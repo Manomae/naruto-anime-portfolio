@@ -1,1 +1,15 @@
-{\n  \"name\": \"naruto-anime-portfolio\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"eslint .\",\n    \"test\": \"jest\"\n  },\n  \"dependencies\": {\n    \"next\": \"latest\",\n    \"react\": \"latest\",\n    \"react-dom\": \"latest\",\n    \"tailwindcss\": \"latest\",\n    \"socket.io-client\": \"latest\",\n    \"@tensorflow/tfjs\": \"latest\",\n    \"framer-motion\": \"latest\",\n    \"ffmpeg.js\": \"latest\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"latest\",\n    \"eslint\": \"latest\",\n    \"jest\": \"latest\",\n    \"@types/react\": \"latest\",\n    \"@types/node\": \"latest\"\n  }\n}
+{
+  "name": "naruto-anime-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+}
