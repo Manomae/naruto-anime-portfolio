@@ -1,76 +1,81 @@
 import React, { useState } from 'react';
 
-export default function NarutoPortalIA() {
+export default function NarutoPortalPro() {
   const [abaAtiva, setAbaAtiva] = useState('ia');
   const [prompt, setPrompt] = useState('');
+  const [resultado, setResultado] = useState(null);
   const [carregando, setCarregando] = useState(false);
 
-  const gerarConteudoIA = () => {
-    if (!prompt) return alert("Escreva o que a IA deve gerar, Ninja!");
-    setCarregando(true);
+  // Função para Gerar Imagem Real (Usando repositório gratuito de IA)
+  const gerarComIA = async () => {
+    if (!prompt) return alert("Escreva algo para a IA, Ninja!");
     
-    // Simulação de geração (Enquanto configuramos a API gratuita depois)
+    setCarregando(true);
+    setResultado(null);
+
+    // Criando um link de imagem baseado na sua descrição (Usa IA Pollinations - Grátis)
+    const urlGerada = `https://pollinations.ai/p/${encodeURIComponent(prompt + " naruto anime style high resolution")}`;
+    
+    // Simulando o tempo de "pensamento" da IA
     setTimeout(() => {
+      setResultado(urlGerada);
       setCarregando(false);
-      alert("IA Processando: " + prompt + "\n(Em breve as imagens aparecerão aqui!)");
-    }, 2000);
+    }, 3000);
   };
 
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       
-      {/* Topo Simples */}
-      <header style={{ padding: '20px', borderBottom: '2px solid orange', textAlign: 'center' }}>
-        <h2 style={{ color: 'orange', margin: 0 }}>NARUTO GENERATOR IA 🤖</h2>
+      {/* Barra de Topo com Login Google */}
+      <header style={{ padding: '15px', borderBottom: '2px solid orange', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111' }}>
+        <h2 style={{ color: 'orange', margin: 0 }}>NARUTO AI PRO 🍥</h2>
+        <button 
+          onClick={() => alert("Firebase: Iniciando Login com Google...")} 
+          style={{ backgroundColor: '#4285F4', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer' }}>
+          Entrar com Google
+        </button>
       </header>
 
-      {/* Menu de Abas */}
-      <nav style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '20px' }}>
-        <button onClick={() => setAbaAtiva('inicio')} style={abaEstilo(abaAtiva === 'inicio')}>Início</button>
-        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Gerador IA</button>
-      </nav>
+      <main style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h3 style={{ color: 'orange' }}>Gerador de Invocações (IA)</h3>
+          <p style={{ color: '#888' }}>Descreva qualquer coisa de Naruto e a IA criará para você.</p>
+        </div>
 
-      {/* Área da IA */}
-      <main style={{ padding: '20px' }}>
-        {abaAtiva === 'ia' && (
-          <div style={cardIA}>
-            <h3 style={{ color: 'orange' }}>🌀 O que você quer criar hoje?</h3>
-            <p style={{ color: '#888', fontSize: '14px' }}>Ex: "Naruto usando Rasengan no espaço" ou "Gif do Sasuke correndo"</p>
-            
-            <input 
-              type="text" 
-              placeholder="Descreva seu vídeo, imagem ou GIF..." 
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              style={inputEstilo}
-            />
+        {/* Campo de Texto */}
+        <input 
+          type="text" 
+          placeholder="Ex: Naruto modo Baryon lutando..." 
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          style={{ width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '15px', outline: 'none' }}
+        />
 
-            <button 
-              onClick={gerarConteudoIA}
-              disabled={carregando}
-              style={botaoGerar(carregando)}>
-              {carregando ? "Invocando Jutsu de IA..." : "Gerar com IA (Grátis)"}
-            </button>
+        <button 
+          onClick={gerarComIA}
+          disabled={carregando}
+          style={{ width: '100%', padding: '15px', backgroundColor: carregando ? '#555' : 'orange', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }}>
+          {carregando ? "EXECUTANDO JUTSU DE IA..." : "GERAR IMAGEM AGORA"}
+        </button>
 
-            <div style={{ marginTop: '30px', border: '1px dashed #444', height: '200px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <p style={{ color: '#555' }}>O resultado aparecerá aqui em 5-10 segundos</p>
+        {/* RESULTADO DA IA */}
+        <div style={{ marginTop: '30px', textAlign: 'center' }}>
+          {carregando && (
+            <div style={{ padding: '20px', border: '2px dashed orange', borderRadius: '10px' }}>
+              <p>Concentrando Chakra... (Aguarde 5 segundos)</p>
             </div>
-          </div>
-        )}
+          )}
 
-        {abaAtiva === 'inicio' && (
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h3>Bem-vindo ao Futuro do Portfólio!</h3>
-            <p>Use a aba Gerador IA para testar nossa inteligência artificial.</p>
-          </div>
-        )}
+          {resultado && !carregando && (
+            <div style={{ borderRadius: '15px', overflow: 'hidden', border: '2px solid orange', boxShadow: '0 0 20px rgba(255, 165, 0, 0.5)' }}>
+              <img src={resultado} alt="Resultado IA" style={{ width: '100%', display: 'block' }} />
+              <div style={{ padding: '10px', backgroundColor: '#111' }}>
+                <p style={{ fontSize: '12px', color: 'orange' }}>Imagem gerada com sucesso! 🔥</p>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
 }
-
-// Estilos
-const abaEstilo = (ativo) => ({ background: 'none', border: 'none', color: ativo ? 'orange' : '#888', borderBottom: ativo ? '2px solid orange' : 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 'bold', padding: '10px' });
-const cardIA = { maxWidth: '600px', margin: '0 auto', padding: '30px', backgroundColor: '#111', borderRadius: '20px', border: '1px solid #333', textAlign: 'center' };
-const inputEstilo = { width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '20px', outline: 'none', fontSize: '16px' };
-const botaoGerar = (carregando) => ({ width: '100%', padding: '15px', backgroundColor: carregando ? '#555' : 'orange', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' });
