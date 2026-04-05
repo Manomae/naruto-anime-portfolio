@@ -24,7 +24,7 @@ export default function EmanuelNarutoAIPro() {
   const [abaAtiva, setAbaAtiva] = useState('ia');
   const [prompt, setPrompt] = useState('');
   const [resultado, setResultado] = useState(null);
-  const [tipoMidia, setTipoMidia] = useState(''); // image, gif, video
+  const [tipoMidia, setTipoMidia] = useState(''); 
   const [carregando, setCarregando] = useState(false);
   const [mensagens, setMensagens] = useState([]);
   const [novaMsg, setNovaMsg] = useState('');
@@ -52,10 +52,17 @@ export default function EmanuelNarutoAIPro() {
     return () => { unsubAuth(); unsubChat(); };
   }, []);
 
+  // FUNÇÃO DE INVOCACÃO ESTABILIZADA
   const gerarMidia = async (tipo, custo) => {
-    if (!user) return alert("Conecte-se com o Google!");
-    if (userData.chakra < custo) return alert("Chakra insuficiente!");
-    if (!prompt && tipo !== 'avatar') return alert("Digite o que deseja invocar!");
+    if (!user) return alert("Ninja, conecte-se com o Google primeiro!");
+    
+    // Se for GIF ou Vídeo, informa que está em manutenção para não gastar chakra
+    if (tipo === 'gif' || tipo === 'video') {
+      return alert(`Jutsu de ${tipo.toUpperCase()} em manutenção! 🔧\nEstamos configurando o motor de vídeo gratuito. Tente Imagem ou Avatar!`);
+    }
+
+    if (userData.chakra < custo) return alert("Seu Chakra esgotou! Assista a um anúncio para recuperar.");
+    if (!prompt && tipo !== 'avatar') return alert("Escreva seu comando, Emanuel!");
 
     setCarregando(true);
     setResultado(null);
@@ -64,16 +71,14 @@ export default function EmanuelNarutoAIPro() {
     const seed = Math.floor(Math.random() * 999999);
     let url = "";
 
+    // Motores estáveis de Imagem e Avatar
     if (tipo === 'image' || tipo === 'avatar') {
-      const p = tipo === 'avatar' ? `portrait of naruto character, centered face, anime style` : `${prompt} naruto anime style`;
-      url = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?seed=${seed}&nologo=true`;
-    } else if (tipo === 'gif') {
-      url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto anime moving gif")}?seed=${seed}&model=video`;
-    } else if (tipo === 'video') {
-      url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " cinematic naruto anime 10s video")}?seed=${seed}&model=video`;
+      const p = tipo === 'avatar' ? `portrait of naruto character, face close-up, anime style, centered, detailed` : `${prompt} naruto anime style, high resolution`;
+      url = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?seed=${seed}&nologo=true&width=1024&height=1024`;
     }
 
     const img = new Image();
+    img.crossOrigin = "anonymous"; // Importante para o download automático
     img.src = url;
     img.onload = async () => {
       const userRef = doc(db, "ninjas", user.uid);
@@ -82,88 +87,79 @@ export default function EmanuelNarutoAIPro() {
       setResultado(url);
       setCarregando(false);
     };
+    img.onerror = () => {
+      alert("Erro na invocação! Chakra concentrado incorretamente. Tente de novo.");
+      setCarregando(false);
+    };
   };
 
   const definirAvatar = async () => {
-    const userRef = doc(db, "ninjas", user.uid);
-    await updateDoc(userRef, { avatarIA: resultado });
-    setUserData(prev => ({ ...prev, avatarIA: resultado }));
-    alert("🔥 Avatar atualizado!");
-    setResultado(null);
+    if (!user || !resultado) return;
+    try {
+      const userRef = doc(db, "ninjas", user.uid);
+      await updateDoc(userRef, { avatarIA: resultado });
+      setUserData(prev => ({ ...prev, avatarIA: resultado }));
+      alert("🔥 Novo Avatar Ninja definido com sucesso! Olhe no topo.");
+      setResultado(null);
+    } catch (e) { alert("Erro ao salvar avatar: " + e.message); }
+  };
+
+  // SISTEMA DE MONETIZAÇÃO REAL (ASSISTIR ANÚNCIO)
+  const ganharChakraPorAnuncio = async () => {
+    if (!user) return alert("Logue para acumular Chakra!");
+    alert("🎥 Carregando anúncio... (No futuro, AdSense abrirá aqui)");
+    setTimeout(async () => {
+      const userRef = doc(db, "ninjas", user.uid);
+      await updateDoc(userRef, { chakra: increment(5) }); // Ganha 5 reais no banco
+      setUserData(prev => ({ ...prev, chakra: prev.chakra + 5 }));
+      alert("✅ +5 de Chakra adicionados à sua conta!");
+    }, 2000);
   };
 
   const enviarMsg = async (e) => {
-    if (!user) return;
-    await addDoc(collection(db, "chat"), {
-      texto: e || novaMsg,
-      user: user.displayName.split(' ')[0],
-      criadoEm: serverTimestamp()
-    });
-    setNovaMsg('');
+    if (!user || (!novaMsg.trim() && !e)) return;
+    try {
+      await addDoc(collection(db, "chat"), {
+        texto: e || novaMsg,
+        user: user.displayName.split(' ')[0],
+        foto: userData.avatarIA || user.photoURL,
+        criadoEm: serverTimestamp()
+      });
+      setNovaMsg('');
+    } catch (error) { alert("Erro no chat: " + error.message); }
+  };
+
+  const baixarImagem = async () => {
+    if (!resultado) return;
+    try {
+      const resposta = await fetch(resultado);
+      const blob = await resposta.blob();
+      const urlBlob = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = urlBlob;
+      link.download = `EmanuelNarutoAI_${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(urlBlob);
+    } catch (e) { window.open(resultado, '_blank'); }
   };
 
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      
       <header style={headerEstilo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={miniAvatar}><img src={userData.avatarIA || user?.photoURL || ""} style={{width:'100%'}} /></div>
-          <span style={{fontSize:'10px', color:'orange'}}>{user ? user.displayName.split(' ')[0] : 'EMANUEL AI'}</span>
+          <div style={miniAvatar}><img src={userData.avatarIA || user?.photoURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=ninja"} style={{width:'100%', height:'100%', objectFit:'cover'}} /></div>
+          <span style={{fontSize:'11px', color:'orange', fontWeight:'bold'}}>{user ? user.displayName.split(' ')[0] : 'EMANUEL AI'}</span>
         </div>
         <div style={badgeChakra}>Chakra: {userData.chakra}</div>
       </header>
 
       <nav style={navEstilo}>
-        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Invocações</button>
-        <button onClick={() => setAbaAtiva('chat')} style={abaEstilo(abaAtiva === 'chat')}>Chat</button>
+        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Jutsu IA</button>
+        <button onClick={() => setAbaAtiva('chat')} style={abaEstilo(abaAtiva === 'chat')}>Chat Vila</button>
         {!user && <button onClick={() => signInWithPopup(auth, provider)} style={btnLog}>Login</button>}
       </nav>
 
-      <main style={{ padding: '15px', maxWidth: '450px', margin: '0 auto', textAlign: 'center' }}>
-        {abaAtiva === 'ia' && (
-          <div style={card}>
-            <input value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Ex: Itachi usando Amaterasu..." style={input} />
-            <div style={gridBotoes}>
-              <button onClick={() => gerarMidia('image', 1)} style={btnG}>Foto (1C)</button>
-              <button onClick={() => gerarMidia('gif', 2)} style={btnG}>GIF (2C)</button>
-              <button onClick={() => gerarMidia('video', 5)} style={btnG}>Vídeo 10s (5C)</button>
-              <button onClick={() => gerarMidia('avatar', 1)} style={btnG}>Avatar (1C)</button>
-            </div>
-            
-            {carregando && <p style={{color:'orange'}}>🌀 Concentrando Chakra...</p>}
-            {resultado && (
-              <div style={resCont}>
-                <img src={resultado} style={{width:'100%', borderRadius:'10px'}} />
-                {tipoMidia === 'avatar' && <button onClick={definirAvatar} style={btnAvatar}>USAR COMO PERFIL</button>}
-                <a href={resultado} download style={btnD}>Download</a>
-              </div>
-            )}
-          </div>
-        )}
-
-        {abaAtiva === 'chat' && (
-          <div style={card}>
-             <div style={chatBox}>{mensagens.map(m => <p key={m.id}><b>{m.user}:</b> {m.texto}</p>)}</div>
-             <div style={{display:'flex', gap:'5px'}}><input value={novaMsg} onChange={e=>setNovaMsg(e.target.value)} style={input} /><button onClick={()=>enviarMsg()} style={btnG}>Senden</button></div>
-             <div style={{marginTop:'10px'}}>{['🍥','🦊','🔥'].map(e => <button key={e} onClick={()=>enviarMsg(e)} style={btnEmoji}>{e}</button>)}</div>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-}
-
-const headerEstilo = { padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111', borderBottom: '2px solid orange' };
-const badgeChakra = { color: 'orange', fontWeight: 'bold', border: '1px solid orange', padding: '3px 10px', borderRadius: '15px', fontSize: '12px' };
-const navEstilo = { display: 'flex', justifyContent: 'center', gap: '10px', padding: '10px' };
-const abaEstilo = (a) => ({ background: 'none', border: 'none', color: a ? 'orange' : '#666', borderBottom: a ? '2px solid orange' : 'none', fontWeight: 'bold' });
-const card = { backgroundColor: '#111', padding: '20px', borderRadius: '15px', border: '1px solid #333' };
-const input = { width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '5px', border: '1px solid orange', backgroundColor: '#222', color: '#fff' };
-const gridBotoes = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' };
-const btnG = { padding: '10px', backgroundColor: 'orange', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer' };
-const btnLog = { backgroundColor: '#4285F4', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px' };
-const resCont = { marginTop: '15px', border: '1px solid orange', padding: '10px', borderRadius: '10px' };
-const btnAvatar = { width: '100%', padding: '10px', marginTop: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', fontWeight: 'bold' };
-const btnD = { display: 'block', marginTop: '10px', color: 'orange', textDecoration: 'none', fontSize: '12px' };
-const chatBox = { height: '200px', overflowY: 'scroll', textAlign: 'left', backgroundColor: '#000', padding: '10px', borderRadius: '5px', marginBottom: '10px' };
-const miniAvatar = { width: '25px', height: '25px', borderRadius: '50%', overflow: 'hidden', border: '1px solid orange', backgroundColor: '#333' };
-const btnEmoji = { background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' };
+      
