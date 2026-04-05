@@ -5,12 +5,26 @@ export default function NarutoPortfolio() {
 
   const episodios = {
     classico: [
-      { id: 1, titulo: "Episódio 01", desc: "Entra Naruto Uzumaki!" },
-      { id: 2, titulo: "Episódio 02", desc: "Meu nome é Konohamaru!" },
+      { 
+        id: 1, 
+        titulo: "Episódio 01", 
+        desc: "Entra Naruto Uzumaki!", 
+        videoUrl: "https://www.youtube.com/embed/ogcXkCCpARU" 
+      },
+      { 
+        id: 2, 
+        titulo: "Episódio 02", 
+        desc: "Meu nome é Konohamaru!", 
+        videoUrl: "https://www.youtube.com/embed/DqmWg4-Updw" 
+      },
     ],
     shippuden: [
-      { id: 1, titulo: "Episódio 01", desc: "Volta para Casa" },
-      { id: 2, titulo: "Episódio 02", desc: "Os Akatsuki em Ação" },
+      { 
+        id: 1, 
+        titulo: "Episódio 01", 
+        desc: "Volta para Casa", 
+        videoUrl: "https://www.youtube.com/embed/mtGFqv2r9x4" 
+      },
     ]
   };
 
@@ -27,15 +41,26 @@ export default function NarutoPortfolio() {
         <button onClick={() => setAbaAtiva('shippuden')} style={botaoEstilo(abaAtiva === 'shippuden')}>Naruto Shippuden</button>
       </nav>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
         {episodios[abaAtiva].map(ep => (
           <div key={ep.id} style={cardEstilo}>
-            <div style={{ height: '150px', backgroundColor: '#222', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #444' }}>
-              <span style={{ color: 'orange' }}>PLAYER DE VÍDEO</span>
+            <div style={{ height: '200px', marginBottom: '10px', border: '1px solid #444', borderRadius: '8px', overflow: 'hidden' }}>
+              {/* O PLAYER DE VÍDEO REAL ENTRA AQUI */}
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src={ep.videoUrl} 
+                title={ep.titulo}
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
             </div>
             <h3 style={{ margin: '5px 0', color: 'orange' }}>{ep.titulo}</h3>
-            <p style={{ fontSize: '14px', color: '#ccc' }}>{ep.desc}</p>
-            <button style={assistirBotao}>Assistir Dublado</button>
+            <p style={{ fontSize: '14px', color: '#ccc', marginBottom: '10px' }}>{ep.desc}</p>
+            <a href={ep.videoUrl.replace('embed/', 'watch?v=')} target="_blank" rel="noreferrer" style={assistirBotao}>
+              Abrir no YouTube
+            </a>
           </div>
         ))}
       </div>
@@ -50,7 +75,8 @@ const botaoEstilo = (ativo) => ({
   border: '2px solid orange',
   cursor: 'pointer',
   fontWeight: 'bold',
-  borderRadius: '5px'
+  borderRadius: '5px',
+  transition: '0.3s'
 });
 
 const cardEstilo = {
@@ -61,12 +87,13 @@ const cardEstilo = {
 };
 
 const assistirBotao = {
+  display: 'block',
+  textAlign: 'center',
+  textDecoration: 'none',
   marginTop: '10px',
-  width: '100%',
-  padding: '8px',
+  padding: '10px',
   backgroundColor: '#ff4500',
   color: 'white',
-  border: 'none',
   borderRadius: '5px',
-  cursor: 'pointer'
+  fontWeight: 'bold'
 };
