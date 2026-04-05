@@ -1,108 +1,106 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+
+// SUA CONFIGURAÇÃO REAL DO FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyCbf0uWYYqZ0UnvxPUkrbN0-T1KrIw03og",
+  authDomain: "emanuel-b526c.firebaseapp.com",
+  projectId: "emanuel-b526c",
+  storageBucket: "emanuel-b526c.firebasestorage.app",
+  messagingSenderId: "340230465087",
+  appId: "1:340230465087:web:72aea1349869155f02ba8a",
+  measurementId: "G-QCEPQ0F5ME"
+};
+
+// Inicializa o Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 export default function EmanuelNarutoAIPro() {
-  const [abaAtiva, setAbaAtiva] = useState('ia');
+  const [user, setUser] = useState(null);
+  const [chakra, setChakra] = useState(5);
   const [prompt, setPrompt] = useState('');
   const [resultado, setResultado] = useState(null);
   const [carregando, setCarregando] = useState(false);
-  const [chakra, setChakra] = useState(5);
-  const [modoNoite, setModoNoite] = useState(true);
-  const [user, setUser] = useState(null);
-  const [mensagens, setMensagens] = useState([
-    { id: 1, texto: "Bem-vindo à Vila da Folha! 🍥", user: "Kakashi" },
-    { id: 2, texto: "Alguém quer treinar hoje? 🦊", user: "Naruto" }
-  ]);
+  const [abaAtiva, setAbaAtiva] = useState('ia');
 
-  const toggleTema = () => setModoNoite(!modoNoite);
-  const fazerLogin = () => {
-    setUser({ nome: "Emanuel" });
-    alert("Iniciando Login com Google...");
+  // Monitora o estado do login
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsub();
+  }, []);
+
+  const loginGoogle = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      alert("Erro ao conectar: " + error.message);
+    }
   };
 
-  const cores = {
-    fundo: modoNoite ? '#0a0a0a' : '#f0f0f0',
-    texto: modoNoite ? '#fff' : '#000',
-    card: modoNoite ? '#111' : '#fff',
-    borda: 'orange'
-  };
-
-  const gerarImagem = (custo, extraPrompt = "") => {
-    if (chakra < custo) return alert(`❌ Chakra insuficiente! Precisa de ${custo}.`);
-    if (!prompt) return alert("Escreva seu comando!");
+  const gerarImagem = (custo) => {
+    if (chakra < custo) return alert("Chakra insuficiente! Assista um anúncio.");
     setCarregando(true);
-    setResultado(null);
-    const seed = Math.floor(Math.random() * 1000000);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " " + extraPrompt + " naruto style anime") }?seed=${seed}`;
+    const seed = Math.floor(Math.random() * 999999);
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto style anime") }?seed=${seed}`;
     const img = new Image();
     img.src = url;
-    img.onload = () => { setResultado(url); setCarregando(false); setChakra(prev => prev - custo); };
+    img.onload = () => {
+      setResultado(url);
+      setCarregando(false);
+      setChakra(prev => prev - custo);
+    };
   };
 
   return (
-    <div style={{ backgroundColor: cores.fundo, color: cores.texto, minHeight: '100vh', fontFamily: 'sans-serif', transition: '0.3s' }}>
+    <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER COMPLETO */}
-      <header style={headerEstilo(cores)}>
+      <header style={headerEstilo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <h4 style={{ color: 'orange', margin: 0, fontSize: '11px' }}>EMANUEL AI</h4>
-          <button onClick={fazerLogin} style={botaoLogin}>
-            {user ? "Conectado" : "Conectar Google"}
-          </button>
-          <button onClick={toggleTema} style={botaoTema}>
-            {modoNoite ? '☀️' : '🌙'}
+          <button onClick={loginGoogle} style={botaoLogin}>
+            {user ? `Olá, ${user.displayName.split(' ')[0]}` : "Conectar Google"}
           </button>
         </div>
-        <div style={badgeChakra}>
-          <span style={{ fontSize: '11px', fontWeight: 'bold' }}>Chakra: {chakra}</span>
-        </div>
+        <div style={badgeChakra}>Chakra: {chakra}</div>
       </header>
 
-      {/* MENU DE ABAS */}
-      <nav style={{ display: 'flex', justifyContent: 'center', gap: '15px', padding: '15px' }}>
+      <nav style={navEstilo}>
         <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Gerador IA</button>
         <button onClick={() => setAbaAtiva('chat')} style={abaEstilo(abaAtiva === 'chat')}>Vila da Folha (Chat)</button>
       </nav>
 
-      <main style={{ padding: '15px', maxWidth: '500px', margin: '0 auto', textAlign: 'center' }}>
-        
+      <main style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
         {abaAtiva === 'ia' && (
-          <div style={containerCard(cores)}>
+          <div style={card}>
             <input 
-              type="text" placeholder="Ex: Naruto vs Sasuke..." value={prompt}
-              onChange={(e) => setPrompt(e.target.value)} style={inputEstilo(cores)}
+              type="text" placeholder="O que vamos invocar? 🍥" value={prompt}
+              onChange={(e) => setPrompt(e.target.value)} style={input}
             />
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-              <button onClick={() => gerarImagem(1)} style={botaoSimples}>Comum (1C)</button>
-              <button onClick={() => gerarImagem(10, "masterpiece, ultra detailed")} style={botaoAvancado}>Aprofundada (10C)</button>
-            </div>
-            <button onClick={() => setChakra(chakra + 5)} style={botaoAnuncio}>📺 +5 CHAKRA</button>
-            <div style={{ marginTop: '15px' }}>
-              {carregando && <p style={{ color: 'orange' }}>🌀 Realizando Jutsu...</p>}
-              {resultado && (
-                <div style={molduraImagem}>
-                  <img src={resultado} alt="IA" style={{ width: '100%', borderRadius: '10px' }} />
-                  <a href={resultado} download style={botaoDownload}>⬇️ BAIXAR FOTO</a>
-                </div>
-              )}
-            </div>
+            <button onClick={() => gerarImagem(1)} style={btnLaranja}>Gerar (1C)</button>
+            <button onClick={() => setChakra(chakra + 5)} style={btnAnuncio}>📺 +5 CHAKRA</button>
+            
+            {resultado && (
+              <div style={resultadoMoldura}>
+                <img src={resultado} alt="IA" style={{ width: '100%', borderRadius: '10px' }} />
+                <a href={resultado} target="_blank" rel="noreferrer" style={btnDownload}>DOWNLOAD</a>
+              </div>
+            )}
           </div>
         )}
 
         {abaAtiva === 'chat' && (
-          <div style={containerCard(cores)}>
-            <h3 style={{ color: 'orange', marginTop: 0 }}>Bate-papo Ninja 🍥</h3>
-            <div style={boxChat}>
-              {mensagens.map(m => (
-                <div key={m.id} style={{ textAlign: 'left', marginBottom: '10px', padding: '5px' }}>
-                  <b style={{ color: 'orange', fontSize: '12px' }}>{m.user}:</b>
-                  <p style={{ margin: 0, fontSize: '14px' }}>{m.texto}</p>
-                </div>
-              ))}
+          <div style={card}>
+            <h3 style={{ color: 'orange' }}>Bate-papo Ninja</h3>
+            <div style={chatBox}>
+              <p><b>Naruto:</b> Dattebayo! 🦊</p>
+              <p><b>Kakashi:</b> Oi, Emanuel. 📖</p>
             </div>
-            <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
-              <input type="text" placeholder="Diga algo... 🦊⚡🗡️" style={inputEstilo(cores)} />
-              <button style={botaoSimples}>Enviar</button>
-            </div>
+            <input type="text" placeholder="Diga algo..." style={input} />
           </div>
         )}
       </main>
@@ -110,17 +108,16 @@ export default function EmanuelNarutoAIPro() {
   );
 }
 
-// ESTILOS
-const headerEstilo = (c) => ({ padding: '10px', borderBottom: '2px solid orange', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: c.card, position: 'sticky', top: 0, zIndex: 100 });
-const botaoLogin = { backgroundColor: '#4285F4', color: 'white', border: 'none', padding: '5px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px', fontWeight: 'bold' };
-const badgeChakra = { backgroundColor: '#000', padding: '5px 10px', borderRadius: '15px', border: '1px solid #4285F4', color: '#fff' };
-const abaEstilo = (ativo) => ({ background: 'none', border: 'none', color: ativo ? 'orange' : '#888', borderBottom: ativo ? '2px solid orange' : 'none', cursor: 'pointer', fontWeight: 'bold', padding: '5px' });
-const containerCard = (c) => ({ backgroundColor: c.card, padding: '20px', borderRadius: '20px', border: `1px solid ${c.borda}` });
-const inputEstilo = (c) => ({ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid orange', backgroundColor: c.fundo, color: c.texto });
-const botaoSimples = { flex: 1, padding: '10px', backgroundColor: 'orange', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const botaoAvancado = { flex: 1, padding: '10px', backgroundColor: '#4285F4', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const botaoAnuncio = { width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const botaoDownload = { display: 'block', marginTop: '10px', padding: '8px', backgroundColor: '#fff', color: '#000', textDecoration: 'none', borderRadius: '5px', fontWeight: 'bold', fontSize: '12px' };
-const molduraImagem = { border: '2px solid orange', padding: '8px', borderRadius: '12px', backgroundColor: '#000' };
-const botaoTema = { background: 'none', border: '1px solid orange', borderRadius: '50%', cursor: 'pointer', padding: '4px' };
-const boxChat = { height: '200px', backgroundColor: '#000', borderRadius: '10px', padding: '10px', overflowY: 'scroll', border: '1px solid #333' };
+// Estilos rápidos
+const headerEstilo = { padding: '10px', borderBottom: '2px solid orange', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111' };
+const botaoLogin = { backgroundColor: '#4285F4', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px', fontWeight: 'bold' };
+const badgeChakra = { backgroundColor: '#000', padding: '5px 10px', borderRadius: '15px', border: '1px solid orange', fontSize: '11px' };
+const navEstilo = { display: 'flex', justifyContent: 'center', gap: '15px', padding: '15px' };
+const abaEstilo = (a) => ({ background: 'none', border: 'none', color: a ? 'orange' : '#888', borderBottom: a ? '2px solid orange' : 'none', fontWeight: 'bold', cursor: 'pointer' });
+const card = { backgroundColor: '#111', padding: '20px', borderRadius: '20px', border: '1px solid #333', textAlign: 'center' };
+const input = { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '10px' };
+const btnLaranja = { width: '100%', padding: '12px', backgroundColor: 'orange', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' };
+const btnAnuncio = { width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
+const btnDownload = { display: 'block', marginTop: '10px', color: 'orange', textDecoration: 'none', fontWeight: 'bold' };
+const resultadoMoldura = { marginTop: '20px', border: '1px solid orange', padding: '10px', borderRadius: '10px' };
+const chatBox = { height: '150px', backgroundColor: '#000', padding: '10px', borderRadius: '10px', overflowY: 'scroll', textAlign: 'left', marginBottom: '10px' };
