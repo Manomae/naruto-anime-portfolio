@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -21,16 +21,39 @@ const provider = new GoogleAuthProvider();
 export default function EmanuelNarutoAIPro() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState({ chakra: 5, avatarIA: null });
+  const [segundosOnline, setSegundosOnline] = useState(0);
   const [abaAtiva, setAbaAtiva] = useState('ia');
   const [prompt, setPrompt] = useState('');
   const [resultado, setResultado] = useState(null);
-  const [tipoMidia, setTipoMidia] = useState(''); 
   const [carregando, setCarregando] = useState(false);
   const [mensagens, setMensagens] = useState([]);
-  const [novaMsg, setNovaMsg] = useState('');
 
+  // 1. Contador de Tempo Online
   useEffect(() => {
-    const unsubAuth = onAuthStateChanged(auth, async (currentUser) => {
+    let intervalo;
+    if (user) {
+      intervalo = setInterval(() => {
+        setSegundosOnline(prev => prev + 1);
+      }, 1000);
+    } else {
+      setSegundosOnline(0);
+      clearInterval(intervalo);
+    }
+    return () => clearInterval(intervalo);
+  }, [user]);
+
+  // Formata o tempo (Dias, Horas, Minutos, Segundos)
+  const formatarTempo = (totalSegundos) => {
+    const dias = Math.floor(totalSegundos / (3600 * 24));
+    const horas = Math.floor((totalSegundos % (3600 * 24)) / 3600);
+    const minutos = Math.floor((totalSegundos % 3600) / 60);
+    const segundos = totalSegundos % 60;
+    return `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+  };
+
+  // 2. Monitor de Autenticação
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         const userRef = doc(db, "ninjas", currentUser.uid);
@@ -41,44 +64,26 @@ export default function EmanuelNarutoAIPro() {
           await setDoc(userRef, inicial);
           setUserData(inicial);
         }
+      } else {
+        setUser(null);
       }
     });
-
-    const q = query(collection(db, "chat"), orderBy("criadoEm", "desc"), limit(15));
-    const unsubChat = onSnapshot(q, (snapshot) => {
-      setMensagens(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse());
-    });
-
-    return () => { unsubAuth(); unsubChat(); };
+    return () => unsub();
   }, []);
 
-  // FUNÇÃO DE INVOCACÃO ESTABILIZADA
-  const gerarMidia = async (tipo, custo) => {
-    if (!user) return alert("Ninja, conecte-se com o Google primeiro!");
-    
-    // Se for GIF ou Vídeo, informa que está em manutenção para não gastar chakra
-    if (tipo === 'gif' || tipo === 'video') {
-      return alert(`Jutsu de ${tipo.toUpperCase()} em manutenção! 🔧\nEstamos configurando o motor de vídeo gratuito. Tente Imagem ou Avatar!`);
-    }
+  const handleAuth = async () => {
+    if (user) await signOut(auth);
+    else await signInWithPopup(auth, provider);
+  };
 
-    if (userData.chakra < custo) return alert("Seu Chakra esgotou! Assista a um anúncio para recuperar.");
-    if (!prompt && tipo !== 'avatar') return alert("Escreva seu comando, Emanuel!");
-
+  const gerarMidia = async (custo) => {
+    if (!user) return alert("Conecte-se para usar o Jutsu!");
+    if (userData.chakra < custo) return alert("Chakra insuficiente!");
     setCarregando(true);
-    setResultado(null);
-    setTipoMidia(tipo);
-
     const seed = Math.floor(Math.random() * 999999);
-    let url = "";
-
-    // Motores estáveis de Imagem e Avatar
-    if (tipo === 'image' || tipo === 'avatar') {
-      const p = tipo === 'avatar' ? `portrait of naruto character, face close-up, anime style, centered, detailed` : `${prompt} naruto anime style, high resolution`;
-      url = `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?seed=${seed}&nologo=true&width=1024&height=1024`;
-    }
-
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto anime style")}?seed=${seed}&nologo=true`;
+    
     const img = new Image();
-    img.crossOrigin = "anonymous"; // Importante para o download automático
     img.src = url;
     img.onload = async () => {
       const userRef = doc(db, "ninjas", user.uid);
@@ -87,79 +92,78 @@ export default function EmanuelNarutoAIPro() {
       setResultado(url);
       setCarregando(false);
     };
-    img.onerror = () => {
-      alert("Erro na invocação! Chakra concentrado incorretamente. Tente de novo.");
-      setCarregando(false);
-    };
-  };
-
-  const definirAvatar = async () => {
-    if (!user || !resultado) return;
-    try {
-      const userRef = doc(db, "ninjas", user.uid);
-      await updateDoc(userRef, { avatarIA: resultado });
-      setUserData(prev => ({ ...prev, avatarIA: resultado }));
-      alert("🔥 Novo Avatar Ninja definido com sucesso! Olhe no topo.");
-      setResultado(null);
-    } catch (e) { alert("Erro ao salvar avatar: " + e.message); }
-  };
-
-  // SISTEMA DE MONETIZAÇÃO REAL (ASSISTIR ANÚNCIO)
-  const ganharChakraPorAnuncio = async () => {
-    if (!user) return alert("Logue para acumular Chakra!");
-    alert("🎥 Carregando anúncio... (No futuro, AdSense abrirá aqui)");
-    setTimeout(async () => {
-      const userRef = doc(db, "ninjas", user.uid);
-      await updateDoc(userRef, { chakra: increment(5) }); // Ganha 5 reais no banco
-      setUserData(prev => ({ ...prev, chakra: prev.chakra + 5 }));
-      alert("✅ +5 de Chakra adicionados à sua conta!");
-    }, 2000);
-  };
-
-  const enviarMsg = async (e) => {
-    if (!user || (!novaMsg.trim() && !e)) return;
-    try {
-      await addDoc(collection(db, "chat"), {
-        texto: e || novaMsg,
-        user: user.displayName.split(' ')[0],
-        foto: userData.avatarIA || user.photoURL,
-        criadoEm: serverTimestamp()
-      });
-      setNovaMsg('');
-    } catch (error) { alert("Erro no chat: " + error.message); }
-  };
-
-  const baixarImagem = async () => {
-    if (!resultado) return;
-    try {
-      const resposta = await fetch(resultado);
-      const blob = await resposta.blob();
-      const urlBlob = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = urlBlob;
-      link.download = `EmanuelNarutoAI_${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(urlBlob);
-    } catch (e) { window.open(resultado, '_blank'); }
   };
 
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       
+      {/* HEADER COM STATUS ONLINE */}
       <header style={headerEstilo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={miniAvatar}><img src={userData.avatarIA || user?.photoURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=ninja"} style={{width:'100%', height:'100%', objectFit:'cover'}} /></div>
-          <span style={{fontSize:'11px', color:'orange', fontWeight:'bold'}}>{user ? user.displayName.split(' ')[0] : 'EMANUEL AI'}</span>
+          <div style={miniAvatar}>
+            <img src={userData.avatarIA || user?.photoURL || ""} style={{width:'100%', height:'100%', objectFit:'cover'}} />
+            {user && <div style={pontoOnline}></div>}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{fontSize:'10px', color:'orange', fontWeight:'bold'}}>
+              {user ? user.displayName.split(' ')[0] : 'VISITANTE'}
+            </span>
+            {user && <span style={{fontSize:'8px', color:'#00ff00'}}>ONLINE: {formatarTempo(segundosOnline)}</span>}
+          </div>
         </div>
-        <div style={badgeChakra}>Chakra: {userData.chakra}</div>
+        <button onClick={handleAuth} style={btnAuth}>
+          {user ? 'SAIR' : 'CONECTAR'}
+        </button>
       </header>
 
       <nav style={navEstilo}>
-        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Jutsu IA</button>
-        <button onClick={() => setAbaAtiva('chat')} style={abaEstilo(abaAtiva === 'chat')}>Chat Vila</button>
-        {!user && <button onClick={() => signInWithPopup(auth, provider)} style={btnLog}>Login</button>}
+        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>JUTSU IA</button>
+        <button onClick={() => setAbaAtiva('status')} style={abaEstilo(abaAtiva === 'status')}>SESSÃO</button>
+        <div style={badgeChakra}>🌀 {userData.chakra} C</div>
       </nav>
 
-      
+      <main style={{ padding: '15px', maxWidth: '450px', margin: '0 auto', textAlign: 'center' }}>
+        
+        {abaAtiva === 'ia' && (
+          <div style={card}>
+            <input value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Invoque sua arte..." style={input} />
+            <button onClick={() => gerarMidia(1)} disabled={carregando} style={btnG}>GERAR ARTE (1C)</button>
+            {resultado && (
+              <div style={resCont}>
+                <img src={resultado} style={{width:'100%', borderRadius:'10px'}} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {abaAtiva === 'status' && (
+          <div style={card}>
+            <h3 style={{color:'orange'}}>Registro de Atividade</h3>
+            <div style={boxTempo}>
+              <p style={{fontSize:'14px'}}>Tempo de Treinamento nesta sessão:</p>
+              <h2 style={{color:'#00ff00', margin:'10px 0'}}>{formatarTempo(segundosOnline)}</h2>
+              <p style={{fontSize:'12px', color:'#888'}}>Mantenha o portal aberto para acumular tempo online!</p>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+// ESTILOS
+const headerEstilo = { padding: '10px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111', borderBottom: '2px solid orange' };
+const miniAvatar = { width: '35px', height: '35px', borderRadius: '50%', border: '2px solid orange', position: 'relative', overflow: 'visible', backgroundColor:'#333' };
+const pontoOnline = { width: '10px', height: '10px', backgroundColor: '#00ff00', borderRadius: '50%', position: 'absolute', bottom: '0', right: '0', border: '2px solid #111', animation: 'pulse 1.5s infinite' };
+const btnAuth = { backgroundColor: '#333', color: '#fff', border: '1px solid orange', padding: '5px 12px', borderRadius: '5px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' };
+const badgeChakra = { color: 'orange', fontWeight: 'bold', fontSize: '12px', padding: '5px' };
+const navEstilo = { display: 'flex', justifyContent: 'center', alignItems:'center', gap: '20px', padding: '10px' };
+const abaEstilo = (a) => ({ background: 'none', border: 'none', color: a ? 'orange' : '#666', borderBottom: a ? '2px solid orange' : 'none', fontWeight: 'bold', fontSize:'12px' });
+const card = { backgroundColor: '#111', padding: '20px', borderRadius: '15px', border: '1px solid #333' };
+const input = { width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '5px', border: '1px solid orange', backgroundColor: '#222', color: '#fff' };
+const btnG = { width: '100%', padding: '10px', backgroundColor: 'orange', border: 'none', borderRadius: '5px', fontWeight: 'bold' };
+const resCont = { marginTop: '15px', border: '1px solid orange', padding: '10px', borderRadius: '10px' };
+const boxTempo = { padding: '20px', border: '1px dashed #444', borderRadius: '10px', marginTop: '10px' };
+
+// Adicione este CSS no seu arquivo global ou dentro de um <style> para a animação da bolinha
+// @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
