@@ -10,6 +10,7 @@
   "dependencies": {
     "next":"14.2.3",
     "react":"latest",
-    "react-dom":"latest"
+    "react-dom":"latest",
+     "lucide-react":"latest"
   }
 }
