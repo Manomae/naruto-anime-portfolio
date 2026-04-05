@@ -4,91 +4,97 @@ export default function EmanuelNarutoAIPro() {
   const [prompt, setPrompt] = useState('');
   const [resultado, setResultado] = useState(null);
   const [carregando, setCarregando] = useState(false);
-  const [chakra, setChakra] = useState(0);
-  const [user, setUser] = useState(null);
+  const [chakra, setChakra] = useState(5);
+  const [modoNoite, setModoNoite] = useState(true);
 
-  const fazerLogin = () => {
-    setUser({ nome: "Emanuel" });
-    alert("Iniciando Login com Google...");
+  // Alternar entre Modo Noturno e Dia
+  const toggleTema = () => setModoNoite(!modoNoite);
+
+  const cores = {
+    fundo: modoNoite ? '#0a0a0a' : '#f0f0f0',
+    texto: modoNoite ? '#fff' : '#000',
+    card: modoNoite ? '#111' : '#fff',
+    borda: 'orange'
   };
 
-  const assistirAnuncioParaGanharChakra = () => {
-    alert("🎥 Carregando anúncio...");
-    setTimeout(() => {
-      setChakra(prev => prev + 5);
-      alert("✅ +5 de Chakra recuperados!");
-    }, 2000);
-  };
-
-  const gerarImagem = () => {
-    if (chakra <= 0) return alert("❌ Chakra Esgotado! Assista a um anúncio.");
+  const gerarImagem = (custo, extraPrompt = "") => {
+    if (chakra < custo) return alert(`❌ Chakra insuficiente! Você precisa de ${custo} Chakras.`);
     if (!prompt) return alert("Escreva seu comando!");
     
     setCarregando(true);
     setResultado(null);
 
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto style anime high quality")}`;
+    // Variação Aleatória para não repetir fotos
+    const seed = Math.floor(Math.random() * 1000000);
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " " + extraPrompt + " naruto style anime 4k") }?seed=${seed}&width=1024&height=1024`;
     
     const img = new Image();
     img.src = url;
     img.onload = () => {
       setResultado(url);
       setCarregando(false);
-      setChakra(prev => prev - 1);
-    };
-    img.onerror = () => {
-      alert("Erro na invocação!");
-      setCarregando(false);
+      setChakra(prev => prev - custo);
     };
   };
 
+  const baixarImagem = () => {
+    const link = document.createElement('a');
+    link.href = resultado;
+    link.download = `Emanuel_AI_Naruto_${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+    <div style={{ backgroundColor: cores.fundo, color: cores.texto, minHeight: '100vh', fontFamily: 'sans-serif', transition: '0.3s' }}>
       
-      {/* HEADER ATUALIZADO: Nome, Login e Chakra juntos */}
-      <header style={headerEstilo}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <h4 style={{ color: 'orange', margin: 0, fontSize: '14px', textTransform: 'uppercase' }}>Emanuel Naruto AI</h4>
-          <button onClick={fazerLogin} style={botaoLogin}>
-            {user ? "Conectado" : "Conectar Google"}
+      <header style={headerEstilo(cores)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h4 style={{ color: 'orange', margin: 0, fontSize: '12px' }}>EMANUEL NARUTO AI</h4>
+          <button onClick={toggleTema} style={botaoTema}>
+            {modoNoite ? '☀️ Dia' : '🌙 Noite'}
           </button>
         </div>
 
         <div style={badgeChakra}>
           <span style={{ fontSize: '12px', fontWeight: 'bold' }}>Chakra: {chakra}</span>
-          <div style={barraChakraFundo}>
-             <div style={{ height: '100%', width: `${Math.min((chakra/10)*100, 100)}%`, backgroundColor: '#4285F4', borderRadius: '5px', transition: '0.5s' }}></div>
-          </div>
         </div>
       </header>
 
       <main style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
         
-        <div style={containerMonetizacao}>
-          <button onClick={assistirAnuncioParaGanharChakra} style={botaoAnuncio}>
-            📺 ASSISTIR ANÚNCIO (+5 CHAKRA)
-          </button>
-        </div>
-
-        <div style={containerIA}>
-          <h3 style={{ color: 'orange', marginTop: 0 }}>Gerador de Invocações IA</h3>
+        <div style={containerIA(cores)}>
+          <h3 style={{ color: 'orange' }}>Invocação de Arte Ninja</h3>
           <input 
             type="text" 
-            placeholder="Ex: Naruto Modo Sennin..." 
+            placeholder="Ex: Sasuke vs Itachi..." 
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            style={inputEstilo}
+            style={inputEstilo(cores)}
           />
 
-          <button onClick={gerarImagem} disabled={carregando} style={botaoGerar(carregando)}>
-            {carregando ? "INVOCANDO JUTSU..." : "GERAR (Gasta 1 Chakra)"}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+            <button onClick={() => gerarImagem(1)} disabled={carregando} style={botaoSimples}>
+              Gerar Comum (1 C)
+            </button>
+            <button onClick={() => gerarImagem(10, "highly detailed, cinematic lighting, masterpiece, sharp focus")} disabled={carregando} style={botaoAvancado}>
+              Busca Aprofundada (10 C)
+            </button>
+          </div>
+
+          <button onClick={() => setChakra(chakra + 5)} style={botaoAnuncio}>
+            📺 RECUPERAR +5 CHAKRA
           </button>
 
           <div style={{ marginTop: '20px' }}>
-            {carregando && <p style={{ color: 'orange' }}>🌀 Concentrando Chakra...</p>}
+            {carregando && <p style={{ color: 'orange' }}>🌀 Realizando Jutsu de Busca...</p>}
             {resultado && (
               <div style={molduraImagem}>
-                <img src={resultado} alt="IA Naruto" style={{ width: '100%', borderRadius: '10px' }} />
+                <img src={resultado} alt="IA" style={{ width: '100%', borderRadius: '10px' }} />
+                <button onClick={baixarImagem} style={botaoDownload}>
+                  ⬇️ BAIXAR FOTO (DOWNLOAD)
+                </button>
               </div>
             )}
           </div>
@@ -98,51 +104,14 @@ export default function EmanuelNarutoAIPro() {
   );
 }
 
-// ESTILOS ATUALIZADOS
-const headerEstilo = { 
-  padding: '10px 15px', 
-  borderBottom: '2px solid orange', 
-  display: 'flex', 
-  justifyContent: 'space-between', 
-  alignItems: 'center', 
-  backgroundColor: '#111',
-  position: 'sticky',
-  top: 0,
-  zIndex: 100
-};
-
-const botaoLogin = { 
-  backgroundColor: '#4285F4', 
-  color: 'white', 
-  border: 'none', 
-  padding: '6px 10px', 
-  borderRadius: '4px', 
-  cursor: 'pointer', 
-  fontSize: '11px', 
-  fontWeight: 'bold' 
-};
-
-const badgeChakra = { 
-  display: 'flex', 
-  alignItems: 'center', 
-  backgroundColor: '#000', 
-  padding: '5px 10px', 
-  borderRadius: '15px', 
-  border: '1px solid #4285F4' 
-};
-
-const barraChakraFundo = { 
-  height: '6px', 
-  width: '40px', 
-  backgroundColor: '#333', 
-  borderRadius: '5px', 
-  marginLeft: '8px',
-  overflow: 'hidden'
-};
-
-const containerMonetizacao = { backgroundColor: '#1a1a1a', padding: '15px', borderRadius: '15px', marginBottom: '20px', border: '1px dashed orange' };
-const botaoAnuncio = { backgroundColor: '#28a745', color: 'white', border: 'none', padding: '10px', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer', width: '100%' };
-const containerIA = { backgroundColor: '#111', padding: '25px', borderRadius: '20px', border: '1px solid #333' };
-const inputEstilo = { width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '15px', outline: 'none' };
-const botaoGerar = (c) => ({ width: '100%', padding: '15px', backgroundColor: c ? '#555' : 'orange', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' });
-const molduraImagem = { border: '2px solid orange', padding: '8px', borderRadius: '12px', backgroundColor: '#000' };
+// ESTILOS
+const headerEstilo = (c) => ({ padding: '10px 15px', borderBottom: '2px solid orange', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: c.card });
+const containerIA = (c) => ({ backgroundColor: c.card, padding: '20px', borderRadius: '20px', border: `1px solid ${c.borda}`, boxShadow: '0 4px 15px rgba(0,0,0,0.2)' });
+const inputEstilo = (c) => ({ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid orange', backgroundColor: c.fundo, color: c.texto, marginBottom: '15px' });
+const badgeChakra = { backgroundColor: '#000', padding: '5px 12px', borderRadius: '15px', border: '1px solid #4285F4', color: '#fff' };
+const botaoSimples = { flex: 1, padding: '12px', backgroundColor: 'orange', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
+const botaoAvancado = { flex: 1, padding: '12px', backgroundColor: '#4285F4', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
+const botaoAnuncio = { width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' };
+const botaoDownload = { marginTop: '15px', width: '100%', padding: '10px', backgroundColor: '#fff', color: '#000', border: '1px solid #000', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
+const molduraImagem = { border: '2px solid orange', padding: '10px', borderRadius: '15px', backgroundColor: '#000', marginTop: '20px' };
+const botaoTema = { padding: '5px 10px', borderRadius: '5px', border: '1px solid orange', background: 'none', color: 'orange', fontSize: '10px', cursor: 'pointer' };
