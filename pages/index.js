@@ -26,7 +26,6 @@ export default function EmanuelNarutoAIPro() {
   const [carregando, setCarregando] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('ia');
 
-  // Monitora o estado do login
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -35,25 +34,50 @@ export default function EmanuelNarutoAIPro() {
   }, []);
 
   const loginGoogle = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      alert("Erro ao conectar: " + error.message);
-    }
+    try { await signInWithPopup(auth, provider); } 
+    catch (error) { alert("Erro: " + error.message); }
   };
 
   const gerarImagem = (custo) => {
-    if (chakra < custo) return alert("Chakra insuficiente! Assista um anúncio.");
+    if (chakra < custo) return alert("Chakra insuficiente!");
     setCarregando(true);
     const seed = Math.floor(Math.random() * 999999);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto style anime") }?seed=${seed}`;
+    // Usando motor de imagem que permite download
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " naruto style anime") }?seed=${seed}&nologo=true`;
+    
     const img = new Image();
+    img.crossOrigin = "anonymous"; // Importante para o download!
     img.src = url;
     img.onload = () => {
       setResultado(url);
       setCarregando(false);
       setChakra(prev => prev - custo);
     };
+  };
+
+  // FUNÇÃO DE DOWNLOAD AUTOMÁTICO CORRIGIDA
+  const baixarAutomático = async () => {
+    if (!resultado) return;
+    try {
+      // 1. Busca a imagem como um arquivo blob
+      const resposta = await fetch(resultado);
+      const blob = await resposta.blob();
+      
+      // 2. Cria um link temporário para o arquivo
+      const urlBlob = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = urlBlob;
+      link.download = `EmanuelNarutoAI_${Date.now()}.png`; // Nome do arquivo
+      
+      // 3. Força o clique no link e limpa
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(urlBlob); // Libera memória
+    } catch (error) {
+      // Se der erro no modo automático, abre em nova aba
+      window.open(resultado, '_blank');
+    }
   };
 
   return (
@@ -87,7 +111,8 @@ export default function EmanuelNarutoAIPro() {
             {resultado && (
               <div style={resultadoMoldura}>
                 <img src={resultado} alt="IA" style={{ width: '100%', borderRadius: '10px' }} />
-                <a href={resultado} target="_blank" rel="noreferrer" style={btnDownload}>DOWNLOAD</a>
+                {/* BOTÃO DOWNLOAD CORRIGIDO */}
+                <button onClick={baixarAutomático} style={btnDownload}>DOWNLOAD AUTOMÁTICO</button>
               </div>
             )}
           </div>
@@ -96,11 +121,7 @@ export default function EmanuelNarutoAIPro() {
         {abaAtiva === 'chat' && (
           <div style={card}>
             <h3 style={{ color: 'orange' }}>Bate-papo Ninja</h3>
-            <div style={chatBox}>
-              <p><b>Naruto:</b> Dattebayo! 🦊</p>
-              <p><b>Kakashi:</b> Oi, Emanuel. 📖</p>
-            </div>
-            <input type="text" placeholder="Diga algo..." style={input} />
+            <div style={chatBox}><p><b>Sistema:</b> Chat em desenvolvimento.</p></div>
           </div>
         )}
       </main>
@@ -118,6 +139,7 @@ const card = { backgroundColor: '#111', padding: '20px', borderRadius: '20px', b
 const input = { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '10px' };
 const btnLaranja = { width: '100%', padding: '12px', backgroundColor: 'orange', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' };
 const btnAnuncio = { width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const btnDownload = { display: 'block', marginTop: '10px', color: 'orange', textDecoration: 'none', fontWeight: 'bold' };
 const resultadoMoldura = { marginTop: '20px', border: '1px solid orange', padding: '10px', borderRadius: '10px' };
-const chatBox = { height: '150px', backgroundColor: '#000', padding: '10px', borderRadius: '10px', overflowY: 'scroll', textAlign: 'left', marginBottom: '10px' };
+const chatBox = { height: '100px', backgroundColor: '#000', padding: '10px', borderRadius: '10px', overflowY: 'scroll', textAlign: 'left' };
+// Novo estilo para o botão de download
+const btnDownload = { width: '100%', padding: '10px', backgroundColor: '#fff', color: '#000', border: '1px solid #000', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
