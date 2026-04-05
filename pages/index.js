@@ -1,68 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-export default function NarutoPortal() {
-  const [abaAtiva, setAbaAtiva] = useState('diario');
-  const [user, setUser] = useState(null);
+export default function NarutoPortalIA() {
+  const [abaAtiva, setAbaAtiva] = useState('ia');
+  const [prompt, setPrompt] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  // Simulação de Anúncio Diário (Muda todo dia)
-  const anuncioDoDia = {
-    titulo: "🔥 DESTAQUE DE HOJE",
-    videoUrl: "https://www.youtube.com/embed/ogcXkCCpARU", // Ep 1 como exemplo
-    linkAfiliado: "#", // Aqui você colocará seu link de ganho no futuro
-    texto: "Assista ao episódio lendário e ganhe pergaminhos!"
+  const gerarConteudoIA = () => {
+    if (!prompt) return alert("Escreva o que a IA deve gerar, Ninja!");
+    setCarregando(true);
+    
+    // Simulação de geração (Enquanto configuramos a API gratuita depois)
+    setTimeout(() => {
+      setCarregando(false);
+      alert("IA Processando: " + prompt + "\n(Em breve as imagens aparecerão aqui!)");
+    }, 2000);
   };
 
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       
-      {/* Barra de Topo com Login */}
-      <header style={{ padding: '15px', borderBottom: '2px solid orange', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111' }}>
-        <h2 style={{ color: 'orange', margin: 0 }}>NARUTO PRO 🍥</h2>
-        <button 
-          onClick={() => alert("Conectando ao Google...")} 
-          style={loginBotao}>
-          {user ? `Olá, Ninja` : "Entrar com Google"}
-        </button>
+      {/* Topo Simples */}
+      <header style={{ padding: '20px', borderBottom: '2px solid orange', textAlign: 'center' }}>
+        <h2 style={{ color: 'orange', margin: 0 }}>NARUTO GENERATOR IA 🤖</h2>
       </header>
 
-      {/* Seção de Anúncio Diário */}
-      <section style={secaoAnuncio}>
-        <div style={{ flex: 1 }}>
-          <h3 style={{ color: '#ff4500' }}>{anuncioDoDia.titulo}</h3>
-          <p>{anuncioDoDia.texto}</p>
-          <button style={botaoAposta}>Apoiar Projeto / Ver Anúncio</button>
-        </div>
-        <div style={{ flex: 1, height: '200px', borderRadius: '10px', overflow: 'hidden' }}>
-          <iframe width="100%" height="100%" src={anuncioDoDia.videoUrl} frameBorder="0" allowFullScreen></iframe>
-        </div>
-      </section>
-
-      {/* Abas de Conteúdo */}
+      {/* Menu de Abas */}
       <nav style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '20px' }}>
-        <button onClick={() => setAbaAtiva('diario')} style={abaEstilo(abaAtiva === 'diario')}>Início</button>
-        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Gerador IA (Beta)</button>
-        <button onClick={() => setAbaAtiva('chat')} style={abaEstilo(abaAtiva === 'chat')}>Vila da Folha (Chat)</button>
+        <button onClick={() => setAbaAtiva('inicio')} style={abaEstilo(abaAtiva === 'inicio')}>Início</button>
+        <button onClick={() => setAbaAtiva('ia')} style={abaEstilo(abaAtiva === 'ia')}>Gerador IA</button>
       </nav>
 
-      {/* Conteúdo Dinâmico */}
-      <main style={{ padding: '20px', textAlign: 'center' }}>
-        {abaAtiva === 'diario' && <p>Bem-vindo ao portal! Os vídeos diários serão postados aqui.</p>}
+      {/* Área da IA */}
+      <main style={{ padding: '20px' }}>
         {abaAtiva === 'ia' && (
           <div style={cardIA}>
-            <h3>🤖 Gerador de Vídeos IA</h3>
-            <p>Em breve: Gere vídeos de 10s do seu Ninja favorito!</p>
-            <button disabled style={{ padding: '10px', cursor: 'not-allowed' }}>Gerar com IA (Aguardando Créditos)</button>
+            <h3 style={{ color: 'orange' }}>🌀 O que você quer criar hoje?</h3>
+            <p style={{ color: '#888', fontSize: '14px' }}>Ex: "Naruto usando Rasengan no espaço" ou "Gif do Sasuke correndo"</p>
+            
+            <input 
+              type="text" 
+              placeholder="Descreva seu vídeo, imagem ou GIF..." 
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              style={inputEstilo}
+            />
+
+            <button 
+              onClick={gerarConteudoIA}
+              disabled={carregando}
+              style={botaoGerar(carregando)}>
+              {carregando ? "Invocando Jutsu de IA..." : "Gerar com IA (Grátis)"}
+            </button>
+
+            <div style={{ marginTop: '30px', border: '1px dashed #444', height: '200px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <p style={{ color: '#555' }}>O resultado aparecerá aqui em 5-10 segundos</p>
+            </div>
           </div>
         )}
-        {abaAtiva === 'chat' && <p>O Chat com emojis de Naruto está sendo selado...</p>}
+
+        {abaAtiva === 'inicio' && (
+          <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h3>Bem-vindo ao Futuro do Portfólio!</h3>
+            <p>Use a aba Gerador IA para testar nossa inteligência artificial.</p>
+          </div>
+        )}
       </main>
     </div>
   );
 }
 
 // Estilos
-const loginBotao = { backgroundColor: '#4285F4', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer' };
-const secaoAnuncio = { margin: '20px', padding: '20px', backgroundColor: '#1a1a1a', borderRadius: '15px', border: '1px solid #333', display: 'flex', gap: '20px', flexWrap: 'wrap' };
-const botaoAposta = { backgroundColor: 'orange', border: 'none', padding: '10px', borderRadius: '5px', fontWeight: 'bold', marginTop: '10px', cursor: 'pointer' };
-const abaEstilo = (ativo) => ({ background: 'none', border: 'none', color: ativo ? 'orange' : '#888', borderBottom: ativo ? '2px solid orange' : 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' });
-const cardIA = { padding: '40px', border: '2px dashed #444', borderRadius: '20px' };
+const abaEstilo = (ativo) => ({ background: 'none', border: 'none', color: ativo ? 'orange' : '#888', borderBottom: ativo ? '2px solid orange' : 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 'bold', padding: '10px' });
+const cardIA = { maxWidth: '600px', margin: '0 auto', padding: '30px', backgroundColor: '#111', borderRadius: '20px', border: '1px solid #333', textAlign: 'center' };
+const inputEstilo = { width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid orange', backgroundColor: '#222', color: 'white', marginBottom: '20px', outline: 'none', fontSize: '16px' };
+const botaoGerar = (carregando) => ({ width: '100%', padding: '15px', backgroundColor: carregando ? '#555' : 'orange', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' });
