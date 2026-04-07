@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, deleteDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, deleteDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCbf0uWYYqZ0UnvxPUkrbN0-T1KrIw03og",
@@ -19,258 +19,163 @@ const provider = new GoogleAuthProvider();
 
 export default function EmanuelNarutoSupreme() {
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState({ chakra: 50, avatarIA: null, grupos: [] });
-  const [abaAtiva, setAbaAtiva] = useState('ia');
+  const [userData, setUserData] = useState({ chakra: 50, avatarIA: null, tema: 'folha', fonte: 'sans-serif', fontSize: '14px' });
+  const [aba, setAba] = useState('ia');
   const [mensagens, setMensagens] = useState([]);
   const [novaMsg, setNovaMsg] = useState('');
   const [resultadoIA, setResultadoIA] = useState(null);
   const [carregando, setCarregando] = useState(false);
-  const [fotoZoom, setFotoZoom] = useState(null);
+  const [zoom, setZoom] = useState(null);
   const [gravando, setGravando] = useState(false);
-  const [usuariosVila, setUsuariosVila] = useState([]);
-  const [gruposDisponiveis, setGruposDisponiveis] = useState([]);
-  const [chatAtivo, setChatAtivo] = useState('geral'); // 'geral', 'id_do_grupo', ou 'uid_do_usuario'
-
+  const [tempoGravacao, setTempoGravacao] = useState(0);
+  const [ninjas, setNinjas] = useState([]);
+  const [chatAtivo, setChatAtivo] = useState('geral');
+  
   const mediaRecorder = useRef(null);
-  const audioChunks = useRef([]);
+  const timerRef = useRef(null);
+  const fileInput = useRef(null);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const userRef = doc(db, "ninjas", currentUser.uid);
-        const snap = await getDoc(userRef);
-        if (snap.exists()) setUserData(snap.data());
+    const unsub = onAuthStateChanged(auth, async (curr) => {
+      if (curr) {
+        setUser(curr);
+        const ref = doc(db, "ninjas", curr.uid);
+        const s = await getDoc(ref);
+        if (s.exists()) setUserData(s.data());
         else {
-          const init = { chakra: 50, avatarIA: null, nome: currentUser.displayName, grupos: [], criadoEm: new Date() };
-          await setDoc(userRef, init);
-          setUserData(init);
+          const d = { chakra: 50, avatarIA: null, nome: curr.displayName, tema: 'folha', fontSize: '14px', online: true };
+          await setDoc(ref, d);
+          setUserData(d);
         }
       }
     });
+    onSnapshot(collection(db, "ninjas"), (s) => setNinjas(s.docs.map(d => ({ id: d.id, ...d.data() }))));
+    return unsub;
+  }, []);
 
-    // Monitorar Mensagens conforme o chat ativo
-    const qChat = query(collection(db, "chats", chatAtivo, "mensagens"), orderBy("criadoEm", "desc"), limit(40));
-    const unsubChat = onSnapshot(qChat, (s) => setMensagens(s.docs.map(d => ({ id: d.id, ...d.data() })).reverse()));
-    
-    // Monitorar Ninjas
-    onSnapshot(collection(db, "ninjas"), (s) => setUsuariosVila(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-    
-    // Monitorar Grupos
-    onSnapshot(collection(db, "grupos"), (s) => setGruposDisponiveis(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-
-    return () => { unsub(); unsubChat(); };
+  useEffect(() => {
+    const q = query(collection(db, "chats", chatAtivo, "msgs"), orderBy("criadoEm", "desc"), limit(30));
+    return onSnapshot(q, (s) => setMensagens(s.docs.map(d => ({ id: d.id, ...d.data() })).reverse()));
   }, [chatAtivo]);
 
-  // --- SISTEMA DE ÁUDIO MELHORADO ---
-  const gerenciarGravacao = async () => {
+  // --- ÁUDIO COM CRONÔMETRO ---
+  const toggleGravacao = async () => {
     if (!gravando) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream);
-      audioChunks.current = [];
-      mediaRecorder.current.ondataavailable = (e) => audioChunks.current.push(e.data);
+      const chunks = [];
+      mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
       mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' });
+        const blob = new Blob(chunks, { type: 'audio/webm' });
         const reader = new FileReader();
-        reader.onload = (ev) => enviarMensagem(null, ev.target.result);
-        reader.readAsDataURL(audioBlob);
+        reader.onload = (ev) => enviarMsg(null, ev.target.result);
+        reader.readAsDataURL(blob);
+        setTempoGravacao(0);
       };
       mediaRecorder.current.start();
       setGravando(true);
+      timerRef.current = setInterval(() => setTempoGravacao(p => p + 1), 1000);
     } else {
       mediaRecorder.current.stop();
       setGravando(false);
+      clearInterval(timerRef.current);
     }
   };
 
-  // --- IA REALISTA 8K ---
-  const gerarVideoRealista = async () => {
-    if (userData.chakra < 10) return alert("Chakra insuficiente!");
-    setCarregando(true);
-    const seed = Math.floor(Math.random() * 999999);
-    const prompt = `Hyper-realistic 8k cinematic video of ${novaMsg}, unreal engine 5 render, highly detailed anime skin, professional lighting, naruto universe`;
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=1024&height=1024&nologo=true`;
-    setResultadoIA(url);
-    await updateDoc(doc(db, "ninjas", user.uid), { chakra: increment(-10) });
-    setUserData(p => ({ ...p, chakra: p.chakra - 10 }));
-    setCarregando(false);
-  };
-
-  // --- FUNÇÕES DE GRUPO ---
-  const criarGrupo = async () => {
-    const nomeG = prompt("Nome do Grupo de Elite (Máx 50 pessoas):");
-    if (!nomeG) return;
-    const novoG = await addDoc(collection(db, "grupos"), {
-      nome: nomeG,
-      criador: user.uid,
-      membros: [user.uid],
-      exclusivo: true
-    });
-    alert("Grupo criado com sucesso!");
-  };
-
-  const gerenciarEntradaSaida = async (grupoId, jaMembro) => {
-    const gRef = doc(db, "grupos", grupoId);
-    const uRef = doc(db, "ninjas", user.uid);
-    if (jaMembro) {
-      await updateDoc(gRef, { membros: arrayRemove(user.uid) });
-      await updateDoc(uRef, { grupos: arrayRemove(grupoId) });
-    } else {
-      const snap = await getDoc(gRef);
-      if (snap.data().membros.length >= 50) return alert("Grupo cheio!");
-      await updateDoc(gRef, { membros: arrayUnion(user.uid) });
-      await updateDoc(uRef, { grupos: arrayUnion(grupoId) });
-    }
-  };
-
-  const enviarMensagem = async (img = null, aud = null) => {
+  const enviarMsg = async (img = null, aud = null) => {
     if (!user) return;
-    await addDoc(collection(db, "chats", chatAtivo, "mensagens"), {
-      texto: novaMsg,
-      imagem: img,
-      audio: aud,
-      user: user.displayName,
-      uid: user.uid,
-      foto: userData.avatarIA || user.photoURL,
+    await addDoc(collection(db, "chats", chatAtivo, "msgs"), {
+      texto: novaMsg, imagem: img, audio: aud,
+      user: user.displayName, uid: user.uid, foto: userData.avatarIA || user.photoURL,
       criadoEm: serverTimestamp()
     });
     setNovaMsg('');
   };
 
-  const deletarConta = async () => {
-    if (confirm("Deseja mesmo apagar seu registro ninja?")) {
-      await deleteDoc(doc(db, "ninjas", user.uid));
-      deleteUser(auth.currentUser).then(() => window.location.reload());
-    }
+  const gerarIA = async (tipo) => {
+    if (userData.chakra < 5) return alert("Sem Chakra!");
+    setCarregando(true);
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(novaMsg + " naruto realistic anime 8k")}?seed=${Math.random()}&nologo=true`;
+    setResultadoIA(url);
+    setCarregando(false);
+    await updateDoc(doc(db, "ninjas", user.uid), { chakra: increment(-5) });
+    setUserData(p => ({ ...p, chakra: p.chakra - 5 }));
   };
 
+  const corP = { folha: '#ff9800', akatsuki: '#ff0000', areia: '#c2b280', nevoeiro: '#00ccff' }[userData.tema];
+
   return (
-    <div style={{ backgroundColor: '#000', color: '#fff', minHeight: '100vh', fontFamily: 'Arial' }}>
+    <div style={{ backgroundColor: '#050505', color: '#fff', minHeight: '100vh', fontFamily: userData.fonte, fontSize: userData.fontSize }}>
       
-      {/* AMPLIFICADOR HD COM FILTRO */}
-      {fotoZoom && (
-        <div onClick={() => setFotoZoom(null)} style={zoomOverlay}>
-          <img src={fotoZoom} style={zoomImg} />
-          <div style={{color:'orange', marginTop:'15px', fontWeight:'bold', textShadow:'0 0 10px #000'}}>MODO HD ATIVADO ⚡</div>
+      {/* AMPLIFICADOR UNIVERSAL */}
+      {zoom && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={zoom} style={{ maxWidth: '90%', maxHeight: '70%', borderRadius: '15px', border: `4px solid ${corP}`, boxShadow: `0 0 20px ${corP}` }} />
+          <button onClick={() => setZoom(null)} style={{ marginTop: '20px', padding: '10px 30px', background: corP, border: 'none', borderRadius: '5px', fontWeight: 'bold' }}>VOLTAR 🔙</button>
         </div>
       )}
 
-      <header style={header}>
-        <img src={userData.avatarIA || user?.photoURL} style={avatar(userData.chakra > 20 ? 'orange' : 'gray')} />
-        <div style={{fontWeight:'bold'}}>🌀 {userData.chakra}C</div>
-        <button onClick={() => setAbaAtiva('perfil')} style={btnTransp}>CONFIG</button>
+      <header style={{ padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#111', borderBottom: `2px solid ${corP}` }}>
+        <img src={userData.avatarIA || user?.photoURL} onClick={() => setZoom(userData.avatarIA || user?.photoURL)} style={{ width: '45px', height: '45px', borderRadius: '50%', border: `2px solid ${corP}`, cursor: 'pointer' }} />
+        <div style={{ color: corP, fontWeight: 'bold' }}>🌀 {userData.chakra}C</div>
+        <button onClick={() => user ? signOut(auth) : signInWithPopup(auth, provider)} style={{ background: 'none', border: `1px solid ${corP}`, color: '#fff', padding: '5px 10px', borderRadius: '5px' }}>{user ? 'SAIR' : 'LOGAR'}</button>
       </header>
 
-      <nav style={nav}>
-        <button onClick={() => setAbaAtiva('ia')} style={aba(abaAtiva === 'ia')}>IA REAL</button>
-        <button onClick={() => setAbaAtiva('chat')} style={aba(abaAtiva === 'chat')}>CHAT</button>
-        <button onClick={() => setAbaAtiva('vila')} style={aba(abaAtiva === 'vila')}>VILA</button>
+      <nav style={{ display: 'flex', justifyContent: 'space-around', padding: '15px', background: '#0a0a0a' }}>
+        {['ia', 'chat', 'vila', 'perfil'].map(t => <button key={t} onClick={() => setAba(t)} style={{ background: 'none', border: 'none', color: aba === t ? corP : '#555', fontWeight: 'bold', textTransform: 'uppercase' }}>{t}</button>)}
       </nav>
 
-      <main style={{maxWidth:'500px', margin:'0 auto', padding:'15px'}}>
-        
-        {abaAtiva === 'ia' && (
-          <div style={card}>
-            <h2 style={{color:'orange'}}>Criação Realista 8K</h2>
-            <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Ex: Itachi Uchiha no mundo real..." style={input} />
-            <button onClick={gerarVideoRealista} style={btnLaranja}>GERAR VÍDEO CINEMATOGRÁFICO (10C)</button>
-            {carregando && <p>Invocando Jutsu... Aguarde.</p>}
-            {resultadoIA && <img src={resultadoIA} onClick={() => setFotoZoom(resultadoIA)} style={imgResultado} />}
-          </div>
-        )}
-
-        {abaAtiva === 'chat' && (
-          <div style={card}>
-            <div style={{display:'flex', gap:'10px', marginBottom:'10px', overflowX:'auto'}}>
-              <button onClick={() => setChatAtivo('geral')} style={aba(chatAtivo === 'geral')}>GERAL</button>
-              {gruposDisponiveis.filter(g => g.membros.includes(user?.uid)).map(g => (
-                <button key={g.id} onClick={() => setChatAtivo(g.id)} style={aba(chatAtivo === g.id)}>{g.nome}</button>
-              ))}
-            </div>
-
-            <div style={chatContainer}>
-              {mensagens.map(m => (
-                <div key={m.id} style={{textAlign: m.uid === user?.uid ? 'right' : 'left', marginBottom:'10px'}}>
-                   <div style={m.uid === user?.uid ? bolhaMe : bolhaOther}>
-                      <small style={{fontSize:'10px', display:'block'}}>{m.user}</small>
-                      {m.texto && <div>{m.texto}</div>}
-                      {m.audio && <audio src={m.audio} controls style={{width:'200px'}} />}
-                      {m.imagem && <img src={m.imagem} onClick={() => setFotoZoom(m.imagem)} style={{width:'100%', borderRadius:'5px'}} />}
-                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{display:'flex', gap:'5px', marginTop:'10px'}}>
-              <button onClick={gerenciarGravacao} style={gravando ? btnRec : btnG}>
-                {gravando ? '🛑' : '🎙️'}
-              </button>
-              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mensagem..." style={input} />
-              <button onClick={() => enviarMensagem()} style={btnLaranja}>ENVIAR</button>
-            </div>
-            {/* Emojis Exclusivos de Grupo */}
-            {chatAtivo !== 'geral' && (
-              <div style={{marginTop:'10px', fontSize:'20px'}}>
-                 {['🍥','🦊','⚡','🔥','👁️','👹'].map(emoji => (
-                   <span key={emoji} onClick={() => setNovaMsg(prev => prev + emoji)} style={{cursor:'pointer', marginRight:'10px'}}>{emoji}</span>
-                 ))}
+      <main style={{ maxWidth: '480px', margin: '0 auto', padding: '15px' }}>
+        {aba === 'ia' && (
+          <div style={{ background: '#111', padding: '20px', borderRadius: '15px' }}>
+            <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Descreva seu Ninja..." style={{ width: '100%', padding: '10px', background: '#222', color: '#fff', border: `1px solid ${corP}`, borderRadius: '5px' }} />
+            <button onClick={gerarIA} style={{ width: '100%', padding: '12px', background: corP, border: 'none', borderRadius: '8px', marginTop: '10px', fontWeight: 'bold' }}>GERAR IA REALISTA (5C)</button>
+            {resultadoIA && (
+              <div style={{ marginTop: '20px' }}>
+                <img src={resultadoIA} onClick={() => setZoom(resultadoIA)} style={{ width: '100%', borderRadius: '10px' }} />
+                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { avatarIA: resultadoIA })} style={{ width: '100%', padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', marginTop: '10px' }}>USAR NO PERFIL</button>
+                <a href={resultadoIA} download style={{ display: 'block', textAlign: 'center', marginTop: '10px', color: corP }}>BAIXAR FOTO</a>
               </div>
             )}
           </div>
         )}
 
-        {abaAtiva === 'vila' && (
-          <div style={card}>
-            <button onClick={criarGrupo} style={btnLaranja}>+ CRIAR NOVO GRUPO</button>
-            <h4 style={{color:'orange', marginTop:'20px'}}>Grupos de Elite:</h4>
-            {gruposDisponiveis.map(g => (
-              <div key={g.id} style={itemVila}>
-                <span>{g.nome} ({g.membros.length}/50)</span>
-                <button onClick={() => gerenciarEntradaSaida(g.id, g.membros.includes(user.uid))} style={btnMini}>
-                  {g.membros.includes(user.uid) ? 'SAIR' : 'ENTRAR'}
-                </button>
-              </div>
-            ))}
-            <h4 style={{color:'orange', marginTop:'20px'}}>Ninjas Online:</h4>
-            {usuariosVila.map(u => (
-              <div key={u.id} onClick={() => {setChatAtivo(u.id < user.uid ? u.id+user.uid : user.uid+u.id); setAbaAtiva('chat');}} style={itemVila}>
-                 <img src={u.avatarIA || u.foto} style={{width:'30px', borderRadius:'50%'}} />
-                 <span>{u.nome}</span>
-                 <small style={{color:'green'}}>Online</small>
-              </div>
-            ))}
+        {aba === 'chat' && (
+          <div style={{ background: '#111', padding: '15px', borderRadius: '15px' }}>
+            <div style={{ height: '350px', overflowY: 'scroll', background: '#000', padding: '10px', borderRadius: '10px' }}>
+              {mensagens.map(m => (
+                <div key={m.id} style={{ marginBottom: '10px', textAlign: m.uid === user?.uid ? 'right' : 'left' }}>
+                  <div style={{ background: m.uid === user?.uid ? corP : '#222', color: m.uid === user?.uid ? '#000' : '#fff', padding: '8px', borderRadius: '10px', display: 'inline-block' }}>
+                    <small onClick={() => setZoom(m.foto)} style={{ cursor: 'pointer', display: 'block', fontSize: '9px' }}>{m.user}</small>
+                    {m.audio ? <audio src={m.audio} controls style={{ width: '150px' }} /> : m.imagem ? <img src={m.imagem} onClick={() => setZoom(m.imagem)} style={{ width: '100px' }} /> : m.texto}
+                    {m.uid === user?.uid && <button onClick={() => deleteDoc(doc(db, "chats", chatAtivo, "msgs", m.id))} style={{ background: 'none', border: 'none', fontSize: '10px' }}>🗑️</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
+              <button onClick={toggleGravacao} style={{ background: gravando ? 'red' : '#333', border: 'none', padding: '10px', borderRadius: '5px' }}>{gravando ? tempoGravacao + 's' : '🎙️'}</button>
+              <button onClick={() => fileInput.current.click()} style={{ background: '#333', border: 'none', padding: '10px', borderRadius: '5px' }}>📎</button>
+              <input type="file" ref={fileInput} hidden onChange={(e) => {
+                const r = new FileReader(); r.onload = (ev) => enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]);
+              }} />
+              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mensagem..." style={{ flex: 1, background: '#222', border: `1px solid ${corP}`, color: '#fff', padding: '10px', borderRadius: '5px' }} />
+              <button onClick={() => enviarMsg()} style={{ background: corP, border: 'none', padding: '10px', borderRadius: '5px' }}>⚡</button>
+            </div>
           </div>
         )}
 
-        {abaAtiva === 'perfil' && (
-          <div style={card}>
-            <h3>Sua Conta Ninja</h3>
-            <button onClick={() => signOut(auth)} style={btnG}>DESCONECTAR</button>
-            <button onClick={deletarConta} style={{...btnG, color:'red', marginTop:'20px'}}>EXCLUIR CONTA (PERIGO)</button>
+        {aba === 'perfil' && (
+          <div style={{ background: '#111', padding: '20px', borderRadius: '15px' }}>
+            <h3>Configurações Ninja</h3>
+            <p>Tema da Vila:</p>
+            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+              {['folha', 'akatsuki', 'areia', 'nevoeiro'].map(t => <button key={t} onClick={() => updateDoc(doc(db, "ninjas", user.uid), { tema: t })} style={{ padding: '8px', background: t === 'akatsuki' ? 'red' : '#333', border: 'none', borderRadius: '5px' }}>{t}</button>)}
+            </div>
+            <button onClick={() => { if(confirm("Apagar conta?")) deleteUser(auth.currentUser); }} style={{ marginTop: '30px', width: '100%', padding: '10px', background: 'none', border: '1px solid #444', color: '#888' }}>Remover Registro Ninja</button>
           </div>
         )}
-
       </main>
     </div>
   );
 }
-
-// ESTILOS MASSIVOS
-const zoomOverlay = { position:'fixed', top:0, left:0, width:'100%', height:'100%', backgroundColor:'rgba(0,0,0,0.95)', zIndex:2000, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center' };
-const zoomImg = { maxWidth:'95%', maxHeight:'80%', borderRadius:'10px', border:'2px solid orange', filter: 'contrast(1.1) saturate(1.1) brightness(1.05)' };
-const header = { padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111', borderBottom: '1px solid orange' };
-const avatar = (c) => ({ width: '45px', height: '45px', borderRadius: '50%', border: `2px solid ${c}` });
-const nav = { display: 'flex', justifyContent: 'space-around', padding: '10px' };
-const aba = (a) => ({ background: 'none', border: 'none', color: a ? 'orange' : '#666', fontWeight: 'bold', borderBottom: a ? '2px solid orange' : 'none', paddingBottom: '5px' });
-const card = { backgroundColor: '#111', padding: '15px', borderRadius: '15px', border: '1px solid #222' };
-const input = { flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid orange', backgroundColor: '#000', color: '#fff' };
-const btnLaranja = { backgroundColor: 'orange', color: '#000', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 'bold', width: '100%', marginTop: '10px' };
-const chatContainer = { height: '350px', overflowY: 'scroll', backgroundColor: '#050505', padding: '10px', borderRadius: '10px' };
-const bolhaMe = { background: 'orange', color: '#000', padding: '10px', borderRadius: '12px 12px 0 12px', display: 'inline-block' };
-const bolhaOther = { background: '#222', color: '#fff', padding: '10px', borderRadius: '12px 12px 12px 0', display: 'inline-block' };
-const btnG = { background: '#333', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px' };
-const btnRec = { background: 'red', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', animation: 'pulse 1s infinite' };
-const imgResultado = { width: '100%', marginTop: '15px', borderRadius: '10px', border: '1px solid orange' };
-const itemVila = { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderBottom: '1px solid #222', cursor: 'pointer' };
-const btnMini = { background: 'orange', color: '#000', border: 'none', padding: '5px 10px', borderRadius: '5px', fontSize: '12px' };
-const btnTransp = { background: 'none', border: '1px solid #444', color: '#fff', padding: '5px', borderRadius: '5px', fontSize: '10px' };
