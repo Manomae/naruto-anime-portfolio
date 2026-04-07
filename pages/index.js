@@ -27,7 +27,7 @@ export default function EmanuelNarutoSupreme() {
   const [carregando, setCarregando] = useState(false);
   const [zoom, setZoom] = useState(null);
   const [gravando, setGravando] = useState(false);
-  const [tempoGravacao, setTempoGravacao] = useState(0);
+  const [segundosRec, setSegundosRec] = useState(0);
   const [ninjas, setNinjas] = useState([]);
   const [chatAtivo, setChatAtivo] = useState('geral');
   
@@ -58,8 +58,7 @@ export default function EmanuelNarutoSupreme() {
     return onSnapshot(q, (s) => setMensagens(s.docs.map(d => ({ id: d.id, ...d.data() })).reverse()));
   }, [chatAtivo]);
 
-  // --- ÁUDIO COM CRONÔMETRO ---
-  const toggleGravacao = async () => {
+  const toggleAudio = async () => {
     if (!gravando) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream);
@@ -70,11 +69,11 @@ export default function EmanuelNarutoSupreme() {
         const reader = new FileReader();
         reader.onload = (ev) => enviarMsg(null, ev.target.result);
         reader.readAsDataURL(blob);
-        setTempoGravacao(0);
+        setSegundosRec(0);
       };
       mediaRecorder.current.start();
       setGravando(true);
-      timerRef.current = setInterval(() => setTempoGravacao(p => p + 1), 1000);
+      timerRef.current = setInterval(() => setSegundosRec(p => p + 1), 1000);
     } else {
       mediaRecorder.current.stop();
       setGravando(false);
@@ -92,90 +91,50 @@ export default function EmanuelNarutoSupreme() {
     setNovaMsg('');
   };
 
-  const gerarIA = async (tipo) => {
+  const invocarIA = async () => {
     if (userData.chakra < 5) return alert("Sem Chakra!");
     setCarregando(true);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(novaMsg + " naruto realistic anime 8k")}?seed=${Math.random()}&nologo=true`;
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(novaMsg + " naruto ultra realistic 8k cinema style")}?seed=${Math.random()}&nologo=true&width=1024&height=1024`;
     setResultadoIA(url);
     setCarregando(false);
     await updateDoc(doc(db, "ninjas", user.uid), { chakra: increment(-5) });
     setUserData(p => ({ ...p, chakra: p.chakra - 5 }));
   };
 
-  const corP = { folha: '#ff9800', akatsuki: '#ff0000', areia: '#c2b280', nevoeiro: '#00ccff' }[userData.tema];
+  const cores = { folha: '#ff9800', akatsuki: '#ff0000', areia: '#c2b280', nevoeiro: '#00ccff' };
+  const corP = cores[userData.tema] || '#ff9800';
 
   return (
     <div style={{ backgroundColor: '#050505', color: '#fff', minHeight: '100vh', fontFamily: userData.fonte, fontSize: userData.fontSize }}>
       
-      {/* AMPLIFICADOR UNIVERSAL */}
       {zoom && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <img src={zoom} style={{ maxWidth: '90%', maxHeight: '70%', borderRadius: '15px', border: `4px solid ${corP}`, boxShadow: `0 0 20px ${corP}` }} />
-          <button onClick={() => setZoom(null)} style={{ marginTop: '20px', padding: '10px 30px', background: corP, border: 'none', borderRadius: '5px', fontWeight: 'bold' }}>VOLTAR 🔙</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.98)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <img src={zoom} style={{ maxWidth: '100%', maxHeight: '80%', borderRadius: '15px', border: `4px solid ${corP}`, boxShadow: `0 0 30px ${corP}`, filter: 'contrast(1.1) brightness(1.1)' }} />
+          <button onClick={() => setZoom(null)} style={{ marginTop: '20px', padding: '12px 50px', background: corP, color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>VOLTAR 🔙</button>
         </div>
       )}
 
       <header style={{ padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#111', borderBottom: `2px solid ${corP}` }}>
-        <img src={userData.avatarIA || user?.photoURL} onClick={() => setZoom(userData.avatarIA || user?.photoURL)} style={{ width: '45px', height: '45px', borderRadius: '50%', border: `2px solid ${corP}`, cursor: 'pointer' }} />
-        <div style={{ color: corP, fontWeight: 'bold' }}>🌀 {userData.chakra}C</div>
-        <button onClick={() => user ? signOut(auth) : signInWithPopup(auth, provider)} style={{ background: 'none', border: `1px solid ${corP}`, color: '#fff', padding: '5px 10px', borderRadius: '5px' }}>{user ? 'SAIR' : 'LOGAR'}</button>
+        <img src={userData.avatarIA || user?.photoURL} onClick={() => setZoom(userData.avatarIA || user?.photoURL)} style={{ width: '48px', height: '48px', borderRadius: '50%', border: `2px solid ${corP}`, cursor: 'pointer', objectFit: 'cover' }} />
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ color: corP, fontWeight: 'bold', fontSize: '16px' }}>🌀 {userData.chakra}C</div>
+          <div style={{ fontSize: '10px', color: '#00ff00' }}>VILA DA FOLHA ONLINE</div>
+        </div>
+        <button onClick={() => user ? signOut(auth) : signInWithPopup(auth, provider)} style={{ background: 'none', border: `1px solid ${corP}`, color: '#fff', padding: '5px 12px', borderRadius: '5px', fontWeight: 'bold' }}>{user ? 'SAIR' : 'LOGAR'}</button>
       </header>
 
       <nav style={{ display: 'flex', justifyContent: 'space-around', padding: '15px', background: '#0a0a0a' }}>
-        {['ia', 'chat', 'vila', 'perfil'].map(t => <button key={t} onClick={() => setAba(t)} style={{ background: 'none', border: 'none', color: aba === t ? corP : '#555', fontWeight: 'bold', textTransform: 'uppercase' }}>{t}</button>)}
+        {['ia', 'chat', 'vila', 'perfil'].map(t => <button key={t} onClick={() => setAba(t)} style={{ background: 'none', border: 'none', color: aba === t ? corP : '#555', fontWeight: 'bold', textTransform: 'uppercase', cursor: 'pointer' }}>{t}</button>)}
       </nav>
 
-      <main style={{ maxWidth: '480px', margin: '0 auto', padding: '15px' }}>
+      <main style={{ maxWidth: '500px', margin: '0 auto', padding: '15px' }}>
         {aba === 'ia' && (
-          <div style={{ background: '#111', padding: '20px', borderRadius: '15px' }}>
-            <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Descreva seu Ninja..." style={{ width: '100%', padding: '10px', background: '#222', color: '#fff', border: `1px solid ${corP}`, borderRadius: '5px' }} />
-            <button onClick={gerarIA} style={{ width: '100%', padding: '12px', background: corP, border: 'none', borderRadius: '8px', marginTop: '10px', fontWeight: 'bold' }}>GERAR IA REALISTA (5C)</button>
+          <div style={cardStyle}>
+            <h3 style={{ color: corP }}>Laboratório de Invocação 8K</h3>
+            <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Ex: Madara vs Aliança Shinobi..." style={inputStyle(corP)} />
+            <button onClick={invocarIA} style={btnStyle(corP)}>{carregando ? 'CONCENTRANDO...' : 'INVOCAR IA REALISTA (5C)'}</button>
             {resultadoIA && (
               <div style={{ marginTop: '20px' }}>
-                <img src={resultadoIA} onClick={() => setZoom(resultadoIA)} style={{ width: '100%', borderRadius: '10px' }} />
-                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { avatarIA: resultadoIA })} style={{ width: '100%', padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', marginTop: '10px' }}>USAR NO PERFIL</button>
-                <a href={resultadoIA} download style={{ display: 'block', textAlign: 'center', marginTop: '10px', color: corP }}>BAIXAR FOTO</a>
-              </div>
-            )}
-          </div>
-        )}
-
-        {aba === 'chat' && (
-          <div style={{ background: '#111', padding: '15px', borderRadius: '15px' }}>
-            <div style={{ height: '350px', overflowY: 'scroll', background: '#000', padding: '10px', borderRadius: '10px' }}>
-              {mensagens.map(m => (
-                <div key={m.id} style={{ marginBottom: '10px', textAlign: m.uid === user?.uid ? 'right' : 'left' }}>
-                  <div style={{ background: m.uid === user?.uid ? corP : '#222', color: m.uid === user?.uid ? '#000' : '#fff', padding: '8px', borderRadius: '10px', display: 'inline-block' }}>
-                    <small onClick={() => setZoom(m.foto)} style={{ cursor: 'pointer', display: 'block', fontSize: '9px' }}>{m.user}</small>
-                    {m.audio ? <audio src={m.audio} controls style={{ width: '150px' }} /> : m.imagem ? <img src={m.imagem} onClick={() => setZoom(m.imagem)} style={{ width: '100px' }} /> : m.texto}
-                    {m.uid === user?.uid && <button onClick={() => deleteDoc(doc(db, "chats", chatAtivo, "msgs", m.id))} style={{ background: 'none', border: 'none', fontSize: '10px' }}>🗑️</button>}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
-              <button onClick={toggleGravacao} style={{ background: gravando ? 'red' : '#333', border: 'none', padding: '10px', borderRadius: '5px' }}>{gravando ? tempoGravacao + 's' : '🎙️'}</button>
-              <button onClick={() => fileInput.current.click()} style={{ background: '#333', border: 'none', padding: '10px', borderRadius: '5px' }}>📎</button>
-              <input type="file" ref={fileInput} hidden onChange={(e) => {
-                const r = new FileReader(); r.onload = (ev) => enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]);
-              }} />
-              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mensagem..." style={{ flex: 1, background: '#222', border: `1px solid ${corP}`, color: '#fff', padding: '10px', borderRadius: '5px' }} />
-              <button onClick={() => enviarMsg()} style={{ background: corP, border: 'none', padding: '10px', borderRadius: '5px' }}>⚡</button>
-            </div>
-          </div>
-        )}
-
-        {aba === 'perfil' && (
-          <div style={{ background: '#111', padding: '20px', borderRadius: '15px' }}>
-            <h3>Configurações Ninja</h3>
-            <p>Tema da Vila:</p>
-            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-              {['folha', 'akatsuki', 'areia', 'nevoeiro'].map(t => <button key={t} onClick={() => updateDoc(doc(db, "ninjas", user.uid), { tema: t })} style={{ padding: '8px', background: t === 'akatsuki' ? 'red' : '#333', border: 'none', borderRadius: '5px' }}>{t}</button>)}
-            </div>
-            <button onClick={() => { if(confirm("Apagar conta?")) deleteUser(auth.currentUser); }} style={{ marginTop: '30px', width: '100%', padding: '10px', background: 'none', border: '1px solid #444', color: '#888' }}>Remover Registro Ninja</button>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-}
+                <img src={resultadoIA} onClick={() => setZoom(resultadoIA)} style={{ width: '100%', borderRadius: '15px', border: `2px solid ${corP}` }} />
+                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { avatarIA: resultadoIA })} style={{ width: '100%', padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '10px', marginTop: '10px', fontWeight: 'bold' }}>USAR NO PERFIL</button>
+                <a href={resultadoIA} download
