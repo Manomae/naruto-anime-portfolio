@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, deleteDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -17,22 +17,22 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-export default function NarutoMessengerUltimate() {
+export default function NarutoUltimateDev() {
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState({ chakra: 50, fonteAnime: false, emojisAtivos: true });
-  const [contatos, setContatos] = useState([]);
+  const [userData, setUserData] = useState({ chakra: 50, fonteAnime: false });
+  const [ninjas, setNinjas] = useState([]);
   const [chatAtivo, setChatAtivo] = useState(null);
   const [mensagens, setMensagens] = useState([]);
   const [novaMsg, setNovaMsg] = useState('');
   const [gravando, setGravando] = useState(false);
   const [segundos, setSegundos] = useState(0);
   const [abaSeta, setAbaSeta] = useState(false);
-  const [mostraConfig, setMostraConfig] = useState(false);
-  const [saindo, setSaindo] = useState(false);
+  const [zoom, setZoom] = useState(null);
 
   const mediaRecorder = useRef(null);
-  const timerRef = useRef(null);
   const scrollRef = useRef(null);
+  const fileInput = useRef(null);
+  const camInput = useRef(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (curr) => {
@@ -41,51 +41,27 @@ export default function NarutoMessengerUltimate() {
         const ref = doc(db, "ninjas", curr.uid);
         const s = await getDoc(ref);
         if (s.exists()) setUserData(s.data());
-        else await setDoc(ref, { nome: curr.displayName, foto: curr.photoURL, chakra: 50, fonteAnime: false, emojisAtivos: true });
+        else await setDoc(ref, { nome: curr.displayName, foto: curr.photoURL, chakra: 50, fonteAnime: false });
       }
     });
-    return onSnapshot(collection(db, "ninjas"), (s) => setContatos(s.docs.map(d => ({ id: d.id, ...d.data() }))));
+    return onSnapshot(collection(db, "ninjas"), (s) => setNinjas(s.docs.map(d => ({ id: d.id, ...d.data() }))));
   }, []);
 
   useEffect(() => {
-    if (!chatAtivo || !user) return;
-    const q = query(collection(db, "chats", chatAtivo.id, "msgs"), orderBy("criadoEm", "desc"), limit(40));
-    return onSnapshot(q, (s) => {
-      setMensagens(s.docs.map(d => ({ id: d.id, ...d.data() })).reverse());
-      setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    });
-  }, [chatAtivo, user]);
+    if (!chatAtivo) return;
+    const q = query(collection(db, "chats", chatAtivo.id, "msgs"), orderBy("criadoEm", "desc"), limit(30));
+    return onSnapshot(q, (s) => setMensagens(s.docs.map(d => ({ id: d.id, ...d.data() })).reverse()));
+  }, [chatAtivo]);
 
-  const handleSair = () => {
-    setSaindo(true);
-    setTimeout(() => {
-      signOut(auth).then(() => window.location.reload());
-    }, 2000);
-  };
-
-  const enviarMensagem = async (img = null, aud = null, video = null) => {
-    if (!user || !chatAtivo) return;
-    let textoFinal = novaMsg;
-    let videoUrl = video;
-
-    // Gerador de Vídeo/GIF por IA (Se começar com /video ou /gif)
-    if (novaMsg.startsWith('/video') || novaMsg.startsWith('/gif')) {
-        videoUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(novaMsg + " naruto style anime movement")}?nologo=true&seed=${Math.random()}`;
-        textoFinal = "🎬 Vídeo Ninja Gerado!";
-    }
-
+  const enviarMsg = async (img = null, aud = null) => {
+    if (!user || (!novaMsg && !img && !aud)) return;
     await addDoc(collection(db, "chats", chatAtivo.id, "msgs"), {
-      texto: textoFinal, imagem: img, audio: aud, video: videoUrl,
-      uid: user.uid, nome: user.displayName, criadoEm: serverTimestamp()
+      texto: novaMsg, imagem: img, audio: aud,
+      uid: user.uid, nome: user.displayName, foto: user.photoURL,
+      criadoEm: serverTimestamp()
     });
     setNovaMsg('');
-  };
-
-  const deletarDados = async () => {
-    if(confirm("Deseja apagar todas as mensagens e resetar chakra?")) {
-        await updateDoc(doc(db, "ninjas", user.uid), { chakra: 50 });
-        alert("Dados limpos!");
-    }
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleAudio = async () => {
@@ -97,128 +73,100 @@ export default function NarutoMessengerUltimate() {
       mediaRecorder.current.onstop = () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         const r = new FileReader();
-        r.onload = (ev) => enviarMensagem(null, ev.target.result);
+        r.onload = (ev) => enviarMsg(null, ev.target.result);
         r.readAsDataURL(blob);
-        setSegundos(0);
       };
       mediaRecorder.current.start();
       setGravando(true);
-      timerRef.current = setInterval(() => setSegundos(p => p + 1), 1000);
+      const timer = setInterval(() => setSegundos(s => s + 1), 1000);
+      mediaRecorder.current.onstart = () => {}; 
     } else {
       mediaRecorder.current.stop();
       setGravando(false);
-      clearInterval(timerRef.current);
+      setSegundos(0);
     }
   };
 
+  const corP = '#ff9800';
+
   return (
-    <div style={{ display: 'flex', height: '100dvh', backgroundColor: '#000', color: '#fff', fontFamily: userData.fonteAnime ? "'Bangers', cursive" : 'sans-serif', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100dvh', backgroundColor: '#000', color: '#fff', fontFamily: userData.fonteAnime ? 'serif' : 'sans-serif' }}>
       
-      {/* ANIMAÇÃO DE SAÍDA */}
-      {saindo && (
-        <div style={saidaOverlay}>
-          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJmZzR6NHR3eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/Do5GRTYdQ3kmQ/giphy.gif" style={{width:'200px'}} />
-          <h2>Saindo da Vila...</h2>
+      {zoom && (
+        <div onClick={() => setZoom(null)} style={zoomOverlay}>
+          <img src={zoom} style={{maxWidth:'90%', borderRadius:'10px', border:'2px solid orange'}} />
+          <button style={{marginTop:'10px', padding:'10px', background:'orange', border:'none', borderRadius:'5px'}}>FECHAR</button>
         </div>
       )}
 
-      {/* SIDEBAR */}
-      <aside style={sidebarStyle}>
-        <div onClick={() => setMostraConfig(true)} style={{cursor:'pointer', fontSize:'22px'}}>⚙️</div>
-        <div style={{flex:1, overflowY:'auto', width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'15px', marginTop:'20px'}}>
-          {contatos.map(c => (
-            <img key={c.id} src={c.foto} onClick={() => {setChatAtivo(c); setMostraConfig(false)}} style={{width:'45px', height:'45px', borderRadius:'50%', border: chatAtivo?.id === c.id ? '2px solid orange' : '1px solid #333', cursor:'pointer'}} />
+      {/* BARRA LATERAL */}
+      <aside style={{ width: '70px', background: '#111', borderRight: '1px solid orange', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px 0' }}>
+        <div style={{fontSize:'30px', marginBottom:'20px'}}>🍥</div>
+        <div style={{flex:1, overflowY:'auto'}}>
+          {ninjas.map(n => (
+            <img key={n.id} src={n.foto} onClick={() => setChatAtivo(n)} style={{width:'45px', borderRadius:'50%', border: chatAtivo?.id === n.id ? '2px solid orange' : '1px solid #444', marginBottom:'15px', cursor:'pointer'}} />
           ))}
         </div>
-        <button onClick={handleSair} style={{background:'none', border:'none', fontSize:'28px', cursor:'pointer'}}>🚪</button>
+        <button onClick={() => signOut(auth)} style={{background:'none', border:'none', fontSize:'25px'}}>🚪</button>
       </aside>
 
-      {/* CHAT OU CONFIGURAÇÕES */}
-      <main style={{flex:1, display:'flex', flexDirection:'column', position:'relative'}}>
-        {mostraConfig ? (
-            <div style={configArea}>
-                <h2 style={{color:'orange'}}>Configurações Shinobi</h2>
-                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { fonteAnime: !userData.fonteAnime })} style={btnConfig}>Letra Anime: {userData.fonteAnime ? "ON" : "OFF"}</button>
-                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { emojisAtivos: !userData.emojisAtivos })} style={btnConfig}>Emojis Especiais: {userData.emojisAtivos ? "ON" : "OFF"}</button>
-                <button onClick={deletarDados} style={btnConfig}>Limpar Dados da Conta</button>
-                <button onClick={() => { localStorage.clear(); alert("Cache Limpo!"); }} style={btnConfig}>Limpar Cache do Sistema</button>
-                <button onClick={() => { if(confirm("APAGAR CONTA DEFINITIVAMENTE?")) deleteUser(user); }} style={{...btnConfig, color:'red', borderColor:'red'}}>EXCLUIR CONTA</button>
-                <button onClick={() => setMostraConfig(false)} style={{marginTop:'20px', background:'orange', border:'none', padding:'10px 20px', borderRadius:'10px', fontWeight:'bold'}}>VOLTAR AO CHAT</button>
-            </div>
-        ) : chatAtivo ? (
+      {/* CHAT AREA */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {chatAtivo ? (
           <>
-            <header style={headerStyle}>
+            <header style={{ padding: '15px', background: '#050505', borderBottom: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                 <img src={chatAtivo.foto} style={{width:'35px', borderRadius:'50%'}} />
-                 <span>{chatAtivo.nome}</span>
+                <img src={chatAtivo.foto} style={{width:'35px', borderRadius:'50%'}} />
+                <span style={{fontWeight:'bold'}}>{chatAtivo.nome}</span>
               </div>
-              <div style={{display:'flex', gap:'15px', alignItems:'center'}}>
-                <span style={{cursor:'pointer'}}>📞</span>
-                <span style={{cursor:'pointer'}}>📹</span>
-                <button onClick={() => setAbaSeta(!abaSeta)} style={setaBtn}>{abaSeta ? '🔼' : '🔽'}</button>
+              <div style={{display:'flex', gap:'15px', fontSize:'20px'}}>
+                <span onClick={() => alert("Iniciando Chamada de Áudio...")} style={{cursor:'pointer'}}>📞</span>
+                <span onClick={() => alert("Iniciando Chamada de Vídeo...")} style={{cursor:'pointer'}}>📹</span>
+                <span onClick={() => setAbaSeta(!abaSeta)} style={{cursor:'pointer', color:'orange'}}>{abaSeta ? '▲' : '▼'}</span>
               </div>
             </header>
 
             {abaSeta && (
-              <div style={abaConteudo}>
-                <div style={{display:'flex', gap:'10px'}}>
-                  <button onClick={() => alert("Criar Grupo...")} style={btnAction}>+ Criar Grupo</button>
-                  {chatAtivo.isGroup && <button onClick={() => deleteDoc(doc(db, "ninjas", chatAtivo.id))} style={{...btnAction, color:'red'}}>Excluir Grupo</button>}
-                </div>
-                {userData.emojisAtivos && (
-                    <div style={{display:'flex', gap:'15px', fontSize:'20px'}}>
-                        {['🍥','🦊','⚡','🔥','🐸'].map(e => <span key={e} onClick={()=>setNovaMsg(p=>p+e)} style={{cursor:'pointer'}}>{e}</span>)}
-                    </div>
-                )}
+              <div style={{ height: '80px', background: '#111', borderBottom: '1px solid orange', display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+                 <button onClick={() => alert("Criar Grupo Limitado a 3 Ninjas")} style={btnMini}>+ GRUPO</button>
+                 <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { fonteAnime: !userData.fonteAnime })} style={btnMini}>FONTE ANIME</button>
+                 <div style={{fontSize:'20px'}}>{['🦊','🔥','🌀'].map(e => <span key={e} onClick={() => setNovaMsg(p => p + e)}>{e}</span>)}</div>
               </div>
             )}
 
-            <div style={chatArea}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {mensagens.map(m => (
-                <div key={m.id} style={m.uid === user.uid ? msgMe : msgThem}>
-                  {m.video ? <img src={m.video} style={{width:'200px', borderRadius:'10px'}} /> : 
-                   m.audio ? <audio src={m.audio} controls style={{width:'180px'}} /> : 
-                   m.imagem ? <img src={m.imagem} style={{width:'180px', borderRadius:'10px'}} /> : m.texto}
+                <div key={m.id} onDoubleClick={() => m.uid === user.uid && deleteDoc(doc(db, "chats", chatAtivo.id, "msgs", m.id))} style={{ alignSelf: m.uid === user.uid ? 'flex-end' : 'flex-start', background: m.uid === user.uid ? 'orange' : '#222', color: m.uid === user.uid ? '#000' : '#fff', padding: '10px', borderRadius: '10px', maxWidth: '80%' }}>
+                  {m.audio ? <audio src={m.audio} controls style={{width:'180px'}} /> : m.imagem ? <img src={m.imagem} onClick={() => setZoom(m.imagem)} style={{width:'150px', borderRadius:'5px'}} /> : m.texto}
+                  <div style={{fontSize:'8px', opacity:0.5, marginTop:'5px'}}>{m.uid === user.uid ? 'Dois cliques para apagar' : ''}</div>
                 </div>
               ))}
               <div ref={scrollRef} />
             </div>
 
-            <footer style={footerStyle}>
-              <button onClick={() => alert("Câmera Aberta")} style={iconBtn}>📷</button>
-              <input value={novaMsg} onChange={e=>setNovaMsg(e.target.value)} placeholder="Digite ou /video..." style={inputStyle} />
-              <div onClick={handleAudio} style={micStyle(gravando)}>
-                {gravando ? <span style={{fontSize:'12px'}}>{segundos}s</span> : '🦊'}
+            <footer style={{ padding: '10px', background: '#050505', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{display:'flex', gap:'5px'}}>
+                <button onClick={() => camInput.current.click()} style={btnRound}>📷</button>
+                <button onClick={() => fileInput.current.click()} style={btnRound}>📎</button>
               </div>
-              <button onClick={() => enviarMensagem()} style={sendBtn}>⚡</button>
+              <input type="file" ref={camInput} hidden capture="environment" onChange={(e) => { const r = new FileReader(); r.onload=(ev)=>enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
+              <input type="file" ref={fileInput} hidden onChange={(e) => { const r = new FileReader(); r.onload=(ev)=>enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
+              
+              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mensagem..." style={{flex:1, padding:'10px', borderRadius:'20px', border:'1px solid #333', background:'#000', color:'#fff'}} />
+              
+              <div onClick={handleAudio} style={{ width:'45px', height:'45px', borderRadius:'50%', background: gravando ? 'red' : 'orange', display:'flex', justifyContent:'center', alignItems:'center', cursor:'pointer' }}>
+                {gravando ? segundos + 's' : '🦊'}
+              </div>
+              
+              <button onClick={() => enviarMsg()} style={{background:'none', border:'none', color:'orange', fontSize:'25px'}}>⚡</button>
             </footer>
           </>
-        ) : <div style={center}>Selecione um Ninja 🍥</div>}
+        ) : <div style={{flex:1, display:'flex', justifyContent:'center', alignItems:'center'}}>Escolha um ninja na barra lateral 🍥</div>}
       </main>
-
-      <style>{`
-        @keyframes chakraPulse { 0% { box-shadow: 0 0 5px #00ccff; } 50% { box-shadow: 0 0 25px #00ccff; transform: scale(1.05); } 100% { box-shadow: 0 0 5px #00ccff; } }
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-      `}</style>
     </div>
   );
 }
 
-// ESTILOS
-const sidebarStyle = { width: '70px', backgroundColor: '#0a0a0a', borderRight: '1px solid orange', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' };
-const headerStyle = { padding: '15px', borderBottom: '1px solid #222', display: 'flex', justifyContent: 'space-between', background: '#050505', alignItems:'center' };
-const chatArea = { flex: 1, padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', background:'url("https://www.transparenttextures.com/patterns/black-paper.png")' };
-const footerStyle = { padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', background: '#050505' };
-const inputStyle = { flex: 1, padding: '12px', borderRadius: '25px', background: '#000', border: '1px solid #333', color: '#fff' };
-const micStyle = (g) => ({ width: '45px', height: '45px', borderRadius: '50%', background: g ? '#00ccff' : 'orange', display:'flex', justifyContent:'center', alignItems:'center', cursor:'pointer', animation: g ? 'chakraPulse 1.5s infinite' : 'none' });
-const saidaOverlay = { position:'fixed', inset:0, background:'#000', zIndex:1000, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center' };
-const configArea = { flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'15px', background:'#050505' };
-const btnConfig = { width:'250px', padding:'12px', background:'none', border:'1px solid #333', color:'#fff', borderRadius:'10px', cursor:'pointer' };
-const setaBtn = { background: 'none', border: 'none', color: 'orange', fontSize: '20px', cursor: 'pointer' };
-const abaConteudo = { height: '110px', background: '#111', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', borderBottom: '1px solid orange' };
-const btnAction = { background: 'none', border: '1px solid orange', color: 'orange', padding: '5px 15px', borderRadius: '15px', fontSize: '11px', cursor: 'pointer' };
-const msgMe = { alignSelf: 'flex-end', background: 'orange', color: '#000', padding: '10px', borderRadius: '15px 15px 0 15px', maxWidth: '80%', fontWeight:'bold' };
-const msgThem = { alignSelf: 'flex-start', background: '#222', color: '#fff', padding: '10px', borderRadius: '15px 15px 15px 0', maxWidth: '80%' };
-const center = { flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#444' };
-const iconBtn = { background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer' };
-const sendBtn = { background: 'none', border: 'none', fontSize: '24px', color: 'orange' };
+const zoomOverlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' };
+const btnRound = { background: '#222', border: 'none', color: '#fff', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer' };
+const btnMini = { background: 'none', border: '1px solid orange', color: 'orange', padding: '5px', borderRadius: '5px', fontSize: '10px' };
