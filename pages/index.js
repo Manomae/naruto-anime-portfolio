@@ -12,12 +12,13 @@ const firebaseConfig = {
   appId: "1:340230465087:web:72aea1349869155f02ba8a",
 };
 
+// Inicialização segura
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-export default function NarutoUltimateDev() {
+export default function NarutoFinalPortal() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState({ chakra: 50, fonteAnime: false });
   const [ninjas, setNinjas] = useState([]);
@@ -33,6 +34,7 @@ export default function NarutoUltimateDev() {
   const scrollRef = useRef(null);
   const fileInput = useRef(null);
   const camInput = useRef(null);
+  const timerInterval = useRef(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (curr) => {
@@ -55,118 +57,125 @@ export default function NarutoUltimateDev() {
 
   const enviarMsg = async (img = null, aud = null) => {
     if (!user || (!novaMsg && !img && !aud)) return;
-    await addDoc(collection(db, "chats", chatAtivo.id, "msgs"), {
-      texto: novaMsg, imagem: img, audio: aud,
-      uid: user.uid, nome: user.displayName, foto: user.photoURL,
-      criadoEm: serverTimestamp()
-    });
-    setNovaMsg('');
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    try {
+      await addDoc(collection(db, "chats", chatAtivo.id, "msgs"), {
+        texto: novaMsg, imagem: img, audio: aud,
+        uid: user.uid, nome: user.displayName, foto: user.photoURL,
+        criadoEm: serverTimestamp()
+      });
+      setNovaMsg('');
+      scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } catch (e) { console.error(e); }
   };
 
   const handleAudio = async () => {
     if (!gravando) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder.current = new MediaRecorder(stream);
-      const chunks = [];
-      mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.current.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        const r = new FileReader();
-        r.onload = (ev) => enviarMsg(null, ev.target.result);
-        r.readAsDataURL(blob);
-      };
-      mediaRecorder.current.start();
-      setGravando(true);
-      const timer = setInterval(() => setSegundos(s => s + 1), 1000);
-      mediaRecorder.current.onstart = () => {}; 
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder.current = new MediaRecorder(stream);
+        const chunks = [];
+        mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.current.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const r = new FileReader();
+          r.onload = (ev) => enviarMsg(null, ev.target.result);
+          r.readAsDataURL(blob);
+          setSegundos(0);
+        };
+        mediaRecorder.current.start();
+        setGravando(true);
+        timerInterval.current = setInterval(() => setSegundos(s => s + 1), 1000);
+      } catch (err) { alert("Ative o microfone!"); }
     } else {
       mediaRecorder.current.stop();
       setGravando(false);
-      setSegundos(0);
+      clearInterval(timerInterval.current);
     }
   };
 
   const corP = '#ff9800';
 
   return (
-    <div style={{ display: 'flex', height: '100dvh', backgroundColor: '#000', color: '#fff', fontFamily: userData.fonteAnime ? 'serif' : 'sans-serif' }}>
+    <div style={{ display: 'flex', height: '100dvh', backgroundColor: '#000', color: '#fff', fontFamily: userData.fonteAnime ? 'serif' : 'sans-serif', overflow: 'hidden' }}>
       
       {zoom && (
-        <div onClick={() => setZoom(null)} style={zoomOverlay}>
-          <img src={zoom} style={{maxWidth:'90%', borderRadius:'10px', border:'2px solid orange'}} />
-          <button style={{marginTop:'10px', padding:'10px', background:'orange', border:'none', borderRadius:'5px'}}>FECHAR</button>
+        <div onClick={() => setZoom(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <img src={zoom} style={{ maxWidth: '90%', maxHeight: '70%', borderRadius: '10px', border: '2px solid orange' }} />
         </div>
       )}
 
-      {/* BARRA LATERAL */}
-      <aside style={{ width: '70px', background: '#111', borderRight: '1px solid orange', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px 0' }}>
-        <div style={{fontSize:'30px', marginBottom:'20px'}}>🍥</div>
-        <div style={{flex:1, overflowY:'auto'}}>
+      {/* BARRA LATERAL (CONTATOS) */}
+      <aside style={{ width: '80px', background: '#111', borderRight: '1px solid orange', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px 0' }}>
+        <div style={{ fontSize: '30px', marginBottom: '20px' }}>🍥</div>
+        <div style={{ flex: 1, overflowY: 'auto', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {ninjas.map(n => (
-            <img key={n.id} src={n.foto} onClick={() => setChatAtivo(n)} style={{width:'45px', borderRadius:'50%', border: chatAtivo?.id === n.id ? '2px solid orange' : '1px solid #444', marginBottom:'15px', cursor:'pointer'}} />
+            <img key={n.id} src={n.foto} onClick={() => setChatAtivo(n)} style={{ width: '50px', height: '50px', borderRadius: '50%', border: chatAtivo?.id === n.id ? '2px solid orange' : '1px solid #444', marginBottom: '15px', cursor: 'pointer', objectFit: 'cover' }} />
           ))}
         </div>
-        <button onClick={() => signOut(auth)} style={{background:'none', border:'none', fontSize:'25px'}}>🚪</button>
+        <button onClick={() => signOut(auth).then(() => window.location.reload())} style={{ background: 'none', border: 'none', fontSize: '25px', cursor: 'pointer' }}>🚪</button>
       </aside>
 
       {/* CHAT AREA */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {chatAtivo ? (
+        {!user ? (
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <button onClick={() => signInWithPopup(auth, provider)} style={{ padding: '15px 30px', background: 'orange', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>CONECTAR GOOGLE</button>
+          </div>
+        ) : chatAtivo ? (
           <>
             <header style={{ padding: '15px', background: '#050505', borderBottom: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                <img src={chatAtivo.foto} style={{width:'35px', borderRadius:'50%'}} />
-                <span style={{fontWeight:'bold'}}>{chatAtivo.nome}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <img src={chatAtivo.foto} style={{ width: '35px', height: '35px', borderRadius: '50%' }} />
+                <span style={{ fontWeight: 'bold' }}>{chatAtivo.nome}</span>
               </div>
-              <div style={{display:'flex', gap:'15px', fontSize:'20px'}}>
-                <span onClick={() => alert("Iniciando Chamada de Áudio...")} style={{cursor:'pointer'}}>📞</span>
-                <span onClick={() => alert("Iniciando Chamada de Vídeo...")} style={{cursor:'pointer'}}>📹</span>
-                <span onClick={() => setAbaSeta(!abaSeta)} style={{cursor:'pointer', color:'orange'}}>{abaSeta ? '▲' : '▼'}</span>
+              <div style={{ display: 'flex', gap: '15px', fontSize: '20px' }}>
+                <span onClick={() => alert("Chamada em breve!")} style={{ cursor: 'pointer' }}>📞</span>
+                <span onClick={() => alert("Vídeo em breve!")} style={{ cursor: 'pointer' }}>📹</span>
+                <span onClick={() => setAbaSeta(!abaSeta)} style={{ cursor: 'pointer', color: 'orange' }}>{abaSeta ? '▲' : '▼'}</span>
               </div>
             </header>
 
             {abaSeta && (
               <div style={{ height: '80px', background: '#111', borderBottom: '1px solid orange', display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-                 <button onClick={() => alert("Criar Grupo Limitado a 3 Ninjas")} style={btnMini}>+ GRUPO</button>
-                 <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { fonteAnime: !userData.fonteAnime })} style={btnMini}>FONTE ANIME</button>
-                 <div style={{fontSize:'20px'}}>{['🦊','🔥','🌀'].map(e => <span key={e} onClick={() => setNovaMsg(p => p + e)}>{e}</span>)}</div>
+                <button onClick={() => alert("Grupos Ativados")} style={{ padding: '5px 10px', background: 'orange', border: 'none', borderRadius: '5px', fontSize: '10px' }}>+ GRUPO</button>
+                <button onClick={() => updateDoc(doc(db, "ninjas", user.uid), { fonteAnime: !userData.fonteAnime })} style={{ padding: '5px 10px', background: 'white', border: 'none', borderRadius: '5px', fontSize: '10px' }}>FONTE</button>
+                <div style={{ fontSize: '20px' }}>🦊 🔥 🌀</div>
               </div>
             )}
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {mensagens.map(m => (
-                <div key={m.id} onDoubleClick={() => m.uid === user.uid && deleteDoc(doc(db, "chats", chatAtivo.id, "msgs", m.id))} style={{ alignSelf: m.uid === user.uid ? 'flex-end' : 'flex-start', background: m.uid === user.uid ? 'orange' : '#222', color: m.uid === user.uid ? '#000' : '#fff', padding: '10px', borderRadius: '10px', maxWidth: '80%' }}>
-                  {m.audio ? <audio src={m.audio} controls style={{width:'180px'}} /> : m.imagem ? <img src={m.imagem} onClick={() => setZoom(m.imagem)} style={{width:'150px', borderRadius:'5px'}} /> : m.texto}
-                  <div style={{fontSize:'8px', opacity:0.5, marginTop:'5px'}}>{m.uid === user.uid ? 'Dois cliques para apagar' : ''}</div>
+                <div key={m.id} onDoubleClick={() => m.uid === user.uid && deleteDoc(doc(db, "chats", chatAtivo.id, "msgs", m.id))} style={{ alignSelf: m.uid === user.uid ? 'flex-end' : 'flex-start', background: m.uid === user.uid ? 'orange' : '#222', color: m.uid === user.uid ? '#000' : '#fff', padding: '10px', borderRadius: '12px', maxWidth: '80%' }}>
+                  <small style={{ fontSize: '8px', opacity: 0.6, display: 'block' }}>{m.nome}</small>
+                  {m.audio ? <audio src={m.audio} controls style={{ width: '180px' }} /> : m.imagem ? <img src={m.imagem} onClick={() => setZoom(m.imagem)} style={{ width: '150px', borderRadius: '8px' }} /> : m.texto}
                 </div>
               ))}
               <div ref={scrollRef} />
             </div>
 
             <footer style={{ padding: '10px', background: '#050505', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{display:'flex', gap:'5px'}}>
-                <button onClick={() => camInput.current.click()} style={btnRound}>📷</button>
-                <button onClick={() => fileInput.current.click()} style={btnRound}>📎</button>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <button onClick={() => camInput.current.click()} style={btnCircle}>📷</button>
+                <button onClick={() => fileInput.current.click()} style={btnCircle}>📎</button>
               </div>
-              <input type="file" ref={camInput} hidden capture="environment" onChange={(e) => { const r = new FileReader(); r.onload=(ev)=>enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
-              <input type="file" ref={fileInput} hidden onChange={(e) => { const r = new FileReader(); r.onload=(ev)=>enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
+              <input type="file" ref={camInput} hidden capture="environment" onChange={(e) => { const r = new FileReader(); r.onload = (ev) => enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
+              <input type="file" ref={fileInput} hidden onChange={(e) => { const r = new FileReader(); r.onload = (ev) => enviarMsg(ev.target.result); r.readAsDataURL(e.target.files[0]) }} />
               
-              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mensagem..." style={{flex:1, padding:'10px', borderRadius:'20px', border:'1px solid #333', background:'#000', color:'#fff'}} />
+              <input value={novaMsg} onChange={e => setNovaMsg(e.target.value)} placeholder="Mandar pergaminho..." style={{ flex: 1, padding: '12px', borderRadius: '25px', border: '1px solid #333', background: '#000', color: '#fff', outline: 'none' }} />
               
-              <div onClick={handleAudio} style={{ width:'45px', height:'45px', borderRadius:'50%', background: gravando ? 'red' : 'orange', display:'flex', justifyContent:'center', alignItems:'center', cursor:'pointer' }}>
+              <div onClick={handleAudio} style={{ width: '45px', height: '45px', borderRadius: '50%', background: gravando ? 'red' : 'orange', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', transition: '0.3s' }}>
                 {gravando ? segundos + 's' : '🦊'}
               </div>
               
-              <button onClick={() => enviarMsg()} style={{background:'none', border:'none', color:'orange', fontSize:'25px'}}>⚡</button>
+              <button onClick={() => enviarMsg()} style={{ background: 'none', border: 'none', color: 'orange', fontSize: '25px', cursor: 'pointer' }}>⚡</button>
             </footer>
           </>
-        ) : <div style={{flex:1, display:'flex', justifyContent:'center', alignItems:'center'}}>Escolha um ninja na barra lateral 🍥</div>}
+        ) : (
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#555' }}>Toque em um ninja para começar 🍥</div>
+        )}
       </main>
     </div>
   );
 }
 
-const zoomOverlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' };
-const btnRound = { background: '#222', border: 'none', color: '#fff', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer' };
-const btnMini = { background: 'none', border: '1px solid orange', color: 'orange', padding: '5px', borderRadius: '5px', fontSize: '10px' };
+const btnCircle = { width: '35px', height: '35px', borderRadius: '50%', border: 'none', background: '#222', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' };
