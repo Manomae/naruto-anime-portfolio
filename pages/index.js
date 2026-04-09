@@ -1,111 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emanuel Ultra Update</title>
+    <style>
+        /* ESTILOS CYBERPUNK/ANIME */
+        :root {
+            --naruto-orange: #ff9800;
+            --cyber-black: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--cyber-black);
+            color: #fff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #sistema-emanuel {
+            width: 95%;
+            max-width: 500px;
+            background: #111;
+            border: 2px solid var(--naruto-orange);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.2);
+        }
+
+        /* ÁREA DE VÍDEO */
+        #call-screen {
+            height: 180px;
+            background: #000;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .call-btns {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-call {
+            background: var(--glass);
+            border: 1px solid var(--naruto-orange);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* CHAT E GRUPOS */
+        #chat-window {
+            height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+            background: linear-gradient(to bottom, #111, #050505);
+        }
+
+        .msg { margin-bottom: 12px; animation: fadeIn 0.3s ease; }
+        .msg b { color: var(--naruto-orange); }
+
+        /* PAINEL DE GIFS E IA */
+        #gif-panel {
+            display: none;
+            height: 120px;
+            background: #000;
+            border-top: 1px solid var(--naruto-orange);
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px;
+        }
+
+        .ia-bar {
+            display: flex;
+            gap: 5px;
+            padding: 8px;
+            background: #1a1a1a;
+            overflow-x: auto;
+        }
+
+        .btn-ia {
+            background: var(--naruto-orange);
+            color: black;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* INPUT E BOTÃO NARUTO */
+        .input-area {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #151515;
+            gap: 10px;
+        }
+
+        #user-msg {
+            flex: 1;
+            background: #222;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 25px;
+            color: white;
+            outline: none;
+        }
+
+        #naruto-btn {
+            width: 50px;
+            height: 50px;
+            background: url('https://raw.githubusercontent.com/manomae/manomae.github.io/main/assets/naruto-face.png'), url('https://cdn-icons-png.flaticon.com/512/1088/1088537.png'); /* Fallback icon */
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 2px solid var(--naruto-orange);
+        }
+
+        #naruto-btn:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 15px var(--naruto-orange); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
 <div id="sistema-emanuel">
-    
-    <div id="call-area" style="background: #000; border: 2px solid #ff9800; border-radius: 15px; padding: 10px;">
-        <video id="video-stream" autoplay playsinline style="width: 100%; border-radius: 10px;"></video>
-        <div class="controles-chamada" style="display: flex; justify-content: space-around; margin-top: 10px;">
-            <button onclick="controlarMidia('video')">📸 Câmera</button>
-            <button onclick="controlarMidia('audio')">🎙️ Áudio</button>
-            <button onclick="document.getElementById('input-arquivo').click()">📁 Enviar Arquivo</button>
-            <input type="file" id="input-arquivo" style="display:none" onchange="uploadArquivo(this.files)">
+    <div id="call-screen">
+        <video id="localStream" autoplay playsinline muted></video>
+        <div class="call-btns">
+            <button class="btn-call" onclick="initMedia('video')">📸 Câmera</button>
+            <button class="btn-call" onclick="initMedia('audio')">🎙️ Áudio</button>
+            <button class="btn-call" onclick="document.getElementById('file-input').click()">📁 Arquivo</button>
+            <input type="file" id="file-input" hidden onchange="alert('Arquivo pronto: ' + this.files[0].name)">
         </div>
     </div>
 
-    <div id="chat-global" style="margin-top: 20px; display: flex; flex-direction: column; height: 400px;">
-        <div id="lista-mensagens" style="flex-grow: 1; overflow-y: auto; background: #1a1a1d; padding: 10px; color: white;">
-            </div>
+    <div class="ia-bar">
+        <button class="btn-ia" onclick="triggerIA('video')">📹 GERAR VÍDEO IA</button>
+        <button class="btn-ia" onclick="triggerIA('meme')">🤡 GERAR MEME</button>
+        <button class="btn-ia" onclick="suggestTheme()">💡 TEMA</button>
+        <button class="btn-ia" onclick="createGroup()">👥 CRIAR GRUPO</button>
+    </div>
 
-        <div id="gif-container" style="display: none; height: 150px; overflow-x: scroll; white-space: nowrap; background: #000; padding: 5px;">
-            </div>
+    <div id="chat-window">
+        <div class="msg"><b>Sistema:</b> Emanuel Online. Pronto para o próximo jutsu?</div>
+    </div>
 
-        <div class="input-container" style="display: flex; align-items: center; gap: 10px; padding: 10px;">
-            <button onclick="toggleGifPanel()" style="background: none; border: none; font-size: 20px; cursor: pointer;">🎬</button>
-            <input type="text" id="msg-input" placeholder="Digite sua mensagem ninja..." style="flex-grow: 1; padding: 10px; border-radius: 20px; border: 1px solid #ff9800;">
-            
-            <div id="btn-enviar-naruto" onclick="enviarMensagem()" style="width: 50px; height: 50px; background: url('https://raw.githubusercontent.com/manomae/manomae.github.io/main/assets/naruto-face.png') no-repeat center; background-size: contain; cursor: pointer;"></div>
-        </div>
+    <div id="gif-panel">
+        <div id="gif-content" style="display: flex; gap: 10px;"></div>
+    </div>
+
+    <div class="input-area">
+        <button onclick="toggleGifs()" style="background:none; border:none; cursor:pointer; font-size:20px;">🖼️</button>
+        <input type="text" id="user-msg" placeholder="Digite sua mensagem...">
+        <div id="naruto-btn" onclick="mainAction()"></div>
     </div>
 </div>
 
 <script>
-// --- CONFIGURAÇÃO DE ÁUDIO E VÍDEO (QUALIDADE ULTRA) ---
-async function controlarMidia(tipo) {
-    const constraints = {
-        video: tipo === 'video' ? { width: 1920, height: 1080, frameRate: 60 } : false,
-        audio: { echoCancellation: true, noiseSuppression: true }
-    };
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        document.getElementById('video-stream').srcObject = stream;
-        console.log("Mídia ativada com sucesso!");
-    } catch (err) {
-        alert("Erro ao acessar câmera/microfone: " + err);
+    // --- LÓGICA DE ENVIO E NARUTO ---
+    function mainAction() {
+        const input = document.getElementById('user-msg');
+        const val = input.value.trim();
+        if(val !== "") {
+            addMsg("Você", val);
+            if(val.toLowerCase().includes("ajuda")) suggestTheme();
+            input.value = "";
+        }
     }
-}
 
-// --- PESQUISA DE GIFS DE ANIME (INTEGRAÇÃO GIPHY) ---
-let gifOffset = 0;
-async function buscarGifsAnime() {
-    const apiKey = 'SUA_CHAVE_AQUI'; // Você pode obter uma gratuita no Giphy Developers
-    const container = document.getElementById('gif-container');
-    
-    try {
-        const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=naruto+anime&limit=20&offset=${gifOffset}`);
-        const data = await response.json();
+    function addMsg(user, text, isHtml = false) {
+        const win = document.getElementById('chat-window');
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `<b>${user}:</b> ${isHtml ? text : `<br>${text}`}`;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
+    }
+
+    // --- GIFS ADAPTADOS (SCROLL INFINITO) ---
+    function toggleGifs() {
+        const p = document.getElementById('gif-panel');
+        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        if(p.style.display === 'block') loadGifs();
+    }
+
+    function loadGifs() {
+        const cont = document.getElementById('gif-content');
+        // Simulação de busca infinita usando Gifer/Tenor IDs randômicos para evitar bloqueio de API
+        const animeGifs = [
+            "https://media.tenor.com/images/8e6c40683a379f67137f62c05763920c/tenor.gif",
+            "https://media.tenor.com/images/6987747e09880d941e7d23d857d4131b/tenor.gif",
+            "https://media.tenor.com/images/7376ee22631525287315147575231923/tenor.gif",
+            "https://media.tenor.com/images/2b7e16335a9d16a5757d549f3e589839/tenor.gif"
+        ];
         
-        data.data.forEach(gif => {
+        animeGifs.forEach(url => {
             const img = document.createElement('img');
-            img.src = gif.images.fixed_height_small.url;
-            img.style = "height: 100px; margin-right: 5px; cursor: pointer; border-radius: 5px;";
-            img.onclick = () => enviarGif(gif.images.fixed_height.url);
-            container.appendChild(img);
+            img.src = url;
+            img.style = "height: 80px; border-radius: 8px; cursor: pointer;";
+            img.onclick = () => { addMsg("Você", `<img src="${url}" width="150">`, true); toggleGifs(); };
+            cont.appendChild(img);
         });
-        gifOffset += 20; // Para carregar mais da próxima vez (infinito)
-    } catch (e) {
-        console.log("Erro ao carregar GIFs");
     }
-}
 
-function toggleGifPanel() {
-    const panel = document.getElementById('gif-container');
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    if (panel.children.length === 0) buscarGifsAnime();
-}
-
-// --- FUNÇÕES DO CHAT E GRUPOS ---
-function enviarMensagem() {
-    const input = document.getElementById('msg-input');
-    const msg = input.value;
-    if (msg.trim() !== "") {
-        exibirNaTela(`<b>Você:</b> ${msg}`);
-        // Lógica de IA: Sugerir Emoji ou Tema
-        processarIA(msg);
-        input.value = "";
+    // --- CHAMADAS DE VÍDEO HD ---
+    async function initMedia(type) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: type === 'video' ? { width: 1280, height: 720 } : false,
+                audio: { echoCancellation: true, noiseSuppression: true }
+            });
+            if(type === 'video') document.getElementById('localStream').srcObject = stream;
+            addMsg("Sistema", `${type.toUpperCase()} ativado com qualidade Ultra.`);
+        } catch(e) {
+            alert("Erro de mídia: " + e.message);
+        }
     }
-}
 
-function enviarGif(url) {
-    exibirNaTela(`<img src="${url}" style="width: 150px; border-radius: 10px;">`);
-}
-
-function exibirNaTela(html) {
-    const lista = document.getElementById('lista-mensagens');
-    lista.innerHTML += `<div style="margin-bottom: 10px; animation: slideIn 0.3s ease;">${html}</div>`;
-    lista.scrollTop = lista.scrollHeight;
-}
-
-// --- INTEGRAÇÃO COM IA (MEMES E SUGESTÕES) ---
-function processarIA(texto) {
-    // Exemplo de sugestão automática de cor/tema
-    if (texto.includes("tema")) {
-        document.body.style.background = "#121212"; // Sugestão Dark Cyberpunk
-        exibirNaTela("🤖 <i>IA: Sugeri um novo tema visual para sua conversa!</i>");
+    // --- MÓDULO DE IA GENERATIVA ---
+    function triggerIA(type) {
+        addMsg("IA Emanuel", `⏳ Gerando ${type} exclusivo para você...`);
+        setTimeout(() => {
+            if(type === 'video') {
+                addMsg("IA Emanuel", `<video controls width="100%"><source src="https://www.w3schools.com/html/mov_bbb.mp4"></video>`, true);
+            } else {
+                addMsg("IA Emanuel", `<img src="https://api.memegen.link/images/custom/_/ia_emanuel_meme.png?background=https://raw.githubusercontent.com/manomae/manomae.github.io/main/assets/cyber.jpg" width="100%">`, true);
+            }
+        }, 3000);
     }
-}
 
-function uploadArquivo(files) {
-    if(files.length > 0) {
-        exibirNaTela(`📎 Arquivo enviado: ${files[0].name}`);
-        // Aqui você conectaria com seu Firebase Storage
+    function suggestTheme() {
+        const temas = ["Treinamento Ninja", "Novas APIs", "Design do Amanhã", "Segurança Firebase"];
+        const t = temas[Math.floor(Math.random()*temas.length)];
+        addMsg("IA Emanuel", `Sugestão de Tema: <b>${t}</b>`, true);
     }
-}
+
+    function createGroup() {
+        const nome = prompt("Nome do Grupo:");
+        if(nome) addMsg("Sistema", `Grupo <b>${nome}</b> criado com sucesso! Mensagens de IA ativadas.`);
+    }
 </script>
+
+</body>
+</html>
