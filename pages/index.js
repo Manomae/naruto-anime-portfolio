@@ -7,11 +7,15 @@
         body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; color: white; }
         
-        /* Tema Naruto: Cores e Estilo */
+        /* Tema Naruto */
         .top-bar { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; pointer-events: auto; }
         .ui-btn { background: #ff9800; color: #fff; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; border: 2px solid #000; box-shadow: 4px 4px 0 #000; }
         
-        /* Overlay de Chamada Shuriken */
+        /* Avatar 3D Style */
+        #profile-area { position: absolute; top: 80px; left: 20px; pointer-events: auto; text-align: center; }
+        #avatar-pic { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #ff9800; background: #333; cursor: pointer; object-fit: cover; }
+
+        /* Overlay Shuriken */
         #call-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); display: none; flex-direction: column;
@@ -24,22 +28,18 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Botão Enviar Rasengan */
+        /* Botão Enviar Rasengan Melhorado */
         .btn-send { 
             position: relative; width: 60px; height: 60px; background: #2196f3; 
             border-radius: 50%; border: none; cursor: pointer; pointer-events: auto;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; overflow: visible;
         }
-        .rasengan-anim {
-            position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle, #fff 10%, #2196f3 70%);
-            opacity: 0; transition: 0.3s;
-        }
-        .btn-send:active .rasengan-anim { opacity: 1; transform: scale(1.5) rotate(360deg); }
+        
+        /* Canvas do Rasengan (Sobreposto ao botão) */
+        #rasengan-container { position: absolute; width: 120px; height: 120px; pointer-events: none; display: none; z-index: 10; }
 
-        /* Controles e Chat */
-        #chat-container { position: absolute; bottom: 120px; right: 20px; width: 300px; pointer-events: auto; display: none; }
-        #chat-input { width: 100%; padding: 10px; border-radius: 20px; border: 2px solid #ff9800; background: #000; color: #fff; }
+        #chat-container { position: absolute; bottom: 120px; right: 20px; width: 300px; pointer-events: auto; display: flex; gap: 10px; }
+        #chat-input { flex: 1; padding: 10px; border-radius: 20px; border: 2px solid #ff9800; background: #000; color: #fff; }
         
         #controls { position: absolute; bottom: 20px; left: 20px; display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; pointer-events: auto; }
         .btn-dir { width: 60px; height: 60px; background: rgba(255,152,0,0.5); border: 2px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
@@ -61,12 +61,17 @@
             <button class="ui-btn" onclick="openCamera()">🤳 CÂMERA</button>
         </div>
 
+        <div id="profile-area">
+            <img id="avatar-pic" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Shinobi" onclick="initAvatarCreator()">
+            <p style="font-size: 12px;">Editar Avatar</p>
+        </div>
+
         <div id="chat-container">
             <input type="text" id="chat-input" placeholder="Enviar mensagem...">
-            <button class="btn-send" onclick="sendWithRasengan()">
-                <div class="rasengan-anim"></div>
-                ⚡
-            </button>
+            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                <div id="rasengan-container"></div>
+                <button class="btn-send" onclick="sendWithRasengan()">⚡</button>
+            </div>
         </div>
 
         <div id="controls">
@@ -75,8 +80,6 @@
             <div class="btn-dir" id="btn-down" style="grid-column: 2; grid-row: 2;">▼</div>
             <div class="btn-dir" id="btn-right" style="grid-column: 3; grid-row: 2;">▶</div>
         </div>
-        
-        <input type="file" id="cam-input" accept="image/*" capture="camera" style="display:none">
     </div>
 
     <script type="importmap">
@@ -86,7 +89,7 @@
     <script type="module">
         import * as THREE from 'three';
 
-        // --- CENA 3D (BASEADA NO SEU ARQUIVO) ---
+        // --- CENA PRINCIPAL ---
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x111111);
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -97,59 +100,99 @@
         const light = new THREE.AmbientLight(0xffffff, 1);
         scene.add(light);
 
-        // Player (Representação)
         const player = new THREE.Group();
         const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0xff9800}));
         player.add(body);
         player.position.y = 0.5;
         scene.add(player);
 
-        // --- LÓGICA DE CHAMADA E MÍDIA ---
-        window.startCall = async (type) => {
-            const overlay = document.getElementById('call-overlay');
-            const callTypeText = document.getElementById('call-type');
-            overlay.style.display = 'flex';
-            callTypeText.innerText = type === 'video' ? "JUTSU DE VÍDEO CONFERÊNCIA..." : "CONEXÃO DE ÁUDIO SHINOBI...";
+        // --- LÓGICA DO AVATAR 3D (Ready Player Me) ---
+        window.initAvatarCreator = () => {
+            const subdomain = 'demo'; // Você pode criar o seu no readyplayer.me
+            const frame = document.createElement('iframe');
+            frame.src = `https://${subdomain}.readyplayer.me/avatar?frameApi`;
+            frame.style.cssText = "position:fixed; top:5%; left:5%; width:90%; height:90%; z-index:1000; border:none; border-radius:20px;";
+            frame.id = "rpm-frame";
+            document.body.appendChild(frame);
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: type === 'video', 
-                    audio: { echoCancellation: true, noiseSuppression: true } 
-                });
-                if(type === 'video') document.getElementById('localVideo').srcObject = stream;
-            } catch (err) {
-                alert("Falha na conexão ninja: " + err);
-                endCall();
-            }
+            window.addEventListener('message', function subscribe(event) {
+                const json = parse(event);
+                if (json?.source === 'readyplayerme' && json?.eventName === 'v1.avatar.exported') {
+                    document.getElementById('avatar-pic').src = `${json.data.url}.png`;
+                    document.getElementById('rpm-frame').remove();
+                    window.removeEventListener('message', subscribe);
+                }
+            });
+            function parse(event) { try { return JSON.parse(event.data); } catch { return null; } }
         };
 
-        window.endCall = () => {
-            const overlay = document.getElementById('call-overlay');
-            overlay.style.display = 'none';
-            const video = document.getElementById('localVideo');
-            if(video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
-        };
+        // --- ANIMAÇÃO DO RASENGAN ---
+        let rasenganScene, rasenganRenderer, rasenganCamera, rasenganBall;
+        
+        function initRasenganFX() {
+            const container = document.getElementById('rasengan-container');
+            rasenganScene = new THREE.Scene();
+            rasenganCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 100);
+            rasenganRenderer = new THREE.WebGLRenderer({ alpha: true });
+            rasenganRenderer.setSize(120, 120);
+            container.appendChild(rasenganRenderer.domElement);
 
-        window.openCamera = () => document.getElementById('cam-input').click();
+            const geo = new THREE.SphereGeometry(1, 32, 32);
+            const mat = new THREE.MeshBasicMaterial({ 
+                color: 0x00ffff, wireframe: true, transparent: true, opacity: 0.8 
+            });
+            rasenganBall = new THREE.Mesh(geo, mat);
+            rasenganScene.add(rasenganBall);
+            rasenganCamera.position.z = 2;
+        }
+        initRasenganFX();
 
         window.sendWithRasengan = () => {
             const input = document.getElementById('chat-input');
-            if(input.value) {
-                console.log("Mensagem com Rasengan: " + input.value);
-                input.value = "";
-                // Aqui você pode integrar o Firebase que você já usa no projeto Emanuel
+            if(!input.value) return;
+
+            const container = document.getElementById('rasengan-container');
+            container.style.display = 'block';
+
+            // Logica de envio
+            console.log("Mensagem Enviada: " + input.value);
+            input.value = "";
+
+            // Efeito visual por 1.5s
+            let startTime = Date.now();
+            function animateFX() {
+                if(Date.now() - startTime > 1500) {
+                    container.style.display = 'none';
+                    return;
+                }
+                rasenganBall.rotation.y += 0.3;
+                rasenganBall.rotation.x += 0.2;
+                rasenganBall.scale.setScalar(Math.random() * 0.5 + 1);
+                rasenganRenderer.render(rasenganScene, rasenganCamera);
+                requestAnimationFrame(animateFX);
             }
+            animateFX();
         };
 
-        // --- MOVIMENTAÇÃO (Simplificada para o exemplo) ---
-        const move = { f: false, b: false, l: false, r: false };
-        document.getElementById('btn-up').onpointerdown = () => move.f = true;
-        document.getElementById('btn-up').onpointerup = () => move.f = false;
-        // ... (Repetir para outros botões de direção)
+        // --- SISTEMA DE CHAMADAS ---
+        window.startCall = async (type) => {
+            const overlay = document.getElementById('call-overlay');
+            overlay.style.display = 'flex';
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: type === 'video', audio: true });
+                if(type === 'video') document.getElementById('localVideo').srcObject = stream;
+            } catch (err) { alert("Erro ninja: " + err); endCall(); }
+        };
 
+        window.endCall = () => {
+            document.getElementById('call-overlay').style.display = 'none';
+            const video = document.getElementById('localVideo');
+            if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        };
+
+        // --- LOOP PRINCIPAL ---
         function animate() {
             requestAnimationFrame(animate);
-            if(move.f) player.position.z -= 0.1;
             camera.position.lerp(new THREE.Vector3(player.position.x, 5, player.position.z + 10), 0.1);
             camera.lookAt(player.position);
             renderer.render(scene, camera);
