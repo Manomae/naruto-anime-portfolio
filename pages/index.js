@@ -3,157 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emanuel Ultra Update</title>
+    <title>Emanuel - Dashboard Total</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
-        /* RESET E BASE */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; color: white; }
-
-        /* BARRA LATERAL (IDÊNTICA AO SEU PRINT) */
-        .sidebar { 
-            width: 70px; 
-            background: #0a0a0a; 
-            border-right: 2px solid #ff9800; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px 0; 
-            gap: 20px;
-        }
-        .icon-circle { 
-            width: 45px; height: 45px; 
-            border-radius: 50%; 
-            border: 2px solid #333; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: 0.3s;
-        }
-        .icon-circle.active { border-color: #ff9800; box-shadow: 0 0 10px #ff9800; }
-        .icon-circle.purple { background: #673ab7; border: none; font-weight: bold; }
-
-        /* CONTAINER PRINCIPAL */
-        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
-        
-        /* HEADER */
-        .header { 
-            height: 60px; background: #0a0a0a; 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; border-bottom: 1px solid #222; 
+        :root {
+            --bg-dark: #0a0a0a;
+            --panel-bg: rgba(20, 20, 20, 0.9);
+            --accent-orange: #ff9d00;
+            --accent-glow: rgba(255, 157, 0, 0.3);
+            --text-gray: #b0b0b0;
+            --glass-border: rgba(255, 255, 255, 0.05);
         }
 
-        /* ÁREA DE MENSAGENS */
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; background: #000; }
+        * { margin: 0; padding: 0; box-box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-        /* O NOVO PAINEL DE CHAKRA (GIFS ANIMADOS PONTUDOS) */
-        #chakra-panel { 
-            display: none; height: 150px; background: #000; 
-            border-top: 3px solid #ffeb3b; position: relative; overflow: hidden; 
-        }
-        .chakra-hair { 
-            position: absolute; width: 10px; background: linear-gradient(to bottom, #ffeb3b, #ff9800); 
-            border-radius: 0 0 50% 50%; animation: fall infinite linear; 
-        }
-        @keyframes fall { 
-            from { transform: translateY(-100px); opacity: 1; } 
-            to { transform: translateY(200px); opacity: 0; } 
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        /* BARRA DE BAIXO (INPUT) */
-        .bottom-bar { 
-            height: 80px; background: #0a0a0a; 
-            display: flex; align-items: center; padding: 0 15px; gap: 10px; 
+        /* BARRA LATERAL MODERNA */
+        nav {
+            width: 70px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            backdrop-filter: blur(10px);
+            z-index: 10;
         }
-        .btn-action { background: #1a1a1a; border: none; border-radius: 50%; width: 40px; height: 40px; color: #ff9800; cursor: pointer; font-size: 18px; }
-        .input-wrapper { flex: 1; background: #111; border: 1px solid #333; border-radius: 25px; padding: 10px 20px; }
-        #msg-input { width: 100%; background: transparent; border: none; color: white; outline: none; }
 
-        /* BOTÃO DO NARUTO (MUDANÇA DO RAIO) */
-        #naruto-send { 
-            width: 55px; height: 55px; 
-            background: url('https://raw.githubusercontent.com/manomae/manomae.github.io/main/assets/naruto-face.png'); 
-            background-size: cover; border-radius: 50%; cursor: pointer; 
-            border: 2px solid #ff9800; transition: 0.3s;
+        .nav-item {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-gray);
+            border: 1px solid transparent;
+            position: relative;
         }
-        #naruto-send:hover { transform: scale(1.2) rotate(10deg); box-shadow: 0 0 20px #ff9800; }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--accent-orange);
+            background: var(--accent-glow);
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .nav-item.profile {
+            background: #4a148c; /* Cor do seu 'M' no print */
+            color: white;
+            font-weight: bold;
+            margin-top: auto; /* Joga para o final */
+        }
+
+        /* ÁREA PRINCIPAL */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        /* HEADER DO CHAT */
+        header {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .user-info h3 { font-size: 1rem; letter-spacing: 1px; }
+
+        /* MENSAGENS (O Vazio que estava no print) */
+        #chat-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg {
+            max-width: 70%;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .msg.received {
+            background: rgba(255,255,255,0.05);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* CAMPO DE ENTRADA (ESTILO PÍLULA) */
+        .input-area {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: white;
+            flex: 1;
+            outline: none;
+            padding: 5px;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            color: var(--accent-orange);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover { transform: scale(1.2); }
+
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="icon-circle active" style="background: #ff9800;"><img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" width="25"></div>
-    <div class="icon-circle"></div>
-    <div class="icon-circle active"></div>
-    <div class="icon-circle"></div>
-    <div class="icon-circle purple">M</div>
-    <div class="icon-circle" style="border:none;"><img src="https://cdn-icons-png.flaticon.com/512/126/126472.png" width="25"></div>
-</div>
-
-<div class="main-content">
-    <div class="header">
-        <span style="font-weight: bold;">Maria Lucilene</span>
-        <div style="display: flex; gap: 20px;">
-            <span>📞</span>
-            <span>📹</span>
-        </div>
-    </div>
-
-    <div id="chat-box">
-        <div style="color: #666; font-size: 12px; text-align: center; margin-bottom: 20px;">Hoje 16:37</div>
-        <p><b>Sistema:</b> Ultra Atualização: Modo Chakra Ativado.</p>
-    </div>
-
-    <div id="chakra-panel" onclick="enviarChakra()">
-        <div style="position: absolute; width: 100%; text-align: center; top: 40%; color: #ffeb3b; font-weight: bold; z-index: 5;">
-            GIFS ANIMADOS: CLIQUE PARA ENVIAR ENERGIA
-        </div>
-    </div>
-
-    <div class="bottom-bar">
-        <button class="btn-action" onclick="toggleChakra()">🎬</button>
-        <button class="btn-action">📎</button>
-        <div class="input-wrapper">
-            <input type="text" id="msg-input" placeholder="Naruto">
-        </div>
-        <div id="naruto-send" onclick="enviarMensagem()"></div>
-    </div>
-</div>
-
-<script>
-    function toggleChakra() {
-        const panel = document.getElementById('chakra-panel');
-        const isVisible = panel.style.display === 'block';
-        panel.style.display = isVisible ? 'none' : 'block';
+    <nav>
+        <div class="nav-item active"><i class="fas fa-users"></i></div>
+        <div class="nav-item"><i class="fas fa-gamepad"></i></div>
+        <div class="nav-item"><i class="fas fa-folder"></i></div>
+        <div class="nav-item"><i class="fas fa-code"></i></div>
         
-        if(!isVisible) {
-            panel.innerHTML = '<div style="position: absolute; width: 100%; text-align: center; top: 40%; color: #ffeb3b; font-weight: bold; z-index: 5;">GIFS ANIMADOS: CLIQUE PARA ENVIAR ENERGIA</div>';
-            for(let i=0; i<30; i++) {
-                let hair = document.createElement('div');
-                hair.className = 'chakra-hair';
-                hair.style.left = Math.random() * 100 + '%';
-                hair.style.height = (Math.random() * 40 + 20) + 'px';
-                hair.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
-                hair.style.animationDelay = Math.random() * 2 + 's';
-                panel.appendChild(hair);
+        <div class="nav-item profile">M</div>
+        <div class="nav-item"><i class="fas fa-cog"></i></div>
+    </nav>
+
+    <main>
+        <header>
+            <div class="user-info">
+                <h3>sgxdgg</h3>
+                <small style="color: #00ff00;">● Online</small>
+            </div>
+            <div class="actions">
+                <button class="btn-action" style="margin-right: 15px;"><i class="fas fa-phone"></i></button>
+                <button class="btn-action"><i class="fas fa-video"></i></button>
+            </div>
+        </header>
+
+        <div id="chat-content">
+            <div class="msg received">Bem-vindo de volta! O sistema foi atualizado para a versão Pro.</div>
+        </div>
+
+        <div class="input-area">
+            <button class="btn-action"><i class="fas fa-paperclip"></i></button>
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Digite uma mensagem...">
+                <button class="btn-action" onclick="sendMessage()"><i class="fas fa-bolt"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função simples para testar o envio
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat-content');
+            
+            if(input.value.trim() !== "") {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'msg';
+                msgDiv.style.alignSelf = 'flex-end';
+                msgDiv.style.background = 'var(--accent-orange)';
+                msgDiv.style.color = 'black';
+                msgDiv.style.borderBottomRightRadius = '2px';
+                msgDiv.textContent = input.value;
+                
+                chat.appendChild(msgDiv);
+                input.value = "";
+                chat.scrollTop = chat.scrollHeight;
+
+                // Aqui você integraria o seu 'db.collection("messages").add()' do Firebase
             }
         }
-    }
 
-    function enviarMensagem() {
-        const input = document.getElementById('msg-input');
-        if(input.value.trim() !== "") {
-            const chat = document.getElementById('chat-box');
-            chat.innerHTML += `<div style="margin-bottom:15px; text-align:right;"><b>Você:</b><br>${input.value}</div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-        }
-    }
-
-    function enviarChakra() {
-        const chat = document.getElementById('chat-box');
-        chat.innerHTML += `<div style="border: 2px solid #ffeb3b; color: #ffeb3b; padding: 10px; border-radius: 10px; background: #111;">🔥 Energia de Chakra Amarela Enviada!</div>`;
-        toggleChakra();
-        chat.scrollTop = chat.scrollHeight;
-    }
-</script>
-
+        // Enviar com Enter
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
 </body>
 </html>
