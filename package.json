@@ -8,10 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "firebase": "latest",
-    "next": "14.2.3",
+    "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "lucide-react": "latest"
+    "three": "^0.160.0"
   }
 }
