@@ -3,218 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emanuel - Dashboard Total</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title>Emanuel Portfolio Chat</title>
     <style>
-        :root {
-            --bg-dark: #0a0a0a;
-            --panel-bg: rgba(20, 20, 20, 0.9);
-            --accent-orange: #ff9d00;
-            --accent-glow: rgba(255, 157, 0, 0.3);
-            --text-gray: #b0b0b0;
-            --glass-border: rgba(255, 255, 255, 0.05);
-        }
+        /* CSS - O Estilo que resolve o problema do espaço branco */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        
+        body { background-color: #000; color: white; height: 100dvh; overflow: hidden; }
 
-        * { margin: 0; padding: 0; box-box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        .app-container { display: flex; height: 100%; width: 100%; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: white;
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* BARRA LATERAL MODERNA */
-        nav {
+        /* Barra Lateral (Sidebar) */
+        .sidebar {
             width: 70px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--glass-border);
+            background-color: #0d0d0d;
+            border-right: 2px solid #ffaa00;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
-            backdrop-filter: blur(10px);
-            z-index: 10;
+            padding-top: 20px;
+            gap: 20px;
         }
 
-        .nav-item {
-            width: 45px;
-            height: 45px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
-            color: var(--text-gray);
-            border: 1px solid transparent;
-            position: relative;
-        }
+        .nav-icon { width: 45px; height: 45px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .nav-icon.active { background: #ffaa00; color: #000; font-weight: bold; }
+        .nav-icon.m-circle { background: #6a1b9a; font-size: 20px; }
 
-        .nav-item:hover, .nav-item.active {
-            color: var(--accent-orange);
-            background: var(--accent-glow);
-            border-color: var(--accent-orange);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
+        /* Área do Chat */
+        .chat-main { flex: 1; display: flex; flex-direction: column; background: #000; }
 
-        .nav-item.profile {
-            background: #4a148c; /* Cor do seu 'M' no print */
-            color: white;
-            font-weight: bold;
-            margin-top: auto; /* Joga para o final */
-        }
-
-        /* ÁREA PRINCIPAL */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        }
-
-        /* HEADER DO CHAT */
-        header {
-            padding: 15px 25px;
+        .chat-header {
+            padding: 15px;
+            background: #111;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--glass-border);
-            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid #222;
         }
 
-        .user-info h3 { font-size: 1rem; letter-spacing: 1px; }
-
-        /* MENSAGENS (O Vazio que estava no print) */
-        #chat-content {
+        /* ONDE AS MENSAGENS FICAM (O "bloco preto" que agora funciona) */
+        #chat-display {
             flex: 1;
-            padding: 20px;
             overflow-y: auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .msg {
-            max-width: 70%;
-            padding: 12px;
+        .bubble {
+            max-width: 80%;
+            padding: 10px 15px;
             border-radius: 15px;
-            font-size: 0.9rem;
+            font-size: 14px;
             line-height: 1.4;
         }
+        .me { align-self: flex-end; background: #ffaa00; color: #000; border-bottom-right-radius: 2px; }
+        .other { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
 
-        .msg.received {
-            background: rgba(255,255,255,0.05);
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-        }
-
-        /* CAMPO DE ENTRADA (ESTILO PÍLULA) */
-        .input-area {
-            padding: 20px;
+        /* Barra de Input (Rodapé) */
+        .input-bar {
+            padding: 15px;
+            background: #000;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .input-wrapper {
+        .icon-btn { background: #222; border: none; color: white; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; }
+
+        #msg-input {
             flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
+            background: #111;
+            border: 1px solid #333;
             border-radius: 25px;
             padding: 10px 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        input {
-            background: transparent;
-            border: none;
             color: white;
-            flex: 1;
             outline: none;
-            padding: 5px;
         }
 
-        .btn-action {
-            background: none;
-            border: none;
-            color: var(--accent-orange);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: 0.2s;
-        }
-
-        .btn-action:hover { transform: scale(1.2); }
-
+        .send-btn { background: none; border: none; font-size: 24px; cursor: pointer; transition: 0.2s; }
+        .send-btn:active { transform: scale(0.8); }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="nav-item active"><i class="fas fa-users"></i></div>
-        <div class="nav-item"><i class="fas fa-gamepad"></i></div>
-        <div class="nav-item"><i class="fas fa-folder"></i></div>
-        <div class="nav-item"><i class="fas fa-code"></i></div>
-        
-        <div class="nav-item profile">M</div>
-        <div class="nav-item"><i class="fas fa-cog"></i></div>
-    </nav>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="nav-icon active">👥</div>
+        <div class="nav-icon"></div>
+        <div class="nav-icon m-circle">M</div>
+        <div style="margin-top: auto; margin-bottom: 20px;">⚙️</div>
+    </aside>
 
-    <main>
-        <header>
-            <div class="user-info">
-                <h3>sgxdgg</h3>
-                <small style="color: #00ff00;">● Online</small>
-            </div>
-            <div class="actions">
-                <button class="btn-action" style="margin-right: 15px;"><i class="fas fa-phone"></i></button>
-                <button class="btn-action"><i class="fas fa-video"></i></button>
-            </div>
+    <main class="chat-main">
+        <header class="chat-header">
+            <strong>emanuel silva</strong>
+            <div>📞 📹</div>
         </header>
 
-        <div id="chat-content">
-            <div class="msg received">Bem-vindo de volta! O sistema foi atualizado para a versão Pro.</div>
-        </div>
-
-        <div class="input-area">
-            <button class="btn-action"><i class="fas fa-paperclip"></i></button>
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Digite uma mensagem...">
-                <button class="btn-action" onclick="sendMessage()"><i class="fas fa-bolt"></i></button>
+        <div id="chat-display">
             </div>
-        </div>
+
+        <footer class="input-bar">
+            <button class="icon-btn">📅</button>
+            <button class="icon-btn">📎</button>
+            <input type="text" id="msg-input" placeholder="Digite uma mensagem...">
+            <button id="send-btn" class="send-btn">⚡</button>
+        </footer>
     </main>
+</div>
 
-    <script>
-        // Função simples para testar o envio
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const chat = document.getElementById('chat-content');
-            
-            if(input.value.trim() !== "") {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'msg';
-                msgDiv.style.alignSelf = 'flex-end';
-                msgDiv.style.background = 'var(--accent-orange)';
-                msgDiv.style.color = 'black';
-                msgDiv.style.borderBottomRightRadius = '2px';
-                msgDiv.textContent = input.value;
-                
-                chat.appendChild(msgDiv);
-                input.value = "";
-                chat.scrollTop = chat.scrollHeight;
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-                // Aqui você integraria o seu 'db.collection("messages").add()' do Firebase
-            }
-        }
+    // 1. SUBSTITUA PELOS SEUS DADOS DO FIREBASE CONSOLE:
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_PROJETO.firebaseapp.com",
+        projectId: "SEU_PROJETO_ID",
+        storageBucket: "SEU_PROJETO.appspot.com",
+        messagingSenderId: "SEU_SENDER_ID",
+        appId: "SUA_APP_ID"
+    };
 
-        // Enviar com Enter
-        document.getElementById('userInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') sendMessage();
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const msgCollection = collection(db, "mensagens");
+
+    const chatDisplay = document.getElementById('chat-display');
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // 2. FUNÇÃO PARA LER MENSAGENS (TEMPO REAL)
+    const q = query(msgCollection, orderBy("createdAt", "asc"));
+    
+    onSnapshot(q, (snapshot) => {
+        chatDisplay.innerHTML = ""; // Limpa a tela
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const div = document.createElement('div');
+            // Aqui definimos quem é "você" para alinhar a bolha
+            div.className = `bubble ${data.user === "Emanuel" ? 'me' : 'other'}`;
+            div.innerText = data.text;
+            chatDisplay.appendChild(div);
         });
-    </script>
+        // Scroll automático
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    });
+
+    // 3. FUNÇÃO PARA ENVIAR
+    async function sendMessage() {
+        const text = msgInput.value.trim();
+        if (text === "") return;
+
+        msgInput.value = ""; // Limpa o campo na hora
+        
+        try {
+            await addDoc(msgCollection, {
+                text: text,
+                user: "Emanuel", // Altere conforme o usuário logado
+                createdAt: serverTimestamp()
+            });
+        } catch (e) {
+            console.error("Erro ao enviar: ", e);
+        }
+    }
+
+    sendBtn.onclick = sendMessage;
+    msgInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+
+</script>
+
 </body>
 </html>
