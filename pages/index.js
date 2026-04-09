@@ -1,4 +1,4 @@
-"use client"; // Necessário no Next.js 13+ para usar Three.js e Hooks
+"use client";
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -6,15 +6,20 @@ import * as THREE from 'three';
 export default function ShinobiWorld() {
   const mountRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState("https://api.dicebear.com/7.x/avataaars/svg?seed=Shinobi");
-  const [showCall, setShowCall] = useState(false);
   const [msg, setMsg] = useState("");
+  
+  // Lista de contatos (Aqui você conectará com seu Firebase/Cloud do projeto Emanuel)
+  const [contatos] = useState([
+    { id: 1, nome: "Sasuke_Uchiha", status: "online" },
+    { id: 2, nome: "Sakura_Haruno", status: "online" },
+    { id: 3, nome: "Kakashi_Sensei", status: "offline" }
+  ]);
 
-  // Refs para o Rasengan
-  const rasenganRef = useRef(null);
   const rasenganCanvasRef = useRef(null);
+  const rasenganBallRef = useRef(null);
 
   useEffect(() => {
-    // --- Configuração da Cena Principal do Jogo ---
+    // --- CENA PRINCIPAL DO JOGO (Three.js) ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -25,14 +30,14 @@ export default function ShinobiWorld() {
     const light = new THREE.AmbientLight(0xffffff, 1);
     scene.add(light);
 
+    // Representação do Player no Mundo
     const player = new THREE.Group();
     const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0xff9800}));
     player.add(body);
     player.position.y = 0.5;
     scene.add(player);
 
-    camera.position.z = 10;
-    camera.position.y = 5;
+    camera.position.set(0, 5, 10);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -44,76 +49,90 @@ export default function ShinobiWorld() {
     return () => mountRef.current?.removeChild(renderer.domElement);
   }, []);
 
-  // --- Função Rasengan ---
-  const triggerRasengan = () => {
+  // --- FUNÇÃO DO AVATAR 3D ---
+  const openAvatarCreator = () => {
+    const frame = document.createElement('iframe');
+    frame.src = `https://models.readyplayer.me/avatar?frameApi`;
+    frame.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; border:none; background:#1a1a1a;";
+    document.body.appendChild(frame);
+
+    const handleMessage = (event) => {
+      const json = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      if (json?.source === 'readyplayerme' && json?.eventName === 'v1.avatar.exported') {
+        setAvatarUrl(`${json.data.url}.png`);
+        frame.remove();
+        window.removeEventListener('message', handleMessage);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+  };
+
+  // --- FUNÇÃO DO RASENGAN ---
+  const sendWithRasengan = () => {
     if (!msg) return;
     rasenganCanvasRef.current.style.display = 'block';
-    console.log("Enviando com Rasengan:", msg);
-    setMsg("");
-
+    
+    // Aqui entra a lógica de envio para o manomae.github.io / Firebase
+    console.log("Jutsu de Mensagem:", msg);
+    
     setTimeout(() => {
       rasenganCanvasRef.current.style.display = 'none';
+      setMsg("");
     }, 1500);
   };
 
-  // --- Ready Player Me (Avatar 3D) ---
-  const openAvatarCreator = () => {
-    const subdomain = 'demo'; 
-    const iFrame = document.createElement('iframe');
-    iFrame.src = `https://${subdomain}.readyplayer.me/avatar?frameApi`;
-    iFrame.style.cssText = "position:fixed; top:5%; left:5%; width:90%; height:90%; z-index:1000; border-radius:20px;";
-    document.body.appendChild(iFrame);
-
-    window.addEventListener('message', (event) => {
-      if (event.data?.source === 'readyplayerme') {
-         // Lógica simplificada para pegar a foto
-         setAvatarUrl(`${event.data.data?.url}.png`);
-         iFrame.remove();
-      }
-    });
-  };
-
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* UI LAYER */}
-      <div style={{ position: 'absolute', top: 0, width: '100%', pointerEvents: 'none' }}>
+      {/* CAMADA DE INTERFACE (UI) */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
         
-        {/* Top Bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', padding: '20px', pointerEvents: 'auto' }}>
-          <button style={styles.btn} onClick={() => setShowCall(true)}>📞 ÁUDIO</button>
-          <button style={styles.btn} onClick={() => setShowCall(true)}>📷 VÍDEO</button>
+        {/* Perfil e Editar Shinobi */}
+        <div style={{ position: 'absolute', top: '20px', left: '20px', pointerEvents: 'auto', textAlign: 'center' }}>
+          <img src={avatarUrl} style={styles.avatar} onClick={openAvatarCreator} alt="Perfil" />
+          <p style={{ color: '#ff9800', fontSize: '14px', fontWeight: 'bold', margin: '5px 0' }}>EDITAR SHINOBI</p>
         </div>
 
-        {/* Avatar Area */}
-        <div style={{ position: 'absolute', top: '80px', left: '20px', pointerEvents: 'auto', textAlign: 'center' }}>
-          <img src={avatarUrl} style={styles.avatar} onClick={openAvatarCreator} alt="Profile" />
-          <p style={{ color: 'white', fontSize: '12px' }}>Editar Shinobi</p>
+        {/* Lista de Contatos Conectados */}
+        <div style={{ position: 'absolute', top: '150px', left: '20px', pointerEvents: 'auto', background: 'rgba(0,0,0,0.6)', padding: '15px', borderRadius: '10px', border: '1px solid #ff9800' }}>
+          <h4 style={{ color: '#ff9800', margin: '0 0 10px 0', fontSize: '14px' }}>NINJAS ONLINE</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {contatos.map(c => (
+              <div key={c.id} style={{ color: 'white', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ color: c.status === 'online' ? '#4caf50' : '#f44336' }}>●</span>
+                {c.nome}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Chat / Rasengan */}
-        <div style={{ position: 'absolute', bottom: '50px', right: '20px', pointerEvents: 'auto', display: 'flex', alignItems: 'center' }}>
+        {/* Chat e Rasengan */}
+        <div style={{ position: 'absolute', bottom: '30px', right: '20px', pointerEvents: 'auto', display: 'flex', alignItems: 'center' }}>
           <input 
             value={msg} 
             onChange={(e) => setMsg(e.target.value)}
-            placeholder="Mensagem..." 
+            placeholder="Escreva seu Jutsu..." 
             style={styles.input} 
           />
           <div style={{ position: 'relative' }}>
-             <div ref={rasenganCanvasRef} style={styles.rasenganFX}>🌀</div>
-             <button onClick={triggerRasengan} style={styles.btnSend}>⚡</button>
+             <div ref={rasenganCanvasRef} style={styles.rasenganVisual}>🌀</div>
+             <button onClick={sendWithRasengan} style={styles.btnSend}>⚡</button>
           </div>
         </div>
+
       </div>
+
+      <style jsx>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 }
 
 const styles = {
-  btn: { background: '#ff9800', border: '2px solid #000', padding: '10px', color: 'white', fontWeight: 'bold', cursor: 'pointer' },
-  avatar: { width: '80px', height: '80px', borderRadius: '50%', border: '3px solid #ff9800', background: '#333', cursor: 'pointer' },
-  input: { padding: '12px', borderRadius: '20px', border: '2px solid #ff9800', background: '#000', color: '#fff', marginRight: '10px' },
-  btnSend: { width: '50px', height: '50px', borderRadius: '50%', background: '#2196f3', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' },
-  rasenganFX: { position: 'absolute', top: '-40px', left: '0', fontSize: '40px', display: 'none', animation: 'spin 0.5s linear infinite' }
+  avatar: { width: '90px', height: '90px', borderRadius: '50%', border: '3px solid #ff9800', cursor: 'pointer', objectFit: 'cover', background: '#222' },
+  input: { padding: '15px', borderRadius: '25px', border: '2px solid #ff9800', background: 'rgba(0,0,0,0.8)', color: '#fff', width: '200px', outline: 'none' },
+  btnSend: { width: '55px', height: '55px', borderRadius: '50%', background: 'radial-gradient(circle, #fff, #2196f3)', border: '2px solid #000', cursor: 'pointer', fontSize: '20px', boxShadow: '0 0 15px #2196f3' },
+  rasenganVisual: { position: 'absolute', top: '-60px', left: '-5px', fontSize: '50px', display: 'none', animation: 'spin 0.3s linear infinite', filter: 'drop-shadow(0 0 10px #2196f3)' }
 };
