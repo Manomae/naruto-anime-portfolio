@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
 export default function Home() {
-  const [nickname, setNickname] = useState('Novo Shinobi');
-  const [avatar, setAvatar] = useState('https://api.dicebear.com/7.x/bottts/svg?seed=Naruto');
-  const [highContrast, setHighContrast] = useState(false);
+  const [nickname, setNickname] = useState('Shinobi');
+  const [avatar, setAvatar] = useState('https://api.dicebear.com/7.x/adventurer/svg?seed=Naruto');
+  const [isHighContrast, setIsHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputText, setInputText] = useState('');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  
+  const chatEndRef = useRef(null);
 
+  // Sincronização com LocalStorage
   useEffect(() => {
     const savedNick = localStorage.getItem('shinobi_nick');
     const savedAvatar = localStorage.getItem('shinobi_avatar');
@@ -16,181 +20,272 @@ export default function Home() {
     if (savedAvatar) setAvatar(savedAvatar);
   }, []);
 
-  // --- FUNÇÕES DE PERSONALIZAÇÃO ---
-  const handleProfile = () => {
-    const action = prompt("Escolha uma opção:\n1. Criar Nickname de Anime\n2. Gerar Foto de Anime Aleatória");
-    if (action === "1") {
-      const n = prompt("Qual será seu nome ninja?");
-      if (n) {
-        setNickname(n);
-        localStorage.setItem('shinobi_nick', n);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // --- LÓGICA DE PERSONALIZAÇÃO ---
+  const customizeProfile = () => {
+    const opt = prompt("Configuração de Perfil:\n1. Mudar Nickname de Anime\n2. Gerar Avatar Ninja Aleatório");
+    if (opt === "1") {
+      const newNick = prompt("Qual seu novo nome ninja?");
+      if (newNick) {
+        setNickname(newNick);
+        localStorage.setItem('shinobi_nick', newNick);
       }
-    } else if (action === "2") {
-      const newAv = `https://api.dicebear.com/7.x/adventurer/svg?seed=${Math.random()}`;
+    } else if (opt === "2") {
+      const randomSeed = Math.floor(Math.random() * 10000);
+      const newAv = `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomSeed}`;
       setAvatar(newAv);
       localStorage.setItem('shinobi_avatar', newAv);
     }
   };
 
-  // --- CHAMADAS E ARQUIVOS ---
-  const startMedia = async (type) => {
+  // --- COMUNICAÇÃO FUNCIONAL ---
+  const handleCall = async (mode) => {
     try {
-      await navigator.mediaDevices.getUserMedia({ video: type === 'video', audio: true });
-      alert(`Jutsu de ${type === 'video' ? 'Visão' : 'Voz'} ativado com sucesso!`);
+      await navigator.mediaDevices.getUserMedia({ video: mode === 'video', audio: true });
+      alert(`Jutsu de ${mode === 'video' ? 'Visão' : 'Voz'} ativado! Conectando...`);
     } catch (err) {
-      alert("Erro ao acessar hardware: " + err.message);
+      alert("Hardware não encontrado ou permissão negada.");
     }
   };
 
-  const handleSend = () => {
-    if (inputValue.trim()) {
-      setMessages([...messages, { text: inputValue, sender: 'me' }]);
-      setInputValue('');
+  const sendMessage = () => {
+    if (inputText.trim()) {
+      setMessages([...messages, { text: inputText, type: 'sent' }]);
+      setInputText('');
     }
   };
 
   return (
-    <div style={{ 
-      backgroundColor: highContrast ? '#000' : '#0f0f0f', 
-      color: highContrast ? '#fff' : '#ffa500',
-      minHeight: '100vh', padding: '20px', 
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      fontSize: `${fontSize}px`
+    <div style={{
+      backgroundColor: isHighContrast ? '#000' : '#0d0d0d',
+      color: isHighContrast ? '#fff' : '#ffa500',
+      minHeight: '100vh',
+      fontFamily: 'sans-serif',
+      fontSize: `${fontSize}px`,
+      transition: '0.3s'
     }}>
       <Head>
-        <title>Meu Shinobi - Interface Moderna</title>
+        <title>Meu Shinobi v2.0</title>
       </Head>
 
-      <main style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '2.5rem', textShadow: '2px 2px 10px rgba(255, 165, 0, 0.5)' }}>MEU SHINOBI</h1>
-        </header>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px' }}>
+        <h1 style={{ textAlign: 'center', letterSpacing: '5px', marginBottom: '50px' }}>MEU SHINOBI</h1>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '30px' }}>
           
-          {/* COLUNA ESQUERDA: CONTATOS */}
-          <div style={cardStyle}>
+          {/* LISTA DE CONTATOS */}
+          <aside style={glassStyle}>
             <h3 style={{ borderBottom: '1px solid #444', paddingBottom: '10px' }}>CONTATOS</h3>
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-              {['Sasuke_Uchiha', 'Sakura_Haruno', 'Kakashi_Sensei'].map(user => (
-                <li key={user} onClick={handleProfile} style={contactItemStyle}>
-                  <span style={{ color: '#4caf50' }}>●</span> {user}
-                </li>
-              ))}
-            </ul>
-          </div>
+            {['Sasuke_Uchiha', 'Sakura_Haruno', 'Kakashi_Sensei'].map(contact => (
+              <div key={contact} onClick={() => setIsChatOpen(true)} style={contactStyle}>
+                <div style={onlineStatus} />
+                <span>{contact}</span>
+              </div>
+            ))}
+          </aside>
 
-          {/* COLUNA DIREITA: CHAT COM NARUTO ANIMADO */}
-          <div style={{ position: 'relative' }}>
+          {/* ÁREA DO CHAT COM NARUTO ANIMADO */}
+          <section style={{ position: 'relative' }}>
             
-            {/* NARUTO EM CIMA DO QUADRADO */}
-            <div style={{ position: 'absolute', top: '-75px', left: '20px', zIndex: 2 }}>
+            {/* NARUTO NO COMPUTADOR (Animação em cima do quadrado) */}
+            <div style={narutoContainerStyle}>
               <img 
                 src="https://i.pinimg.com/originals/e4/20/83/e420835f082e0787e7428f5228189c4d.gif" 
-                alt="Naruto Digitando" 
-                style={{ width: '120px', filter: 'drop-shadow(0 0 10px #ffa500)' }} 
+                alt="Naruto Typing" 
+                style={{ width: '130px', filter: 'drop-shadow(0 0 10px #ffa500)' }}
               />
             </div>
 
             <div style={chatBoxStyle}>
+              {/* Header do Chat */}
               <div style={chatHeaderStyle}>
-                <div>
-                  <img src={avatar} style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }} />
-                  <span>Conversando com: <strong>{nickname}</strong></span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img src={avatar} style={{ width: '40px', borderRadius: '50%', border: '2px solid #ffa500' }} />
+                  <span onClick={customizeProfile} style={{ cursor: 'pointer' }}>
+                    Conversando com: <strong>{nickname}</strong> ▼
+                  </span>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => startMedia('audio')} style={iconBtnStyle}>📞</button>
-                  <button onClick={() => startMedia('video')} style={iconBtnStyle}>📹</button>
-                  <label style={iconBtnStyle}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => handleCall('audio')} style={actionBtn}>📞</button>
+                  <button onClick={() => handleCall('video')} style={actionBtn}>📹</button>
+                  <label style={actionBtn}>
                     📎
-                    <input type="file" hidden onChange={(e) => alert('Arquivo: ' + e.target.files[0].name)} />
+                    <input type="file" hidden onChange={(e) => alert(`Arquivo ${e.target.files[0].name} pronto!`)} />
                   </label>
                 </div>
               </div>
 
-              <div style={messagesAreaStyle}>
-                {messages.map((m, i) => (
-                  <div key={i} style={{ textAlign: 'right', margin: '10px 0' }}>
-                    <span style={messageBubbleStyle}>{m.text}</span>
+              {/* Mensagens */}
+              <div style={messageAreaStyle}>
+                {!isChatOpen ? (
+                  <div style={{ textAlign: 'center', marginTop: '100px', opacity: 0.5 }}>
+                    Selecione um amigo para começar o chat ninja
                   </div>
-                ))}
+                ) : (
+                  messages.map((m, i) => (
+                    <div key={i} style={{ textAlign: 'right', margin: '10px 0' }}>
+                      <span style={bubbleStyle}>{m.text}</span>
+                    </div>
+                  ))
+                )}
+                <div ref={chatEndRef} />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', padding: '15px' }}>
+              {/* Input */}
+              <div style={inputAreaStyle}>
                 <input 
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Escreva sua mensagem ninja..." 
-                  style={inputStyle} 
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Escreva sua mensagem..." 
+                  style={inputFieldStyle}
                 />
-                <button onClick={handleSend} style={sendBtnStyle}>Enviar</button>
+                <button onClick={sendMessage} style={sendButtonStyle}>ENVIAR</button>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-      </main>
+      </div>
 
-      {/* MENU DE CONFIGURAÇÕES E ACESSIBILIDADE */}
-      <div style={{ position: 'fixed', bottom: '20px', right: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <button 
-          onClick={() => {
-            const opt = prompt("CONFIGURAÇÕES:\n1. Alto Contraste (Visão)\n2. Aumentar Texto\n3. Diminuir Texto\n4. Personalizar Conta\n5. Excluir Conta");
-            if(opt === "1") setHighContrast(!highContrast);
-            if(opt === "2") setFontSize(fontSize + 2);
-            if(opt === "3") setFontSize(fontSize - 2);
-            if(opt === "4") handleProfile();
-            if(opt === "5") { if(confirm("Deseja apagar tudo?")){ localStorage.clear(); location.reload(); } }
-          }}
-          style={settingsBtnStyle}
-        >
-          ⚙️ CONFIGS
-        </button>
+      {/* MENU DE ACESSIBILIDADE E CONFIGS */}
+      <div style={settingsPanelStyle}>
+        <button onClick={() => {
+          const m = prompt("CONFIGURAÇÕES:\n1. Alto Contraste\n2. Aumentar Texto\n3. Diminuir Texto\n4. Excluir Minha Conta");
+          if(m === "1") setIsHighContrast(!isHighContrast);
+          if(m === "2") setFontSize(fontSize + 2);
+          if(m === "3") setFontSize(fontSize - 2);
+          if(m === "4") { if(confirm("Deseja apagar tudo?")){ localStorage.clear(); location.reload(); } }
+        }} style={settingsCircle}>⚙️</button>
       </div>
     </div>
   );
 }
 
-// --- ESTILOS MODERNOS (CSS-in-JS) ---
-const cardStyle = {
-  background: 'rgba(255, 255, 255, 0.05)',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+// --- ESTILOS (Design Moderno & Shinobi) ---
+const glassStyle = {
+  background: 'rgba(255, 255, 255, 0.03)',
+  backdropFilter: 'blur(15px)',
   borderRadius: '20px',
   padding: '20px',
+  border: '1px solid rgba(255, 165, 0, 0.2)',
   height: 'fit-content'
 };
 
-const contactItemStyle = {
-  padding: '12px',
+const contactStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  padding: '15px',
   cursor: 'pointer',
-  borderBottom: '1px solid #333',
-  transition: '0.3s',
-  borderRadius: '8px',
-  marginBottom: '5px'
+  borderRadius: '10px',
+  transition: '0.2s',
+  borderBottom: '1px solid #222'
+};
+
+const onlineStatus = {
+  width: '10px',
+  height: '10px',
+  backgroundColor: '#4caf50',
+  borderRadius: '50%',
+  boxShadow: '0 0 5px #4caf50'
+};
+
+const narutoContainerStyle = {
+  position: 'absolute',
+  top: '-90px',
+  left: '30px',
+  zIndex: 10
 };
 
 const chatBoxStyle = {
-  background: '#1e1e1e',
-  borderRadius: '25px',
+  background: '#141414',
   border: '2px solid #ffa500',
-  boxShadow: '0 15px 35px rgba(0,0,0,0.7)',
+  borderRadius: '25px',
+  height: '550px',
   display: 'flex',
   flexDirection: 'column',
-  height: '500px',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
 };
 
 const chatHeaderStyle = {
-  background: '#252525',
-  padding: '15px 20px',
+  padding: '20px',
+  background: '#1a1a1a',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   borderBottom: '1px solid #333'
 };
 
-const messagesAreaStyle = {
+const actionBtn = {
+  background: '#333',
+  border: 'none',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  fontSize: '1.2rem'
+};
+
+const messageAreaStyle = {
   flex: 1,
   padding: '20px',
   overflowY: 'auto',
-  background: 'linear-gradient(180deg,
+  background: 'radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%)'
+};
+
+const bubbleStyle = {
+  background: '#ffa500',
+  color: '#000',
+  padding: '10px 18px',
+  borderRadius: '18px 18px 0 18px',
+  fontWeight: 'bold',
+  display: 'inline-block'
+};
+
+const inputAreaStyle = {
+  padding: '20px',
+  background: '#1a1a1a',
+  display: 'flex',
+  gap: '15px'
+};
+
+const inputFieldStyle = {
+  flex: 1,
+  background: '#252525',
+  border: '1px solid #444',
+  borderRadius: '15px',
+  padding: '12px',
+  color: '#fff',
+  outline: 'none'
+};
+
+const sendButtonStyle = {
+  background: '#ffa500',
+  color: '#000',
+  border: 'none',
+  padding: '0 25px',
+  borderRadius: '15px',
+  fontWeight: 'bold',
+  cursor: 'pointer'
+};
+
+const settingsPanelStyle = {
+  position: 'fixed',
+  bottom: '30px',
+  right: '30px'
+};
+
+const settingsCircle = {
+  width: '60px',
+  height: '60px',
+  borderRadius: '50%',
+  background: '#ffa500',
+  border: 'none',
+  fontSize: '1.5rem',
+  cursor: 'pointer',
+  boxShadow: '0 5px 15px rgba(255,165,0,0.4)'
+};
