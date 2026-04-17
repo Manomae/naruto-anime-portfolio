@@ -1,116 +1,126 @@
-// ==========================================
-// CONFIGURAÇÕES INICIAIS E ESTADO DO USUÁRIO
-// ==========================================
-const userConfig = {
-    realName: "Usuário Google", // Aqui entraria a variável do seu login Google
-    nickname: localStorage.getItem('shinobi_nick') || "Novo Shinobi",
-    avatar: localStorage.getItem('shinobi_avatar') || "https://api.dicebear.com/7.x/bottts/svg?seed=Naruto",
-    accessibility: {
-        fontSize: 16,
-        highContrast: false
-    }
+/**
+ * SISTEMA MEU SHINOBI - CÓDIGO UNIFICADO (index.js)
+ * Funcionalidades: Nickname, Foto de Anime, Chamadas, Arquivos e Acessibilidade
+ */
+
+// 1. ESTADO GLOBAL DO USUÁRIO
+const shinobiState = {
+    nickname: localStorage.getItem('shinobi_nick') || "Shinobi_Inativo",
+    avatar: localStorage.getItem('shinobi_avatar') || "https://api.dicebear.com/7.x/pixel-art/svg?seed=Naruto",
+    highContrast: false,
+    fontSize: 16
 };
 
-// ==========================================
-// SISTEMA DE NICKNAME E AVATAR
-// ==========================================
+// 2. INICIALIZAÇÃO AO CARREGAR A PÁGINA
+document.addEventListener('DOMContentLoaded', () => {
+    applyStoredSettings();
+    console.log("Sistema Shinobi pronto para o combate!");
+});
 
-// Função para criar/editar Nickname de Anime
-function openNicknameCreator() {
-    const newNick = prompt("Digite seu Nickname de Shinobi:", userConfig.nickname);
-    if (newNick) {
-        userConfig.nickname = newNick;
-        localStorage.setItem('shinobi_nick', newNick);
-        renderProfile();
+function applyStoredSettings() {
+    // Atualiza o nome exibido na conversa
+    const nameDisplay = document.getElementById('current-chat-name');
+    if (nameDisplay) nameDisplay.innerText = `Conversando com: ${shinobiState.nickname}`;
+    
+    // Atualiza a foto de perfil se houver o elemento
+    const profileImg = document.getElementById('user-profile-img');
+    if (profileImg) profileImg.src = shinobiState.avatar;
+}
+
+// 3. SISTEMA DE PERFIL (NICKNAME E FOTO)
+function handleProfileCustomization() {
+    const action = prompt("O que deseja fazer?\n1. Mudar Nickname de Anime\n2. Gerar Foto de Anime Aleatória");
+    
+    if (action === "1") {
+        const newNick = prompt("Digite seu novo Nickname de Anime:", shinobiState.nickname);
+        if (newNick) {
+            shinobiState.nickname = newNick;
+            localStorage.setItem('shinobi_nick', newNick);
+            applyStoredSettings();
+        }
+    } else if (action === "2") {
+        const randomId = Math.floor(Math.random() * 10000);
+        // Usando API de Avatares Pixel Art (combina muito com o tema)
+        const newAvatar = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${randomId}`;
+        shinobiState.avatar = newAvatar;
+        localStorage.setItem('shinobi_avatar', newAvatar);
+        applyStoredSettings();
+        alert("Novo visual Shinobi gerado!");
     }
 }
 
-// Gerar foto de anime aleatória
-function generateAnimePhoto() {
-    const randomId = Math.floor(Math.random() * 5000);
-    // Usando uma API de avatares estilo pixel/art (ajustável para anime)
-    const newAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${randomId}`;
-    userConfig.avatar = newAvatar;
-    localStorage.setItem('shinobi_avatar', newAvatar);
-    renderProfile();
-}
-
-// ==========================================
-// MECÂNICAS DE COMUNICAÇÃO (VÍDEO, ÁUDIO, ARQUIVOS)
-// ==========================================
-
-function startVideoCall() {
-    console.log("Iniciando Jutsus de Transmissão de Vídeo...");
-    alert(`Chamada de vídeo com ${document.getElementById('current-chat-name').innerText} iniciada!`);
-    // Aqui você integraria o Navigator.mediaDevices.getUserMedia()
+// 4. COMUNICAÇÃO (VÍDEO, ÁUDIO E ARQUIVOS)
+async function startVideoCall() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        alert("Jutsu de Transmissão de Vídeo Ativado! Câmera conectada.");
+        // Aqui você pode direcionar o 'stream' para um elemento <video>
+        console.log("Stream de vídeo iniciado:", stream);
+    } catch (err) {
+        alert("Erro ao acessar câmera: " + err.message);
+    }
 }
 
 function startAudioCall() {
-    console.log("Iniciando Transmissão de Voz via Rádio...");
-    alert("Conectando áudio...");
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            alert("Conexão de áudio estabelecida com a Vila!");
+        })
+        .catch(err => alert("Erro ao acessar microfone: " + err.message));
 }
 
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if (file) {
-        alert(`Arquivo "${file.name}" preparado para envio!`);
-        // Lógica de upload para o seu backend ou Firebase
+        alert(`Arquivo "${file.name}" pronto para ser enviado pelo pergaminho de invocação!`);
+        // Lógica de upload (Firebase/Backend) entraria aqui
     }
 }
 
-// ==========================================
-// CONFIGURAÇÕES E ACESSIBILIDADE
-// ==========================================
-
-function toggleHighContrast() {
-    userConfig.accessibility.highContrast = !userConfig.accessibility.highContrast;
-    document.body.classList.toggle('high-contrast');
-    alert("Modo de alto contraste alterado!");
-}
-
-function increaseFontSize() {
-    userConfig.accessibility.fontSize += 2;
-    document.body.style.fontSize = userConfig.accessibility.fontSize + "px";
-}
-
-function deleteAccount() {
-    const confirmacao = confirm("TEM CERTEZA? Isso apagará todos os seus dados de Shinobi permanentemente.");
-    if (confirmacao) {
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-// ==========================================
-// INTERFACE E RENDERIZAÇÃO
-// ==========================================
-
-function renderProfile() {
-    // Atualiza os elementos na tela (certifique-se que os IDs batem com seu HTML)
-    const nickElement = document.getElementById('user-display-name');
-    if(nickElement) nickElement.innerText = userConfig.nickname;
+function sendMessage() {
+    const input = document.getElementById('msg-input');
+    const container = document.getElementById('chat-messages');
     
-    const imgElement = document.getElementById('profile-img');
-    if(imgElement) imgElement.src = userConfig.avatar;
+    if (input && input.value.trim() !== "") {
+        const msg = document.createElement('div');
+        msg.style.padding = "10px";
+        msg.style.borderBottom = "1px solid #444";
+        msg.innerHTML = `<strong>${shinobiState.nickname}:</strong> ${input.value}`;
+        container.appendChild(msg);
+        
+        // Efeito visual no Naruto (se existir o elemento do GIF)
+        const naruto = document.querySelector('.naruto-gif');
+        if (naruto) {
+            naruto.style.transform = "scale(1.1) translateY(-5px)";
+            setTimeout(() => naruto.style.transform = "scale(1) translateY(0)", 200);
+        }
+        
+        input.value = "";
+        container.scrollTop = container.scrollHeight;
+    }
 }
 
-// Inicialização ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-    renderProfile();
-    console.log("Sistema Shinobi Online!");
-});
-
-// ==========================================
-// EFEITOS DE ANIMAÇÃO (NARUTO NO PC)
-// ==========================================
-// Esta função pode ser chamada quando o usuário clica em uma conversa
-function triggerNarutoTyping() {
-    const narutoAnim = document.querySelector('.naruto-animation');
-    if(narutoAnim) {
-        narutoAnim.style.display = 'block';
-        // Simula ele parando de digitar após 3 segundos
-        setTimeout(() => {
-            // narutoAnim.style.display = 'none';
-        }, 3000);
+// 5. CONFIGURAÇÕES E ACESSIBILIDADE
+function openSettings() {
+    const choice = prompt("CONFIGURAÇÕES:\n1. Alto Contraste (Visão)\n2. Aumentar Fonte\n3. Excluir Conta\n4. Personalizar Perfil");
+    
+    switch(choice) {
+        case "1":
+            document.body.classList.toggle('high-contrast');
+            alert("Modo de contraste alterado.");
+            break;
+        case "2":
+            shinobiState.fontSize += 2;
+            document.body.style.fontSize = shinobiState.fontSize + "px";
+            break;
+        case "3":
+            if (confirm("Deseja apagar todos os seus dados de Shinobi?")) {
+                localStorage.clear();
+                location.reload();
+            }
+            break;
+        case "4":
+            handleProfileCustomization();
+            break;
     }
 }
