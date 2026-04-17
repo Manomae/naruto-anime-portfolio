@@ -1,126 +1,105 @@
-/**
- * SISTEMA MEU SHINOBI - CÓDIGO UNIFICADO (index.js)
- * Funcionalidades: Nickname, Foto de Anime, Chamadas, Arquivos e Acessibilidade
- */
+import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 
-// 1. ESTADO GLOBAL DO USUÁRIO
-const shinobiState = {
-    nickname: localStorage.getItem('shinobi_nick') || "Shinobi_Inativo",
-    avatar: localStorage.getItem('shinobi_avatar') || "https://api.dicebear.com/7.x/pixel-art/svg?seed=Naruto",
-    highContrast: false,
-    fontSize: 16
-};
+export default function Home() {
+  const [nickname, setNickname] = useState('Novo Shinobi');
+  const [avatar, setAvatar] = useState('https://api.dicebear.com/7.x/pixel-art/svg?seed=Naruto');
+  const [highContrast, setHighContrast] = useState(false);
 
-// 2. INICIALIZAÇÃO AO CARREGAR A PÁGINA
-document.addEventListener('DOMContentLoaded', () => {
-    applyStoredSettings();
-    console.log("Sistema Shinobi pronto para o combate!");
-});
+  // Carregar dados salvos ao iniciar
+  useEffect(() => {
+    const savedNick = localStorage.getItem('shinobi_nick');
+    const savedAvatar = localStorage.getItem('shinobi_avatar');
+    if (savedNick) setNickname(savedNick);
+    if (savedAvatar) setAvatar(savedAvatar);
+  }, []);
 
-function applyStoredSettings() {
-    // Atualiza o nome exibido na conversa
-    const nameDisplay = document.getElementById('current-chat-name');
-    if (nameDisplay) nameDisplay.innerText = `Conversando com: ${shinobiState.nickname}`;
-    
-    // Atualiza a foto de perfil se houver o elemento
-    const profileImg = document.getElementById('user-profile-img');
-    if (profileImg) profileImg.src = shinobiState.avatar;
-}
-
-// 3. SISTEMA DE PERFIL (NICKNAME E FOTO)
-function handleProfileCustomization() {
-    const action = prompt("O que deseja fazer?\n1. Mudar Nickname de Anime\n2. Gerar Foto de Anime Aleatória");
-    
+  // --- FUNÇÕES DE PERFIL ---
+  const handleProfile = () => {
+    const action = prompt("1. Mudar Nickname\n2. Gerar Foto Anime");
     if (action === "1") {
-        const newNick = prompt("Digite seu novo Nickname de Anime:", shinobiState.nickname);
-        if (newNick) {
-            shinobiState.nickname = newNick;
-            localStorage.setItem('shinobi_nick', newNick);
-            applyStoredSettings();
-        }
+      const n = prompt("Seu Nickname:");
+      if (n) {
+        setNickname(n);
+        localStorage.setItem('shinobi_nick', n);
+      }
     } else if (action === "2") {
-        const randomId = Math.floor(Math.random() * 10000);
-        // Usando API de Avatares Pixel Art (combina muito com o tema)
-        const newAvatar = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${randomId}`;
-        shinobiState.avatar = newAvatar;
-        localStorage.setItem('shinobi_avatar', newAvatar);
-        applyStoredSettings();
-        alert("Novo visual Shinobi gerado!");
+      const newAv = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${Math.random()}`;
+      setAvatar(newAv);
+      localStorage.setItem('shinobi_avatar', newAv);
     }
-}
+  };
 
-// 4. COMUNICAÇÃO (VÍDEO, ÁUDIO E ARQUIVOS)
-async function startVideoCall() {
+  // --- FUNÇÕES DE CHAMADA (WEB API) ---
+  const startCall = async (type) => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        alert("Jutsu de Transmissão de Vídeo Ativado! Câmera conectada.");
-        // Aqui você pode direcionar o 'stream' para um elemento <video>
-        console.log("Stream de vídeo iniciado:", stream);
+      await navigator.mediaDevices.getUserMedia({ video: type === 'video', audio: true });
+      alert(`Chamada de ${type} iniciada com sucesso!`);
     } catch (err) {
-        alert("Erro ao acessar câmera: " + err.message);
+      alert("Erro ao acessar hardware: " + err.message);
     }
-}
+  };
 
-function startAudioCall() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            alert("Conexão de áudio estabelecida com a Vila!");
-        })
-        .catch(err => alert("Erro ao acessar microfone: " + err.message));
-}
+  return (
+    <div style={{ 
+      backgroundColor: highContrast ? '#000' : '#1a1a1a', 
+      color: highContrast ? '#fff' : '#ffa500',
+      minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' 
+    }}>
+      <Head>
+        <title>Meu Shinobi - Projeto</title>
+      </Head>
 
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        alert(`Arquivo "${file.name}" pronto para ser enviado pelo pergaminho de invocação!`);
-        // Lógica de upload (Firebase/Backend) entraria aqui
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById('msg-input');
-    const container = document.getElementById('chat-messages');
-    
-    if (input && input.value.trim() !== "") {
-        const msg = document.createElement('div');
-        msg.style.padding = "10px";
-        msg.style.borderBottom = "1px solid #444";
-        msg.innerHTML = `<strong>${shinobiState.nickname}:</strong> ${input.value}`;
-        container.appendChild(msg);
+      {/* ANIMAÇÃO DO NARUTO NO PC (O QUADRADO) */}
+      <div style={{ position: 'relative', maxWidth: '500px', margin: '100px auto 0' }}>
         
-        // Efeito visual no Naruto (se existir o elemento do GIF)
-        const naruto = document.querySelector('.naruto-gif');
-        if (naruto) {
-            naruto.style.transform = "scale(1.1) translateY(-5px)";
-            setTimeout(() => naruto.style.transform = "scale(1) translateY(0)", 200);
-        }
-        
-        input.value = "";
-        container.scrollTop = container.scrollHeight;
-    }
+        <div style={{ position: 'absolute', top: '-80px', left: '10px' }}>
+          <img 
+            src="https://i.pinimg.com/originals/e4/20/83/e420835f082e0787e7428f5228189c4d.gif" 
+            alt="Naruto Animado" 
+            style={{ width: '100px' }} 
+          />
+        </div>
+
+        <div style={{ 
+          border: '4px solid #ffa500', borderRadius: '15px', 
+          padding: '20px', background: '#2c3e50' 
+        }}>
+          <h2 style={{ textAlign: 'center' }}>MEU SHINOBI</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+             <img src={avatar} style={{ width: '50px', borderRadius: '50%' }} alt="Perfil" />
+             <span>Conversando com: <strong>{nickname}</strong></span>
+          </div>
+
+          {/* ÁREA DE BOTÕES FUNCIONAIS */}
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <button onClick={() => startCall('audio')} style={btnStyle}>📞 Áudio</button>
+            <button onClick={() => startCall('video')} style={btnStyle}>📹 Vídeo</button>
+            <label style={btnStyle}>
+              📎 Arquivo
+              <input type="file" hidden onChange={(e) => alert('Arquivo: ' + e.target.files[0].name)} />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTÃO DE CONFIGURAÇÕES FLUTUANTE */}
+      <button 
+        onClick={() => {
+          const opt = prompt("1. Acessibilidade (Contraste)\n2. Perfil\n3. Limpar Conta");
+          if(opt === "1") setHighContrast(!highContrast);
+          if(opt === "2") handleProfile();
+          if(opt === "3") { localStorage.clear(); location.reload(); }
+        }}
+        style={{ position: 'fixed', bottom: '20px', right: '20px', padding: '15px', borderRadius: '50%', cursor: 'pointer' }}
+      >
+        ⚙️
+      </button>
+    </div>
+  );
 }
 
-// 5. CONFIGURAÇÕES E ACESSIBILIDADE
-function openSettings() {
-    const choice = prompt("CONFIGURAÇÕES:\n1. Alto Contraste (Visão)\n2. Aumentar Fonte\n3. Excluir Conta\n4. Personalizar Perfil");
-    
-    switch(choice) {
-        case "1":
-            document.body.classList.toggle('high-contrast');
-            alert("Modo de contraste alterado.");
-            break;
-        case "2":
-            shinobiState.fontSize += 2;
-            document.body.style.fontSize = shinobiState.fontSize + "px";
-            break;
-        case "3":
-            if (confirm("Deseja apagar todos os seus dados de Shinobi?")) {
-                localStorage.clear();
-                location.reload();
-            }
-            break;
-        case "4":
-            handleProfileCustomization();
-            break;
-    }
-}
+const btnStyle = {
+  padding: '10px', background: '#ffa500', border: 'none', 
+  borderRadius: '5px', color: '#000', cursor: 'pointer', fontWeight: 'bold'
+};
