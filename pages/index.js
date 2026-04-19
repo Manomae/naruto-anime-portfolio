@@ -1,75 +1,111 @@
-// 1. Configuração Direta (Sem alertas que travam o sistema)
-const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    appId: "SUA_APP_ID"
-};
-
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// 2. FUNÇÃO QUE CORRIGE A SINCRONIZAÇÃO (O "Cérebro" do sistema)
-async function sincronizarSistema() {
-    const statusLabel = document.querySelector('.servidor-status') || { innerText: "" };
-    console.log("Iniciando Jutsus de Sincronização...");
-
-    // Em vez de alert(), usamos o console e atualizamos a UI
-    // Isso evita que o navegador do celular trave a tela
-    try {
-        // Pega os contatos que JÁ ESTÃO no seu Firebase (onde você salvou seu e-mail)
-        db.collection("contatos").onSnapshot((snapshot) => {
-            const lista = document.getElementById('contatos-render') || document.getElementById('listaContatos');
-            if(!lista) return;
-            
-            lista.innerHTML = ""; // Limpa o "Sincronizando..."
-
-            snapshot.forEach((doc) => {
-                const contato = doc.data();
-                const item = document.createElement('div');
-                item.className = 'contato-card'; // Mantém seu design preferido
-                item.innerHTML = `
-                    <span>${contato.nome || 'Ninja'}</span>
-                    <div class="botoes">
-                        <button onclick="fazerChamada('${contato.nome}', 'audio')">📞</button>
-                        <button onclick="fazerChamada('${contato.nome}', 'video')">🎥</button>
-                    </div>
-                `;
-                lista.appendChild(item);
-            });
-            console.log("Contatos sincronizados com sucesso!");
-        });
-    } catch (err) {
-        console.error("Erro Crítico:", err);
-    }
-}
-
-// 3. LÓGICA DAS CHAMADAS (Com as animações de Naruto que você pediu)
-function fazerChamada(nome, tipo) {
-    const tela = document.getElementById('call-screen'); 
-    tela.style.display = 'flex';
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shinobi Sync Final</title>
     
-    if (tipo === 'video') {
-        // Ativa a câmera e o Rasengan em intervalos
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-            document.getElementById('videoPlayer').srcObject = stream;
-            
-            // Intervalo do Rasengan (Aparece e some)
-            setInterval(() => {
-                const r = document.getElementById('rasengan-animation');
-                if(r) {
-                    r.style.display = 'block';
-                    setTimeout(() => r.style.display = 'none', 2000);
-                }
-            }, 5000);
-        });
-    } else {
-        // Áudio: Mostra o Naruto segurando o telefone
-        document.getElementById('naruto-audio-img').style.display = 'block';
-        document.getElementById('videoPlayer').style.display = 'none';
-    }
-}
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-// Inicializa sem travar nada
-window.onload = sincronizarSistema;
+    <style>
+        :root { --orange: #ff6600; --dark: #0a0a0a; }
+        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* Layout Principal */
+        .container { padding: 20px; text-align: center; }
+        .contatos-lista { background: #1a1a1a; border: 1px solid var(--orange); border-radius: 15px; padding: 10px; margin-top: 20px; min-height: 200px; }
+        .card-ninja { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; }
+        
+        /* Botões */
+        .btn-sync { background: var(--orange); color: black; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; width: 100%; margin-bottom: 10px; }
+        .btn-call { background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 8px; border-radius: 5px; margin-left: 5px; }
+
+        /* Interface de Chamada Fullscreen */
+        #interface-chamada { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        #video-local { width: 90%; height: 60%; background: #111; border: 2px solid var(--orange); border-radius: 15px; object-fit: cover; }
+        
+        /* Animações Naruto */
+        .rasengan { position: absolute; width: 100px; display: none; animation: spin 0.5s linear infinite; filter: drop-shadow(0 0 15px #00a2ff); }
+        .naruto-fone { width: 200px; border-radius: 50%; border: 4px solid var(--orange); display: none; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .encerrar { background: #ff3333; color: white; border: none; padding: 20px; border-radius: 50%; margin-top: 30px; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="color: var(--orange)">SHINOBI SYNC v4</h2>
+    <button class="btn-sync" onclick="ativarSincronizacao()">SINCRONIZAR COM GOOGLE</button>
+    <div id="status-sync" style="font-size: 12px; opacity: 0.7;">Aguardando comando...</div>
+
+    <div class="contatos-lista" id="grid-contatos">
+        </div>
+</div>
+
+<div id="interface-chamada">
+    <h2 id="nome-remetente">Chamando...</h2>
+    
+    <img id="img-audio" src="https://i.ibb.co/v4m00pY/naruto-phone.png" class="naruto-fone">
+    
+    <video id="video-local" autoplay playsinline muted></video>
+    
+    <img id="anim-rasengan" src="https://i.ibb.co/8Y64f8m/rasengan.png" class="rasengan">
+
+    <button class="encerrar" onclick="encerrarChamada()">✖</button>
+</div>
+
+<script>
+    // 1. Sua Configuração Firebase
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_PROJETO.firebaseapp.com",
+        projectId: "SEU_PROJETO",
+        storageBucket: "SEU_PROJETO.appspot.com",
+        appId: "SUA_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
+    // 2. Sincronização Real (Sem alertas que travam)
+    function ativarSincronizacao() {
+        // Redirecionamento é obrigatório para Vercel + Mobile
+        auth.signInWithRedirect(provider);
+    }
+
+    // Captura o retorno do Google após o login
+    auth.getRedirectResult().then((result) => {
+        if (result && result.credential) {
+            const token = result.credential.accessToken;
+            buscarContatosGoogle(token);
+        }
+    }).catch(err => {
+        document.getElementById('status-sync').innerText = "Erro: " + err.message;
+    });
+
+    function buscarContatosGoogle(token) {
+        document.getElementById('status-sync').innerText = "Buscando Jutsus de Contatos...";
+        fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const contatos = data.connections || [];
+            contatos.forEach(p => {
+                const nome = p.names ? p.names[0].displayName : "Shinobi";
+                const tel = p.phoneNumbers ? p.phoneNumbers[0].value : "";
+                // Salva no seu Firestore (Coleção: contatos)
+                db.collection("contatos").add({ nome: nome, telefone: tel, sync: true });
+            });
+            document.getElementById('status-sync').innerText = "Sincronizado com Sucesso!";
+        });
+    }
+
+    // 3. Monitoramento em Tempo Real do Banco
+    db.collection("cont
