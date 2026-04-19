@@ -1,117 +1,75 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shinobi Fix v3</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <style>
-        body { background: #000; color: #ff6600; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; }
-        .card { background: #111; border: 2px solid #ff6600; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
-        .btn { background: #ff6600; color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px; }
-        .contato { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #00a2ff; }
-        #chamada { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
-        #video-container { width: 90%; height: 60%; background: #111; border: 2px solid #ff6600; border-radius: 20px; overflow: hidden; position: relative; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .rasengan { position: absolute; width: 80px; top: 20%; left: 30%; animation: spin 0.8s linear infinite; display: none; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
+// 1. Configuração Direta (Sem alertas que travam o sistema)
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    appId: "SUA_APP_ID"
+};
 
-<div class="card">
-    <h2>NARUTO SYNC 🦊</h2>
-    <p id="status">Status: Offline</p>
-    <button class="btn" onclick="login()">ATIVAR SINCRONIZAÇÃO GOOGLE</button>
-</div>
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-<div id="lista" class="card" style="display:none;">
-    <h3>Contatos Sincronizados</h3>
-    <div id="contatos-render"></div>
-</div>
+// 2. FUNÇÃO QUE CORRIGE A SINCRONIZAÇÃO (O "Cérebro" do sistema)
+async function sincronizarSistema() {
+    const statusLabel = document.querySelector('.servidor-status') || { innerText: "" };
+    console.log("Iniciando Jutsus de Sincronização...");
 
-<div id="chamada">
-    <h2 id="nome-contato">Chamando...</h2>
-    <div id="video-container">
-        <video id="vid" autoplay playsinline></video>
-        <img id="rasengan-img" src="https://i.ibb.co/8Y64f8m/rasengan.png" class="rasengan">
-    </div>
-    <button class="btn" style="background:red; width:70px; height:70px; border-radius:50%;" onclick="encerrar()">✖</button>
-</div>
+    // Em vez de alert(), usamos o console e atualizamos a UI
+    // Isso evita que o navegador do celular trave a tela
+    try {
+        // Pega os contatos que JÁ ESTÃO no seu Firebase (onde você salvou seu e-mail)
+        db.collection("contatos").onSnapshot((snapshot) => {
+            const lista = document.getElementById('contatos-render') || document.getElementById('listaContatos');
+            if(!lista) return;
+            
+            lista.innerHTML = ""; // Limpa o "Sincronizando..."
 
-<script>
-    const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
-        authDomain: "SEU_PROJETO.firebaseapp.com",
-        projectId: "SEU_PROJETO",
-        storageBucket: "SEU_PROJETO.appspot.com",
-        appId: "SEU_APP_ID"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-
-    // Lógica de Login para Mobile (Redirect)
-    function login() {
-        auth.signInWithRedirect(provider);
-    }
-
-    // Verifica se voltou do login
-    auth.getRedirectResult().then((result) => {
-        if (result.credential) {
-            const token = result.credential.accessToken;
-            document.getElementById('status').innerText = "Status: Sincronizando...";
-            pegarContatosGoogle(token);
-        }
-    }).catch(err => console.error("Erro no redirect:", err));
-
-    function pegarContatosGoogle(token) {
-        fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(data => {
-            const lista = data.connections || [];
-            document.getElementById('lista').style.display = 'block';
-            const render = document.getElementById('contatos-render');
-            render.innerHTML = "";
-
-            lista.forEach(p => {
-                const nome = p.names ? p.names[0].displayName : "Ninja";
-                const card = document.createElement('div');
-                card.className = 'contato';
-                card.innerHTML = `<span>${nome}</span> <button onclick="abrirChamada('${nome}')" style="background:none; border:none; font-size:20px;">🎥</button>`;
-                render.appendChild(card);
-                // Salva no Firestore
-                db.collection("contatos").add({ nome: nome, sync: true });
+            snapshot.forEach((doc) => {
+                const contato = doc.data();
+                const item = document.createElement('div');
+                item.className = 'contato-card'; // Mantém seu design preferido
+                item.innerHTML = `
+                    <span>${contato.nome || 'Ninja'}</span>
+                    <div class="botoes">
+                        <button onclick="fazerChamada('${contato.nome}', 'audio')">📞</button>
+                        <button onclick="fazerChamada('${contato.nome}', 'video')">🎥</button>
+                    </div>
+                `;
+                lista.appendChild(item);
             });
-            document.getElementById('status').innerText = "Status: Online (Google Sync)";
+            console.log("Contatos sincronizados com sucesso!");
         });
+    } catch (err) {
+        console.error("Erro Crítico:", err);
     }
+}
 
-    function abrirChamada(nome) {
-        document.getElementById('chamada').style.display = 'flex';
-        document.getElementById('nome-contato').innerText = nome;
-        
-        navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-            document.getElementById('vid').srcObject = stream;
-            // Intervalo Rasengan
+// 3. LÓGICA DAS CHAMADAS (Com as animações de Naruto que você pediu)
+function fazerChamada(nome, tipo) {
+    const tela = document.getElementById('call-screen'); 
+    tela.style.display = 'flex';
+    
+    if (tipo === 'video') {
+        // Ativa a câmera e o Rasengan em intervalos
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+            document.getElementById('videoPlayer').srcObject = stream;
+            
+            // Intervalo do Rasengan (Aparece e some)
             setInterval(() => {
-                const r = document.getElementById('rasengan-img');
-                r.style.display = 'block';
-                setTimeout(() => r.style.display = 'none', 1000);
-            }, 3000);
+                const r = document.getElementById('rasengan-animation');
+                if(r) {
+                    r.style.display = 'block';
+                    setTimeout(() => r.style.display = 'none', 2000);
+                }
+            }, 5000);
         });
+    } else {
+        // Áudio: Mostra o Naruto segurando o telefone
+        document.getElementById('naruto-audio-img').style.display = 'block';
+        document.getElementById('videoPlayer').style.display = 'none';
     }
+}
 
-    function encerrar() {
-        location.reload();
-    }
-</script>
-</body>
-</html>
+// Inicializa sem travar nada
+window.onload = sincronizarSistema;
