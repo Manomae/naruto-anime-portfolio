@@ -1,135 +1,179 @@
-// --- ESTILOS (Design Ninja Otimizado) ---
-const style = document.createElement('style');
-style.innerHTML = `
-    body { background-color: #000; font-family: 'Segoe UI', sans-serif; color: #ff9800; margin: 0; overflow: hidden; }
-    .container { display: flex; height: 100vh; }
-    .sidebar { width: 280px; background: #111; border-right: 1px solid #333; padding: 15px; overflow-y: auto; scrollbar-width: thin; }
-    .contato-card { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #222; transition: 0.3s; }
-    .contato-card:hover { background: #1a1a1a; }
-    .avatar-ninja { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ff9800; margin-right: 10px; object-fit: cover; }
-    .btn-sync { 
-        background: linear-gradient(45deg, #ff9800, #e65100); 
-        color: black; border: none; padding: 12px; width: 100%; 
-        border-radius: 8px; font-weight: bold; cursor: pointer; 
-        margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
-    }
-    #chat { flex: 1; display: flex; flex-direction: column; background: #050505; }
-    #mensagens-container { flex: 1; padding: 20px; overflow-y: auto; }
-    .status-badge { font-size: 0.8rem; color: #4caf50; border: 1px solid #4caf50; padding: 2px 8px; border-radius: 10px; }
-`;
-document.head.appendChild(style);
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Naruto Interface - Sincronizada</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-// --- INTERFACE ---
-document.body.innerHTML = `
-    <div class="container">
-        <div class="sidebar">
-            <button class="btn-sync" id="btnSync">SINCRONIZAR GOOGLE 🍥</button>
-            <div id="lista-contatos"></div>
-        </div>
-        <div id="chat">
-            <div style="padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-                <h2>Vila da Folha: Chat</h2>
-                <span class="status-badge" id="statusServer">Conectado</span>
-            </div>
-            <div id="mensagens-container"></div>
-        </div>
-    </div>
-`;
-
-// --- LÓGICA CORE (Firebase Otimizado) ---
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-
-// 1. Login com Redirecionamento (Melhor para Mobile)
-const btnSync = document.getElementById('btnSync');
-btnSync.addEventListener('click', () => {
-    btnSync.innerText = "CARREGANDO CHAKRA...";
-    firebase.auth().signInWithRedirect(provider);
-});
-
-// 2. Captura do Resultado e Persistência
-firebase.auth().getRedirectResult().then((result) => {
-    if (result.credential) {
-        const token = result.credential.accessToken;
-        localStorage.setItem('google_token', token); // Salva para não pedir toda hora
-        buscarContatos(token);
-        ativarNotificacoes();
-    } else if (firebase.auth().currentUser) {
-        // Se já estiver logado, tenta recuperar o token salvo
-        const savedToken = localStorage.getItem('google_token');
-        if (savedToken) buscarContatos(savedToken);
-    }
-}).catch(error => {
-    console.error("Erro no retorno:", error);
-    alert("Falha na invocação! Verifique sua conexão.");
-});
-
-// 3. Busca de Contactos (API People) com tratamento de erro
-async function buscarContatos(token) {
-    try {
-        const response = await fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,photos', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
+    <style>
+        :root { --laranja: #ff6600; --fundo: #121212; --card: #1e1e1e; }
         
-        const lista = document.getElementById('lista-contatos');
-        lista.innerHTML = '';
+        body { 
+            background: var(--fundo); color: white; margin: 0; 
+            font-family: 'Ubuntu', sans-serif; -webkit-tap-highlight-color: transparent;
+        }
 
-        if (data.connections) {
-            data.connections.forEach(c => {
-                const nome = c.names ? c.names[0].displayName : "Shinobi";
-                const foto = c.photos ? c.photos[0].url : "https://via.placeholder.com/40";
-                
+        /* Lista de Contatos Otimizada */
+        .header { padding: 20px; text-align: center; border-bottom: 2px solid var(--laranja); }
+        
+        #listaContatos { padding: 15px; display: grid; gap: 10px; }
+
+        .contato-card {
+            background: var(--card); border-radius: 12px; padding: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid var(--laranja);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-group { display: flex; gap: 8px; }
+
+        .action-btn {
+            background: var(--laranja); border: none; color: white;
+            padding: 10px; border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; transition: 0.2s;
+        }
+
+        /* Tela de Chamada Fullscreen */
+        #call-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 1000; display: none;
+            flex-direction: column; align-items: center; justify-content: space-around;
+        }
+
+        #video-container {
+            width: 95%; height: 70%; background: #000; border-radius: 20px;
+            overflow: hidden; position: relative; border: 2px solid var(--laranja);
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Animações Naruto */
+        .rasengan-overlay {
+            position: absolute; width: 120px; pointer-events: none;
+            animation: spin 1s linear infinite; display: none;
+            filter: drop-shadow(0 0 10px #00a2ff);
+        }
+
+        .naruto-calling {
+            width: 250px; border-radius: 50%; border: 5px solid var(--laranja);
+            display: none;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .btn-end {
+            background: #ff3333; width: 70px; height: 70px; border-radius: 50%;
+            border: none; color: white; font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1 style="margin:0; font-size: 1.5rem;">Ninja Sync v2</h1>
+</div>
+
+<div id="listaContatos">
+    <div style="text-align: center; opacity: 0.5;">Iniciando Jutsus de Sincronização...</div>
+</div>
+
+<div id="call-overlay">
+    <div id="call-info" style="text-align:center">
+        <h2 id="calling-name">Nome do Contato</h2>
+        <p id="call-status">Conectando...</p>
+    </div>
+
+    <img id="naruto-audio" src="https://i.ibb.co/v4m00pY/naruto-phone.png" class="naruto-calling" alt="Naruto Call">
+
+    <div id="video-container">
+        <video id="myVideo" autoplay playsinline muted></video>
+        <img id="rasengan" src="https://i.ibb.co/8Y64f8m/rasengan.png" class="rasengan-overlay" style="top:20%; left:30%;">
+    </div>
+
+    <button class="btn-end" onclick="endCall()">✖</button>
+</div>
+
+<script>
+    // --- SUA CONFIGURAÇÃO FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_DOMINIO.firebaseapp.com",
+        projectId: "SEU_ID",
+        storageBucket: "SEU_BUCKET.appspot.com",
+        messagingSenderId: "SENDER_ID",
+        appId: "APP_ID"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- CORREÇÃO DA SINCRONIZAÇÃO ---
+    // Esta função ouve o Firebase e atualiza o sistema sem mexer no resto
+    function syncNinjaContacts() {
+        db.collection("contatos").onSnapshot((snapshot) => {
+            const container = document.getElementById('listaContatos');
+            container.innerHTML = "";
+            
+            snapshot.forEach((doc) => {
+                const c = doc.data();
                 const card = document.createElement('div');
                 card.className = 'contato-card';
                 card.innerHTML = `
-                    <img src="${foto}" class="avatar-ninja" onerror="this.src='https://via.placeholder.com/40'">
-                    <span>${nome}</span>
+                    <strong>${c.nome || 'Ninja'}</strong>
+                    <div class="btn-group">
+                        <button class="action-btn" onclick="startCall('${c.nome}', 'audio')">📞</button>
+                        <button class="action-btn" onclick="startCall('${c.nome}', 'video')">🎥</button>
+                    </div>
                 `;
-                lista.appendChild(card);
+                container.appendChild(card);
             });
-        }
-    } catch (err) {
-        console.error("Erro ao buscar contatos:", err);
-    }
-}
-
-// 4. Notificações e Firestore (Otimizado para não travar)
-function ativarNotificacoes() {
-    if ("Notification" in window) {
-        Notification.requestPermission();
-    }
-}
-
-// Listener de mensagens com "limpeza" de memória
-const mensagensRef = firebase.firestore().collection("mensagens");
-mensagensRef.orderBy("timestamp", "desc").limit(10) // Limitamos a 10 para não pesar no seu mobile
-    .onSnapshot(snap => {
-        const container = document.getElementById('mensagens-container');
-        snap.docChanges().forEach(change => {
-            if (change.type === "added") {
-                const msg = change.doc.data();
-                const userAtivo = firebase.auth().currentUser;
-
-                // Evita notificar a própria mensagem
-                if (userAtivo && msg.usuario !== userAtivo.displayName) {
-                    if (Notification.permission === "granted") {
-                        new Notification(`Mensagem de ${msg.usuario}`, { 
-                            body: msg.texto,
-                            icon: 'https://cdn-icons-png.flaticon.com/512/1183/1183672.png' // Ícone de Kunai/Ninja
-                        });
-                    }
-                }
-                
-                // Adiciona no UI
-                const p = document.createElement('p');
-                p.style.borderLeft = "2px solid #ff9800";
-                p.style.paddingLeft = "10px";
-                p.innerHTML = `<strong>${msg.usuario}:</strong> ${msg.texto}`;
-                container.prepend(p);
-            }
+        }, (err) => {
+            console.error("Erro na sincronização:", err);
+            document.getElementById('listaContatos').innerHTML = "Erro ao carregar contatos.";
         });
-    }, err => {
-        document.getElementById('statusServer').innerText = "Offline";
-        document.getElementById('statusServer').style.color = "red";
-    });
+    }
+
+    // --- LÓGICA DE CHAMADA ---
+    function startCall(nome, tipo) {
+        const overlay = document.getElementById('call-overlay');
+        const videoCont = document.getElementById('video-container');
+        const narutoImg = document.getElementById('naruto-audio');
+        const rasengan = document.getElementById('rasengan');
+        
+        document.getElementById('calling-name').innerText = nome;
+        overlay.style.display = 'flex';
+
+        if(tipo === 'video') {
+            videoCont.style.display = 'block';
+            narutoImg.style.display = 'none';
+            
+            navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(s => {
+                document.getElementById('myVideo').srcObject = s;
+                // Animação do Rasengan aparecendo em intervalos
+                setInterval(() => {
+                    rasengan.style.display = 'block';
+                    setTimeout(() => { rasengan.style.display = 'none'; }, 2000);
+                }, 5000);
+            });
+        } else {
+            videoCont.style.display = 'none';
+            narutoImg.style.display = 'block'; // Naruto no telefone
+        }
+    }
+
+    function endCall() {
+        const video = document.getElementById('myVideo');
+        if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('call-overlay').style.display = 'none';
+    }
+
+    // Iniciar Sincronização
+    syncNinjaContacts();
+</script>
+
+</body>
+</html>
