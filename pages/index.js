@@ -14,7 +14,6 @@ const firebaseConfig = {
     measurementId: "G-1VTYT7BGEJ"
 };
 
-// Inicializa o Firebase apenas uma vez
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -32,7 +31,9 @@ export default function ShinobiHome() {
     const localStream = useRef(null);
 
     const servers = {
-        iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }]
+        iceServers: [
+            { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
+        ]
     };
 
     useEffect(() => {
@@ -43,7 +44,9 @@ export default function ShinobiHome() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 localStream.current = stream;
-                if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                }
                 
                 setStatus('SISTEMA ONLINE');
 
@@ -68,7 +71,9 @@ export default function ShinobiHome() {
         };
     }, []);
 
-    const setupPeerConnection = (target) => {
+    const setupPeerConnection = async (target) => {
+        if (pc.current) pc.current.close();
+        
         pc.current = new RTCPeerConnection(servers);
         
         localStream.current.getTracks().forEach(track => {
@@ -76,20 +81,24 @@ export default function ShinobiHome() {
         });
 
         pc.current.ontrack = (event) => {
-            if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0];
+                remoteVideoRef.current.play().catch(e => console.error("Erro no play remoto:", e));
+            }
         };
 
+        // Envia o endereço de rede (ICE) para o Firebase
         pc.current.onicecandidate = (event) => {
             if (event.candidate) {
                 db.collection('calls').doc(target).collection('candidates').add(event.candidate.toJSON());
             }
         };
 
-        // Escutar candidatos ICE do outro Shinobi
+        // Escuta os endereços de rede do outro lado
         db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
             snap.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+                if (change.type === 'added' && pc.current) {
+                    pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(e => console.error(e));
                 }
             });
         });
@@ -98,12 +107,15 @@ export default function ShinobiHome() {
     const callContact = async () => {
         if (targetId.length < 6) return alert("ID Inválido!");
         setStatus('INVOCANDO...');
-        setupPeerConnection(targetId);
+        await setupPeerConnection(targetId);
 
         const offer = await pc.current.createOffer();
         await pc.current.setLocalDescription(offer);
 
-        await db.collection('calls').doc(targetId).set({ offer, from: myId });
+        await db.collection('calls').doc(targetId).set({ 
+            offer: { sdp: offer.sdp, type: offer.type }, 
+            from: myId 
+        });
 
         db.collection('calls').doc(targetId).onSnapshot(snap => {
             const data = snap.data();
@@ -115,11 +127,13 @@ export default function ShinobiHome() {
     };
 
     const answerCall = async (offer, fromId) => {
-        setupPeerConnection(fromId);
+        await setupPeerConnection(fromId);
         await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
         const answer = await pc.current.createAnswer();
         await pc.current.setLocalDescription(answer);
-        await db.collection('calls').doc(myId).update({ answer });
+        await db.collection('calls').doc(myId).update({ 
+            answer: { sdp: answer.sdp, type: answer.type } 
+        });
         setStatus('CONECTADO');
     };
 
