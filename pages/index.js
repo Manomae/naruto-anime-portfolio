@@ -1,114 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// 1. MÁGICA: Integração dos contatos selecionados no seu vídeo
 const NINJA_CONTACTS = [
   { id: '1', name: "Mãe", status: "online", bio: "Ocupada na missão" },
-  { id: '2', name: "Lorena Calderón", status: "offline", bio: "Treinando..." },
+  { id: '2', name: "Lorena Calderón", status: "online", bio: "Disponível" },
   { id: '3', name: "Gabriel", status: "online", bio: "Disponível para chat" },
-  { id: '4', name: "Jeferson", status: "away", bio: "Em patrulha" },
-  { id: '5', name: "Juliana Luz 🙏🙏", status: "online", bio: "Ninja Médica" },
-  { id: '6', name: "Roney de Oliveira Lima", status: "online", bio: "Estrategista" },
-  { id: '7', name: "Tia Lidia", status: "offline", bio: "Em repouso" }
+  { id: '5', name: "Juliana Luz 🙏🙏", status: "online", bio: "Ninja Médica" }
 ];
 
-export default function ShinobiSystem() {
+export default function ShinobiOS() {
   const [selectedContact, setSelectedContact] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
+  const [incomingMsg, setIncomingMsg] = useState(null);
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-    setMessages([...messages, { text: inputValue, sender: 'me', time: new Date().toLocaleTimeString() }]);
-    setInputValue('');
+  // SIMULAÇÃO: Uma notificação chega 2 segundos após abrir o sistema
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIncomingMsg({
+        contact: NINJA_CONTACTS[0], // "Mãe" manda mensagem
+        text: "Filho, já terminou o sistema? Me avisa aqui! 🍜"
+      });
+      setShowNotification(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // FUNÇÃO: Abrir sistema direto pela notificação
+  const handleOpenFromNotify = () => {
+    setSelectedContact(incomingMsg.contact);
+    setShowNotification(false);
   };
 
   return (
-    <div className="system-os">
-      {/* SIDEBAR DE CONEXÕES */}
+    <div className="os-container">
+      
+      {/* NOTIFICAÇÃO REALISTA (HUD) */}
+      {showNotification && (
+        <div className="notification-toast" onClick={handleOpenFromNotify}>
+          <div className="notify-icon"></div>
+          <div className="notify-content">
+            <strong>{incomingMsg.contact.name}</strong>
+            <p>{incomingMsg.text}</p>
+          </div>
+          <span className="notify-time">agora</span>
+        </div>
+      )}
+
       <aside className="sidebar">
-        <header className="sidebar-header">
-          <h3>CONTATOS GOOGLE</h3>
-          <span className="badge">{NINJA_CONTACTS.length} Conexões</span>
-        </header>
-        
+        <div className="sidebar-header">SHINOBI CHAT</div>
         <div className="contact-list">
-          {NINJA_CONTACTS.map(ninja => (
+          {NINJA_CONTACTS.map(c => (
             <div 
-              key={ninja.id} 
-              className={`contact-item ${selectedContact?.id === ninja.id ? 'active' : ''}`}
-              onClick={() => setSelectedContact(ninja)}
+              key={c.id} 
+              className={`contact-item ${selectedContact?.id === c.id ? 'active' : ''}`}
+              onClick={() => setSelectedContact(c)}
             >
-              <div className={`status-dot ${ninja.status}`}></div>
-              <div className="info">
-                <p className="name">{ninja.name}</p>
-                <p className="bio">{ninja.bio}</p>
-              </div>
+              <div className="dot"></div>
+              {c.name}
             </div>
           ))}
         </div>
       </aside>
 
-      {/* ÁREA DE BATE-PAPO */}
-      <main className="chat-window">
+      <main className="main-chat">
         {selectedContact ? (
-          <>
-            <header className="chat-header">
-              <h2>Conexão Ativa: {selectedContact.name}</h2>
-              <button className="call-btn">Chamada de Voz</button>
-            </header>
-            
-            <div className="messages">
-              {messages.length === 0 ? (
-                <div className="empty">Inicie uma conversa segura com {selectedContact.name}</div>
-              ) : (
-                messages.map((m, i) => (
-                  <div key={i} className={`msg-bubble ${m.sender}`}>
-                    {m.text} <span className="time">{m.time}</span>
-                  </div>
-                ))
+          <div className="chat-active">
+            <header><h2>{selectedContact.name}</h2></header>
+            <div className="messages-box">
+              <div className="msg-received">Conexão segura estabelecida com {selectedContact.name}...</div>
+              {selectedContact.id === '1' && (
+                <div className="msg-incoming">{incomingMsg?.text}</div>
               )}
             </div>
-
-            <footer className="chat-input">
-              <input 
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Digite sua mensagem ninja..." 
-              />
-              <button onClick={handleSendMessage}>ENVIAR</button>
+            <footer className="input-area">
+              <input placeholder="Responder..." />
+              <button>Enviar</button>
             </footer>
-          </>
-        ) : (
-          <div className="welcome-screen">
-            <h1>SISTEMA SHINOBI v2.0</h1>
-            <p>Selecione um contato na lateral para iniciar a conexão.</p>
           </div>
+        ) : (
+          <div className="idle-screen">Aguardando novas transmissões...</div>
         )}
       </main>
 
       <style jsx>{`
-        .system-os { display: flex; height: 100vh; background: #050505; color: #fff; font-family: sans-serif; }
-        .sidebar { width: 300px; background: #111; border-right: 1px solid #222; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #222; }
-        .contact-item { display: flex; align-items: center; padding: 15px; cursor: pointer; transition: 0.3s; }
-        .contact-item:hover, .active { background: #1a1a1a; border-left: 4px solid #ff9100; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 15px; }
-        .online { background: #00ff88; }
-        .offline { background: #555; }
-        .away { background: #ffcc00; }
-        .name { font-weight: bold; margin: 0; }
-        .bio { font-size: 12px; color: #888; margin: 0; }
+        .os-container { display: flex; height: 100vh; background: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         
-        .chat-window { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .chat-header { padding: 20px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg-bubble { max-width: 70%; padding: 12px; border-radius: 15px; background: #222; align-self: flex-start; }
-        .me { align-self: flex-end; background: #ff9100; color: #000; font-weight: bold; }
-        .time { font-size: 10px; opacity: 0.7; margin-left: 8px; }
-        .chat-input { padding: 20px; display: flex; gap: 10px; background: #0a0a0a; }
-        input { flex: 1; background: #1a1a1a; border: none; padding: 15px; border-radius: 8px; color: white; }
-        button { background: #ff9100; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+        /* ANIMAÇÃO DA NOTIFICAÇÃO */
+        .notification-toast {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 90%;
+          max-width: 400px;
+          background: rgba(25, 25, 25, 0.95);
+          backdrop-filter: blur(10px);
+          padding: 15px;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          z-index: 9999;
+          cursor: pointer;
+          animation: slideDown 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes slideDown {
+          from { top: -100px; opacity: 0; }
+          to { top: 20px; opacity: 1; }
+        }
+
+        .notify-icon { width: 40px; height: 40px; background: #ff9100; border-radius: 12px; }
+        .notify-content { flex: 1; }
+        .notify-content p { font-size: 14px; margin: 2px 0 0; color: #bbb; }
+        .notify-time { font-size: 10px; color: #666; }
+
+        /* LAYOUT BASE */
+        .sidebar { width: 260px; background: #0a0a0a; border-right: 1px solid #111; }
+        .sidebar-header { padding: 30px 20px; font-weight: 900; letter-spacing: 2px; color: #ff9100; }
+        .contact-item { padding: 15px 20px; display: flex; align-items: center; gap: 10px; cursor: pointer; color: #888; }
+        .active { background: #111; color: #ff9100; border-right: 3px solid #ff9100; }
+        .dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; }
+
+        .main-chat { flex: 1; background: radial-gradient(circle at center, #111 0%, #000 100%); display: flex; align-items: center; justify-content: center; }
+        .chat-active { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .chat-active header { padding: 20px; border-bottom: 1px solid #111; }
+        .messages-box { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg-incoming { background: #222; padding: 12px; border-radius: 0 15px 15px 15px; align-self: flex-start; max-width: 80%; }
+        .msg-received { color: #555; font-size: 12px; text-align: center; width: 100%; }
+        
+        .input-area { padding: 20px; display: flex; gap: 10px; }
+        input { flex: 1; background: #111; border: 1px solid #222; padding: 15px; border-radius: 10px; color: white; outline: none; }
+        button { background: #ff9100; border: none; padding: 0 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .idle-screen { color: #333; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; }
       `}</style>
     </div>
   );
