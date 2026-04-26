@@ -3,7 +3,6 @@ import Head from 'next/head';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
-// CONFIGURAÇÃO REAL QUE VOCÊ MANDOU
 const firebaseConfig = {
   apiKey: "AIzaSyD60jeX_HrJ6agEQTJE85zonqYwil4u5dc",
   authDomain: "shinobisync-ec4e9.firebaseapp.com",
@@ -14,22 +13,15 @@ const firebaseConfig = {
   measurementId: "G-1VTYT7BGEJ"
 };
 
-// Inicializa apenas uma vez
+// Inicializa apenas uma vez fora do componente
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.firestore();
 
 export default function ShinobiHome() {
-    // ... O restante do código da interface Naruto continua igual daqui para baixo
-
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-
-export default function ShinobiHome() {
+    const db = firebase.firestore(); // Mantenha o db aqui dentro para o React usar corretamente
     const [myId, setMyId] = useState('');
+    // ... restante do seu código igual
     const [targetId, setTargetId] = useState('');
     const [status, setStatus] = useState('STATUS: AGUARDANDO_CHAKRA');
     const localVideoRef = useRef(null);
