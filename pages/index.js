@@ -3,15 +3,25 @@ import Head from 'next/head';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
-// --- COLOQUE SUAS CHAVES DO FIREBASE AQUI ---
+// CONFIGURAÇÃO REAL QUE VOCÊ MANDOU
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+  apiKey: "AIzaSyD60jeX_HrJ6agEQTJE85zonqYwil4u5dc",
+  authDomain: "shinobisync-ec4e9.firebaseapp.com",
+  projectId: "shinobisync-ec4e9",
+  storageBucket: "shinobisync-ec4e9.firebasestorage.app",
+  messagingSenderId: "634559333749",
+  appId: "1:634559333749:web:167b301b3a6c4fb0343f3c",
+  measurementId: "G-1VTYT7BGEJ"
 };
+
+// Inicializa apenas uma vez
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+export default function ShinobiHome() {
+    // ... O restante do código da interface Naruto continua igual daqui para baixo
 
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
