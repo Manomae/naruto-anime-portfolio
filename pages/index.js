@@ -3,119 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHINOBI OS - INTERFACE ELITE</title>
+    <title>SHINOBI SYSTEM OS - v4.0 ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@300;700&display=swap');
         
-        :root { --red-chakra: #ff0000; --blue-chakra: #00d9ff; --bg: #050507; }
+        :root { --red-chakra: #ff0000; --bg: #030305; }
         body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; overflow: hidden; }
 
-        /* Interface Estilo Naruto Moderno */
-        .shinobi-container { border: 2px solid #1a1a1a; background: rgba(10, 10, 15, 0.95); box-shadow: 0 0 40px rgba(0,0,0,1); }
-        .hud-border { border-left: 4px solid var(--red-chakra); background: linear-gradient(90deg, rgba(255,0,0,0.1) 0%, transparent 100%); }
+        /* Estética Shinobi Moderna */
+        .hud-main { border: 1px solid #1a1a1a; background: linear-gradient(135deg, #0a0a0c 0%, #050507 100%); position: relative; }
+        .red-line { border-left: 3px solid var(--red-chakra); background: rgba(255, 0, 0, 0.05); }
         
-        video { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; filter: grayscale(20%) contrast(110%); transform: scaleX(-1); }
-        .video-slot { border: 1px solid #222; position: relative; overflow: hidden; height: 220px; }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); border: 1px solid #111; }
+        .video-box { position: relative; height: 250px; border: 1px solid #222; }
 
-        /* Botões Estilo Jutsu */
-        .btn-jutsu { 
-            background: #111; border: 1px solid var(--red-chakra); color: var(--red-chakra);
-            font-family: 'Orbitron', sans-serif; transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        /* Botões Estilo JUTSU */
+        .jutsu-trigger { 
+            background: transparent; border: 1px solid var(--red-chakra); color: var(--red-chakra);
+            font-family: 'Orbitron', sans-serif; text-transform: uppercase; font-weight: 900;
+            transition: all 0.4s ease; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
         }
-        .btn-jutsu:hover { background: var(--red-chakra); color: #fff; box-shadow: 0 0 20px var(--red-chakra); }
+        .jutsu-trigger:hover { background: var(--red-chakra); color: white; box-shadow: 0 0 25px var(--red-chakra); cursor: pointer; }
 
-        /* Segredos e HUD */
-        .scanline { width: 100%; height: 2px; background: rgba(255,0,0,0.1); position: absolute; animation: scan 4s linear infinite; z-index: 10; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        /* Efeitos de Interface (Segredos) */
+        .scan-effect { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        .glitch-text { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; text-shadow: 0 0 10px var(--red-chakra); } 100% { opacity: 0.8; } }
 
-        .secret-panel { display: none; }
-        .active-glow { animation: glow 1.5s infinite alternate; }
-        @keyframes glow { from { text-shadow: 0 0 5px var(--red-chakra); } to { text-shadow: 0 0 15px var(--red-chakra); } }
-        
-        .chat-scroll::-webkit-scrollbar { width: 2px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: var(--red-chakra); }
+        .secret-functions { display: none; }
+        .chat-area::-webkit-scrollbar { width: 3px; }
+        .chat-area::-webkit-scrollbar-thumb { background: var(--red-chakra); }
     </style>
 </head>
-<body class="p-2 flex items-center justify-center min-h-screen">
+<body class="p-2 md:p-6 min-h-screen flex items-center justify-center">
 
-    <div class="shinobi-container w-full max-w-5xl h-[95vh] flex flex-col relative overflow-hidden">
-        <div class="scanline"></div>
+    <div class="hud-main w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl relative">
+        <div class="scan-effect"></div>
 
-        <header class="p-4 border-b border-white/5 flex justify-between items-end">
+        <header class="p-4 border-b border-white/5 flex flex-col md:flex-row justify-between items-center z-10">
             <div>
-                <h1 class="text-2xl font-black font-['Orbitron'] tracking-tighter text-white">SHINOBI<span class="text-red-600">_OS</span></h1>
-                <p class="text-[9px] text-zinc-500 uppercase tracking-[4px]">Sistema de Invocação P2P Direct-Link</p>
+                <h1 class="text-2xl font-black font-['Orbitron'] tracking-tighter glitch-text">SHINOBI<span class="text-red-600">_INTERFACE</span></h1>
+                <p class="text-[8px] text-zinc-600 tracking-[5px] uppercase italic">P2P Network Core / Security Level: ANBU</p>
             </div>
-            <div class="text-right">
-                <p class="text-[10px] text-zinc-500">SEU CÓDIGO DE TRANSMISSÃO:</p>
-                <div id="myId" class="text-3xl font-black text-red-600 active-glow font-['Orbitron']">------</div>
+            <div class="text-center md:text-right mt-2 md:mt-0">
+                <p class="text-[10px] text-zinc-500 font-bold uppercase">Código de Invocação Atual:</p>
+                <div id="myId" class="text-4xl font-black text-red-600 font-['Orbitron']">------</div>
             </div>
         </header>
 
-        <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
+        <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10">
             
-            <div class="lg:col-span-7 p-4 border-r border-white/5 space-y-4">
+            <div class="lg:col-span-8 p-4 space-y-4 border-r border-white/5 bg-black/20 overflow-y-auto">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="video-slot">
+                    <div class="video-box">
                         <video id="localVideo" autoplay playsinline muted></video>
-                        <div class="absolute top-2 left-2 text-[10px] bg-red-600 px-2">LOCAL_USER</div>
+                        <div class="absolute bottom-2 left-2 bg-red-600 px-2 text-[9px] font-bold">MEU_CHAKRA</div>
                     </div>
-                    <div class="video-slot">
+                    <div class="video-box">
                         <video id="remoteVideo" autoplay playsinline></video>
-                        <div class="absolute top-2 left-2 text-[10px] bg-blue-600 px-2">REMOTE_SHINOBI</div>
+                        <div class="absolute bottom-2 left-2 bg-blue-600 px-2 text-[9px] font-bold">ALVO_DETECTADO</div>
                     </div>
                 </div>
 
-                <div class="hud-border p-4 space-y-4">
-                    <p class="text-[10px] text-red-500 font-bold uppercase underline">Invocação por Código</p>
-                    <div class="flex gap-2">
-                        <input id="targetId" type="text" maxlength="6" placeholder="DIGITE O ID ALVO..." 
-                            class="bg-transparent border-b border-zinc-800 flex-1 p-2 outline-none text-red-500 font-bold text-xl placeholder:text-zinc-800">
-                        <button onclick="callContact()" class="btn-jutsu px-10 py-2 font-bold uppercase italic">Invocar</button>
+                <div class="red-line p-6 mt-4">
+                    <h2 class="text-xs font-bold text-red-500 mb-4 tracking-widest italic underline">REALIZAR INVOCAÇÃO DIRETA</h2>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <input id="targetId" type="text" maxlength="6" placeholder="DIGITE O ID DE 6 DÍGITOS..." 
+                            class="bg-black/80 border border-zinc-800 p-4 flex-1 outline-none text-red-600 font-bold text-2xl font-['Orbitron'] placeholder:text-zinc-900 focus:border-red-600 transition-all">
+                        <button onclick="callContact()" class="jutsu-trigger px-12 py-4">Invocar</button>
                     </div>
+                    <p class="text-[9px] text-zinc-600 mt-2 font-bold italic">// Insira o código do outro Shinobi para abrir o túnel P2P.</p>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 flex flex-col bg-black/20 p-4">
-                <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-                    <span class="text-[10px] text-zinc-400 font-bold italic underline">PERGAMINHOS DE TEXTO</span>
-                    <button onclick="toggleSecrets()" class="text-[10px] text-red-900 hover:text-red-600">FUNÇÕES_OCULTAS</button>
+            <div class="lg:col-span-4 flex flex-col p-4 bg-black/40">
+                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                    <span class="text-[10px] text-red-600 font-black italic tracking-widest">TRANSMISSÃO_PERGAMINHOS</span>
+                    <button onclick="toggleSecrets()" class="text-[10px] text-zinc-600 hover:text-white transition">SECRET_OPPS</button>
                 </div>
 
-                <div id="chat" class="flex-1 overflow-y-auto chat-scroll space-y-3 mb-4 pr-2">
-                    <div class="text-[10px] text-zinc-600 uppercase tracking-widest">// Aguardando sinal de Chakra...</div>
+                <div id="chat" class="flex-1 overflow-y-auto chat-area space-y-3 mb-4 pr-2 font-['JetBrains_Mono'] text-sm">
+                    <div class="text-zinc-700 text-[10px] italic">// Sistema aguardando handshake...</div>
                 </div>
 
                 <div class="space-y-4">
-                    <div id="secrets" class="flex justify-around bg-red-900/10 p-2 rounded secret-panel border border-red-900/30">
-                        <button onclick="sendEmoji('🔥')" class="hover:scale-125 transition">🔥</button>
-                        <button onclick="sendEmoji('⚡')" class="hover:scale-125 transition">⚡</button>
-                        <button onclick="sendEmoji('🌀')" class="hover:scale-125 transition">🌀</button>
-                        <button onclick="document.getElementById('fileInput').click()" title="Enviar Arquivo">📂</button>
-                        <input type="file" id="fileInput" class="hidden" onchange="sendFile(this)">
+                    <div id="secretsPanel" class="flex justify-around bg-red-900/5 p-3 rounded secret-functions border border-red-900/20">
+                        <button onclick="sendEmoji('🔥')" class="text-xl hover:scale-125 transition">🔥</button>
+                        <button onclick="sendEmoji('⚡')" class="text-xl hover:scale-125 transition">⚡</button>
+                        <button onclick="sendEmoji('🌀')" class="text-xl hover:scale-125 transition">🌀</button>
+                        <button onclick="document.getElementById('fileInput').click()" class="text-xl hover:scale-125 transition">📜</button>
+                        <input type="file" id="fileInput" class="hidden" onchange="alert('Arquivo selado para envio...')">
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <button id="micBtn" onmousedown="startAudio()" onmouseup="stopAudio()" class="text-xl opacity-40 hover:opacity-100 transition">🎙️</button>
-                        <input id="msgInput" type="text" placeholder="Escrever pergaminho..." 
+                    <div class="flex items-center gap-2 border-t border-white/5 pt-4">
+                        <button id="micIcon" class="text-xl opacity-30 hover:opacity-100 transition">🎙️</button>
+                        <input id="msgInput" type="text" placeholder="Escreva aqui..." 
                             class="bg-transparent flex-1 border-b border-zinc-800 p-2 outline-none text-sm focus:border-red-600 transition-all">
-                        <button onclick="sendChat()" class="text-red-600 text-sm font-black uppercase">Send</button>
+                        <button onclick="sendChat()" class="text-red-600 font-black hover:text-white transition">ENVIAR</button>
                     </div>
                 </div>
             </div>
         </main>
 
-        <footer class="p-2 bg-red-600 text-black flex justify-between px-4">
-            <span class="text-[9px] font-bold">ALERTA: CONEXÃO P2P MONITORADA PELO CLÃ</span>
-            <span id="connection-status" class="text-[9px] font-bold uppercase italic">Offline</span>
+        <footer class="p-2 bg-red-600 flex justify-between px-6 z-10">
+            <span class="text-[8px] font-bold text-black uppercase tracking-widest">P2P Secure Link: ACTIVE</span>
+            <span id="connStatus" class="text-[8px] font-bold text-black uppercase italic">Status: Standby</span>
         </footer>
     </div>
 
     <script>
-        // --- COLOQUE SUAS CHAVES AQUI ---
+        // --- COLOQUE SUAS CHAVES DO FIREBASE AQUI ---
         const firebaseConfig = {
             apiKey: "SUA_API_KEY",
             projectId: "SEU_PROJECT_ID",
@@ -127,33 +127,35 @@
         const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
         let localStream, peerConnection, dataChannel;
         
-        // LÓGICA DE ID SIMPLES (6 DÍGITOS)
+        // Lógica de ID de 6 dígitos que você pediu
         const myId = Math.floor(100000 + Math.random() * 900000).toString();
         document.getElementById('myId').innerText = myId;
 
-        // 1. INICIAR CÂMERA E ESCUTAR CHAMADAS
         async function init() {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            document.getElementById('localVideo').srcObject = localStream;
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
 
-            // SISTEMA DE ALERTA (Escutando o Firebase)
-            db.collection('calls').doc(myId).onSnapshot(async snap => {
-                const data = snap.data();
-                if (data?.offer && !peerConnection) {
-                    if (confirm("🚨 INVOCADOR DETECTADO! Aceitar chamada?")) {
-                        await answerCall(data.offer);
-                    }
-                }
-            });
-
-            // Escutar Candidatos ICE (O segredo da conexão)
-            db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
-                snap.docChanges().forEach(change => {
-                    if (change.type === 'added' && peerConnection) {
-                        peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+                // SISTEMA DE ALERTA: Quando alguém te liga
+                db.collection('calls').doc(myId).onSnapshot(async snap => {
+                    const data = snap.data();
+                    if (data?.offer && !peerConnection) {
+                        // O alerta que você pediu para aceitar a chamada
+                        if (confirm("🚨 INVOCADOR DETECTADO (ID: " + data.from + ")! Aceitar transmissão?")) {
+                            await answerCall(data.offer, data.from);
+                        }
                     }
                 });
-            });
+
+                // Lógica de Candidatos (ICE) para conexão atravessar qualquer "buraco"
+                db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'added' && peerConnection) {
+                            peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+                        }
+                    });
+                });
+            } catch (e) { alert("Erro ao acessar câmera: " + e); }
         }
 
         async function setupPeer(target) {
@@ -162,6 +164,7 @@
             
             peerConnection.ontrack = e => document.getElementById('remoteVideo').srcObject = e.streams[0];
             
+            // Enviando candidatos ICE para o outro lado
             peerConnection.onicecandidate = e => {
                 if (e.candidate) {
                     db.collection('calls').doc(target).collection('candidates').add(e.candidate.toJSON());
@@ -169,27 +172,34 @@
             };
 
             peerConnection.onconnectionstatechange = () => {
-                document.getElementById('connection-status').innerText = peerConnection.connectionState;
+                document.getElementById('connStatus').innerText = "Status: " + peerConnection.connectionState;
             };
 
-            // DATA CHANNEL (Chat rápido e privado)
-            dataChannel = peerConnection.createDataChannel("shinobiData");
-            dataChannel.onmessage = e => handleIncomingData(JSON.parse(e.data));
+            // DATA CHANNEL: Chat e Emojis P2P direto
+            dataChannel = peerConnection.createDataChannel("shinobiChat");
+            setupDataHandlers(dataChannel);
             
-            peerConnection.ondatachannel = e => {
-                dataChannel = e.channel;
-                dataChannel.onmessage = ev => handleIncomingData(JSON.parse(ev.data));
+            peerConnection.ondatachannel = e => setupDataHandlers(e.channel);
+        }
+
+        function setupDataHandlers(channel) {
+            channel.onmessage = e => {
+                const data = JSON.parse(e.data);
+                displayMsg('CONTATO', data.msg, 'text-blue-400');
             };
         }
 
+        // FUNÇÃO PARA INVOCAR (BOTÃO)
         async function callContact() {
             const target = document.getElementById('targetId').value;
-            if(!target) return alert("Digite o ID alvo!");
+            if(target.length < 6) return alert("ID Inválido!");
             
             await setupPeer(target);
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            await db.collection('calls').doc(target).set({ offer });
+            
+            // Salva a oferta e avisa quem está ligando
+            await db.collection('calls').doc(target).set({ offer, from: myId });
 
             db.collection('calls').doc(target).onSnapshot(snap => {
                 const data = snap.data();
@@ -197,42 +207,28 @@
             });
         }
 
-        async function answerCall(offer) {
-            const target = document.getElementById('targetId').value || "caller"; 
-            await setupPeer(target);
+        async function answerCall(offer, callerId) {
+            await setupPeer(callerId);
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            await db.collection('calls').doc(myId).update({ answer });
+            await db.collection('calls').doc(callerId).update({ answer });
         }
 
-        // FUNÇÕES DE INTERFACE
+        // CHAT E UI
         function sendChat() {
-            const val = document.getElementById('msgInput').value;
-            if(!val || !dataChannel) return;
-            const payload = { sender: 'VOCÊ', msg: val };
-            dataChannel.send(JSON.stringify(payload));
-            displayMsg('VOCÊ', val, 'text-red-600');
-            document.getElementById('msgInput').value = "";
+            const input = document.getElementById('msgInput');
+            if(!input.value || !dataChannel) return;
+            dataChannel.send(JSON.stringify({msg: input.value}));
+            displayMsg('VOCÊ', input.value, 'text-red-600');
+            input.value = "";
         }
 
-        function handleIncomingData(data) {
-            displayMsg('CONTATO', data.msg, 'text-blue-400');
+        function sendEmoji(e) { 
+            if(dataChannel) {
+                dataChannel.send(JSON.stringify({msg: e}));
+                displayMsg('VOCÊ', e, 'text-red-600');
+            }
         }
 
         function displayMsg(user, msg, color) {
-            const chat = document.getElementById('chat');
-            chat.innerHTML += `<div class="bg-white/5 p-2 rounded"><span class="${color} font-bold text-[10px]">${user}:</span> <span class="text-xs">${msg}</span></div>`;
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        function sendEmoji(e) { if(dataChannel) { dataChannel.send(JSON.stringify({sender:'VOCÊ', msg:e})); displayMsg('VOCÊ', e, 'text-red-600'); } }
-        function toggleSecrets() { const s = document.getElementById('secrets'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
-        
-        function startAudio() { document.getElementById('micBtn').classList.add('text-red-600'); }
-        function stopAudio() { document.getElementById('micBtn').classList.remove('text-red-600'); }
-
-        init();
-    </script>
-</body>
-</html>
