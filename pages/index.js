@@ -39,23 +39,30 @@ export default function ShinobiHome() {
         setMyId(generatedId);
 
         async function initSystem() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localStream.current = stream;
-                if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-                
-                // Ouvir se alguém está me chamando (O Alerta que você amou)
-                db.collection('calls').doc(generatedId).onSnapshot(async (snapshot) => {
-                    const data = snapshot.data();
-                    if (data?.offer && !pc.current) {
-                        if (confirm("🚨 INVOCADOR DETECTADO! Aceitar chamado de Konoha?")) {
-                            await answerCall(data.offer, generatedId);
-                        }
-                    }
-                });
-                setStatus('SISTEMA ONLINE');
-            } catch (e) { setStatus('ERRO DE CÂMERA'); }
+    try {
+        console.log("Iniciando captura de mídia...");
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 1280, height: 720 }, 
+            audio: true 
+        });
+        
+        localStream.current = stream;
+        
+        if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+            // Força o vídeo a tocar
+            await localVideoRef.current.play(); 
+            console.log("Vídeo local iniciado!");
         }
+
+        // ... resto do código (onSnapshot das calls)
+        setStatus('SISTEMA ONLINE');
+    } catch (e) { 
+        console.error("Erro detalhado:", e);
+        setStatus('ERRO: ' + e.message); 
+    }
+}
+
         initSystem();
     }, []);
 
