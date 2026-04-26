@@ -1,163 +1,174 @@
-import React, { useState, useEffect, useRef } from 'react';
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shinobi Connect - Sistema de Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --konoha-red: #ff4343; --shinobi-blue: #0a192f; }
+        body { background: var(--shinobi-blue); color: #e6f1ff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 40vh; }
+        video { width: 100%; height: 100%; border-radius: 12px; background: #000; object-fit: cover; border: 2px solid var(--konoha-red); }
+        .chat-box { height: 30vh; overflow-y: auto; scrollbar-width: thin; }
+        .btn-jutsu { transition: 0.3s; background: var(--konoha-red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-jutsu:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--konoha-red); }
+        #sharing-id { color: #5efdff; font-family: monospace; }
+    </style>
+</head>
+<body class="p-4 flex flex-col h-screen">
 
-// Contatos selecionados na sua agenda
-const NINJA_CONTACTS = [
-  { id: '1', name: "Mãe", status: "online", phone: "+55...", photo: "https://via.placeholder.com/150/FF9100/000000?text=Mae" },
-  { id: '2', name: "Lorena Calderón", status: "online", photo: "https://via.placeholder.com/150/FF9100/000000?text=Lorena" },
-  { id: '3', name: "Gabriel", status: "online", photo: "https://via.placeholder.com/150/FF9100/000000?text=Gabriel" }
-];
+    <header class="flex justify-between items-center mb-4 glass p-4 rounded-xl">
+        <h1 class="text-xl font-bold tracking-tighter">SHINOBI <span class="text-red-500">SYSTEM</span></h1>
+        <div id="status" class="text-xs uppercase text-gray-400">Status: Aguardando Chakra...</div>
+    </header>
 
-export default function ShinobiOS() {
-  const [activeContact, setActiveContact] = useState(NINJA_CONTACTS[0]);
-  const [callStatus, setCallStatus] = useState('idle'); // idle, calling, ringing, active
-  const [messages, setMessages] = useState([]);
-  const ringtoneRef = useRef(null);
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-
-  // --- MÁGICA 1: Registro do Service Worker via Código (Tudo em um) ---
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        self.addEventListener('push', (e) => {
-          const data = e.data.json();
-          self.registration.showNotification(data.title, {
-            body: data.body,
-            icon: data.icon,
-            vibrate: [200, 100, 200],
-            tag: 'shinobi-call',
-            actions: [{action: 'accept', title: 'Atender 📞'}]
-          });
-        });
-      `;
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl);
-    }
-  }, []);
-
-  // --- MÁGICA 2: Iniciar Chamada com Música e Notificação ---
-  const startCall = async (type) => {
-    setCallStatus('calling');
-    
-    // Inicia a música de chamada (Toque de saída)
-    ringtoneRef.current = new Audio('https://www.soundjay.com/phone/phone-calling-1.mp3'); 
-    ringtoneRef.current.loop = true;
-    ringtoneRef.current.play();
-
-    // Simula o envio do sinal para o Google/Firebase (Celular dela acorda aqui)
-    console.log(`Enviando sinal de ${type} para o dispositivo da ${activeContact.name}...`);
-    
-    // Simulação: Ela "vê" seu rosto e atende após 5 segundos
-    setTimeout(() => {
-      acceptCall();
-    }, 5000);
-  };
-
-  const acceptCall = async () => {
-    if (ringtoneRef.current) ringtoneRef.current.pause();
-    setCallStatus('active');
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-      // Em um app real, aqui o WebRTC conectaria o vídeo dela ao remoteVideoRef
-    } catch (err) {
-      alert("Erro ao acessar mídia: " + err);
-    }
-  };
-
-  const hangUp = () => {
-    if (ringtoneRef.current) ringtoneRef.current.pause();
-    if (localVideoRef.current?.srcObject) {
-      localVideoRef.current.srcObject.getTracks().forEach(t => t.stop());
-    }
-    setCallStatus('idle');
-  };
-
-  return (
-    <div className="system-main">
-      {/* HUD DE CHAMADA (O que aparece quando você liga) */}
-      {callStatus !== 'idle' && (
-        <div className="call-screen">
-          <div className="caller-profile">
-            <div className="pulse-ring"></div>
-            <img src={activeContact.photo} alt="Rosto" className="avatar-img" />
-            <h1>{activeContact.name}</h1>
-            <p>{callStatus === 'calling' ? 'Chamando...' : 'Conexão Segura'}</p>
-          </div>
-
-          {callStatus === 'active' && (
-            <div className="video-streams">
-              <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" poster="/placeholder-ninja.jpg" />
-              <video ref={localVideoRef} autoPlay playsInline muted className="local-video" />
-            </div>
-          )}
-
-          <div className="call-controls">
-            <button className="btn-hangup" onClick={hangUp}>✕</button>
-          </div>
+    <div class="video-grid mb-4">
+        <div class="relative">
+            <video id="localVideo" autoplay playsinline muted></video>
+            <span class="absolute bottom-2 left-2 bg-black/50 text-[10px] px-2">VOCÊ</span>
         </div>
-      )}
-
-      {/* INTERFACE DE NAVEGAÇÃO */}
-      <aside className="sidebar">
-        {NINJA_CONTACTS.map(c => (
-          <div key={c.id} className={`nav-item ${activeContact.id === c.id ? 'active' : ''}`} onClick={() => setActiveContact(c)}>
-            {c.name[0]}
-          </div>
-        ))}
-      </aside>
-
-      <main className="chat-window">
-        <header className="chat-header">
-          <div className="header-info">
-            <h2>{activeContact.name}</h2>
-            <span>Online | Contato Google</span>
-          </div>
-          <div className="header-actions">
-            <button className="action-btn" onClick={() => startCall('audio')}>📞</button>
-            <button className="action-btn neon" onClick={() => startCall('video')}>📹</button>
-          </div>
-        </header>
-
-        <div className="chat-content">
-          <div className="msg-sys">Seu rosto e voz serão transmitidos via criptografia Shinobi.</div>
+        <div class="relative">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <span class="absolute bottom-2 left-2 bg-black/50 text-[10px] px-2">CONTATO</span>
         </div>
-      </main>
-
-      <style jsx>{`
-        .system-main { height: 100vh; display: flex; background: #000; color: white; font-family: 'Inter', sans-serif; }
-        
-        /* Chamada em Tela Cheia */
-        .call-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: space-around; }
-        .caller-profile { text-align: center; position: relative; }
-        .avatar-img { width: 120px; height: 120px; border-radius: 50%; border: 3px solid #ff9100; position: relative; z-index: 2; }
-        
-        .pulse-ring { 
-          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-          width: 140px; height: 140px; border: 2px solid #ff9100; border-radius: 50%;
-          animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } }
-
-        .video-streams { position: absolute; inset: 0; background: #000; }
-        .remote-video { width: 100%; height: 100%; object-fit: cover; }
-        .local-video { position: absolute; top: 20px; right: 20px; width: 100px; height: 150px; border-radius: 12px; border: 2px solid #ff9100; object-fit: cover; }
-
-        .btn-hangup { width: 70px; height: 70px; background: #ff3b30; border: none; border-radius: 50%; color: white; font-size: 30px; cursor: pointer; box-shadow: 0 0 20px rgba(255,59,48,0.4); }
-
-        /* Estilo Base */
-        .sidebar { width: 70px; background: #0a0a0a; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 15px; }
-        .nav-item { width: 45px; height: 45px; background: #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
-        .active { background: #ff9100; color: black; }
-
-        .chat-window { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 20px; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; }
-        .action-btn { background: #1a1a1a; border: 1px solid #333; color: #ff9100; width: 45px; height: 45px; border-radius: 50%; margin-left: 10px; cursor: pointer; font-size: 18px; }
-        .neon { border-color: #ff9100; box-shadow: 0 0 10px rgba(255, 145, 0, 0.2); }
-        .msg-sys { text-align: center; color: #444; font-size: 12px; margin-top: 50px; }
-      `}</style>
     </div>
-  );
-}
+
+    <div class="flex-1 flex flex-col glass rounded-xl p-4 overflow-hidden">
+        <div class="flex gap-2 mb-4">
+            <input id="callInput" type="text" placeholder="ID do Contato" class="bg-transparent border border-white/20 rounded px-3 py-2 flex-1 outline-none focus:border-red-500">
+            <button onclick="makeCall()" class="btn-jutsu px-4 py-2 rounded">Invocar Chamada</button>
+        </div>
+
+        <div id="chatBox" class="chat-box mb-4 space-y-2 border-b border-white/10 pb-2">
+            <div class="text-gray-500 text-xs text-center italic">Inicie o chat para trocar pergaminhos...</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="startAudioRecord()" title="Mandar Áudio" class="p-2 hover:bg-white/10 rounded-full">🎙️</button>
+            <label class="cursor-pointer p-2 hover:bg-white/10 rounded-full">
+                📂 <input type="file" id="fileInput" class="hidden" onchange="sendFile()">
+            </label>
+            <input id="msgInput" type="text" placeholder="Escreva sua mensagem..." class="bg-white/5 border-none rounded-full px-4 py-2 flex-1 outline-none">
+            <button onclick="sendTextMsg()" class="text-2xl">🔥</button>
+        </div>
+    </div>
+
+    <div class="mt-2 text-[10px] flex justify-between px-2">
+        <span>SEU ID: <b id="myId">---</b></span>
+        <span>MODO: P2P DIRECT-CODE</span>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO FIREBASE (Substitua pelos seus dados do console)
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            projectId: "SEU_PROJECT_ID",
+            appId: "SEU_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // WEBRTC E STREAMS
+        let localStream = null;
+        let remoteStream = null;
+        let peerConnection = null;
+        const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
+
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const chatBox = document.getElementById('chatBox');
+
+        // INICIALIZAÇÃO
+        async function init() {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localVideo.srcObject = localStream;
+            
+            // Criar ID de Sessão Único (Pode ser seu contato Google no futuro)
+            const myId = Math.floor(Math.random() * 9000) + 1000;
+            document.getElementById('myId').innerText = myId;
+
+            // Ouvir por chamadas recebidas
+            db.collection('calls').doc(myId.toString()).onSnapshot(snapshot => {
+                const data = snapshot.data();
+                if (data && !peerConnection && data.offer) {
+                    answerCall(myId.toString(), data.offer);
+                }
+            });
+        }
+
+        async function createPC() {
+            peerConnection = new RTCPeerConnection(servers);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            
+            peerConnection.ontrack = (event) => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            // Canal de Dados (Chat/Arquivos/Emojis)
+            const dataChannel = peerConnection.createDataChannel("shinobiChat");
+            setupDataChannel(dataChannel);
+        }
+
+        function setupDataChannel(channel) {
+            channel.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                addMessageToUI(msg.sender, msg.content, msg.type);
+            };
+            window.activeChannel = channel;
+        }
+
+        // FUNÇÕES DE CHAMADA (FIREBASE SINALIZAÇÃO)
+        async function makeCall() {
+            await createPC();
+            const targetId = document.getElementById('callInput').value;
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            await db.collection('calls').doc(targetId).set({ offer: { type: offer.type, sdp: offer.sdp } });
+            
+            // Ouvir resposta
+            db.collection('calls').doc(targetId).onSnapshot(snapshot => {
+                const data = snapshot.data();
+                if (data?.answer && !peerConnection.currentRemoteDescription) {
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                }
+            });
+        }
+
+        async function answerCall(id, offer) {
+            await createPC();
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await db.collection('calls').doc(id).update({ answer: { type: answer.type, sdp: answer.sdp } });
+        }
+
+        // CHAT E MÍDIA
+        function sendTextMsg() {
+            const val = document.getElementById('msgInput').value;
+            if(!val || !window.activeChannel) return;
+            const msg = { sender: 'Você', content: val, type: 'text' };
+            window.activeChannel.send(JSON.stringify(msg));
+            addMessageToUI('Você', val, 'text');
+            document.getElementById('msgInput').value = '';
+        }
+
+        function addMessageToUI(sender, content, type) {
+            const div = document.createElement('div');
+            div.className = "text-sm p-2 rounded bg-white/10";
+            div.innerHTML = `<b>${sender}:</b> ${content}`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Nota: Gravação de áudio e envio de arquivos requerem blobs convertidos em Base64 ou ArrayBuffers
+        // via DataChannel, o que mantém a conexão 100% P2P sem custo de servidor.
+
+        init();
+    </script>
+</body>
+</html>
