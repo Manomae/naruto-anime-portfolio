@@ -1,111 +1,169 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shinobi Sync Final</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+import React, { useState } from 'react';
 
-    <style>
-        :root { --orange: #ff6600; --dark: #0a0a0a; }
-        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        /* Layout Principal */
-        .container { padding: 20px; text-align: center; }
-        .contatos-lista { background: #1a1a1a; border: 1px solid var(--orange); border-radius: 15px; padding: 10px; margin-top: 20px; min-height: 200px; }
-        .card-ninja { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; }
-        
-        /* Botões */
-        .btn-sync { background: var(--orange); color: black; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; width: 100%; margin-bottom: 10px; }
-        .btn-call { background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 8px; border-radius: 5px; margin-left: 5px; }
+export default function ChatSystem() {
+  const [activeChat, setActiveChat] = useState('Geral');
 
-        /* Interface de Chamada Fullscreen */
-        #interface-chamada { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
-        #video-local { width: 90%; height: 60%; background: #111; border: 2px solid var(--orange); border-radius: 15px; object-fit: cover; }
-        
-        /* Animações Naruto */
-        .rasengan { position: absolute; width: 100px; display: none; animation: spin 0.5s linear infinite; filter: drop-shadow(0 0 15px #00a2ff); }
-        .naruto-fone { width: 200px; border-radius: 50%; border: 4px solid var(--orange); display: none; }
-        
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .encerrar { background: #ff3333; color: white; border: none; padding: 20px; border-radius: 50%; margin-top: 30px; font-size: 20px; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2 style="color: var(--orange)">SHINOBI SYNC v4</h2>
-    <button class="btn-sync" onclick="ativarSincronizacao()">SINCRONIZAR COM GOOGLE</button>
-    <div id="status-sync" style="font-size: 12px; opacity: 0.7;">Aguardando comando...</div>
-
-    <div class="contatos-lista" id="grid-contatos">
+  return (
+    <div className="chat-container">
+      {/* Sidebar - Lista de Conversas / Clãs */}
+      <aside className="sidebar">
+        <div className="profile-area">
+          <div className="avatar"></div>
+          <span>Meu Perfil</span>
         </div>
-</div>
+        <nav className="channels">
+          <p className="section-title">CANAIS DE MISSÃO</p>
+          <div className={`channel ${activeChat === 'Geral' ? 'active' : ''}`} onClick={() => setActiveChat('Geral')}>
+            # chat-geral
+          </div>
+          <div className={`channel ${activeChat === 'Equipe 7' ? 'active' : ''}`} onClick={() => setActiveChat('Equipe 7')}>
+            # equipe-7
+          </div>
+          <div className={`channel ${activeChat === 'Recrutamento' ? 'active' : ''}`} onClick={() => setActiveChat('Recrutamento')}>
+            # recrutamento
+          </div>
+        </nav>
+      </aside>
 
-<div id="interface-chamada">
-    <h2 id="nome-remetente">Chamando...</h2>
-    
-    <img id="img-audio" src="https://i.ibb.co/v4m00pY/naruto-phone.png" class="naruto-fone">
-    
-    <video id="video-local" autoplay playsinline muted></video>
-    
-    <img id="anim-rasengan" src="https://i.ibb.co/8Y64f8m/rasengan.png" class="rasengan">
+      {/* Área Principal do Bate-Papo */}
+      <main className="chat-main">
+        <header className="chat-header">
+          <h2>{activeChat}</h2>
+          <div className="status">● 14 Ninjas Online</div>
+        </header>
 
-    <button class="encerrar" onclick="encerrarChamada()">✖</button>
-</div>
+        <div className="messages-area">
+          <div className="msg-bubble system">
+            <p>Bem-vindo ao sistema de comunicação da Aldeia. Mantenha o sigilo das informações.</p>
+          </div>
+          {/* Exemplo de Mensagem Recebida */}
+          <div className="msg-group">
+            <div className="mini-avatar"></div>
+            <div className="msg-content">
+              <span className="sender">Sasuke_Uchiha</span>
+              <p className="text">Alguém para missão de Rank S hoje? 🐍</p>
+            </div>
+          </div>
+        </div>
 
-<script>
-    // 1. Sua Configuração Firebase
-    const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
-        authDomain: "SEU_PROJETO.firebaseapp.com",
-        projectId: "SEU_PROJETO",
-        storageBucket: "SEU_PROJETO.appspot.com",
-        appId: "SUA_APP_ID"
-    };
+        {/* Input de Mensagem Melhorado */}
+        <footer className="input-area">
+          <button className="attach-btn">+</button>
+          <input type="text" placeholder={`Enviar mensagem em #${activeChat}...`} />
+          <button className="send-btn">➔</button>
+        </footer>
+      </main>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-
-    // 2. Sincronização Real (Sem alertas que travam)
-    function ativarSincronizacao() {
-        // Redirecionamento é obrigatório para Vercel + Mobile
-        auth.signInWithRedirect(provider);
-    }
-
-    // Captura o retorno do Google após o login
-    auth.getRedirectResult().then((result) => {
-        if (result && result.credential) {
-            const token = result.credential.accessToken;
-            buscarContatosGoogle(token);
+      <style jsx>{`
+        .chat-container {
+          display: flex;
+          height: 100vh;
+          background: #0f0f12;
+          color: #e0e0e0;
+          font-family: 'Inter', sans-serif;
         }
-    }).catch(err => {
-        document.getElementById('status-sync').innerText = "Erro: " + err.message;
-    });
 
-    function buscarContatosGoogle(token) {
-        document.getElementById('status-sync').innerText = "Buscando Jutsus de Contatos...";
-        fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(data => {
-            const contatos = data.connections || [];
-            contatos.forEach(p => {
-                const nome = p.names ? p.names[0].displayName : "Shinobi";
-                const tel = p.phoneNumbers ? p.phoneNumbers[0].value : "";
-                // Salva no seu Firestore (Coleção: contatos)
-                db.collection("contatos").add({ nome: nome, telefone: tel, sync: true });
-            });
-            document.getElementById('status-sync').innerText = "Sincronizado com Sucesso!";
-        });
-    }
+        /* Sidebar */
+        .sidebar {
+          width: 260px;
+          background: rgba(20, 20, 25, 0.8);
+          border-right: 1px solid rgba(255, 255, 255, 0.05);
+          display: flex;
+          flex-direction: column;
+        }
 
-    // 3. Monitoramento em Tempo Real do Banco
-    db.collection("cont
+        .profile-area {
+          padding: 20px;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .avatar {
+          width: 40px; height: 40px;
+          background: linear-gradient(45deg, #ff9100, #ff4500);
+          border-radius: 50%;
+          box-shadow: 0 0 10px rgba(255, 145, 0, 0.4);
+        }
+
+        .channels { padding: 20px 10px; }
+        .section-title { font-size: 0.7rem; color: #666; margin-bottom: 10px; padding-left: 10px; }
+        
+        .channel {
+          padding: 10px;
+          border-radius: 8px;
+          margin-bottom: 5px;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        .channel:hover, .active {
+          background: rgba(255, 145, 0, 0.1);
+          color: #ff9100;
+        }
+
+        /* Área de Chat */
+        .chat-main {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .chat-header {
+          padding: 15px 25px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .messages-area {
+          flex: 1;
+          padding: 20px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .msg-group { display: flex; gap: 15px; }
+        .mini-avatar { width: 35px; height: 35px; background: #333; border-radius: 8px; }
+        .sender { font-size: 0.85rem; color: #ff9100; font-weight: bold; margin-bottom: 4px; display: block; }
+        .text { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 0 12px 12px 12px; }
+
+        /* Input */
+        .input-area {
+          padding: 20px;
+          display: flex;
+          gap: 10px;
+          background: rgba(0,0,0,0.2);
+        }
+
+        input {
+          flex: 1;
+          background: #1a1a20;
+          border: 1px solid #333;
+          border-radius: 10px;
+          padding: 12px;
+          color: white;
+          outline: none;
+        }
+
+        .send-btn, .attach-btn {
+          background: #ff9100;
+          border: none;
+          width: 45px;
+          border-radius: 10px;
+          color: black;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+          .sidebar { display: none; } /* Esconde sidebar no mobile por padrão */
+        }
+      `}</style>
+    </div>
+  );
+}
