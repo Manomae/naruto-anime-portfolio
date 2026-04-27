@@ -38,28 +38,33 @@ export default function ShinobiHome() {
 
     // --- FUNÇÕES DE CONEXÃO ---
 
-    const setupPeerConnection = async (target) => {
+    const setupPeerConnection = async (target, isIncoming = false) => {
         if (pc.current) pc.current.close();
         pc.current = new RTCPeerConnection(servers);
         
+        // Adiciona audio e video local à conexão
         localStream.current.getTracks().forEach(track => {
             pc.current.addTrack(track, localStream.current);
         });
 
+        // Quando o video do outro lado chegar
         pc.current.ontrack = (event) => {
             if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = event.streams[0];
             }
         };
 
+        // Envia seus candidatos de rede para o outro Shinobi
         pc.current.onicecandidate = (event) => {
             if (event.candidate) {
                 db.collection('calls').doc(target).collection('candidates').add(event.candidate.toJSON());
             }
         };
 
-        // Escuta candidatos para o ID atual (estável)
-        db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
+        // Escuta candidatos que chegam para VOCÊ
+        // Se for chamada recebida, escuta no seu ID. Se for você ligando, escuta no ID do alvo.
+        const listenId = isIncoming ? myId : target;
+        db.collection('calls').doc(listenId).collection('candidates').onSnapshot(snap => {
             snap.docChanges().forEach(change => {
                 if (change.type === 'added' && pc.current?.remoteDescription) {
                     pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(e => {});
@@ -69,18 +74,21 @@ export default function ShinobiHome() {
     };
 
     const callContact = async () => {
-        if (targetId.length < 6) return alert("ID Inválido!");
+        if (targetId.length < 6) return alert("Digite o ID completo!");
         setStatus('INVOCANDO...');
-        await setupPeerConnection(targetId);
+        
+        await setupPeerConnection(targetId, false);
 
         const offer = await pc.current.createOffer();
         await pc.current.setLocalDescription(offer);
 
+        // Salva a oferta no "pergaminho" do alvo
         await db.collection('calls').doc(targetId).set({ 
             offer: { sdp: offer.sdp, type: offer.type }, 
             from: myId 
         });
 
+        // Fica esperando a resposta (answer) do alvo
         db.collection('calls').doc(targetId).onSnapshot(snap => {
             const data = snap.data();
             if (data?.answer && !pc.current.currentRemoteDescription) {
@@ -92,22 +100,22 @@ export default function ShinobiHome() {
 
     const answerCall = async (offer, fromId) => {
         setStatus('CONECTANDO...');
-        await setupPeerConnection(fromId);
+        await setupPeerConnection(fromId, true);
         await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
         
         const answer = await pc.current.createAnswer();
         await pc.current.setLocalDescription(answer);
         
+        // Manda a resposta de volta
         await db.collection('calls').doc(myId).update({ 
             answer: { sdp: answer.sdp, type: answer.type } 
         });
         setStatus('CONECTADO');
     };
 
-    // --- INICIALIZAÇÃO CORRIGIDA (SEM LOOP) ---
+    // --- INICIALIZAÇÃO ÚNICA (SEM LOOP) ---
 
     useEffect(() => {
-        // Geramos o ID apenas UMA VEZ
         const generatedId = Math.floor(100000 + Math.random() * 900000).toString();
         setMyId(generatedId);
 
@@ -115,30 +123,28 @@ export default function ShinobiHome() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 localStream.current = stream;
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = stream;
-                }
+                if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+                
                 setStatus('SISTEMA ONLINE');
 
-                // O ouvinte usa o generatedId para evitar depender do estado myId
+                // Escuta se alguém está te chamando pelo seu ID gerado
                 db.collection('calls').doc(generatedId).onSnapshot(async (snapshot) => {
                     const data = snapshot.data();
                     if (data?.offer && !pc.current) {
-                        if (confirm(`🚨 INVOCADOR DETECTADO (ID: ${data.from})! Aceitar chamado?`)) {
+                        if (confirm(`🚨 INVOCADOR DETECTADO (ID: ${data.from})! Aceitar?`)) {
                             await answerCall(data.offer, data.from);
                         }
                     }
                 });
             } catch (e) { 
-                setStatus('ERRO DE CHAKRA (CÂMERA)');
+                setStatus('ERRO DE CÂMERA');
                 console.error(e);
             }
         }
-        
         initSystem();
 
         return () => pc.current?.close();
-    }, []); // Colchetes vazios para impedir o loop infinito
+    }, []); // IMPORTANTE: Array vazio trava o loop
 
     return (
         <div className="min-h-screen p-4 flex items-center justify-center bg-black">
