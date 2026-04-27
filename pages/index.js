@@ -36,9 +36,9 @@ export default function ShinobiHome() {
         ]
     };
 
-    // --- FUNÇÕES DE CONEXÃO (LÓGICA CORRIGIDA) ---
+    // --- FUNÇÕES DE CONEXÃO ---
 
-    const setupPeerConnection = async (target, isCaller) => {
+    const setupPeerConnection = async (target) => {
         if (pc.current) pc.current.close();
         pc.current = new RTCPeerConnection(servers);
         
@@ -49,19 +49,17 @@ export default function ShinobiHome() {
         pc.current.ontrack = (event) => {
             if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = event.streams[0];
-                remoteVideoRef.current.play().catch(e => console.error("Erro no play remoto:", e));
             }
         };
 
         pc.current.onicecandidate = (event) => {
             if (event.candidate) {
-                // Envia para o documento do OUTRO shinobi
                 db.collection('calls').doc(target).collection('candidates').add(event.candidate.toJSON());
             }
         };
 
-        // Escuta candidatos que chegam para MIM
-        db.collection('calls').doc(myId || target).collection('candidates').onSnapshot(snap => {
+        // Escuta candidatos para o ID atual (estável)
+        db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
             snap.docChanges().forEach(change => {
                 if (change.type === 'added' && pc.current?.remoteDescription) {
                     pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(e => {});
@@ -73,7 +71,7 @@ export default function ShinobiHome() {
     const callContact = async () => {
         if (targetId.length < 6) return alert("ID Inválido!");
         setStatus('INVOCANDO...');
-        await setupPeerConnection(targetId, true);
+        await setupPeerConnection(targetId);
 
         const offer = await pc.current.createOffer();
         await pc.current.setLocalDescription(offer);
@@ -94,7 +92,7 @@ export default function ShinobiHome() {
 
     const answerCall = async (offer, fromId) => {
         setStatus('CONECTANDO...');
-        await setupPeerConnection(fromId, false);
+        await setupPeerConnection(fromId);
         await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
         
         const answer = await pc.current.createAnswer();
@@ -106,9 +104,10 @@ export default function ShinobiHome() {
         setStatus('CONECTADO');
     };
 
-    // --- INICIALIZAÇÃO ---
+    // --- INICIALIZAÇÃO CORRIGIDA (SEM LOOP) ---
 
     useEffect(() => {
+        // Geramos o ID apenas UMA VEZ
         const generatedId = Math.floor(100000 + Math.random() * 900000).toString();
         setMyId(generatedId);
 
@@ -121,6 +120,7 @@ export default function ShinobiHome() {
                 }
                 setStatus('SISTEMA ONLINE');
 
+                // O ouvinte usa o generatedId para evitar depender do estado myId
                 db.collection('calls').doc(generatedId).onSnapshot(async (snapshot) => {
                     const data = snapshot.data();
                     if (data?.offer && !pc.current) {
@@ -134,12 +134,11 @@ export default function ShinobiHome() {
                 console.error(e);
             }
         }
+        
         initSystem();
 
         return () => pc.current?.close();
-    }, [myId]); // Dependência adicionada para garantir o ID no snapshot
-
-    // --- INTERFACE (UI) ---
+    }, []); // Colchetes vazios para impedir o loop infinito
 
     return (
         <div className="min-h-screen p-4 flex items-center justify-center bg-black">
