@@ -3,7 +3,7 @@ import Head from 'next/head';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
-// --- CONFIGURAÇÃO REAL DO FIREBASE ---
+// --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyD60jeX_HrJ6agEQTJE85zonqYwil4u5dc",
     authDomain: "shinobisync-ec4e9.firebaseapp.com",
@@ -36,44 +36,10 @@ export default function ShinobiHome() {
         ]
     };
 
-    useEffect(() => {
-        const generatedId = Math.floor(100000 + Math.random() * 900000).toString();
-        setMyId(generatedId);
+    // --- FUNÇÕES DE CONEXÃO (LÓGICA CORRIGIDA) ---
 
-        async function initSystem() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localStream.current = stream;
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = stream;
-                }
-                
-                setStatus('SISTEMA ONLINE');
-
-                // Ouvinte de Invocação (Alerta de Chamada)
-                db.collection('calls').doc(generatedId).onSnapshot(async (snapshot) => {
-                    const data = snapshot.data();
-                    if (data?.offer && !pc.current) {
-                        if (confirm(`🚨 INVOCADOR DETECTADO (ID: ${data.from})! Aceitar chamado?`)) {
-                            await answerCall(data.offer, data.from);
-                        }
-                    }
-                });
-            } catch (e) { 
-                setStatus('ERRO DE CÂMERA');
-                console.error(e);
-            }
-        }
-        initSystem();
-
-        return () => {
-            if (pc.current) pc.current.close();
-        };
-    }, []);
-
-    const setupPeerConnection = async (target) => {
+    const setupPeerConnection = async (target, isCaller) => {
         if (pc.current) pc.current.close();
-        
         pc.current = new RTCPeerConnection(servers);
         
         localStream.current.getTracks().forEach(track => {
@@ -87,18 +53,18 @@ export default function ShinobiHome() {
             }
         };
 
-        // Envia o endereço de rede (ICE) para o Firebase
         pc.current.onicecandidate = (event) => {
             if (event.candidate) {
+                // Envia para o documento do OUTRO shinobi
                 db.collection('calls').doc(target).collection('candidates').add(event.candidate.toJSON());
             }
         };
 
-        // Escuta os endereços de rede do outro lado
-        db.collection('calls').doc(myId).collection('candidates').onSnapshot(snap => {
+        // Escuta candidatos que chegam para MIM
+        db.collection('calls').doc(myId || target).collection('candidates').onSnapshot(snap => {
             snap.docChanges().forEach(change => {
-                if (change.type === 'added' && pc.current) {
-                    pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(e => console.error(e));
+                if (change.type === 'added' && pc.current?.remoteDescription) {
+                    pc.current.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(e => {});
                 }
             });
         });
@@ -107,7 +73,7 @@ export default function ShinobiHome() {
     const callContact = async () => {
         if (targetId.length < 6) return alert("ID Inválido!");
         setStatus('INVOCANDO...');
-        await setupPeerConnection(targetId);
+        await setupPeerConnection(targetId, true);
 
         const offer = await pc.current.createOffer();
         await pc.current.setLocalDescription(offer);
@@ -127,15 +93,53 @@ export default function ShinobiHome() {
     };
 
     const answerCall = async (offer, fromId) => {
-        await setupPeerConnection(fromId);
+        setStatus('CONECTANDO...');
+        await setupPeerConnection(fromId, false);
         await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
+        
         const answer = await pc.current.createAnswer();
         await pc.current.setLocalDescription(answer);
+        
         await db.collection('calls').doc(myId).update({ 
             answer: { sdp: answer.sdp, type: answer.type } 
         });
         setStatus('CONECTADO');
     };
+
+    // --- INICIALIZAÇÃO ---
+
+    useEffect(() => {
+        const generatedId = Math.floor(100000 + Math.random() * 900000).toString();
+        setMyId(generatedId);
+
+        async function initSystem() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localStream.current = stream;
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                }
+                setStatus('SISTEMA ONLINE');
+
+                db.collection('calls').doc(generatedId).onSnapshot(async (snapshot) => {
+                    const data = snapshot.data();
+                    if (data?.offer && !pc.current) {
+                        if (confirm(`🚨 INVOCADOR DETECTADO (ID: ${data.from})! Aceitar chamado?`)) {
+                            await answerCall(data.offer, data.from);
+                        }
+                    }
+                });
+            } catch (e) { 
+                setStatus('ERRO DE CHAKRA (CÂMERA)');
+                console.error(e);
+            }
+        }
+        initSystem();
+
+        return () => pc.current?.close();
+    }, [myId]); // Dependência adicionada para garantir o ID no snapshot
+
+    // --- INTERFACE (UI) ---
 
     return (
         <div className="min-h-screen p-4 flex items-center justify-center bg-black">
