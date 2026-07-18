@@ -62,6 +62,9 @@ export default function EmanuelOSCore() {
   const [generoVoz, setGeneroVoz] = useState('masculino');
   const [pesquisaChat, setPesquisaChat] = useState('');
   
+  // 🌟 PARTE 1 DA ATUALIZAÇÃO: Estado do microfone adicionado corretamente aqui
+  const [estaOuvindo, setEstaOuvindo] = useState(false);
+  
   // Estados do Chat e Respostas Reais
   const [chatInput, setChatInput] = useState('');
   const [historicoChats, setHistoricoChats] = useState([
@@ -84,7 +87,7 @@ export default function EmanuelOSCore() {
   const [statusStudio, setStatusStudio] = useState('Aguardando comando de edição...');
   const fileInputRef = useRef(null);
 
-  // 🎙️ MOTOR DE VOZ REAL TRABALHADA (Web Speech API)
+  // 🎙完整 MOTOR DE VOZ REAL TRABALHADA (Web Speech API)
   const falarTextoReal = (texto) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -107,6 +110,26 @@ export default function EmanuelOSCore() {
       utterance.rate = 1.02;
       window.speechSynthesis.speak(utterance);
     }
+  };
+
+  // 🌟 PARTE 2 DA ATUALIZAÇÃO: Função iniciarEscuta adicionada perfeitamente aqui
+  const iniciarEscuta = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
+
+    const reconhecimento = new SpeechRecognition();
+    reconhecimento.lang = 'pt-BR';
+
+    reconhecimento.onstart = () => setEstaOuvindo(true);
+    reconhecimento.onend = () => setEstaOuvindo(false);
+
+    reconhecimento.onresult = (event) => {
+      const transcricao = event.results[0][0].transcript;
+      setChatInput(transcricao);
+      processarConversaReal(transcricao);
+    };
+
+    reconhecimento.start();
   };
 
   // ⏱️ SAUDAÇÃO REAL POR HORÁRIO ATIVO AO CARREGAR O SISTEMA
@@ -133,12 +156,10 @@ export default function EmanuelOSCore() {
     let respostaTexto = "";
     const textoLimpo = textoUsuario.toLowerCase();
 
-    // 🌟 AQUI ENTRA A INTEGRAÇÃO COM O SEU DICIONÁRIO NINJA!
-    // Ele faz a busca inteligente antes de rodar os 'ifs' de saudação normais.
+    // 🌟 INTEGRAÇÃO COM O SEU DICIONÁRIO NINJA
     const resultadoDicionario = buscarNoDicionario(textoUsuario);
 
     if (resultadoDicionario) {
-      // Se encontrar o termo (mesmo digitado errado), a IA responde com o significado dele!
       respostaTexto = `Rastreando dados cognitivos sobre o termo "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
     } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
       const hora = new Date().getHours();
@@ -169,7 +190,7 @@ export default function EmanuelOSCore() {
   };
 
   // 💬 DISPARO REAL FUNCIONAL DE MENSAGENS (1 OU AS 2 AO MESMO TEMPO)
-  const ejecutarDisparoReal = (e) => {
+  const executarDisparoReal = (e) => {
     e.preventDefault();
     if (!ddd || !telefone) return alert("Por favor, digite um DDD e número válidos.");
 
@@ -268,7 +289,7 @@ export default function EmanuelOSCore() {
           <input 
             type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
             placeholder="Digite palavras específicas para filtrar conversas..."
-            style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '13px' }}
+            style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', color: '#fff', fontSize: '13px' }}
           />
           {pesquisaChat && (
             <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
@@ -388,13 +409,22 @@ export default function EmanuelOSCore() {
         {/* ⌨️ BARRA INFERIOR DE CAPTAÇÃO CENTRAL DA INTERFACE */}
         <div style={{ width: '100%', maxWidth: '650px', background: 'rgba(7, 7, 12, 0.5)', padding: '14px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(15px)' }}>
           <form onSubmit={handleEnviarMensagemTexto} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            
+            {/* 🌟 PARTE 3 DA ATUALIZAÇÃO: Botão do microfone com a lógica e estilos solicitados */}
             <button 
               type="button"
-              onClick={() => processarConversaReal("Como você está?")}
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: 'none', width: '45px', height: '45px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}
+              onClick={iniciarEscuta} 
+              style={{ 
+                backgroundColor: estaOuvindo ? '#ff0055' : 'rgba(255,255,255,0.05)', 
+                border: 'none', width: '45px', height: '45px', borderRadius: '50%', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                cursor: 'pointer', fontSize: '18px',
+                transition: 'all 0.3s'
+              }}
             >
-              🎙️
+              {estaOuvindo ? '🔴' : '🎙️'}
             </button>
+            
             <input 
               type="text" 
               value={chatInput}
