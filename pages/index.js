@@ -1,6 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
+// 📂 IMPORTANTE: Certifique-se de que o seu 'dicionario-ninja.json' está na mesma pasta deste arquivo!
+import dicionarioNinja from './dicionario-ninja.json';
+
+// ==========================================
+// 🛠️ ALGORITMO DE DISTÂNCIA DE LEVENSHTEIN (Parte 2)
+// Pluga direto aqui fora do componente principal para deixar o código limpo
+// ==========================================
+function calcularDiferencaLetras(palavra1, palavra2) {
+  const p1 = palavra1.toLowerCase().trim();
+  const p2 = palavra2.toLowerCase().trim();
+  
+  const matriz = [];
+  for (let i = 0; i <= p1.length; i++) matriz[i] = [i];
+  for (let j = 0; j <= p2.length; j++) matriz[0][j] = j;
+  
+  for (let i = 1; i <= p1.length; i++) {
+    for (let j = 1; j <= p2.length; j++) {
+      const custo = p1[i - 1] === p2[j - 1] ? 0 : 1;
+      matriz[i][j] = Math.min(
+        matriz[i - 1][j] + 1,      // Deleção
+        matriz[i][j - 1] + 1,      // Inserção
+        matriz[i - 1][j - 1] + custo // Substituição
+      );
+    }
+  }
+  return matriz[p1.length][p2.length];
+}
+
+function buscarNoDicionario(perguntaUsuario) {
+  if (!dicionarioNinja) return null;
+  const palavrasDigitadas = perguntaUsuario.toLowerCase().split(" ");
+  let melhorResultado = null;
+  let menorDistancia = 3; // Aceita até 2 letras erradas do usuário
+
+  for (const item of dicionarioNinja) {
+    const combinacoes = [item.termo, ...(item.sinonimos || [])];
+
+    for (const termoValido of combinacoes) {
+      for (const palavraDigitada of palavrasDigitadas) {
+        if (palavraDigitada === termoValido.toLowerCase()) {
+          return item; // Busca exata idêntica
+        }
+
+        const distancia = calcularDiferencaLetras(palavraDigitada, termoValido);
+        if (distancia < menorDistancia) {
+          menorDistancia = distancia;
+          melhorResultado = item;
+        }
+      }
+    }
+  }
+  return melhorResultado;
+}
+
 export default function EmanuelOSCore() {
   // Estados de Controle de Modos e Abas
   const [modo, setModo] = useState('live'); // live | studio
@@ -43,14 +97,14 @@ export default function EmanuelOSCore() {
       if (vozPt.length > 0) {
         if (vozAtiva === 'Emanuelly' || generoVoz === 'feminino') {
           utterance.voice = vozPt.find(v => v.name.toLowerCase().includes('maria') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('luciana')) || vozPt[0];
-          utterance.pitch = 1.3; // Tom trabalhado feminino
+          utterance.pitch = 1.3;
         } else {
           utterance.voice = vozPt.find(v => v.name.toLowerCase().includes('daniel') || v.name.toLowerCase().includes('helio')) || vozPt[0];
-          utterance.pitch = 0.95; // Tom trabalhado masculino
+          utterance.pitch = 0.95;
         }
       }
       
-      utterance.rate = 1.02; // Fluidez aprimorada na fala
+      utterance.rate = 1.02;
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -68,7 +122,6 @@ export default function EmanuelOSCore() {
       textoSaudacao = "Boa noite, Emanuel! Espero que esteja tudo bem. Meu núcleo de IA está ativo para te dar suporte. Quer testar os disparos reais de mensagens ou trabalhar na criação de avatares no Studio Mode?";
     }
 
-    // Dá um pequeno tempo para o navegador registrar as vozes nativas antes de falar
     setTimeout(() => {
       setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()}`, texto: textoSaudacao, tipo: 'ia' }]);
       falarTextoReal(textoSaudacao);
@@ -80,7 +133,14 @@ export default function EmanuelOSCore() {
     let respostaTexto = "";
     const textoLimpo = textoUsuario.toLowerCase();
 
-    if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
+    // 🌟 AQUI ENTRA A INTEGRAÇÃO COM O SEU DICIONÁRIO NINJA!
+    // Ele faz a busca inteligente antes de rodar os 'ifs' de saudação normais.
+    const resultadoDicionario = buscarNoDicionario(textoUsuario);
+
+    if (resultadoDicionario) {
+      // Se encontrar o termo (mesmo digitado errado), a IA responde com o significado dele!
+      respostaTexto = `Rastreando dados cognitivos sobre o termo "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
+    } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
       const hora = new Date().getHours();
       respostaTexto = hora < 12 ? "Bom dia, Emanuel! Tudo bem? Estou às suas ordens." : hora < 18 ? "Boa tarde, Emanuel! Como posso te ajudar agora?" : "Boa noite, Emanuel! Vamos programar ou editar?";
     } else if (textoLimpo.includes('como você está') || textoLimpo.includes('tudo bem')) {
@@ -109,7 +169,7 @@ export default function EmanuelOSCore() {
   };
 
   // 💬 DISPARO REAL FUNCIONAL DE MENSAGENS (1 OU AS 2 AO MESMO TEMPO)
-  const executarDisparoReal = (e) => {
+  const ejecutarDisparoReal = (e) => {
     e.preventDefault();
     if (!ddd || !telefone) return alert("Por favor, digite um DDD e número válidos.");
 
@@ -121,13 +181,11 @@ export default function EmanuelOSCore() {
     } else if (modoDisparo === 'canal2') {
       textoFinal = msgCanal2;
     } else {
-      // Dispara as duas ao mesmo tempo com quebra de linha real
       textoFinal = `${msgCanal1}\n\n${msgCanal2}`;
     }
 
     if (!textoFinal.trim()) return alert("Por favor, digite o conteúdo da mensagem.");
 
-    // Envio Real via Link de Integração Nativo
     const urlLinkReal = `https://api.whatsapp.com/send?phone=${numeroCompleto}&text=${encodeURIComponent(textoFinal)}`;
     window.open(urlLinkReal, '_blank');
   };
@@ -181,7 +239,7 @@ export default function EmanuelOSCore() {
         {/* Identidade do Sistema */}
         <div>
           <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
-            EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
+            Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
           </h1>
           <span style={{ fontSize: '10px', color: '#71717a', fontWeight: 'bold' }}>SISTEMA OPERACIONAL MULTIMODAL AGI</span>
         </div>

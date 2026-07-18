@@ -1,0 +1,20 @@
+[
+  {
+    "termo": "Nagato",
+    "categoria": "Personagem",
+    "significado": "Líder da Akatsuki que controlava os Seis Caminhos de Pain. Ele buscava a paz através da dor após sofrer os traumas da guerra na Vila da Chuva.",
+    "sinonimos": ["Pain", "Uzumaki Nagato", "Seis Caminhos"]
+  },
+  {
+    "termo": "Shinobi",
+    "categoria": "Geral",
+    "significado": "O mesmo que Ninja. Um indivíduo treinado no uso de chakra, artes marciais e jutsus para cumprir missões e proteger sua vila.",
+    "sinonimos": ["Ninja", "Kunoichi"]
+  },
+  {
+    "termo": "Chakra",
+    "categoria": "Energia",
+    "significado": "A energia essencial usada pelos ninjas para moldar e realizar Jutsus (Ninjutsu, Genjutsu e Taijutsu). É a mistura da energia física e espiritual.",
+    "sinonimos": ["Energia Ninja", "Chacra"]
+  }
+]
