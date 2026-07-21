@@ -55,18 +55,22 @@ function buscarNoDicionario(perguntaUsuario) {
 }
 
 export default function EmanuelOSCore() {
-  // 🔐 ESTADOS DO SISTEMA DE SEGURANÇA E PROTOCOLO DE ACESSO
+  // 🔐 ESTADOS DO SISTEMA DE SEGURANÇA E PROTOCOLO DE ACESSO (4 ETAPAS)
   const [bloqueado, setBloqueado] = useState(true);
-  const [etapaSeguranca, setEtapaSeguranca] = useState(1); // 1 = PIN, 2 = E-mail & Chave
+  const [etapaSeguranca, setEtapaSeguranca] = useState(1); // 1 = Telefone, 2 = PIN, 3 = Email, 4 = Chave
+  
+  // CAMPOS DE DIGITAÇÃO
+  const [telefoneDigitado, setTelefoneDigitado] = useState('');
   const [pinDigitado, setPinDigitado] = useState('');
-  const [emailSeguranca, setEmailSeguranca] = useState('');
-  const [chaveAcesso, setChaveAcesso] = useState('');
-  const [solicitacaoEnviada, setSolicitacaoEnviada] = useState(false);
+  const [emailDigitado, setEmailDigitado] = useState('');
+  const [chaveDigitada, setChaveDigitada] = useState('');
 
-  // CREDENCIAIS MESTRES DO SISTEMA EMANUEL.OS
-  const PIN_MESTRE_EMANUEL = "2121";          // 👈 Altere "2026" para o PIN numérico que desejar
-  const EMAIL_AUTORIZADO = "leeheroi123@gmail.com"; // 👈 Seu e-mail de acesso
-  const CHAVE_MESTRE = "EMA-ADE-2121";         // 👈 Altere "EMA-AGI-777" para a palavra-chave secreta que quiser
+  // 🔑 CREDENCIAIS MESTRES DO SISTEMA EMANUEL.OS
+  const TELEFONE_AUTORIZADO = "88981493989";
+  const TELEFONE_AUTORIZADO_DDI = "5588981493989";
+  const PIN_MESTRE_EMANUEL = "7878";
+  const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
+  const CHAVE_MESTRE = "EMA-API-780";
 
   // Estados de Controle de Modos e Abas
   const [modo, setModo] = useState('live'); 
@@ -86,7 +90,7 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 4 camadas ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
   // Estados de Disparo Real de Linhas Telefônicas
@@ -103,32 +107,46 @@ export default function EmanuelOSCore() {
   const [statusStudio, setStatusStudio] = useState('Aguardando comando de edição...');
   const imageInputRef = useRef(null);
 
-  // 🛡️ LÓGICA DE VERIFICAÇÃO DE PIN E 2FA
-  const verificarPin = (e) => {
+  // 🛡️ LÓGICA DAS 4 ETAPAS DE SEGURANÇA
+  const validarEtapa1Telefone = (e) => {
     e.preventDefault();
-    if (pinDigitado === PIN_MESTRE_EMANUEL) {
+    const telLimpo = telefoneDigitado.replace(/\D/g, '');
+    if (telLimpo === TELEFONE_AUTORIZADO || telLimpo === TELEFONE_AUTORIZADO_DDI) {
       setEtapaSeguranca(2);
     } else {
-      alert("⚠️ PIN Incorreto! Acesso negado ao Emanuel.OS");
+      alert("⚠️ Telefone não autorizado! Acesso negado.");
+      setTelefoneDigitado('');
+    }
+  };
+
+  const validarEtapa2Pin = (e) => {
+    e.preventDefault();
+    if (pinDigitado === PIN_MESTRE_EMANUEL) {
+      setEtapaSeguranca(3);
+    } else {
+      alert("⚠️ PIN Mestre incorreto!");
       setPinDigitado('');
     }
   };
 
-  const solicitarChaveEmail = () => {
-    if (!emailSeguranca.trim() || emailSeguranca.toLowerCase() !== EMAIL_AUTORIZADO) {
-      return alert("⚠️ E-mail não autorizado para solicitar chave de acesso.");
+  const validarEtapa3Email = (e) => {
+    e.preventDefault();
+    if (emailDigitado.trim().toLowerCase() === EMAIL_AUTORIZADO.toLowerCase()) {
+      setEtapaSeguranca(4);
+    } else {
+      alert("⚠️ E-mail não autorizado!");
+      setEmailDigitado('');
     }
-    setSolicitacaoEnviada(true);
-    alert(`📧 Solicitação enviada! Uma autorização foi gerada para o e-mail: ${emailSeguranca}. Use a Palavra-Chave Mestre para confirmar.`);
   };
 
-  const verificarAutenticacaoFinal = (e) => {
+  const validarEtapa4Chave = (e) => {
     e.preventDefault();
-    if (chaveAcesso === CHAVE_MESTRE) {
+    if (chaveDigitada === CHAVE_MESTRE) {
       setBloqueado(false);
-      alert("🔓 Acesso Autorizado! Bem-vindo ao Emanuel.OS Core.");
+      alert("🔓 Acesso Autorizado! Autenticação de 4 Etapas concluída com sucesso.");
     } else {
-      alert("⚠️ Palavra-Chave ou Token inválido! Acesso bloqueado pelo Firewall.");
+      alert("⚠️ Palavra-Chave Mestre inválida! O sistema permanecerá bloqueado.");
+      setChaveDigitada('');
     }
   };
 
@@ -237,12 +255,12 @@ export default function EmanuelOSCore() {
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
 
-  // 🔒 TELA DE SEGURANÇA E AUTENTICAÇÃO ANTES DE ACESSAR O SISTEMA
+  // 🔒 TELA DE SEGURANÇA EM 4 ETAPAS SEQUENCIAIS
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS - Central de Segurança & Autenticação</title>
+          <title>Emanuel.OS - Autenticação em 4 Etapas</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
@@ -251,13 +269,40 @@ export default function EmanuelOSCore() {
           <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
           </h2>
-          <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '25px', letterSpacing: '1px' }}>
-            PAINEL DE PROTOCOLO DE SEGURANÇA CRIPTOGRÁFICO
+          <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
+            PROTOCOLO DE SEGURANÇA DE 4 ETAPAS ({etapaSeguranca}/4)
           </span>
 
+          {/* INDICADOR DE ETAPAS */}
+          <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '20px' }}>
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 1 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 2 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 3 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 4 ? '#ff0055' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+          </div>
+
+          {/* ETAPA 1: NÚMERO DE TELEFONE */}
           {etapaSeguranca === 1 && (
-            <form onSubmit={verificarPin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>Insira seu PIN Mestre de Segurança (4 Dígitos):</span>
+            <form onSubmit={validarEtapa1Telefone} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📱 1ª Etapa: Digite seu Número de Telefone:</span>
+              <input 
+                type="text" 
+                value={telefoneDigitado} 
+                onChange={(e) => setTelefoneDigitado(e.target.value)}
+                placeholder="Ex: 88981493989"
+                style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '16px', outline: 'none' }}
+              />
+              <button type="submit" style={{ padding: '14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)' }}>
+                Validar Telefone ➔
+              </button>
+            </form>
+          )}
+
+          {/* ETAPA 2: PIN MESTRE */}
+          {etapaSeguranca === 2 && (
+            <form onSubmit={validarEtapa2Pin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Telefone Aprovado!</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>🔢 2ª Etapa: Digite seu PIN Mestre (4 Dígitos):</span>
               <input 
                 type="password" 
                 maxLength="4" 
@@ -267,45 +312,47 @@ export default function EmanuelOSCore() {
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', outline: 'none' }}
               />
               <button type="submit" style={{ padding: '14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)' }}>
-                🔓 Validar PIN Mestre
+                Validar PIN ➔
               </button>
             </form>
           )}
 
-          {etapaSeguranca === 2 && (
-            <form onSubmit={verificarAutenticacaoFinal} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ PIN Aprovado! Confirme o E-mail Autorizado:</span>
-              
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <input 
-                  type="email" 
-                  value={emailSeguranca} 
-                  onChange={(e) => setEmailSeguranca(e.target.value)}
-                  placeholder="Seu e-mail cadastrado..."
-                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: '#09090b', color: '#fff', fontSize: '11px' }}
-                />
-                <button type="button" onClick={solicitarChaveEmail} style={{ padding: '10px', backgroundColor: 'rgba(255,0,85,0.2)', border: '1px solid #ff0055', color: '#ff0055', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                  📩 Enviar Chave
-                </button>
-              </div>
+          {/* ETAPA 3: E-MAIL AUTORIZADO */}
+          {etapaSeguranca === 3 && (
+            <form onSubmit={validarEtapa3Email} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ PIN Aprovado!</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📧 3ª Etapa: Digite seu E-mail Autorizado:</span>
+              <input 
+                type="email" 
+                value={emailDigitado} 
+                onChange={(e) => setEmailDigitado(e.target.value)}
+                placeholder="seuemail@gmail.com"
+                style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '13px', outline: 'none' }}
+              />
+              <button type="submit" style={{ padding: '14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)' }}>
+                Validar E-mail ➔
+              </button>
+            </form>
+          )}
 
-              {solicitacaoEnviada && (
-                <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Digite a Palavra-Chave/Token Mestre enviado para autorizar:</span>
-              )}
-
+          {/* ETAPA 4: PALAVRA-CHAVE MESTRE */}
+          {etapaSeguranca === 4 && (
+            <form onSubmit={validarEtapa4Chave} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ E-mail Confirmado!</span>
+              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 4ª Etapa Final: Palavra-Chave Mestre:</span>
               <input 
                 type="password" 
-                value={chaveAcesso} 
-                onChange={(e) => setChaveAcesso(e.target.value)}
-                placeholder="Digite a Palavra-Chave Mestre..."
-                style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ff0055', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '13px' }}
+                value={chaveDigitada} 
+                onChange={(e) => setChaveDigitada(e.target.value)}
+                placeholder="Palavra-Chave Mestre..."
+                style={{ padding: '14px', borderRadius: '12px', border: '1px solid #ff0055', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '14px', outline: 'none' }}
               />
-
-              <button type="submit" style={{ padding: '14px', backgroundColor: '#ff0055', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,85,0.4)', marginTop: '5px' }}>
+              <button type="submit" style={{ padding: '14px', backgroundColor: '#ff0055', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,85,0.4)' }}>
                 🛡️ Desbloquear Emanuel.OS Core
               </button>
             </form>
           )}
+
         </div>
       </div>
     );
