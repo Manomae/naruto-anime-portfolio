@@ -21,7 +21,7 @@ export default function MapaSpatialChakraEmanuel() {
   const [termoBusca, setTermoBusca] = useState('');
   const [sugestoesBusca, setSugestoesBusca] = useState([]);
   const [carregandoBusca, setCarregandoBusca] = useState(false);
-  const [filtroCategoria, setFiltroCategoria] = useState('geral'); // 'oceano', 'especies', 'idosos', 'pcd'
+  const [filtroCategoria, setFiltroCategoria] = useState('geral');
 
   // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
@@ -111,7 +111,7 @@ export default function MapaSpatialChakraEmanuel() {
     mainLight.position.set(0, 25, 0);
     scene.add(mainLight);
 
-    // 🌊 PLANO DO OCEANO / RIO 3D COM REFLEXO AZUL
+    // PLANO DO OCEANO / RIO 3D
     const oceanoGeo = new THREE.PlaneGeometry(100, 100);
     const oceanoMat = new THREE.MeshStandardMaterial({
       color: 0x002244,
@@ -130,14 +130,13 @@ export default function MapaSpatialChakraEmanuel() {
     gridHelper.position.y = -0.49;
     scene.add(gridHelper);
 
-    // 🌉 GRANDE PONTE FUTURISTA CRUZANDO O OCEANO
+    // PONTE FUTURISTA
     const ponteBaseGeo = new THREE.BoxGeometry(32, 0.4, 4);
     const ponteBaseMat = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.8 });
     const ponteMesh = new THREE.Mesh(ponteBaseGeo, ponteBaseMat);
     ponteMesh.position.set(0, 0.2, 0);
     scene.add(ponteMesh);
 
-    // Arcos de Luz Neon da Ponte
     for (let i = -12; i <= 12; i += 6) {
       const arcoGeo = new THREE.TorusGeometry(2, 0.1, 16, 32, Math.PI);
       const arcoMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.8 });
@@ -307,12 +306,22 @@ export default function MapaSpatialChakraEmanuel() {
       {/* CABEÇALHO */}
       <header style={{ position: 'absolute', top: '15px', left: '30px', zIndex: 10 }}>
         <h1 style={{ fontSize: '18px', margin: 0, color: '#fff', fontWeight: '900', letterSpacing: '1px' }}>
-          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>OCEANOS & BIO-PRESERVAÇÃO</span>
+          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>MAPA TERRESTRE & OCEANOS</span>
         </h1>
         <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>
           Pesquisa de Espécies Aquáticas, Bio-Farmacêutica, Treinamento e Smart Care
         </span>
       </header>
+
+      {/* 🧭 NAVEGAÇÃO DE IDA E VOLTA (CORE & ESPACIAL) */}
+      <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px' }}>
+        <a href="/" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
+          🏠 Core
+        </a>
+        <a href="/espacial" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,0,85,0.2)', color: '#ff0055', border: '1px solid #ff0055', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
+          🚀 Mapa Espacial
+        </a>
+      </div>
 
       {/* 🚨 ALERTA IA ANTI-ABALROAMENTO */}
       {alertaAbalroamento && (
@@ -401,7 +410,7 @@ export default function MapaSpatialChakraEmanuel() {
       </div>
 
       {/* FERRAMENTAS CLOUD */}
-      <div style={{ position: 'absolute', top: '15px', right: '150px', zIndex: 25, display: 'flex', gap: '8px' }}>
+      <div style={{ position: 'absolute', top: '15px', right: '230px', zIndex: 25, display: 'flex', gap: '8px' }}>
         <button onClick={() => setAbaAtiva('agenda')} style={{ padding: '8px 14px', background: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
           📅 Agenda IA
         </button>
@@ -410,7 +419,7 @@ export default function MapaSpatialChakraEmanuel() {
         </button>
       </div>
 
-      {/* RELÓGIO, CLIMA & ECOSSISTEMA */}
+      {/* RELÓGIO & STATUS */}
       <div style={{ position: 'absolute', top: '80px', left: '30px', zIndex: 15, backgroundColor: 'rgba(7, 12, 28, 0.85)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '16px', padding: '12px', backdropFilter: 'blur(15px)', width: '280px', color: '#fff' }}>
         <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#00f0ff', marginBottom: '4px' }}>
           📅 {tempoAtual ? tempoAtual.toLocaleDateString('pt-BR') : 'Carregando...'} - 🕒 {tempoAtual ? tempoAtual.toLocaleTimeString('pt-BR') : '--:--:--'}
@@ -423,12 +432,7 @@ export default function MapaSpatialChakraEmanuel() {
         </div>
       </div>
 
-      {/* BOTÃO VOLTAR */}
-      <a href="/" style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 10, padding: '8px 18px', backgroundColor: 'rgba(0,240,255,0.1)', color: '#00f0ff', border: '1px solid rgba(0,240,255,0.4)', borderRadius: '20px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
-        ← Core
-      </a>
-
-      {/* CONTAINER THREE.JS (OCEANO & CIDADE) */}
+      {/* CONTAINER THREE.JS */}
       <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
 
       {/* MODAL AGENDA E LINK */}
@@ -447,7 +451,7 @@ export default function MapaSpatialChakraEmanuel() {
               <form onSubmit={adicionarTarefa} style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
                 <input 
                   type="text" 
-                  placeholder="Nova tarefa ou projeto de estudo..." 
+                  placeholder="Nova tarefa ou projeto..." 
                   value={novaTarefa} 
                   onChange={(e) => setNovaTarefa(e.target.value)}
                   style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', fontSize: '11px' }}
@@ -468,7 +472,7 @@ export default function MapaSpatialChakraEmanuel() {
           {abaAtiva === 'link' && (
             <div>
               <p style={{ fontSize: '11px', color: '#a1a1aa', marginBottom: '12px' }}>
-                Publique relatórios da pesquisa aquática e arquivos do Google Drive instantaneamente na nuvem do Emanuel.OS.
+                Publique relatórios da pesquisa e arquivos do Google Drive instantaneamente na nuvem do Emanuel.OS.
               </p>
               <button onClick={gerarLinkOnline} style={{ width: '100%', padding: '10px', backgroundColor: '#ff00aa', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', marginBottom: '12px' }}>
                 🌐 Gerar Link Online Público

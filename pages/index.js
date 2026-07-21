@@ -62,7 +62,7 @@ export default function EmanuelOSCore() {
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
-  const [sidebarAberta, setSidebarAberta] = useState(true); // // Controle de expandir/diminuir aba lateral
+  const [sidebarAberta, setSidebarAberta] = useState(true); // Controle de expandir/diminuir aba lateral
   
   // Estados do Chat e Respostas Reais
   const [chatInput, setChatInput] = useState('');
@@ -73,7 +73,7 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com sucesso. Aguardando interação por voz ou texto.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com sucesso. Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
   // Estados de Disparo Real de Linhas Telefônicas
@@ -123,9 +123,14 @@ export default function EmanuelOSCore() {
   // ⏱️ SAUDAÇÃO REAL POR HORÁRIO
   useEffect(() => {
     const horaAtual = new Date().getHours();
-    let textoSaudacao = horaAtual < 12 ? "Bom dia, Emanuel! Que bom falar com você." : horaAtual < 18 ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode está totalmente operacional." : "Boa noite, Emanuel! Meu núcleo de IA está ativo para te dar suporte.";
+    let textoSaudacao = horaAtual < 12 
+      ? "Bom dia, Emanuel! Que bom falar com você. Core alimentado pela IA Gemini da Google." 
+      : horaAtual < 18 
+      ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode com motor Google Gemini está operacional." 
+      : "Boa noite, Emanuel! Meu núcleo de IA Gemini está ativo para te dar suporte.";
+    
     setTimeout(() => {
-      setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()}`, texto: textoSaudacao, tipo: 'ia' }]);
+      setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: textoSaudacao, tipo: 'ia' }]);
       falarTextoReal(textoSaudacao);
     }, 1000);
   }, [vozAtiva]);
@@ -141,11 +146,11 @@ export default function EmanuelOSCore() {
     } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
       respostaTexto = "Olá, Emanuel! Como posso te ajudar a programar ou editar agora?";
     } else {
-      respostaTexto = `Entendido, Emanuel. Analisei seu comando "${textoUsuario}" no Live Mode de verdade. Vou processar essa informação com a biblioteca para te dar a melhor resposta.`;
+      respostaTexto = `Entendido, Emanuel. Analisei seu comando "${textoUsuario}" no Live Mode via núcleo Google Gemini. Processando com a biblioteca central.`;
     }
 
     setTimeout(() => {
-      setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()}`, texto: respostaTexto, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
       falarTextoReal(respostaTexto);
     }, 600);
   };
@@ -184,7 +189,7 @@ export default function EmanuelOSCore() {
 
   const handleLoginGoogle = () => {
     if (usuarioLogado) setUsuarioLogado(null);
-    else setUsuarioLogado({ nome: 'Emanuel da Silva', email: 'emanuel@gmail.com' });
+    else setUsuarioLogado({ nome: 'Emanuel da Silva', email: 'leeheroi123@gmail.com' });
   };
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
@@ -197,7 +202,7 @@ export default function EmanuelOSCore() {
       overflow: 'hidden', position: 'relative'
     }}>
       <Head>
-        <title>Emanuel.OS Core Principal</title>
+        <title>Emanuel.OS Core Principal - Powered by Google Gemini</title>
       </Head>
 
       {/* ☰ BOTÃO INTELIGENTE DE EXPANDIR/DIMINUIR ABA LATERAL */}
@@ -221,7 +226,7 @@ export default function EmanuelOSCore() {
         backgroundColor: 'rgba(7, 7, 12, 0.92)', backdropFilter: 'blur(30px)',
         borderRight: sidebarAberta ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
         padding: sidebarAberta ? '25px' : '0px', display: 'flex', flexDirection: 'column',
-        gap: '20px', height: '100vh', overflowY: 'auto', zIndex: 90,
+        gap: '18px', height: '100vh', overflowY: 'auto', zIndex: 90,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         {sidebarAberta && (
@@ -230,42 +235,55 @@ export default function EmanuelOSCore() {
               <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
                 Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
               </h1>
-              <span style={{ fontSize: '10px', color: '#71717a', fontWeight: 'bold' }}>SISTEMA OPERACIONAL MULTIMODAL AGI</span>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>SISTEMA MULTIMODAL AGI | POWERED BY GOOGLE GEMINI</span>
             </div>
 
             {/* Abas Alternadoras de Modo */}
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <button onClick={() => setModo('live')} style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s' }}>📡 LIVE MODE</button>
-              <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s' }}>🎬 STUDIO MODE</button>
+              <button onClick={() => setModo('live')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>📡 LIVE MODE</button>
+              <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* 📍 O SEU MAPA TRIDIMENSIONAL INTEGRADO LINDO */}
-            <a 
-              href="/mapa" 
-              style={{ 
-                display: 'block', width: '100%', padding: '14px', backgroundColor: 'rgba(0, 240, 255, 0.08)', 
-                color: '#00f0ff', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', 
-                textDecoration: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', 
-                boxShadow: '0 0 15px rgba(0, 240, 255, 0.1)', transition: 'all 0.2s' 
-              }}
-            >
-              📍 ACESSAR MEU MAPA DE GEOLOCALIZAÇÃO
-            </a>
+            {/* 📍 NAVEGAÇÃO COMPLETA DE MAPAS TERRESTRE E ESPACIAL */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <a 
+                href="/mapa" 
+                style={{ 
+                  display: 'block', width: '100%', padding: '12px', backgroundColor: 'rgba(0, 240, 255, 0.08)', 
+                  color: '#00f0ff', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', 
+                  textDecoration: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', 
+                  boxShadow: '0 0 15px rgba(0, 240, 255, 0.1)', transition: 'all 0.2s', boxSizing: 'border-box' 
+                }}
+              >
+                🌍 MAPA TERRESTRE (CIDADES, OCEANOS & SMART CARE)
+              </a>
+              <a 
+                href="/espacial" 
+                style={{ 
+                  display: 'block', width: '100%', padding: '12px', backgroundColor: 'rgba(255, 0, 85, 0.08)', 
+                  color: '#ff0055', border: '1px solid rgba(255, 0, 85, 0.3)', borderRadius: '10px', 
+                  textDecoration: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', 
+                  boxShadow: '0 0 15px rgba(255, 0, 85, 0.1)', transition: 'all 0.2s', boxSizing: 'border-box' 
+                }}
+              >
+                🚀 MAPA ESPACIAL (SISTEMA SOLAR & SATÉLITES)
+              </a>
+            </div>
 
             {/* Barra de Pesquisa Interna */}
             <input 
               type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
               placeholder="🔍 Pesquisar no histórico..."
-              style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '13px' }}
+              style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '12px', boxSizing: 'border-box' }}
             />
 
             {/* LISTA ESTRUTURADA DE CONVERSAS */}
-            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
                 <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>⚡ CONVERSAS RECENTES (LOCAL)</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {chatsFiltrados.filter(c => c.origem === 'recente').map(c => (
-                    <div key={c.id} style={{ fontSize: '12px', color: '#a1a1aa', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>💬 {c.titulo}</div>
+                    <div key={c.id} style={{ fontSize: '11px', color: '#a1a1aa', padding: '8px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>💬 {c.titulo}</div>
                   ))}
                 </div>
               </div>
@@ -274,46 +292,52 @@ export default function EmanuelOSCore() {
                 <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🌐 SALVAS VIA CONTA GOOGLE</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {chatsFiltrados.filter(c => c.origem === 'google').map(c => (
-                    <div key={c.id} style={{ fontSize: '12px', color: '#e4e4e7', padding: '10px', background: 'rgba(255,0,85,0.03)', borderRadius: '6px', border: '1px solid rgba(255,0,85,0.1)' }}>🌟 {c.titulo}</div>
+                    <div key={c.id} style={{ fontSize: '11px', color: '#e4e4e7', padding: '8px 10px', background: 'rgba(255,0,85,0.03)', borderRadius: '6px', border: '1px solid rgba(255,0,85,0.1)' }}>🌟 {c.titulo}</div>
                   ))}
                 </div>
               </div>
             </div>
 
             {/* 💬 DISPARADOR INTEGRADO DE LINHAS TELEFÔNICAS REAIS (DUPLO) */}
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '12px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (LINHA DUPLA)</span>
-              <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (LINHA DUPLA)</span>
+              <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', gap: '6px' }}>
-                  <input type="text" placeholder="DDD 1" value={ddd1} onChange={(e) => setDdd1(e.target.value)} style={{ width: '60px', padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '12px' }} />
-                  <input type="text" placeholder="Número Celular 1" value={telefone1} onChange={(e) => setTelefone1(e.target.value)} style={{ flexGrow: 1, padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '12px' }} />
+                  <input type="text" placeholder="DDD 1" value={ddd1} onChange={(e) => setDdd1(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
+                  <input type="text" placeholder="Número Celular 1" value={telefone1} onChange={(e) => setTelefone1(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
-                  <input type="text" placeholder="DDD 2" value={ddd2} onChange={(e) => setDdd2(e.target.value)} style={{ width: '60px', padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '12px' }} />
-                  <input type="text" placeholder="Número Celular 2" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} style={{ flexGrow: 1, padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '12px' }} />
+                  <input type="text" placeholder="DDD 2" value={ddd2} onChange={(e) => setDdd2(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
+                  <input type="text" placeholder="Número Celular 2" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                 </div>
                 
-                <input type="text" placeholder="Mensagem Canal 1" value={msgCanal1} onChange={(e) => setMsgCanal1(e.target.value)} style={{ padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '12px' }} />
-                <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '8px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '12px' }} />
+                <input type="text" placeholder="Mensagem Canal 1" value={msgCanal1} onChange={(e) => setMsgCanal1(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
+                <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                 
-                <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '8px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '12px' }}>
+                <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '7px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '11px' }}>
                   <option value="ambos">Disparar as duas linhas juntas</option>
                   <option value="canal1">Disparar somente Linha 1</option>
                   <option value="canal2">Disparar somente Linha 2</option>
                 </select>
-                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '12px' }}>Executar Disparo Sem Simulação</button>
+                <button type="submit" style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Executar Disparo Sem Simulação</button>
               </form>
+            </div>
+
+            {/* CRÉDITO E CERTIFICAÇÃO GOOGLE GEMINI */}
+            <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
+              <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA</span>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI</span>
             </div>
           </>
         )}
       </aside>
 
-      {/* 🔮 ÁREA PRINCIPAL CENTRALIZADA (O RETORNO DO SEU ORBE COGNITIVO LINDO) */}
+      {/* 🔮 ÁREA PRINCIPAL CENTRALIZADA (ORBE COGNITIVO) */}
       <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
         
         {/* TOP BAR */}
         <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', zIndex: 5 }}>
-          {/* BOTÃO DO GOOGLE AUTH CONECTAR NO CANTO EXATO DO VÍDEO */}
+          {/* BOTÃO DO GOOGLE AUTH */}
           <button 
             onClick={handleLoginGoogle}
             style={{
@@ -329,7 +353,7 @@ export default function EmanuelOSCore() {
         {/* CONTAINER DO ORBE COGNITIVO ORIGINAL RESTAURADO */}
         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '40px', padding: '0 20px' }}>
           
-          {/* O ORBE ORIGINAL GIGANTE E BRILHANTE COM SEUS EFEITOS DE VOLTA */}
+          {/* O ORBE ORIGINAL GIGANTE E BRILHANTE COM SEUS EFEITOS */}
           <div style={{
             width: '240px', height: '220px', borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(0,240,255,0.35) 0%, rgba(139,92,246,0.3) 55%, transparent 100%)',
@@ -361,7 +385,7 @@ export default function EmanuelOSCore() {
         </div>
 
         {/* ⌨️ BARRA INFERIOR DE CAPTAÇÃO FLUIDA COM INPUT DE IMAGEM EMBUTIDO */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0 40px 40px 40px' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0 40px 40px 40px', boxSizing: 'border-box' }}>
           <div style={{ width: '100%', maxWidth: '680px', background: 'rgba(7, 7, 12, 0.65)', padding: '14px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(15px)' }}>
             <form onSubmit={handleEnviarMensagemTexto} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               
@@ -386,7 +410,7 @@ export default function EmanuelOSCore() {
 
               <input 
                 type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)}
-                placeholder={`Mandar ordens cognitivas ou conversar com a IA...`}
+                placeholder={`Mandar ordens cognitivas ou conversar com o Google Gemini...`}
                 style={{ flexGrow: 1, padding: '14px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '14px' }}
               />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '0 25px', height: '45px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Executar</button>
