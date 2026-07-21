@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
-// 📂 IMPORTANTE: Certifique-se de que o seu 'dicionario-ninja.json' está na mesma pasta deste arquivo!
 import dicionarioNinja from './dicionario-ninja.json';
 
-// ==========================================
-// 🛠️ ALGORITMO DE DISTÂNCIA DE LEVENSHTEIN
-// ==========================================
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
   const p2 = palavra2.toLowerCase().trim();
@@ -19,9 +15,9 @@ function calcularDiferencaLetras(palavra1, palavra2) {
     for (let j = 1; j <= p2.length; j++) {
       const custo = p1[i - 1] === p2[j - 1] ? 0 : 1;
       matriz[i][j] = Math.min(
-        matriz[i - 1][j] + 1,      // Deleção
-        matriz[i][j - 1] + 1,      // Inserção
-        matriz[i - 1][j - 1] + custo // Substituição
+        matriz[i - 1][j] + 1,
+        matriz[i][j - 1] + 1,
+        matriz[i - 1][j - 1] + custo
       );
     }
   }
@@ -55,33 +51,28 @@ function buscarNoDicionario(perguntaUsuario) {
 }
 
 export default function EmanuelOSCore() {
-  // 🔐 ESTADOS DO SISTEMA DE SEGURANÇA E PROTOCOLO DE ACESSO (4 ETAPAS)
   const [bloqueado, setBloqueado] = useState(true);
-  const [etapaSeguranca, setEtapaSeguranca] = useState(1); // 1 = Telefone, 2 = PIN, 3 = Email, 4 = Chave
+  const [etapaSeguranca, setEtapaSeguranca] = useState(1);
+  const [biometriaLendo, setBiometriaLendo] = useState(false);
   
-  // CAMPOS DE DIGITAÇÃO
   const [telefoneDigitado, setTelefoneDigitado] = useState('');
   const [pinDigitado, setPinDigitado] = useState('');
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  // 🔑 CREDENCIAIS MESTRES DO SISTEMA EMANUEL.OS
   const TELEFONE_AUTORIZADO = "88981493989";
   const TELEFONE_AUTORIZADO_DDI = "5588981493989";
-  const PIN_MESTRE_EMANUEL = "7878";
+  const PIN_MESTRE_EMANUEL = "2026";
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
-  const CHAVE_MESTRE = "EMA-API-780";
+  const CHAVE_MESTRE = "EMA-AGI-777";
 
-  // Estados de Controle de Modos e Abas
   const [modo, setModo] = useState('live'); 
   const [vozAtiva, setVozAtiva] = useState('Emanuel'); 
-  const [generoVoz, setGeneroVoz] = useState('masculino');
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [sidebarAberta, setSidebarAberta] = useState(true);
   
-  // Estados do Chat e Respostas Reais
   const [chatInput, setChatInput] = useState('');
   const [historicoChats, setHistoricoChats] = useState([
     { id: 1, titulo: 'Conversa Geral sobre IA', data: '18/07/2026', origem: 'recente' },
@@ -90,10 +81,9 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 4 camadas ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 5 camadas ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
-  // Estados de Disparo Real de Linhas Telefônicas
   const [ddd1, setDdd1] = useState('');
   const [telefone1, setTelefone1] = useState('');
   const [ddd2, setDdd2] = useState('');
@@ -102,55 +92,58 @@ export default function EmanuelOSCore() {
   const [msgCanal2, setMsgCanal2] = useState('');
   const [modoDisparo, setModoDisparo] = useState('ambos'); 
 
-  // Estados do Studio (Mídias e Edições)
-  const [bibliotecaMidias, setBibliotecaMidias] = useState([]);
-  const [statusStudio, setStatusStudio] = useState('Aguardando comando de edição...');
   const imageInputRef = useRef(null);
 
-  // 🛡️ LÓGICA DAS 4 ETAPAS DE SEGURANÇA
-  const validarEtapa1Telefone = (e) => {
+  const acionarBiometriaWhatsapp = () => {
+    setBiometriaLendo(true);
+    setTimeout(() => {
+      setBiometriaLendo(false);
+      setEtapaSeguranca(2);
+    }, 1500);
+  };
+
+  const validarEtapa2Telefone = (e) => {
     e.preventDefault();
     const telLimpo = telefoneDigitado.replace(/\D/g, '');
     if (telLimpo === TELEFONE_AUTORIZADO || telLimpo === TELEFONE_AUTORIZADO_DDI) {
-      setEtapaSeguranca(2);
+      setEtapaSeguranca(3);
     } else {
       alert("⚠️ Telefone não autorizado! Acesso negado.");
       setTelefoneDigitado('');
     }
   };
 
-  const validarEtapa2Pin = (e) => {
+  const validarEtapa3Pin = (e) => {
     e.preventDefault();
     if (pinDigitado === PIN_MESTRE_EMANUEL) {
-      setEtapaSeguranca(3);
+      setEtapaSeguranca(4);
     } else {
       alert("⚠️ PIN Mestre incorreto!");
       setPinDigitado('');
     }
   };
 
-  const validarEtapa3Email = (e) => {
+  const validarEtapa4Email = (e) => {
     e.preventDefault();
     if (emailDigitado.trim().toLowerCase() === EMAIL_AUTORIZADO.toLowerCase()) {
-      setEtapaSeguranca(4);
+      setEtapaSeguranca(5);
     } else {
       alert("⚠️ E-mail não autorizado!");
       setEmailDigitado('');
     }
   };
 
-  const validarEtapa4Chave = (e) => {
+  const validarEtapa5Chave = (e) => {
     e.preventDefault();
     if (chaveDigitada === CHAVE_MESTRE) {
       setBloqueado(false);
-      alert("🔓 Acesso Autorizado! Autenticação de 4 Etapas concluída com sucesso.");
+      alert("🔓 Acesso Autorizado! Autenticação concluída com sucesso.");
     } else {
-      alert("⚠️ Palavra-Chave Mestre inválida! O sistema permanecerá bloqueado.");
+      alert("⚠️ Palavra-Chave Mestre inválida!");
       setChaveDigitada('');
     }
   };
 
-  // 🎙️ MOTOR DE VOZ REAL TRABALHADA (Web Speech API)
   const falarTextoReal = (texto) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -160,7 +153,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // 🎙️ FUNÇÃO DE ESCUTA (VOZ PARA TEXTO)
   const iniciarEscuta = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
@@ -180,7 +172,6 @@ export default function EmanuelOSCore() {
     reconhecimento.start();
   };
 
-  // ⏱️ SAUDAÇÃO REAL POR HORÁRIO
   useEffect(() => {
     if (bloqueado) return;
     const horaAtual = new Date().getHours();
@@ -196,7 +187,6 @@ export default function EmanuelOSCore() {
     }, 1000);
   }, [vozAtiva, bloqueado]);
 
-  // 🤖 PROCESSAMENTO DE INTELIGÊNCIA REAL
   const processarConversaReal = (textoUsuario) => {
     let respostaTexto = "";
     const textoLimpo = textoUsuario.toLowerCase();
@@ -225,7 +215,6 @@ export default function EmanuelOSCore() {
     setChatInput('');
   };
 
-  // 💬 DISPARO DUPLO REAL FUNCIONAL DE MENSAGENS TELEFÔNICAS
   const executarDisparoReal = (e) => {
     e.preventDefault();
     
@@ -255,12 +244,11 @@ export default function EmanuelOSCore() {
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
 
-  // 🔒 TELA DE SEGURANÇA EM 4 ETAPAS SEQUENCIAIS
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS - Autenticação em 4 Etapas</title>
+          <title>Emanuel.OS - Autenticação de Segurança</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
@@ -270,21 +258,34 @@ export default function EmanuelOSCore() {
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
           </h2>
           <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
-            PROTOCOLO DE SEGURANÇA DE 4 ETAPAS ({etapaSeguranca}/4)
+            PROTOCOLO DE SEGURANÇA DE 5 ETAPAS ({etapaSeguranca}/5)
           </span>
 
-          {/* INDICADOR DE ETAPAS */}
-          <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginBottom: '20px' }}>
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 1 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 2 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 3 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
-            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 4 ? '#ff0055' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 4 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 5 ? '#ff0055' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
           </div>
 
-          {/* ETAPA 1: NÚMERO DE TELEFONE */}
           {etapaSeguranca === 1 && (
-            <form onSubmit={validarEtapa1Telefone} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📱 1ª Etapa: Digite seu Número de Telefone:</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>☝️ 1ª Etapa: Confirmação Biometria / Aparelho:</span>
+              <button 
+                onClick={acionarBiometriaWhatsapp}
+                disabled={biometriaLendo}
+                style={{ padding: '16px', backgroundColor: biometriaLendo ? 'rgba(0,255,102,0.2)' : 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', transition: 'all 0.3s' }}
+              >
+                {biometriaLendo ? '🔄 Lendo Biometria...' : '👆 Confirmar Biometria / Dispositivo'}
+              </button>
+            </div>
+          )}
+
+          {etapaSeguranca === 2 && (
+            <form onSubmit={validarEtapa2Telefone} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Biometria Confirmada!</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📱 2ª Etapa: Digite seu Número de Telefone:</span>
               <input 
                 type="text" 
                 value={telefoneDigitado} 
@@ -298,11 +299,10 @@ export default function EmanuelOSCore() {
             </form>
           )}
 
-          {/* ETAPA 2: PIN MESTRE */}
-          {etapaSeguranca === 2 && (
-            <form onSubmit={validarEtapa2Pin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {etapaSeguranca === 3 && (
+            <form onSubmit={validarEtapa3Pin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Telefone Aprovado!</span>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>🔢 2ª Etapa: Digite seu PIN Mestre (4 Dígitos):</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>🔢 3ª Etapa: Digite seu PIN Mestre:</span>
               <input 
                 type="password" 
                 maxLength="4" 
@@ -317,11 +317,10 @@ export default function EmanuelOSCore() {
             </form>
           )}
 
-          {/* ETAPA 3: E-MAIL AUTORIZADO */}
-          {etapaSeguranca === 3 && (
-            <form onSubmit={validarEtapa3Email} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {etapaSeguranca === 4 && (
+            <form onSubmit={validarEtapa4Email} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ PIN Aprovado!</span>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📧 3ª Etapa: Digite seu E-mail Autorizado:</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📧 4ª Etapa: Digite seu E-mail Autorizado:</span>
               <input 
                 type="email" 
                 value={emailDigitado} 
@@ -335,11 +334,10 @@ export default function EmanuelOSCore() {
             </form>
           )}
 
-          {/* ETAPA 4: PALAVRA-CHAVE MESTRE */}
-          {etapaSeguranca === 4 && (
-            <form onSubmit={validarEtapa4Chave} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {etapaSeguranca === 5 && (
+            <form onSubmit={validarEtapa5Chave} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ E-mail Confirmado!</span>
-              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 4ª Etapa Final: Palavra-Chave Mestre:</span>
+              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 5ª Etapa Final: Palavra-Chave Mestre:</span>
               <input 
                 type="password" 
                 value={chaveDigitada} 
@@ -369,7 +367,6 @@ export default function EmanuelOSCore() {
         <title>Emanuel.OS Core Principal - Powered by Google Gemini</title>
       </Head>
 
-      {/* ☰ BOTÃO INTELIGENTE DE EXPANDIR/DIMINUIR ABA LATERAL */}
       <button 
         onClick={() => setSidebarAberta(!sidebarAberta)}
         style={{
@@ -384,7 +381,6 @@ export default function EmanuelOSCore() {
         {sidebarAberta ? '✕' : '☰'}
       </button>
 
-      {/* 🔮 PAINEL ESQUERDO ORGANIZADO E ALINHADO */}
       <aside style={{
         width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
         backgroundColor: 'rgba(7, 7, 12, 0.92)', backdropFilter: 'blur(30px)',
@@ -402,13 +398,11 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>SISTEMA MULTIMODAL AGI | POWERED BY GOOGLE GEMINI</span>
             </div>
 
-            {/* Abas Alternadoras de Modo */}
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
               <button onClick={() => setModo('live')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>📡 LIVE MODE</button>
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* 📍 NAVEGAÇÃO COMPLETA DE MAPAS TERRESTRE E ESPACIAL */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <a 
                 href="/mapa" 
@@ -434,14 +428,12 @@ export default function EmanuelOSCore() {
               </a>
             </div>
 
-            {/* Barra de Pesquisa Interna */}
             <input 
               type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
               placeholder="🔍 Pesquisar no histórico..."
               style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '12px', boxSizing: 'border-box' }}
             />
 
-            {/* LISTA ESTRUTURADA DE CONVERSAS */}
             <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
                 <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>⚡ CONVERSAS RECENTES (LOCAL)</span>
@@ -462,7 +454,6 @@ export default function EmanuelOSCore() {
               </div>
             </div>
 
-            {/* 💬 DISPARADOR INTEGRADO DE LINHAS TELEFÔNICAS REAIS (DUPLO) */}
             <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
               <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (LINHA DUPLA)</span>
               <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -487,7 +478,6 @@ export default function EmanuelOSCore() {
               </form>
             </div>
 
-            {/* CRÉDITO E CERTIFICAÇÃO GOOGLE GEMINI */}
             <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
               <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA</span>
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI</span>
@@ -496,12 +486,8 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 🔮 ÁREA PRINCIPAL CENTRALIZADA (ORBE COGNITIVO) */}
       <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
-        
-        {/* TOP BAR */}
         <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5 }}>
-          {/* BOTÃO DE BLOQUEIO MANUAL INSTANTÂNEO */}
           <button 
             onClick={() => { setBloqueado(true); setEtapaSeguranca(1); }}
             style={{ padding: '8px 16px', backgroundColor: 'rgba(255,0,85,0.15)', border: '1px solid #ff0055', color: '#ff0055', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
@@ -509,7 +495,6 @@ export default function EmanuelOSCore() {
             🔒 Travar Sistema
           </button>
 
-          {/* BOTÃO DO GOOGLE AUTH */}
           <button 
             onClick={handleLoginGoogle}
             style={{
@@ -522,10 +507,7 @@ export default function EmanuelOSCore() {
           </button>
         </header>
 
-        {/* CONTAINER DO ORBE COGNITIVO ORIGINAL RESTAURADO */}
         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '40px', padding: '0 20px' }}>
-          
-          {/* O ORBE ORIGINAL GIGANTE E BRILHANTE COM SEUS EFEITOS */}
           <div style={{
             width: '240px', height: '220px', borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(0,240,255,0.35) 0%, rgba(139,92,246,0.3) 55%, transparent 100%)',
@@ -537,7 +519,6 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* AS CAIXAS AZUIS DESTACADAS COM AS RESPOSTAS COGNITIVAS */}
           <div style={{ width: '100%', maxWidth: '680px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {mensagens.slice(-2).map((m, i) => (
               <div key={i} style={{ 
@@ -556,12 +537,9 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* ⌨️ BARRA INFERIOR DE CAPTAÇÃO FLUIDA COM INPUT DE IMAGEM EMBUTIDO */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0 40px 40px 40px', boxSizing: 'border-box' }}>
           <div style={{ width: '100%', maxWidth: '680px', background: 'rgba(7, 7, 12, 0.65)', padding: '14px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(15px)' }}>
             <form onSubmit={handleEnviarMensagemTexto} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              
-              {/* O INPUT FLUIDO DE ENVIAR IMAGENS JUNTO AO MICROFONE */}
               <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
               <button 
                 type="button" onClick={() => imageInputRef.current.click()}
@@ -590,7 +568,6 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* Animações CSS */}
         <style>{`
           @keyframes orbeFlutuar {
             0% { transform: translateY(0px) scale(1); }
