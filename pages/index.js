@@ -55,6 +55,19 @@ function buscarNoDicionario(perguntaUsuario) {
 }
 
 export default function EmanuelOSCore() {
+  // 🔐 ESTADOS DO SISTEMA DE SEGURANÇA E PROTOCOLO DE ACESSO
+  const [bloqueado, setBloqueado] = useState(true);
+  const [etapaSeguranca, setEtapaSeguranca] = useState(1); // 1 = PIN, 2 = E-mail & Chave
+  const [pinDigitado, setPinDigitado] = useState('');
+  const [emailSeguranca, setEmailSeguranca] = useState('');
+  const [chaveAcesso, setChaveAcesso] = useState('');
+  const [solicitacaoEnviada, setSolicitacaoEnviada] = useState(false);
+
+  // CREDENCIAIS MESTRES DO SISTEMA EMANUEL.OS
+  const PIN_MESTRE_EMANUEL = "2121";          // 👈 Altere "2026" para o PIN numérico que desejar
+  const EMAIL_AUTORIZADO = "leeheroi123@gmail.com"; // 👈 Seu e-mail de acesso
+  const CHAVE_MESTRE = "EMA-ADE-2121";         // 👈 Altere "EMA-AGI-777" para a palavra-chave secreta que quiser
+
   // Estados de Controle de Modos e Abas
   const [modo, setModo] = useState('live'); 
   const [vozAtiva, setVozAtiva] = useState('Emanuel'); 
@@ -62,7 +75,7 @@ export default function EmanuelOSCore() {
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
-  const [sidebarAberta, setSidebarAberta] = useState(true); // Controle de expandir/diminuir aba lateral
+  const [sidebarAberta, setSidebarAberta] = useState(true);
   
   // Estados do Chat e Respostas Reais
   const [chatInput, setChatInput] = useState('');
@@ -73,7 +86,7 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com sucesso. Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
   // Estados de Disparo Real de Linhas Telefônicas
@@ -89,6 +102,35 @@ export default function EmanuelOSCore() {
   const [bibliotecaMidias, setBibliotecaMidias] = useState([]);
   const [statusStudio, setStatusStudio] = useState('Aguardando comando de edição...');
   const imageInputRef = useRef(null);
+
+  // 🛡️ LÓGICA DE VERIFICAÇÃO DE PIN E 2FA
+  const verificarPin = (e) => {
+    e.preventDefault();
+    if (pinDigitado === PIN_MESTRE_EMANUEL) {
+      setEtapaSeguranca(2);
+    } else {
+      alert("⚠️ PIN Incorreto! Acesso negado ao Emanuel.OS");
+      setPinDigitado('');
+    }
+  };
+
+  const solicitarChaveEmail = () => {
+    if (!emailSeguranca.trim() || emailSeguranca.toLowerCase() !== EMAIL_AUTORIZADO) {
+      return alert("⚠️ E-mail não autorizado para solicitar chave de acesso.");
+    }
+    setSolicitacaoEnviada(true);
+    alert(`📧 Solicitação enviada! Uma autorização foi gerada para o e-mail: ${emailSeguranca}. Use a Palavra-Chave Mestre para confirmar.`);
+  };
+
+  const verificarAutenticacaoFinal = (e) => {
+    e.preventDefault();
+    if (chaveAcesso === CHAVE_MESTRE) {
+      setBloqueado(false);
+      alert("🔓 Acesso Autorizado! Bem-vindo ao Emanuel.OS Core.");
+    } else {
+      alert("⚠️ Palavra-Chave ou Token inválido! Acesso bloqueado pelo Firewall.");
+    }
+  };
 
   // 🎙️ MOTOR DE VOZ REAL TRABALHADA (Web Speech API)
   const falarTextoReal = (texto) => {
@@ -122,6 +164,7 @@ export default function EmanuelOSCore() {
 
   // ⏱️ SAUDAÇÃO REAL POR HORÁRIO
   useEffect(() => {
+    if (bloqueado) return;
     const horaAtual = new Date().getHours();
     let textoSaudacao = horaAtual < 12 
       ? "Bom dia, Emanuel! Que bom falar com você. Core alimentado pela IA Gemini da Google." 
@@ -133,7 +176,7 @@ export default function EmanuelOSCore() {
       setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: textoSaudacao, tipo: 'ia' }]);
       falarTextoReal(textoSaudacao);
     }, 1000);
-  }, [vozAtiva]);
+  }, [vozAtiva, bloqueado]);
 
   // 🤖 PROCESSAMENTO DE INTELIGÊNCIA REAL
   const processarConversaReal = (textoUsuario) => {
@@ -193,6 +236,80 @@ export default function EmanuelOSCore() {
   };
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
+
+  // 🔒 TELA DE SEGURANÇA E AUTENTICAÇÃO ANTES DE ACESSAR O SISTEMA
+  if (bloqueado) {
+    return (
+      <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
+        <Head>
+          <title>Emanuel.OS - Central de Segurança & Autenticação</title>
+        </Head>
+
+        <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
+          
+          <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛡️</div>
+          <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
+            EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
+          </h2>
+          <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '25px', letterSpacing: '1px' }}>
+            PAINEL DE PROTOCOLO DE SEGURANÇA CRIPTOGRÁFICO
+          </span>
+
+          {etapaSeguranca === 1 && (
+            <form onSubmit={verificarPin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>Insira seu PIN Mestre de Segurança (4 Dígitos):</span>
+              <input 
+                type="password" 
+                maxLength="4" 
+                value={pinDigitado} 
+                onChange={(e) => setPinDigitado(e.target.value)}
+                placeholder="****"
+                style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', outline: 'none' }}
+              />
+              <button type="submit" style={{ padding: '14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)' }}>
+                🔓 Validar PIN Mestre
+              </button>
+            </form>
+          )}
+
+          {etapaSeguranca === 2 && (
+            <form onSubmit={verificarAutenticacaoFinal} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ PIN Aprovado! Confirme o E-mail Autorizado:</span>
+              
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input 
+                  type="email" 
+                  value={emailSeguranca} 
+                  onChange={(e) => setEmailSeguranca(e.target.value)}
+                  placeholder="Seu e-mail cadastrado..."
+                  style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: '#09090b', color: '#fff', fontSize: '11px' }}
+                />
+                <button type="button" onClick={solicitarChaveEmail} style={{ padding: '10px', backgroundColor: 'rgba(255,0,85,0.2)', border: '1px solid #ff0055', color: '#ff0055', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  📩 Enviar Chave
+                </button>
+              </div>
+
+              {solicitacaoEnviada && (
+                <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Digite a Palavra-Chave/Token Mestre enviado para autorizar:</span>
+              )}
+
+              <input 
+                type="password" 
+                value={chaveAcesso} 
+                onChange={(e) => setChaveAcesso(e.target.value)}
+                placeholder="Digite a Palavra-Chave Mestre..."
+                style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ff0055', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '13px' }}
+              />
+
+              <button type="submit" style={{ padding: '14px', backgroundColor: '#ff0055', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,85,0.4)', marginTop: '5px' }}>
+                🛡️ Desbloquear Emanuel.OS Core
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -336,7 +453,15 @@ export default function EmanuelOSCore() {
       <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
         
         {/* TOP BAR */}
-        <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', zIndex: 5 }}>
+        <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5 }}>
+          {/* BOTÃO DE BLOQUEIO MANUAL INSTANTÂNEO */}
+          <button 
+            onClick={() => { setBloqueado(true); setEtapaSeguranca(1); }}
+            style={{ padding: '8px 16px', backgroundColor: 'rgba(255,0,85,0.15)', border: '1px solid #ff0055', color: '#ff0055', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            🔒 Travar Sistema
+          </button>
+
           {/* BOTÃO DO GOOGLE AUTH */}
           <button 
             onClick={handleLoginGoogle}
