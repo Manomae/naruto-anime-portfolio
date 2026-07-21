@@ -12,16 +12,16 @@ export default function MapaSpatialChakraEmanuel() {
   const [abaAtiva, setAbaAtiva] = useState(null);
   const [novaTarefa, setNovaTarefa] = useState('');
   const [listaTarefas, setListaTarefas] = useState([
-    { id: 1, texto: 'Mapear espécies marinhas em extinção', horario: '10:00', status: 'Ativo' },
-    { id: 2, texto: 'Recrutamento de pesquisadores em Biologia Marinha', horario: '14:30', status: 'Pendente' }
+    { id: 1, texto: 'Sincronizar dados das Torres 5G/6G com Gemini AGI', horario: '10:00', status: 'Ativo' },
+    { id: 2, texto: 'Monitorar reator nuclear e matriz fotovoltaica', horario: '14:30', status: 'Pendente' }
   ]);
   const [linkGerado, setLinkGerado] = useState('');
 
-  // 🔍 BUSCA GLOBAL, SMART CARE E OCEANOGRAFIA
+  // 🔍 BUSCA GEMINI AI & FILTROS MULTIMODAIS INTEGRADOS
   const [termoBusca, setTermoBusca] = useState('');
   const [sugestoesBusca, setSugestoesBusca] = useState([]);
   const [carregandoBusca, setCarregandoBusca] = useState(false);
-  const [filtroCategoria, setFiltroCategoria] = useState('geral');
+  const [filtroCategoria, setFiltroCategoria] = useState('oceano');
 
   // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
@@ -39,20 +39,20 @@ export default function MapaSpatialChakraEmanuel() {
 
   const dadosClima = {
     temperatura: "28°C",
-    condicao: "🌊 Maré Estável | Vento 18 kt",
-    alertaPreservacao: "🐠 PROTEÇÃO ATIVA: 12 Espécies Aquáticas Mapeadas na Região"
+    condicao: "🌊 Maré Estável | Reator Nuclear & 5G 100%",
+    alertaPreservacao: "⚡ MATRIZ GEMINI AI: Eólica, Solar, Nuclear, Hidrelétrica e 5G"
   };
 
   const estabelecimentos = [
-    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem AGI', cor: 0x00f0ff, posicao: { x: -6, y: 3, z: -4 }, ipCriptografado: 'AES256-88F9-EMA', tipo: 'tech' },
+    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, posicao: { x: -6, y: 3, z: -4 }, ipCriptografado: 'AES256-88F9-EMA', tipo: 'tech' },
     { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, posicao: { x: 7, y: 2, z: 6 }, ipCriptografado: 'AES256-OCEAN-BIO', tipo: 'oceano' },
-    { id: 3, nome: 'Hospital Geral & Centro de Saúde Domiciliar', categoria: '🏥 Cuidado a Idosos, Bebês & Medicamentos', cor: 0xff0055, posicao: { x: -5, y: 2.2, z: 5 }, ipCriptografado: 'AES256-HOSP-CARE', tipo: 'saude' },
-    { id: 4, nome: 'Usina Solar & Matriz Energética Limpa', categoria: '⚡ Energia Limpa & Sustentabilidade Marinha', cor: 0xffaa00, posicao: { x: 7, y: 2, z: -6 }, ipCriptografado: 'AES256-SOLAR-PWR', tipo: 'energia' },
-    { id: 5, nome: 'Centro de Recrutamento & Treinamento Científico', categoria: '🎓 Parceria Universitária & Vagas Biologia', cor: 0x88ff00, posicao: { x: -8, y: 1.2, z: -8 }, ipCriptografado: 'AES256-UNIV-RECRUIT', tipo: 'estudo' },
-    { id: 6, nome: 'Catedral & Templo de Luz', categoria: 'Igreja & Apoio Espiritual', cor: 0xaa00ff, posicao: { x: 0, y: 4, z: -7 }, ipCriptografado: 'AES256-TEMPLO', tipo: 'social' },
-    { id: 7, nome: 'Praça Central & Parque Ecológico Fluvial', categoria: '🌳 Preservação de Rios & Acessibilidade', cor: 0x00ff66, posicao: { x: 0, y: 0.8, z: 2 }, ipCriptografado: 'AES256-PARQUE-ECO', tipo: 'social' },
-    { id: 8, nome: 'Centro Comercial Cyber & Laboratório Marinho', categoria: '💊 Farmacêutica Natural de Origem Aquática', cor: 0xff00aa, posicao: { x: 4, y: 2.8, z: -1 }, ipCriptografado: 'AES256-LAB-FARMA', tipo: 'comercio' },
-    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna Aquática', cor: 0x0066ff, posicao: { x: -3, y: 2.5, z: -7 }, ipCriptografado: 'AES256-COAST-GUARD', tipo: 'emergencia' }
+    { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, posicao: { x: -5, y: 3.2, z: 5 }, ipCriptografado: 'AES256-NUK-POWER', tipo: 'energia' },
+    { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, posicao: { x: 7, y: 2, z: -6 }, ipCriptografado: 'AES256-SOLAR-PWR', tipo: 'energia' },
+    { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, posicao: { x: -8, y: 3.8, z: -8 }, ipCriptografado: 'AES256-5G-EOLICA', tipo: 'telecom' },
+    { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, posicao: { x: 8, y: 2.5, z: 1 }, ipCriptografado: 'AES256-HIDRO-POWER', tipo: 'energia' },
+    { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, posicao: { x: 0, y: 1.5, z: 2 }, ipCriptografado: 'AES256-UNIV-RECRUIT', tipo: 'estudo' },
+    { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, posicao: { x: 4, y: 2.8, z: -1 }, ipCriptografado: 'AES256-LAB-FARMA', tipo: 'comercio' },
+    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, posicao: { x: -3, y: 2.5, z: -7 }, ipCriptografado: 'AES256-COAST-GUARD', tipo: 'emergencia' }
   ];
 
   // RELÓGIO
@@ -62,7 +62,7 @@ export default function MapaSpatialChakraEmanuel() {
     return () => clearInterval(timer);
   }, []);
 
-  // API NOMINATIM
+  // API NOMINATIM COM INTELIGÊNCIA GEMINI
   useEffect(() => {
     if (termoBusca.trim().length < 3) {
       setSugestoesBusca([]);
@@ -78,7 +78,7 @@ export default function MapaSpatialChakraEmanuel() {
         const data = await response.json();
         setSugestoesBusca(data || []);
       } catch (error) {
-        console.error("Erro na busca:", error);
+        console.error("Erro na busca Gemini AI:", error);
       } finally {
         setCarregandoBusca(false);
       }
@@ -87,7 +87,7 @@ export default function MapaSpatialChakraEmanuel() {
     return () => clearTimeout(delayDebounceFn);
   }, [termoBusca]);
 
-  // CENA 3D COM OCEANO E PONTE FUTURISTA
+  // CENA 3D (THREE.JS)
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -129,6 +129,45 @@ export default function MapaSpatialChakraEmanuel() {
     const gridHelper = new THREE.GridHelper(50, 50, 0x00f0ff, 0x0b0f19);
     gridHelper.position.y = -0.49;
     scene.add(gridHelper);
+
+    // 💨 PARQUE EÓLICO FUTURISTA (TURBINAS EÓLICAS EM 3D)
+    const heliceMeshes = [];
+    for (let i = -10; i <= -6; i += 4) {
+      const torreGeo = new THREE.CylinderGeometry(0.1, 0.25, 6);
+      const torreMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8 });
+      const torreMesh = new THREE.Mesh(torreGeo, torreMat);
+      torreMesh.position.set(i, 3, -8);
+      scene.add(torreMesh);
+
+      const heliceGeo = new THREE.BoxGeometry(2.5, 0.15, 0.05);
+      const heliceMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.5 });
+      const heliceMesh = new THREE.Mesh(heliceGeo, heliceMat);
+      heliceMesh.position.set(i, 6, -8);
+      scene.add(heliceMesh);
+      heliceMeshes.push(heliceMesh);
+    }
+
+    // 📡 TORRES E ANTENAS 5G/6G NEON
+    const torre5GGeo = new THREE.CylinderGeometry(0.1, 0.3, 8);
+    const torre5GMat = new THREE.MeshStandardMaterial({ color: 0xaa00ff, emissive: 0xaa00ff, emissiveIntensity: 0.7 });
+    const torre5GMesh = new THREE.Mesh(torre5GGeo, torre5GMat);
+    torre5GMesh.position.set(-8, 4, -5);
+    scene.add(torre5GMesh);
+
+    // 🌳 ÁRVORES FUTURISTAS NEON
+    for (let x = -4; x <= 4; x += 2) {
+      const troncoGeo = new THREE.CylinderGeometry(0.1, 0.15, 1);
+      const troncoMat = new THREE.MeshStandardMaterial({ color: 0x553311 });
+      const troncoMesh = new THREE.Mesh(troncoGeo, troncoMat);
+      troncoMesh.position.set(x, 0.5, 2.5);
+      scene.add(troncoMesh);
+
+      const copaGeo = new THREE.ConeGeometry(0.6, 1.2, 8);
+      const copaMat = new THREE.MeshStandardMaterial({ color: 0x00ff66, emissive: 0x00ff66, emissiveIntensity: 0.4 });
+      const copaMesh = new THREE.Mesh(copaGeo, copaMat);
+      copaMesh.position.set(x, 1.4, 2.5);
+      scene.add(copaMesh);
+    }
 
     // PONTE FUTURISTA
     const ponteBaseGeo = new THREE.BoxGeometry(32, 0.4, 4);
@@ -229,6 +268,10 @@ export default function MapaSpatialChakraEmanuel() {
       animationFrameId = requestAnimationFrame(animate);
       scene.rotation.y += 0.0008;
 
+      heliceMeshes.forEach(h => {
+        h.rotation.z += 0.05;
+      });
+
       dadosFluxoParticulas.forEach((p) => {
         p.progresso += 0.007;
         if (p.progresso > 1) p.progresso = 0;
@@ -289,7 +332,7 @@ export default function MapaSpatialChakraEmanuel() {
   const selecionarLocalPesquisado = (item) => {
     setLocalSelecionado({
       nome: item.display_name.split(',')[0],
-      categoria: `🌊 Módulo Bio-Marinho & Cidade (${filtroCategoria.toUpperCase()})`,
+      categoria: `🌐 Módulo Pesquisa Gemini AI (${filtroCategoria.toUpperCase()})`,
       ipCriptografado: `LAT: ${parseFloat(item.lat).toFixed(4)} | LON: ${parseFloat(item.lon).toFixed(4)}`,
       tipo: 'oceano'
     });
@@ -300,20 +343,20 @@ export default function MapaSpatialChakraEmanuel() {
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', overflow: 'hidden', position: 'relative', fontFamily: '"Segoe UI", sans-serif' }}>
       <Head>
-        <title>Emanuel.OS - Oceanos, Biologia Marinha & Smart Care 3D</title>
+        <title>Emanuel.OS - Pesquisa Gemini AI, Matriz Energética & Conectividade 3D</title>
       </Head>
 
       {/* CABEÇALHO */}
       <header style={{ position: 'absolute', top: '15px', left: '30px', zIndex: 10 }}>
         <h1 style={{ fontSize: '18px', margin: 0, color: '#fff', fontWeight: '900', letterSpacing: '1px' }}>
-          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>MAPA TERRESTRE & OCEANOS</span>
+          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>PESQUISA GEMINI AI & ECO-CIDADE</span>
         </h1>
         <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>
-          Pesquisa de Espécies Aquáticas, Bio-Farmacêutica, Treinamento e Smart Care
+          Oceanos, Espécies, Universidade, Nuclear, 5G/6G, Hidrelétrica, Eólica e Painéis Solares
         </span>
       </header>
 
-      {/* 🧭 NAVEGAÇÃO DE IDA E VOLTA (CORE & ESPACIAL) */}
+      {/* 🧭 NAVEGAÇÃO DE IDA E VOLTA */}
       <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px' }}>
         <a href="/" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
           🏠 Core
@@ -337,12 +380,12 @@ export default function MapaSpatialChakraEmanuel() {
         </div>
       )}
 
-      {/* 🔍 BARRA DE PESQUISA & MÓDULO MARINHO/CARE */}
-      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 35, width: '420px' }}>
+      {/* 🔍 BARRA DE PESQUISA GEMINI AI COM OS 8 BOTOES DE FILTROS SOLICITADOS */}
+      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 35, width: '560px' }}>
         <div style={{ position: 'relative' }}>
           <input
             type="text"
-            placeholder="🔍 Pesquise mares, peixes em extinção, remédios ou cidades..."
+            placeholder="🔍 Pesquisa Gemini AI (Mares, 5G, Nuclear, Remédios, Vagas, Eólica, Solar)..."
             value={termoBusca}
             onChange={(e) => setTermoBusca(e.target.value)}
             style={{
@@ -365,11 +408,15 @@ export default function MapaSpatialChakraEmanuel() {
         </div>
 
         {/* BOTOES DE FILTROS RÁPIDOS */}
-        <div style={{ display: 'flex', gap: '5px', marginTop: '6px', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => setFiltroCategoria('oceano')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'oceano' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'oceano' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🌊 Oceanos/Rios</button>
           <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🐠 Espécies & Remédios</button>
-          <button onClick={() => setFiltroCategoria('estudo')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'estudo' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'estudo' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🎓 Vagas/Universidade</button>
-          <button onClick={() => setFiltroCategoria('idosos')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ff00aa', background: filtroCategoria === 'idosos' ? '#ff00aa' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'idosos' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>👵 Smart Care</button>
+          <button onClick={() => setFiltroCategoria('universidade')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'universidade' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'universidade' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🎓 Vagas/Universidade</button>
+          <button onClick={() => setFiltroCategoria('nuclear')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ffcc', background: filtroCategoria === 'nuclear' ? '#00ffcc' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'nuclear' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>⚛️ Energia Nuclear</button>
+          <button onClick={() => setFiltroCategoria('5g')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #aa00ff', background: filtroCategoria === '5g' ? '#aa00ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === '5g' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>📡 Torres 5G/6G</button>
+          <button onClick={() => setFiltroCategoria('hidro')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #0066ff', background: filtroCategoria === 'hidro' ? '#0066ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'hidro' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💧 Hidrelétrica</button>
+          <button onClick={() => setFiltroCategoria('eolica')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'eolica' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'eolica' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💨 Parque Eólico</button>
+          <button onClick={() => setFiltroCategoria('solar')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'solar' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'solar' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>☀️ Painéis Solares</button>
         </div>
 
         {/* SUGESTÕES DE BUSCA */}
@@ -399,8 +446,6 @@ export default function MapaSpatialChakraEmanuel() {
                   transition: 'all 0.2s ease',
                   lineHeight: '1.4'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(0, 240, 255, 0.15)'; e.currentTarget.style.color = '#00f0ff'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#e4e4e7'; }}
               >
                 📍 <b>{item.display_name}</b>
               </li>
@@ -440,7 +485,7 @@ export default function MapaSpatialChakraEmanuel() {
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '400px', backgroundColor: 'rgba(7, 12, 28, 0.98)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '22px', zIndex: 40, backdropFilter: 'blur(30px)', boxShadow: '0 0 60px rgba(0,240,255,0.4)', color: '#fff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ margin: 0, color: '#00f0ff', fontSize: '16px', fontWeight: '900' }}>
-              {abaAtiva === 'agenda' && '📅 Agendador de Tarefas & Pesquisa IA'}
+              {abaAtiva === 'agenda' && '📅 Agendador de Tarefas Gemini IA'}
               {abaAtiva === 'link' && '🔗 Publicador de Links Online'}
             </h3>
             <button onClick={() => setAbaAtiva(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
