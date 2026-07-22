@@ -8,12 +8,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "firebase": "^10.0.0",
     "leaflet": "^1.9.4",
     "next": "latest",
+    "nodemailer": "^9.0.3",
     "react": "latest",
     "react-dom": "latest",
     "react-leaflet": "^5.0.0",
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "twilio": "^6.0.2"
   }
 }

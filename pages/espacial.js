@@ -8,7 +8,6 @@ export default function MapaEspacialEmanuelOS() {
   const [fogueteLancado, setFogueteLancado] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(null);
 
-  // ESTADOS DE PRODUTIVIDADE E CLOUD
   const [abaAtiva, setAbaAtiva] = useState(null);
   const [novaTarefa, setNovaTarefa] = useState('');
   const [listaTarefas, setListaTarefas] = useState([
@@ -17,13 +16,11 @@ export default function MapaEspacialEmanuelOS() {
   ]);
   const [linkGerado, setLinkGerado] = useState('');
 
-  // 🔍 BARRA DE PESQUISA & FILTROS ESPACIAIS
   const [termoBusca, setTermoBusca] = useState('');
   const [sugestoesBusca, setSugestoesBusca] = useState([]);
   const [carregandoBusca, setCarregandoBusca] = useState(false);
-  const [filtroCategoria, setFiltroCategoria] = useState('minerais'); // 'minerais', 'especies', 'planetas', 'astronautas'
+  const [filtroCategoria, setFiltroCategoria] = useState('minerais');
 
-  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
     nome: "Emanuel da Silva (Comando Aeroespacial Emanuel.OS)",
     whatsapp: "5588981493989",
@@ -38,20 +35,18 @@ export default function MapaEspacialEmanuelOS() {
   };
 
   const missoesEspaciais = [
-    { id: 1, nome: 'Satélite AGI-Net 01', categoria: '🛰️ Satélite de Internet & IA Global', destino: 'Órbita Terrestre Baixa (LEO)', status: 'Operacional', cor: 0x00f0ff },
-    { id: 2, nome: 'Sonda Interplanetária Ares-X', categoria: '🪐 Exploração de Marte & Minerais', destino: 'Planeta Marte', status: 'Em Trânsito', cor: 0xff5500 },
-    { id: 3, nome: 'Telescópio Orbital Deep-Vision', categoria: '🔭 Atmosfera & Espécies Desconhecidas', destino: 'Ponto Lagrange L1', status: 'Ativo', cor: 0xaa00ff },
-    { id: 4, nome: 'Foguete Propulsor Titan-V', categoria: '🚀 Veículo de Lançamento & Mísseis', destino: 'Base de Lançamento', status: 'Pronto para Propulsão', cor: 0x00ff66 }
+    { id: 1, nome: 'Satélite AGI-Net 01', categoria: '🛰️ Satélite de Internet & IA Global', destino: 'Órbita Terrestre Baixa (LEO)', status: 'Operacional' },
+    { id: 2, nome: 'Sonda Interplanetária Ares-X', categoria: '🪐 Exploração de Marte & Minerais', destino: 'Planeta Marte', status: 'Em Trânsito' },
+    { id: 3, nome: 'Telescópio Orbital Deep-Vision', categoria: '🔭 Atmosfera & Espécies Desconhecidas', destino: 'Ponto Lagrange L1', status: 'Ativo' },
+    { id: 4, nome: 'Foguete Propulsor Titan-V', categoria: '🚀 Veículo de Lançamento & Mísseis', destino: 'Base de Lançamento', status: 'Pronto para Propulsão' }
   ];
 
-  // RELÓGIO
   useEffect(() => {
     setTempoAtual(new Date());
     const timer = setInterval(() => setTempoAtual(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // API NOMINATIM
   useEffect(() => {
     if (termoBusca.trim().length < 3) {
       setSugestoesBusca([]);
@@ -76,7 +71,6 @@ export default function MapaEspacialEmanuelOS() {
     return () => clearTimeout(delayDebounceFn);
   }, [termoBusca]);
 
-  // CENA 3D (THREE.JS)
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -100,7 +94,6 @@ export default function MapaEspacialEmanuelOS() {
     const ambientLight = new THREE.AmbientLight(0x333355, 0.5);
     scene.add(ambientLight);
 
-    // TERRA 3D
     const terraGeo = new THREE.SphereGeometry(6, 64, 64);
     const terraMat = new THREE.MeshStandardMaterial({
       color: 0x114488,
@@ -112,7 +105,6 @@ export default function MapaEspacialEmanuelOS() {
     const terraMesh = new THREE.Mesh(terraGeo, terraMat);
     scene.add(terraMesh);
 
-    // ATMOSFERA
     const atmoGeo = new THREE.SphereGeometry(6.3, 64, 64);
     const atmoMat = new THREE.MeshBasicMaterial({
       color: 0x00f0ff,
@@ -123,11 +115,9 @@ export default function MapaEspacialEmanuelOS() {
     const atmosferaMesh = new THREE.Mesh(atmoGeo, atmoMat);
     scene.add(atmosferaMesh);
 
-    // CAMPO DE ESTRELAS
     const estrelasGeo = new THREE.BufferGeometry();
-    const estrelasCont = 800;
-    const posicoesEstrelas = new Float32Array(estrelasCont * 3);
-    for (let i = 0; i < estrelasCont * 3; i++) {
+    const posicoesEstrelas = new Float32Array(800 * 3);
+    for (let i = 0; i < 800 * 3; i++) {
       posicoesEstrelas[i] = (Math.random() - 0.5) * 300;
     }
     estrelasGeo.setAttribute('position', new THREE.BufferAttribute(posicoesEstrelas, 3));
@@ -135,13 +125,11 @@ export default function MapaEspacialEmanuelOS() {
     const campoEstrelas = new THREE.Points(estrelasGeo, estrelasMat);
     scene.add(campoEstrelas);
 
-    // SATÉLITE
     const sateliteGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
     const sateliteMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.8 });
     const sateliteMesh = new THREE.Mesh(sateliteGeo, sateliteMat);
     scene.add(sateliteMesh);
 
-    // FOGUETE
     const fogueteGeo = new THREE.ConeGeometry(0.4, 2, 16);
     const fogueteMat = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, emissiveIntensity: 0.5 });
     const fogueteMesh = new THREE.Mesh(fogueteGeo, fogueteMat);
@@ -165,7 +153,6 @@ export default function MapaEspacialEmanuelOS() {
       sateliteMesh.position.x = Math.cos(anguloOrbita) * raioOrbita;
       sateliteMesh.position.z = Math.sin(anguloOrbita) * raioOrbita;
       sateliteMesh.position.y = Math.sin(anguloOrbita * 2) * 2;
-      sateliteMesh.rotation.y += 0.02;
 
       if (fogueteLancado || lancando) {
         lancando = true;
@@ -224,7 +211,7 @@ export default function MapaEspacialEmanuelOS() {
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#000003', overflow: 'hidden', position: 'relative', fontFamily: '"Segoe UI", sans-serif' }}>
       <Head>
-        <title>Emanuel.OS - Comando Aeroespacial & Sistema Solar 3D</title>
+        <title>Emanuel.OS - Central Aeroespacial 3D</title>
       </Head>
 
       {/* CABEÇALHO */}
@@ -237,17 +224,17 @@ export default function MapaEspacialEmanuelOS() {
         </span>
       </header>
 
-      {/* 🧭 BARRA DE NAVEGAÇÃO DE IDA E VOLTA (CORE / TERRESTRE / ESPACIAL) */}
+      {/* NAVEGAÇÃO COMPLETA DE IDA E VOLTA (CORE / MAPA IA) */}
       <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px' }}>
-        <a href="/" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
-          🏠 Core
+        <a href="/" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          🏠 Core Login
         </a>
-        <a href="/mapa" style={{ padding: '8px 14px', backgroundColor: 'rgba(0,240,255,0.15)', color: '#00f0ff', border: '1px solid #00f0ff', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
-          🌍 Mapa Terrestre
+        <a href="/mapa-ia" style={{ padding: '8px 14px', backgroundColor: 'rgba(234, 88, 12, 0.2)', color: '#fb923c', border: '1px solid #ea580c', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
+          ⚡ Mapa IA & Redes Sociais
         </a>
       </div>
 
-      {/* 🔍 BARRA DE PESQUISA & FILTROS ESPACIAIS REFORMULADOS */}
+      {/* BARRA DE PESQUISA & FILTROS */}
       <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 35, width: '440px' }}>
         <div style={{ position: 'relative' }}>
           <input
@@ -274,7 +261,6 @@ export default function MapaEspacialEmanuelOS() {
           )}
         </div>
 
-        {/* NOVAS CATEGORIAS PEDIDAS */}
         <div style={{ display: 'flex', gap: '5px', marginTop: '6px', justifyContent: 'center' }}>
           <button onClick={() => setFiltroCategoria('minerais')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'minerais' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'minerais' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🪨 Pedras & Minerais</button>
           <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🧬 Espécies Desconhecidas</button>
@@ -282,7 +268,6 @@ export default function MapaEspacialEmanuelOS() {
           <button onClick={() => setFiltroCategoria('astronautas')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ff00aa', background: filtroCategoria === 'astronautas' ? '#ff00aa' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'astronautas' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>👨‍🚀 Centro Médico Espacial</button>
         </div>
 
-        {/* SUGESTÕES DE BUSCA */}
         {sugestoesBusca.length > 0 && (
           <ul style={{
             listStyle: 'none',
@@ -292,7 +277,6 @@ export default function MapaEspacialEmanuelOS() {
             border: '1px solid rgba(0, 240, 255, 0.5)',
             borderRadius: '15px',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)',
             maxHeight: '200px',
             overflowY: 'auto'
           }}>
@@ -305,8 +289,7 @@ export default function MapaEspacialEmanuelOS() {
                   fontSize: '11px',
                   color: '#e4e4e7',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  cursor: 'pointer',
-                  lineHeight: '1.4'
+                  cursor: 'pointer'
                 }}
               >
                 📍 <b>{item.display_name}</b>
@@ -316,7 +299,7 @@ export default function MapaEspacialEmanuelOS() {
         )}
       </div>
 
-      {/* FERRAMENTAS CLOUD E PROPULSÃO */}
+      {/* PROPULSÃO & CLOUD */}
       <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 25, display: 'flex', gap: '8px' }}>
         <button 
           onClick={() => setFogueteLancado(true)}
@@ -332,7 +315,7 @@ export default function MapaEspacialEmanuelOS() {
         </button>
       </div>
 
-      {/* RELÓGIO & STATUS DA ATMOSFERA */}
+      {/* RELÓGIO & STATUS */}
       <div style={{ position: 'absolute', top: '80px', left: '30px', zIndex: 15, backgroundColor: 'rgba(7, 12, 28, 0.85)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '16px', padding: '12px', backdropFilter: 'blur(15px)', width: '280px', color: '#fff' }}>
         <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#00f0ff', marginBottom: '4px' }}>
           📅 {tempoAtual ? tempoAtual.toLocaleDateString('pt-BR') : 'Carregando...'} - 🕒 {tempoAtual ? tempoAtual.toLocaleTimeString('pt-BR') : '--:--:--'}
@@ -341,16 +324,16 @@ export default function MapaEspacialEmanuelOS() {
           🌌 Atmosfera 3D: Estável | Órbita LEO Ativa
         </div>
         <div style={{ fontSize: '9px', color: '#00ff66', backgroundColor: 'rgba(0,255,102,0.1)', padding: '5px', borderRadius: '6px', border: '1px solid rgba(0,255,102,0.3)', fontWeight: 'bold' }}>
-          🛰️ 4 Satélites AGI Transmitindo Sinal Global
+          🛰️ Satélites AGI Transmitindo Sinal Global
         </div>
       </div>
 
-      {/* CONTAINER THREE.JS */}
+      {/* CANVAS THREE.JS */}
       <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* MODAL AGENDA E LINK */}
+      {/* MODAL AGENDA/LINK */}
       {abaAtiva && (
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '400px', backgroundColor: 'rgba(7, 12, 28, 0.98)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '22px', zIndex: 40, backdropFilter: 'blur(30px)', boxShadow: '0 0 60px rgba(0,240,255,0.4)', color: '#fff' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '400px', backgroundColor: 'rgba(7, 12, 28, 0.98)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '22px', zIndex: 40, backdropFilter: 'blur(30px)', color: '#fff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ margin: 0, color: '#00f0ff', fontSize: '16px', fontWeight: '900' }}>
               {abaAtiva === 'agenda' && '📅 Agendador de Tarefas IA'}
@@ -401,7 +384,7 @@ export default function MapaEspacialEmanuelOS() {
         </div>
       )}
 
-      {/* PAINEL LATERAL DE MISSÕES ESPACIAIS E TODAS AS SUAS REDES SOCIAIS */}
+      {/* PAINEL LATERAL DE CONTATOS DO EMANUEL & MISSÕES */}
       <aside style={{ position: 'absolute', right: '30px', bottom: '30px', width: '360px', backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '20px', padding: '20px', backdropFilter: 'blur(25px)', zIndex: 20, color: '#fff' }}>
         <h3 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#00f0ff', fontWeight: '900' }}>🪐 MISSÕES DO SISTEMA SOLAR</h3>
         

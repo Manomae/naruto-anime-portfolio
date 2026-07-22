@@ -62,9 +62,9 @@ export default function EmanuelOSCore() {
 
   const TELEFONE_AUTORIZADO = "88981493989";
   const TELEFONE_AUTORIZADO_DDI = "5588981493989";
-  const PIN_MESTRE_EMANUEL = "2026";
+  const PIN_MESTRE_EMANUEL = "8888";
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
-  const CHAVE_MESTRE = "EMA-AGI-777";
+  const CHAVE_MESTRE = "ASD-DDD-888";
 
   const [modo, setModo] = useState('live'); 
   const [vozAtiva, setVozAtiva] = useState('Emanuel'); 
@@ -403,29 +403,31 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a 
-                href="/mapa" 
-                style={{ 
-                  display: 'block', width: '100%', padding: '12px', backgroundColor: 'rgba(0, 240, 255, 0.08)', 
-                  color: '#00f0ff', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', 
-                  textDecoration: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', 
-                  boxShadow: '0 0 15px rgba(0, 240, 255, 0.1)', transition: 'all 0.2s', boxSizing: 'border-box' 
-                }}
-              >
-                🌍 MAPA TERRESTRE (CIDADES, OCEANOS & SMART CARE)
-              </a>
-              <a 
-                href="/espacial" 
-                style={{ 
-                  display: 'block', width: '100%', padding: '12px', backgroundColor: 'rgba(255, 0, 85, 0.08)', 
-                  color: '#ff0055', border: '1px solid rgba(255, 0, 85, 0.3)', borderRadius: '10px', 
-                  textDecoration: 'none', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', 
-                  boxShadow: '0 0 15px rgba(255, 0, 85, 0.1)', transition: 'all 0.2s', boxSizing: 'border-box' 
-                }}
-              >
-                🚀 MAPA ESPACIAL (SISTEMA SOLAR & SATÉLITES)
-              </a>
+            {/* PAINEL DE NAVEGAÇÃO DOS 4 MAPAS PRINCIPAIS */}
+            <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
+              <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados</h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {/* 1. Mapa Espacial */}
+                <a href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                  🪐 Mapa Espacial
+                </a>
+
+                {/* 2. Mapa Terrestre */}
+                <a href="/mapa" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                  🌍 Mapa Terrestre
+                </a>
+
+                {/* 3. Gerador 3D de Mapas IA */}
+                <a href="/mapa-ia" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                  ⚡ Gerador 3D IA
+                </a>
+
+                {/* 4. Central Aeroespacial Internacional */}
+                <a href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                  🛸 Aeroespacial Futuro
+                </a>
+              </div>
             </div>
 
             <input 
