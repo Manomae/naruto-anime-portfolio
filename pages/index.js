@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
@@ -60,6 +61,22 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
+  // 🛡️ STATES DA 6ª CAMADA: Ticons OS gevaGifs
+  const [isAdmin, setIsAdmin] = useState(true); // Liberado para você testar sem limites
+  const [attemptsLeft, setAttemptsLeft] = useState(2);
+  const [isLockedTicons, setIsLockedTicons] = useState(false);
+  const [statusTicons, setStatusTicons] = useState('🔐 Selecione a sequência correta do Ticons OS gevaGifs');
+  const [selectedSequence, setSelectedSequence] = useState([]);
+  const targetSequence = ['🔥', 'avatar_ninja.png', 'gif_animado.gif'];
+
+  const availableOptions = [
+    { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
+    { type: 'avatar', value: 'avatar_ninja.png', label: 'Avatar Ninja' },
+    { type: 'gif', value: 'gif_animado.gif', label: 'GIF Chakra' },
+    { type: 'video', value: 'video_intro.mp4', label: 'Vídeo 3D' },
+    { type: 'image', value: 'img_vila.png', label: 'Imagem Vila' }
+  ];
+
   const TELEFONE_AUTORIZADO = "88981493989";
   const TELEFONE_AUTORIZADO_DDI = "5588981493989";
   const PIN_MESTRE_EMANUEL = "8888";
@@ -81,7 +98,7 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 5 camadas ativo. Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 6 camadas ativo (incluindo Ticons OS gevaGifs). Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
   const [ddd1, setDdd1] = useState('');
@@ -93,6 +110,24 @@ export default function EmanuelOSCore() {
   const [modoDisparo, setModoDisparo] = useState('ambos'); 
 
   const imageInputRef = useRef(null);
+
+  // Controle de Tentativas da 6ª Camada
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const savedData = JSON.parse(localStorage.getItem('ticons_auth_data') || '{}');
+
+    if (savedData.date === today) {
+      if (!isAdmin) {
+        setAttemptsLeft(savedData.attempts !== undefined ? savedData.attempts : 2);
+        if (savedData.attempts <= 0) {
+          setIsLockedTicons(true);
+          setStatusTicons('❌ Limite de 2 tentativas diárias atingido. Volte amanhã!');
+        }
+      }
+    } else {
+      localStorage.setItem('ticons_auth_data', JSON.stringify({ date: today, attempts: 2 }));
+    }
+  }, [isAdmin]);
 
   const acionarBiometriaWhatsapp = () => {
     setBiometriaLendo(true);
@@ -136,11 +171,47 @@ export default function EmanuelOSCore() {
   const validarEtapa5Chave = (e) => {
     e.preventDefault();
     if (chaveDigitada === CHAVE_MESTRE) {
-      setBloqueado(false);
-      alert("🔓 Acesso Autorizado! Autenticação concluída com sucesso.");
+      setEtapaSeguranca(6); // Avança para a 6ª Camada Ticons OS gevaGifs
     } else {
       alert("⚠️ Palavra-Chave Mestre inválida!");
       setChaveDigitada('');
+    }
+  };
+
+  // Validação da 6ª Etapa (Ticons OS gevaGifs)
+  const handleSelectOptionTicons = (item) => {
+    if (isLockedTicons && !isAdmin) return;
+    const newSeq = [...selectedSequence, item.value];
+    setSelectedSequence(newSeq);
+
+    if (newSeq.length === targetSequence.length) {
+      verifySequenceTicons(newSeq);
+    }
+  };
+
+  const verifySequenceTicons = (seq) => {
+    const isCorrect = JSON.stringify(seq) === JSON.stringify(targetSequence);
+
+    if (isCorrect || isAdmin) {
+      setBloqueado(false);
+      alert("🔓 Acesso Total Autorizado pelo Ticons OS gevaGifs! Bem-vindo, Emanuel.");
+    } else {
+      if (!isAdmin) {
+        const newAttempts = attemptsLeft - 1;
+        setAttemptsLeft(newAttempts);
+        localStorage.setItem('ticons_auth_data', JSON.stringify({ date: new Date().toDateString(), attempts: newAttempts }));
+
+        if (newAttempts <= 0) {
+          setIsLockedTicons(true);
+          setStatusTicons('❌ Senha incorreta! Tentativas diárias esgotadas.');
+        } else {
+          setStatusTicons(`⚠️ Sequência incorreta! Resta ${newAttempts} tentativa hoje.`);
+          setSelectedSequence([]);
+        }
+      } else {
+        setStatusTicons('🔓 [MODO ADMIN] Tentativas ilimitadas liberadas!');
+        setSelectedSequence([]);
+      }
     }
   };
 
@@ -251,14 +322,14 @@ export default function EmanuelOSCore() {
           <title>Emanuel.OS - Autenticação de Segurança</title>
         </Head>
 
-        <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
           
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛡️</div>
           <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
           </h2>
           <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
-            PROTOCOLO DE SEGURANÇA DE 5 ETAPAS ({etapaSeguranca}/5)
+            PROTOCOLO DE SEGURANÇA DE 6 ETAPAS ({etapaSeguranca}/6)
           </span>
 
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginBottom: '20px' }}>
@@ -267,6 +338,7 @@ export default function EmanuelOSCore() {
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 3 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 4 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 5 ? '#ff0055' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 6 ? '#eab308' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
           </div>
 
           {etapaSeguranca === 1 && (
@@ -337,7 +409,7 @@ export default function EmanuelOSCore() {
           {etapaSeguranca === 5 && (
             <form onSubmit={validarEtapa5Chave} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ E-mail Confirmado!</span>
-              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 5ª Etapa Final: Palavra-Chave Mestre:</span>
+              <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 5ª Etapa: Palavra-Chave Mestre:</span>
               <input 
                 type="password" 
                 value={chaveDigitada} 
@@ -346,9 +418,39 @@ export default function EmanuelOSCore() {
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid #ff0055', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '14px', outline: 'none' }}
               />
               <button type="submit" style={{ padding: '14px', backgroundColor: '#ff0055', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,85,0.4)' }}>
-                🛡️ Desbloquear Emanuel.OS Core
+                Ir para a 6ª Camada ➔
               </button>
             </form>
+          )}
+
+          {/* 🌟 6ª CAMADA INTEGRADAS: Ticons OS gevaGifs */}
+          {etapaSeguranca === 6 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 5 Camadas Validadas!</span>
+              <span style={{ fontSize: '12px', color: '#eab308', fontWeight: 'bold' }}>🔑 6ª Camada: Ticons OS gevaGifs</span>
+              
+              <p style={{ fontSize: '11px', color: '#38bdf8', margin: 0 }}>{statusTicons}</p>
+              {!isAdmin && <p style={{ fontSize: '10px', color: '#f59e0b', margin: 0 }}>Tentativas hoje: <b>{attemptsLeft}/2</b></p>}
+
+              {!isLockedTicons || isAdmin ? (
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', margin: '12px 0' }}>
+                    {availableOptions.map((opt, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectOptionTicons(opt)}
+                        style={{ backgroundColor: '#1e293b', border: '1px solid #eab308', color: '#fff', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#94a3b8' }}>Sequência: <span style={{ color: '#eab308' }}>{selectedSequence.join(' ➔ ') || 'Nenhuma'}</span></p>
+                </div>
+              ) : (
+                <p style={{ color: '#ef4444', fontSize: '12px', fontWeight: 'bold' }}>Acesso bloqueado até amanhã.</p>
+              )}
+            </div>
           )}
 
         </div>
@@ -408,25 +510,21 @@ export default function EmanuelOSCore() {
               <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados</h3>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {/* 1. Mapa Espacial */}
-                <a href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                <Link href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                   🪐 Mapa Espacial
-                </a>
+                </Link>
 
-                {/* 2. Mapa Terrestre */}
-                <a href="/mapa" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                <Link href="/mapa" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                   🌍 Mapa Terrestre
-                </a>
+                </Link>
 
-                {/* 3. Gerador 3D de Mapas IA */}
-                <a href="/mapa-ia" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                <Link href="/mapa-ia" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                   ⚡ Gerador 3D IA
-                </a>
+                </Link>
 
-                {/* 4. Central Aeroespacial Internacional */}
-                <a href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                <Link href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                   🛸 Aeroespacial Futuro
-                </a>
+                </Link>
               </div>
             </div>
 
