@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import * as THREE from 'three';
 
-export default function MapaSpatialChakraEmanuel() {
+export default function MapaTerrestreEmanuel() {
   const mountRef = useRef(null);
   const [localSelecionado, setLocalSelecionado] = useState(null);
   const [alertaAbalroamento, setAlertaAbalroamento] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(null);
   
+  // 🌟 CONTROLE DA BARRA FLUIDA SUPERIOR RETRÁTIL
+  const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
+
   // ESTADOS DE PRODUTIVIDADE E CLOUD
   const [abaAtiva, setAbaAtiva] = useState(null);
   const [novaTarefa, setNovaTarefa] = useState('');
@@ -338,6 +341,7 @@ export default function MapaSpatialChakraEmanuel() {
     });
     setTermoBusca('');
     setSugestoesBusca([]);
+    setIsBarraFluidaOpen(false); // Fecha o painel após selecionar
   };
 
   return (
@@ -349,7 +353,7 @@ export default function MapaSpatialChakraEmanuel() {
       {/* CABEÇALHO */}
       <header style={{ position: 'absolute', top: '15px', left: '30px', zIndex: 10 }}>
         <h1 style={{ fontSize: '18px', margin: 0, color: '#fff', fontWeight: '900', letterSpacing: '1px' }}>
-          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>PESQUISA GEMINI AI & ECO-CIDADE</span>
+          ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>MAPA TERRESTRE & ECO-CIDADE</span>
         </h1>
         <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>
           Oceanos, Espécies, Universidade, Nuclear, 5G/6G, Hidrelétrica, Eólica e Painéis Solares
@@ -380,77 +384,111 @@ export default function MapaSpatialChakraEmanuel() {
         </div>
       )}
 
-      {/* 🔍 BARRA DE PESQUISA GEMINI AI COM OS 8 BOTOES DE FILTROS SOLICITADOS */}
-      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 35, width: '560px' }}>
-        <div style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="🔍 Pesquisa Gemini AI (Mares, 5G, Nuclear, Remédios, Vagas, Eólica, Solar)..."
-            value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px 18px',
-              backgroundColor: 'rgba(7, 12, 28, 0.95)',
-              border: '1px solid #00f0ff',
-              borderRadius: '25px',
-              color: '#fff',
-              fontSize: '11px',
-              outline: 'none',
-              backdropFilter: 'blur(15px)',
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
-              boxSizing: 'border-box'
-            }}
-          />
-          {carregandoBusca && (
-            <span style={{ position: 'absolute', right: '15px', top: '12px', fontSize: '10px', color: '#00f0ff' }}>⚡</span>
-          )}
-        </div>
-
-        {/* BOTOES DE FILTROS RÁPIDOS */}
-        <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => setFiltroCategoria('oceano')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'oceano' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'oceano' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🌊 Oceanos/Rios</button>
-          <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🐠 Espécies & Remédios</button>
-          <button onClick={() => setFiltroCategoria('universidade')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'universidade' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'universidade' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🎓 Vagas/Universidade</button>
-          <button onClick={() => setFiltroCategoria('nuclear')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ffcc', background: filtroCategoria === 'nuclear' ? '#00ffcc' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'nuclear' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>⚛️ Energia Nuclear</button>
-          <button onClick={() => setFiltroCategoria('5g')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #aa00ff', background: filtroCategoria === '5g' ? '#aa00ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === '5g' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>📡 Torres 5G/6G</button>
-          <button onClick={() => setFiltroCategoria('hidro')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #0066ff', background: filtroCategoria === 'hidro' ? '#0066ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'hidro' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💧 Hidrelétrica</button>
-          <button onClick={() => setFiltroCategoria('eolica')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'eolica' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'eolica' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💨 Parque Eólico</button>
-          <button onClick={() => setFiltroCategoria('solar')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'solar' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'solar' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>☀️ Painéis Solares</button>
-        </div>
-
-        {/* SUGESTÕES DE BUSCA */}
-        {sugestoesBusca.length > 0 && (
-          <ul style={{
-            listStyle: 'none',
-            margin: '8px 0 0 0',
-            padding: '8px',
+      {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL (PUXAR DE CIMA PARA BAIXO) */}
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '90%', maxWidth: '620px' }}>
+        
+        {/* Puxador Visível */}
+        <div 
+          onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
+          style={{
             backgroundColor: 'rgba(7, 12, 28, 0.95)',
-            border: '1px solid rgba(0, 240, 255, 0.5)',
-            borderRadius: '15px',
+            backdropFilter: 'blur(15px)',
+            borderBottomLeftRadius: '16px',
+            borderBottomRightRadius: '16px',
+            border: '1px solid #00f0ff',
+            borderTop: 'none',
+            padding: '8px 24px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            color: '#00f0ff',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            boxShadow: '0 10px 25px rgba(0,240,255,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            gap: '8px'
+          }}
+        >
+          <span>{isBarraFluidaOpen ? '▲ Recolher Painel de Pesquisa Terrestre' : '▼ Puxe para Baixo (Pesquisa Gemini AI & Filtros)'}</span>
+        </div>
+
+        {/* Conteúdo Oculto do Painel */}
+        {isBarraFluidaOpen && (
+          <div style={{
+            backgroundColor: 'rgba(7, 12, 28, 0.98)',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)',
-            maxHeight: '220px',
-            overflowY: 'auto'
+            padding: '16px',
+            borderRadius: '18px',
+            border: '1px solid rgba(0, 240, 255, 0.5)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            marginTop: '6px'
           }}>
-            {sugestoesBusca.map((item, index) => (
-              <li
-                key={index}
-                onClick={() => selecionarLocalPesquisado(item)}
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="🔍 Pesquisa Gemini AI (Mares, 5G, Nuclear, Remédios, Vagas, Eólica, Solar)..."
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
                 style={{
-                  padding: '10px',
+                  width: '100%',
+                  padding: '12px 18px',
+                  backgroundColor: '#09090b',
+                  border: '1px solid #00f0ff',
+                  borderRadius: '20px',
+                  color: '#fff',
                   fontSize: '11px',
-                  color: '#e4e4e7',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  lineHeight: '1.4'
+                  outline: 'none',
+                  boxSizing: 'border-box'
                 }}
-              >
-                📍 <b>{item.display_name}</b>
-              </li>
-            ))}
-          </ul>
+              />
+              {carregandoBusca && (
+                <span style={{ position: 'absolute', right: '15px', top: '12px', fontSize: '10px', color: '#00f0ff' }}>⚡</span>
+              )}
+            </div>
+
+            {/* BOTOES DE FILTROS RÁPIDOS */}
+            <div style={{ display: 'flex', gap: '4px', marginTop: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => setFiltroCategoria('oceano')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'oceano' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'oceano' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🌊 Oceanos/Rios</button>
+              <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🐠 Espécies & Remédios</button>
+              <button onClick={() => setFiltroCategoria('universidade')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'universidade' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'universidade' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🎓 Vagas/Universidade</button>
+              <button onClick={() => setFiltroCategoria('nuclear')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ffcc', background: filtroCategoria === 'nuclear' ? '#00ffcc' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'nuclear' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>⚛️ Energia Nuclear</button>
+              <button onClick={() => setFiltroCategoria('5g')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #aa00ff', background: filtroCategoria === '5g' ? '#aa00ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === '5g' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>📡 Torres 5G/6G</button>
+              <button onClick={() => setFiltroCategoria('hidro')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #0066ff', background: filtroCategoria === 'hidro' ? '#0066ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'hidro' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💧 Hidrelétrica</button>
+              <button onClick={() => setFiltroCategoria('eolica')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'eolica' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'eolica' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>💨 Parque Eólico</button>
+              <button onClick={() => setFiltroCategoria('solar')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'solar' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'solar' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>☀️ Painéis Solares</button>
+            </div>
+
+            {/* SUGESTÕES DE BUSCA */}
+            {sugestoesBusca.length > 0 && (
+              <ul style={{
+                listStyle: 'none',
+                margin: '10px 0 0 0',
+                padding: '8px',
+                backgroundColor: '#09090b',
+                border: '1px solid rgba(0, 240, 255, 0.5)',
+                borderRadius: '12px',
+                maxHeight: '180px',
+                overflowY: 'auto'
+              }}>
+                {sugestoesBusca.map((item, index) => (
+                  <li
+                    key={index}
+                    onClick={() => selecionarLocalPesquisado(item)}
+                    style={{
+                      padding: '8px',
+                      fontSize: '11px',
+                      color: '#e4e4e7',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📍 <b>{item.display_name}</b>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </div>
 

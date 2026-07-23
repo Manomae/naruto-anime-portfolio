@@ -62,7 +62,7 @@ export default function EmanuelOSCore() {
   const [chaveDigitada, setChaveDigitada] = useState('');
 
   // 🛡️ STATES DA 6ª CAMADA: Ticons OS gevaGifs
-  const [isAdmin, setIsAdmin] = useState(true); // Liberado para você testar sem limites
+  const [isAdmin, setIsAdmin] = useState(true); 
   const [attemptsLeft, setAttemptsLeft] = useState(2);
   const [isLockedTicons, setIsLockedTicons] = useState(false);
   const [statusTicons, setStatusTicons] = useState('🔐 Selecione a sequência correta do Ticons OS gevaGifs');
@@ -90,6 +90,9 @@ export default function EmanuelOSCore() {
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [sidebarAberta, setSidebarAberta] = useState(true);
   
+  // Painel Fluido Lateral Direito (Para a IA Integrada)
+  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
+
   const [chatInput, setChatInput] = useState('');
   const [historicoChats, setHistoricoChats] = useState([
     { id: 1, titulo: 'Conversa Geral sobre IA', data: '18/07/2026', origem: 'recente' },
@@ -171,14 +174,13 @@ export default function EmanuelOSCore() {
   const validarEtapa5Chave = (e) => {
     e.preventDefault();
     if (chaveDigitada === CHAVE_MESTRE) {
-      setEtapaSeguranca(6); // Avança para a 6ª Camada Ticons OS gevaGifs
+      setEtapaSeguranca(6);
     } else {
       alert("⚠️ Palavra-Chave Mestre inválida!");
       setChaveDigitada('');
     }
   };
 
-  // Validação da 6ª Etapa (Ticons OS gevaGifs)
   const handleSelectOptionTicons = (item) => {
     if (isLockedTicons && !isAdmin) return;
     const newSeq = [...selectedSequence, item.value];
@@ -585,6 +587,37 @@ export default function EmanuelOSCore() {
           </>
         )}
       </aside>
+
+      {/* 🌟 PAINEL FLUIDO LATERAL DIREITO (SISTEMA INTEGRADO DA SUA IA + GEMINI) */}
+      <div style={{
+        position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-320px', top: 0,
+        height: '100vh', width: '310px', backgroundColor: 'rgba(7, 12, 28, 0.95)',
+        backdropFilter: 'blur(20px)', borderLeft: '1px solid rgba(0, 240, 255, 0.3)',
+        zIndex: 95, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', padding: '20px',
+        boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '15px'
+      }}>
+        {/* Puxador da Barra Fluida Lateral */}
+        <button 
+          onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
+          style={{
+            position: 'absolute', left: '-40px', top: '30px', width: '40px', height: '50px',
+            backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)',
+            borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+            color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          {painelFluidoDireitoAberto ? '➔' : '◀'}
+        </button>
+
+        <h3 style={{ color: '#00f0ff', fontSize: '14px', margin: 0, fontWeight: 'bold' }}>🤖 IA Integrada + Gemini AGI</h3>
+        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>Módulo complementar de processamento cognitivo simultâneo.</p>
+
+        <div style={{ flexGrow: 1, backgroundColor: '#020617', borderRadius: '12px', padding: '12px', border: '1px solid #1e293b', overflowY: 'auto' }}>
+          <span style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>⚡ Núcleo de Resposta Auxiliar:</span>
+          <p style={{ fontSize: '11px', color: '#e2e8f0', margin: 0 }}>O motor complementar está ativo e pronto para auxiliar em análises paralelas enquanto você conversa no chat central.</p>
+        </div>
+      </div>
 
       <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
         <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5 }}>

@@ -8,6 +8,9 @@ export default function MapaEspacialEmanuelOS() {
   const [fogueteLancado, setFogueteLancado] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(null);
 
+  // 🌟 CONTROLE DA BARRA FLUIDA SUPERIOR RETRÁTIL
+  const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
+
   const [abaAtiva, setAbaAtiva] = useState(null);
   const [novaTarefa, setNovaTarefa] = useState('');
   const [listaTarefas, setListaTarefas] = useState([
@@ -206,6 +209,7 @@ export default function MapaEspacialEmanuelOS() {
     });
     setTermoBusca('');
     setSugestoesBusca([]);
+    setIsBarraFluidaOpen(false); // Fecha a barra fluida
   };
 
   return (
@@ -224,7 +228,7 @@ export default function MapaEspacialEmanuelOS() {
         </span>
       </header>
 
-      {/* NAVEGAÇÃO COMPLETA DE IDA E VOLTA (CORE / MAPA IA) */}
+      {/* NAVEGAÇÃO COMPLETA DE IDA E VOLTA */}
       <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px' }}>
         <a href="/" style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '15px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
           🏠 Core Login
@@ -234,68 +238,105 @@ export default function MapaEspacialEmanuelOS() {
         </a>
       </div>
 
-      {/* BARRA DE PESQUISA & FILTROS */}
-      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 35, width: '440px' }}>
-        <div style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="🔍 Pesquise pedras, minerais, exoplanetas ou astronautas..."
-            value={termoBusca}
-            onChange={(e) => setTermoBusca(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '12px 18px',
-              backgroundColor: 'rgba(7, 12, 28, 0.95)',
-              border: '1px solid #00f0ff',
-              borderRadius: '25px',
-              color: '#fff',
-              fontSize: '11px',
-              outline: 'none',
-              backdropFilter: 'blur(15px)',
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
-              boxSizing: 'border-box'
-            }}
-          />
-          {carregandoBusca && (
-            <span style={{ position: 'absolute', right: '15px', top: '12px', fontSize: '10px', color: '#00f0ff' }}>⚡</span>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', gap: '5px', marginTop: '6px', justifyContent: 'center' }}>
-          <button onClick={() => setFiltroCategoria('minerais')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'minerais' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'minerais' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🪨 Pedras & Minerais</button>
-          <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🧬 Espécies Desconhecidas</button>
-          <button onClick={() => setFiltroCategoria('planetas')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'planetas' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'planetas' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🪐 Aprendizado Planetas</button>
-          <button onClick={() => setFiltroCategoria('astronautas')} style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ff00aa', background: filtroCategoria === 'astronautas' ? '#ff00aa' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'astronautas' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>👨‍🚀 Centro Médico Espacial</button>
-        </div>
-
-        {sugestoesBusca.length > 0 && (
-          <ul style={{
-            listStyle: 'none',
-            margin: '8px 0 0 0',
-            padding: '8px',
+      {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL (PUXAR DE CIMA PARA BAIXO) */}
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '90%', maxWidth: '520px' }}>
+        
+        {/* Puxador da Barra Fluida */}
+        <div 
+          onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
+          style={{
             backgroundColor: 'rgba(7, 12, 28, 0.95)',
-            border: '1px solid rgba(0, 240, 255, 0.5)',
-            borderRadius: '15px',
+            backdropFilter: 'blur(15px)',
+            borderBottomLeftRadius: '16px',
+            borderBottomRightRadius: '16px',
+            border: '1px solid #00f0ff',
+            borderTop: 'none',
+            padding: '8px 24px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            color: '#00f0ff',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            boxShadow: '0 10px 25px rgba(0,240,255,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            gap: '8px'
+          }}
+        >
+          <span>{isBarraFluidaOpen ? '▲ Recolher Painel Aeroespacial' : '▼ Puxe para Baixo (Pesquisa Espacial & Filtros)'}</span>
+        </div>
+
+        {/* Conteúdo Oculto da Barra Fluida */}
+        {isBarraFluidaOpen && (
+          <div style={{
+            backgroundColor: 'rgba(7, 12, 28, 0.98)',
             backdropFilter: 'blur(20px)',
-            maxHeight: '200px',
-            overflowY: 'auto'
+            padding: '16px',
+            borderRadius: '18px',
+            border: '1px solid rgba(0, 240, 255, 0.5)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            marginTop: '6px'
           }}>
-            {sugestoesBusca.map((item, index) => (
-              <li
-                key={index}
-                onClick={() => selecionarLocalPesquisado(item)}
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="🔍 Pesquise pedras, minerais, exoplanetas ou astronautas..."
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
                 style={{
-                  padding: '8px 10px',
+                  width: '100%',
+                  padding: '12px 18px',
+                  backgroundColor: '#09090b',
+                  border: '1px solid #00f0ff',
+                  borderRadius: '20px',
+                  color: '#fff',
                   fontSize: '11px',
-                  color: '#e4e4e7',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  cursor: 'pointer'
+                  outline: 'none',
+                  boxSizing: 'border-box'
                 }}
-              >
-                📍 <b>{item.display_name}</b>
-              </li>
-            ))}
-          </ul>
+              />
+              {carregandoBusca && (
+                <span style={{ position: 'absolute', right: '15px', top: '12px', fontSize: '10px', color: '#00f0ff' }}>⚡</span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '5px', marginTop: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => setFiltroCategoria('minerais')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00f0ff', background: filtroCategoria === 'minerais' ? '#00f0ff' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'minerais' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🪨 Pedras & Minerais</button>
+              <button onClick={() => setFiltroCategoria('especies')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #00ff66', background: filtroCategoria === 'especies' ? '#00ff66' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'especies' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🧬 Espécies Desconhecidas</button>
+              <button onClick={() => setFiltroCategoria('planetas')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ffaa00', background: filtroCategoria === 'planetas' ? '#ffaa00' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'planetas' ? '#000' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>🪐 Aprendizado Planetas</button>
+              <button onClick={() => setFiltroCategoria('astronautas')} style={{ padding: '5px 10px', fontSize: '9px', borderRadius: '10px', border: '1px solid #ff00aa', background: filtroCategoria === 'astronautas' ? '#ff00aa' : 'rgba(0,0,0,0.5)', color: filtroCategoria === 'astronautas' ? '#fff' : '#fff', fontWeight: 'bold', cursor: 'pointer' }}>👨‍🚀 Centro Médico Espacial</button>
+            </div>
+
+            {sugestoesBusca.length > 0 && (
+              <ul style={{
+                listStyle: 'none',
+                margin: '10px 0 0 0',
+                padding: '8px',
+                backgroundColor: '#09090b',
+                border: '1px solid rgba(0, 240, 255, 0.5)',
+                borderRadius: '12px',
+                maxHeight: '180px',
+                overflowY: 'auto'
+              }}>
+                {sugestoesBusca.map((item, index) => (
+                  <li
+                    key={index}
+                    onClick={() => selecionarLocalPesquisado(item)}
+                    style={{
+                      padding: '8px',
+                      fontSize: '11px',
+                      color: '#e4e4e7',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📍 <b>{item.display_name}</b>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </div>
 

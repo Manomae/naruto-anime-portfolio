@@ -9,6 +9,9 @@ export default function MapaIA() {
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
 
+  // State para Controle da Barra Fluida Superior
+  const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
+
   // States Oficiais
   const [prompt, setPrompt] = useState('Vila ninja de naruto com personagens, transito, carros, predios, mar e piscina');
   const [status, setStatus] = useState('Clique em qualquer lugar para ativar o som do Telão 🔊 ou clique nos prédios!');
@@ -605,28 +608,79 @@ export default function MapaIA() {
       <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 60px)' }}>
         <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 0 }} />
 
-        {/* Floating Prompt Bar */}
-        <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '650px' }}>
-          <form
-            onSubmit={handleGenerate}
-            style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(12px)', padding: '8px 12px', borderRadius: '16px', border: '1px solid rgba(249, 115, 22, 0.4)', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', gap: '8px' }}
+        {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL (PUXAR DE CIMA PARA BAIXO) */}
+        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '90%', maxWidth: '680px' }}>
+          {/* Puxador da Barra Fluida */}
+          <div 
+            onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
+            style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backdropFilter: 'blur(10px)',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px',
+              border: '1px solid rgba(0, 255, 255, 0.4)',
+              borderTop: 'none',
+              padding: '8px 24px',
+              textAlign: 'center',
+              cursor: 'pointer',
+              color: '#00ffff',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+              gap: '8px'
+            }}
           >
-            <span style={{ color: '#fb923c', fontSize: '18px', paddingLeft: '8px' }}>✨</span>
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Ex: vila ninja de naruto com carros, transito, mar e piscina..."
-              style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', fontSize: '12px', color: '#fff', width: '100%', padding: '4px' }}
-            />
-            <button
-              type="submit"
-              style={{ background: 'linear-gradient(to right, #ea580c, #d97706)', color: '#fff', fontSize: '12px', fontWeight: 'bold', padding: '10px 20px', borderRadius: '12px', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Gerar Mapa
-            </button>
-          </form>
-          <p style={{ textAlign: 'center', fontSize: '11px', color: '#fdba74', marginTop: '6px', fontFamily: 'monospace' }}>{status}</p>
+            <span>{isBarraFluidaOpen ? '▲ Recolher Painel Fluido' : '▼ Puxe para Baixo (Barra de Pesquisa & Tags IA)'}</span>
+          </div>
+
+          {/* Conteúdo Oculto da Barra Fluida */}
+          {isBarraFluidaOpen && (
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              backdropFilter: 'blur(16px)',
+              padding: '16px',
+              borderRadius: '16px',
+              border: '1px solid rgba(249, 115, 22, 0.5)',
+              boxShadow: '0 20px 30px rgba(0,0,0,0.6)',
+              marginTop: '6px'
+            }}>
+              <form
+                onSubmit={handleGenerate}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}
+              >
+                <span style={{ color: '#fb923c', fontSize: '18px' }}>✨</span>
+                <input
+                  type="text"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Ex: vila ninja de naruto com carros, transito, mar e piscina..."
+                  style={{ backgroundColor: '#020617', border: '1px solid #334155', outline: 'none', fontSize: '12px', color: '#fff', width: '100%', padding: '10px', borderRadius: '10px' }}
+                />
+                <button
+                  type="submit"
+                  style={{ background: 'linear-gradient(to right, #ea580c, #d97706)', color: '#fff', fontSize: '12px', fontWeight: 'bold', padding: '10px 20px', borderRadius: '10px', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  Gerar Mapa
+                </button>
+              </form>
+
+              {/* Tags com as Palavras-Chave das Construções */}
+              <div>
+                <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Palavras-Chave Detectadas das Construções:</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {mapInfo.tags.map((tag, idx) => (
+                    <span key={idx} style={{ fontSize: '10px', backgroundColor: 'rgba(67, 20, 7, 0.8)', color: '#fdba74', padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(154, 52, 18, 0.5)' }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p style={{ textAlign: 'center', fontSize: '11px', color: '#fdba74', marginTop: '10px', marginBottom: 0, fontFamily: 'monospace' }}>{status}</p>
+            </div>
+          )}
         </div>
 
         {/* Controles de Câmera de Passeio */}
