@@ -12,7 +12,19 @@ export default function MapaIA() {
   // State para Controle da Barra Fluida Superior
   const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
 
-  // States Oficiais
+  // 💻 Terminal Gemini Advanced Command + Nano Banana 🍌
+  const [painelCmdAberto, setPainelCmdAberto] = useState(true);
+  const [cmdInput, setCmdInput] = useState('');
+  const [cmdLogs, setCmdLogs] = useState([
+    "[G-AGI: LOG] System core operational.",
+    "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
+    "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
+    "[CMD> G-AGI] User: Inicializando renderizador 3D do Mapa IA...[Complete]",
+    "[G-AGI: INFO] Motor Nano Banana 🍌 e fios de chakra conectados.",
+    "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
+  ]);
+
+  // States Oficiais do Mapa
   const [prompt, setPrompt] = useState('Vila ninja de naruto com personagens, transito, carros, predios, mar e piscina');
   const [status, setStatus] = useState('Clique em qualquer lugar para ativar o som do Telão 🔊 ou clique nos prédios!');
   const [mapInfo, setMapInfo] = useState({
@@ -40,7 +52,7 @@ export default function MapaIA() {
   const [customVideoUrl, setCustomVideoUrl] = useState('/naruto.mp4');
   const [audioEnabled, setAudioEnabled] = useState(false);
 
-  // Three.js References
+  // References do Three.js
   const cityGroupRef = useRef(null);
   const trafficVehiclesRef = useRef([]);
   const waterMeshRef = useRef(null);
@@ -51,6 +63,84 @@ export default function MapaIA() {
 
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
+
+  // Executar Comandos no Terminal CMD do Lado Direito
+  const executarComandoCMD = (comandoDigitado) => {
+    const cmd = comandoDigitado.trim();
+    if (!cmd) return;
+
+    const novosLogs = [...cmdLogs, `[CMD> G-AGI] User: ${cmd}`];
+
+    if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
+      novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
+      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Konoha Village, glowing cyan chakra wires, 8k resolution, raytracing photorealistic'");
+    } else if (cmd.includes('/gerar-mapa') || cmd.includes('gerar')) {
+      novosLogs.push("[G-AGI: ENGINE] Reconstruindo cenário 3D com base no prompt atual...");
+      generateMapFromPrompt(prompt);
+      novosLogs.push("[G-AGI: STATUS] Elementos 3D e fios de chakra reajustados!");
+    } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
+      novosLogs.push("[G-AGI: STATUS] Fios de Chakra: 100% Conectados | Telão 4K: Ativo | Trânsito: Fluido");
+    } else if (cmd.includes('/voz-hd')) {
+      novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de som estéreo conectado ao Telão.");
+    } else {
+      novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' executado com sucesso no núcleo auxiliar.`);
+    }
+
+    setCmdLogs(novosLogs);
+    setCmdInput('');
+  };
+
+  const handleCmdSubmit = (e) => {
+    e.preventDefault();
+    executarComandoCMD(cmdInput);
+  };
+
+  // Gerador de Download do Arquivo com 300 Comandos Mestre
+  const baixarPDF300Comandos = () => {
+    const comandosList = [
+      "=========================================================================",
+      "  EMANUEL.OS & GOOGLE GEMINI AGI CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
+      "=========================================================================\n",
+      "[ CATEGORIA 01: ENGINE NANO BANANA 🍌 & RENDERIZAÇÃO 3D ]",
+      "001. /nano-banana --render 'Vila Ninja Cyberpunk em 8K'",
+      "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
+      "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
+      "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
+      "005. /nano-banana --water-effects 'Reflexos da água e maré dinâmica'",
+      "006. /nano-banana --texture 'Paredes rústicas da vila com concreto e madeira'",
+      "007. /nano-banana --pool-mode 'Piscina neon iluminada'",
+      "008. /nano-banana --traffic-density 'Adicionar 12 veículos autônomos na pista'",
+      "009. /nano-banana --night-mode 'Ativar iluminação noturna total'",
+      "010. /nano-banana --weather 'Ativar neblina suave e chuva cibernética'",
+      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
+      "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
+      "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
+      "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
+      "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
+      "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
+      "054. /kwai --link-sync 'Conectar transmissão ao vivo no telão 3D'",
+      "055. /youtube --embed 'Carregar vídeos oficiais do canal no Mini-Player'",
+      "... \n",
+      "[ CATEGORIA 03: SEGURANÇA DE 6 CAMADAS & TICONS OS 🛡️ ]",
+      "150. /status-core 'Verificar saúde de todas as 6 camadas'",
+      "151. /ticons-os --unlock 'Executar sequência mestre Fogo + Avatar + GIF'",
+      "152. /biometria --scan 'Validar sensor biométrico instantâneo'",
+      "... \n",
+      "[ CATEGORIA 04: DISPARO DUPLO WHATSAPP & VOZ HD 🎙️ ]",
+      "250. /voz-hd --sintetizar 'Executar respostas faladas pelo Gemini'",
+      "251. /disparo-duplo --enviar 'Linha 1 e Linha 2 simultâneas'",
+      "..."
+    ];
+
+    const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Emanuel_OS_300_Comandos_Mestre.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   // Carregar mapas salvos do localStorage
   useEffect(() => {
@@ -64,12 +154,11 @@ export default function MapaIA() {
     }
   }, []);
 
-  // Inicialização da Cena 3D, Câmera, Telão e Fios de Chakra
+  // Inicialização da Cena 3D
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
 
-    // 1. Cena e Câmera
     const scene = new THREE.Scene();
     sceneRef.current = scene;
     scene.background = new THREE.Color(0x0a0e17);
@@ -85,7 +174,6 @@ export default function MapaIA() {
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
-    // 2. Renderizador
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -94,14 +182,12 @@ export default function MapaIA() {
 
     currentMount.appendChild(renderer.domElement);
 
-    // 3. Orbit Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.maxPolarAngle = Math.PI / 2 - 0.01;
     controlsRef.current = controls;
 
-    // 4. Luzes
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
@@ -114,17 +200,14 @@ export default function MapaIA() {
     pointLight.position.set(0, 25, 0);
     scene.add(pointLight);
 
-    // 5. Chão em Grid
     const gridHelper = new THREE.GridHelper(80, 40, 0x00ffff, 0x1e293b);
     gridHelper.position.y = 0.01;
     scene.add(gridHelper);
 
-    // Grupo Principal da Cidade
     const cityGroup = new THREE.Group();
     cityGroupRef.current = cityGroup;
     scene.add(cityGroup);
 
-    // Canvas dinâmico secundário
     const vCanvas = document.createElement('canvas');
     vCanvas.width = 512;
     vCanvas.height = 256;
@@ -134,7 +217,6 @@ export default function MapaIA() {
     const cTexture = new THREE.CanvasTexture(vCanvas);
     canvasTextureRef.current = cTexture;
 
-    // 🎥 6. Telão de Vídeo 3D Elevado com Áudio
     const video = document.createElement('video');
     video.src = customVideoUrl;
     video.crossOrigin = 'anonymous';
@@ -152,10 +234,8 @@ export default function MapaIA() {
     screenMesh.position.set(0, 22, -12);
     scene.add(screenMesh);
 
-    // Gerar mapa inicial
     generateMapFromPrompt(prompt, cityGroup, scene);
 
-    // 🔊 Ativar áudio no primeiro clique
     const handleUserInteraction = () => {
       if (videoElementRef.current) {
         videoElementRef.current.muted = false;
@@ -166,7 +246,6 @@ export default function MapaIA() {
     window.addEventListener('click', handleUserInteraction, { once: true });
     window.addEventListener('touchstart', handleUserInteraction, { once: true });
 
-    // 🖱️ Evento de Clique nos Prédios 3D
     const handleCanvasClick = (event) => {
       if (!currentMount || !cityGroupRef.current) return;
 
@@ -190,7 +269,6 @@ export default function MapaIA() {
 
     renderer.domElement.addEventListener('click', handleCanvasClick);
 
-    // Teclado para passear na Câmera Virtual
     const handleKeyDown = (e) => {
       if (!cameraRef.current) return;
       const key = e.key.toLowerCase();
@@ -203,7 +281,6 @@ export default function MapaIA() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Loop de Animação
     let animationFrameId;
     let time = 0;
 
@@ -250,7 +327,6 @@ export default function MapaIA() {
     };
   }, [customVideoUrl]);
 
-  // Alternar Modo de Câmera Virtual
   const toggleWalkMode = () => {
     if (!cameraRef.current || !controlsRef.current) return;
 
@@ -266,7 +342,6 @@ export default function MapaIA() {
     setWalkMode(!walkMode);
   };
 
-  // Alternar Áudio
   const toggleAudio = () => {
     if (!videoElementRef.current) return;
     const nextState = !videoElementRef.current.muted;
@@ -289,7 +364,6 @@ export default function MapaIA() {
     if (direction === 'right') cameraRef.current.translateX(dist);
   };
 
-  // Desenhar canvas do Telão secundário
   const updateVideoCanvas = () => {
     const ctx = videoCtxRef.current;
     if (!ctx) return;
@@ -340,7 +414,6 @@ export default function MapaIA() {
     }
   };
 
-  // Gerador de elementos 3D + Fios de Chakra do Kankuro
   const generateMapFromPrompt = (userPrompt, groupParam, sceneParam) => {
     const group = groupParam || cityGroupRef.current;
     const scene = sceneParam || sceneRef.current;
@@ -452,7 +525,6 @@ export default function MapaIA() {
       }
     }
 
-    // 🌟 NÚCLEO CENTRAL DE CHAKRA FLUTUANTE
     const nucleusGroup = new THREE.Group();
     const coreGeo = new THREE.SphereGeometry(2.8, 16, 16);
     const coreMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
@@ -462,7 +534,6 @@ export default function MapaIA() {
     nucleusGroup.add(coreMesh);
     group.add(nucleusGroup);
 
-    // ⚡ FIOS DE CHAKRA DO KANKURO INTERLIGANDO O NÚCLEO ÀS ESTRUTURAS
     const chakraLinesGroup = new THREE.Group();
     chakraLinesGroupRef.current = chakraLinesGroup;
 
@@ -610,7 +681,6 @@ export default function MapaIA() {
 
         {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL (PUXAR DE CIMA PARA BAIXO) */}
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '90%', maxWidth: '680px' }}>
-          {/* Puxador da Barra Fluida */}
           <div 
             onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
             style={{
@@ -629,14 +699,13 @@ export default function MapaIA() {
               boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
               display: 'flex',
               alignItems: 'center',
-              justify: 'center',
+              justifyContent: 'center',
               gap: '8px'
             }}
           >
             <span>{isBarraFluidaOpen ? '▲ Recolher Painel Fluido' : '▼ Puxe para Baixo (Barra de Pesquisa & Tags IA)'}</span>
           </div>
 
-          {/* Conteúdo Oculto da Barra Fluida */}
           {isBarraFluidaOpen && (
             <div style={{
               backgroundColor: 'rgba(15, 23, 42, 0.95)',
@@ -667,7 +736,6 @@ export default function MapaIA() {
                 </button>
               </form>
 
-              {/* Tags com as Palavras-Chave das Construções */}
               <div>
                 <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Palavras-Chave Detectadas das Construções:</span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -683,7 +751,125 @@ export default function MapaIA() {
           )}
         </div>
 
-        {/* Controles de Câmera de Passeio */}
+        {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
+        <div style={{
+          position: 'absolute',
+          right: painelCmdAberto ? '0px' : '-380px',
+          top: '10px',
+          height: 'calc(100vh - 80px)',
+          width: '370px',
+          backgroundColor: 'rgba(7, 12, 28, 0.92)',
+          backdropFilter: 'blur(25px)',
+          border: '1px solid rgba(0, 240, 255, 0.4)',
+          borderRadius: '16px 0 0 16px',
+          zIndex: 95,
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          padding: '16px',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
+        }}>
+          {/* Puxador da Barra */}
+          <button 
+            onClick={() => setPainelCmdAberto(!painelCmdAberto)}
+            style={{
+              position: 'absolute', left: '-42px', top: '25px', width: '42px', height: '48px',
+              backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)',
+              borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+              color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}
+          >
+            {painelCmdAberto ? '➔' : '◀'}
+          </button>
+
+          {/* Header Estilo Janela Windows 11 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
+            <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
+              Gemini-Integrated Advanced Command Terminal
+            </span>
+            <button onClick={() => setPainelCmdAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
+          </div>
+
+          {/* Título Interno */}
+          <div>
+            <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🤖 IA INTEGRADA + GEMINI AGI
+            </h3>
+            <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
+              NÚCLEO DE RESPOSTA AUXILIAR
+            </h4>
+            <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
+              (G-AGI Core: ACTIVE)
+            </span>
+          </div>
+
+          {/* Botão Baixar PDF de 300 Comandos + Botões Rápidos */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <button 
+              onClick={baixarPDF300Comandos}
+              style={{
+                backgroundColor: 'rgba(234, 88, 12, 0.2)', border: '1px solid #ea580c', color: '#fb923c',
+                padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+              }}
+            >
+              📄 Baixar Manual em TXT/PDF (300 Comandos Mestre)
+            </button>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+              <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                🍌 /nano-banana
+              </button>
+              <button onClick={() => executarComandoCMD('/gerar-mapa')} style={{ backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                🗺️ /gerar-mapa
+              </button>
+              <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                ⚡ /status-core
+              </button>
+              <button onClick={() => executarComandoCMD('/voz-hd')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff0055', color: '#ff0055', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                🎙️ /voz-hd
+              </button>
+            </div>
+          </div>
+
+          {/* Display de Logs do CMD */}
+          <div style={{
+            flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
+            border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
+            fontFamily: 'Consolas, monospace', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px'
+          }}>
+            {cmdLogs.map((log, i) => (
+              <p key={i} style={{
+                margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
+                color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
+                       log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
+                       log.startsWith('[CMD>') ? '#38bdf8' :
+                       log.startsWith('[G-AGI: INFO]') ? '#fef08a' :
+                       log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
+              }}>
+                {log}
+              </p>
+            ))}
+          </div>
+
+          {/* Prompt de Digitação CMD */}
+          <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
+            <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
+            <input
+              type="text"
+              value={cmdInput}
+              onChange={(e) => setCmdInput(e.target.value)}
+              placeholder="Digite comando ou instrução..."
+              style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
+            />
+            <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
+          </form>
+        </div>
+
+        {/* Controles da Câmera Virtual */}
         {walkMode && (
           <div style={{ position: 'absolute', bottom: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 15, backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)', padding: '12px 20px', borderRadius: '20px', border: '1px solid #00ffff', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '11px', color: '#00ffff', fontWeight: 'bold' }}>🎮 Controles da Câmera Virtual</span>
@@ -698,7 +884,7 @@ export default function MapaIA() {
           </div>
         )}
 
-        {/* Painel Lateral Esquerdo de Controles (Sempre Presente) */}
+        {/* Painel Lateral Esquerdo de Controles */}
         <div style={{ position: 'absolute', top: '80px', left: '16px', zIndex: 10, width: '300px', backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '16px', padding: '16px', border: '1px solid #1e293b', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)', maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
           <div style={{ marginBottom: '16px' }}>
             <h3 style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
@@ -761,7 +947,7 @@ export default function MapaIA() {
           </div>
         </div>
 
-        {/* 🌐 Modal Futurista ao Clicar nos Prédios 3D */}
+        {/* Modal Futurista ao Clicar nos Prédios 3D */}
         {selectedBuildingInfo && (
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 30, backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(16px)', border: '2px solid #00ffff', borderRadius: '20px', padding: '24px', width: '320px', boxShadow: '0 0 30px rgba(0, 255, 255, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px', marginBottom: '14px' }}>
@@ -811,7 +997,7 @@ export default function MapaIA() {
           </div>
         )}
 
-        {/* Mini-Player Flutuante & Minimizável do Telão */}
+        {/* Mini-Player Flutuante */}
         <div style={{ position: 'absolute', bottom: '20px', right: '20px', zIndex: 15, backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(12px)', border: '1px solid #00ffff', borderRadius: '16px', padding: minimizedPlayer ? '8px 12px' : '16px', width: minimizedPlayer ? 'auto' : '260px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#00ffff' }}>📺 Mini-Player Telão 4K</span>

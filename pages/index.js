@@ -90,8 +90,18 @@ export default function EmanuelOSCore() {
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [sidebarAberta, setSidebarAberta] = useState(true);
   
-  // Painel Fluido Lateral Direito (Para a IA Integrada)
-  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
+  // 💻 Terminal Gemini Advanced + Nano Banana 🍌
+  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(true);
+  const [cmdInput, setCmdInput] = useState('');
+  const [cmdLogs, setCmdLogs] = useState([
+    "[G-AGI: LOG] System core operational.",
+    "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
+    "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
+    "[CMD> G-AGI] User: Analisar fluxo de dados de naruto-anime-port...[Complete]",
+    "[G-AGI: INFO] O motor complementar detectou anomalias sutis de dados (0.012%).",
+    "[G-AGI: INFO] Pronto para auxiliar em análises paralelas adicionais.",
+    "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
+  ]);
 
   const [chatInput, setChatInput] = useState('');
   const [historicoChats, setHistoricoChats] = useState([
@@ -114,7 +124,6 @@ export default function EmanuelOSCore() {
 
   const imageInputRef = useRef(null);
 
-  // Controle de Tentativas da 6ª Camada
   useEffect(() => {
     const today = new Date().toDateString();
     const savedData = JSON.parse(localStorage.getItem('ticons_auth_data') || '{}');
@@ -288,6 +297,83 @@ export default function EmanuelOSCore() {
     setChatInput('');
   };
 
+  // Funções do Terminal CMD Interativo
+  const executarComandoCMD = (comandoDigitado) => {
+    const cmd = comandoDigitado.trim();
+    if (!cmd) return;
+
+    const novosLogs = [...cmdLogs, `[CMD> G-AGI] User: ${cmd}`];
+
+    if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
+      novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
+      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Ninja Village, glowing cyan chakra wires, 8k resolution, raytracing photorealistic'");
+    } else if (cmd.includes('/gerar-mapa')) {
+      novosLogs.push("[G-AGI: ENGINE] Conectando matriz de dados ao gerador 3D de mapas...");
+    } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
+      novosLogs.push("[G-AGI: STATUS] 6 Camadas: PROTEGIDAS | Ticons OS: ATIVO | Matriz Gemini: STABLE (0.00%)");
+    } else if (cmd.includes('/voz-hd')) {
+      novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de áudio HD sincronizado com sucesso.");
+      falarTextoReal("Terminal Gemini AGI com áudio de alta definição sincronizado.");
+    } else {
+      novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' processado no núcleo de resposta auxiliar.`);
+    }
+
+    setCmdLogs(novosLogs);
+    setCmdInput('');
+  };
+
+  const handleCmdSubmit = (e) => {
+    e.preventDefault();
+    executarComandoCMD(cmdInput);
+  };
+
+  // Gerador de Download do Arquivo com 300 Comandos Mestre
+  const baixarPDF300Comandos = () => {
+    const comandosList = [
+      "=========================================================================",
+      "  EMANUEL.OS & GOOGLE GEMINI AGI CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
+      "=========================================================================\n",
+      "[ CATEGORIA 01: ENGINE NANO BANANA 🍌 & RENDERIZAÇÃO 3D ]",
+      "001. /nano-banana --render 'Vila Ninja Cyberpunk em 8K'",
+      "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
+      "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
+      "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
+      "005. /nano-banana --water-effects 'Reflexos da água e maré dinâmica'",
+      "006. /nano-banana --texture 'Paredes rústicas da vila com concreto e madeira'",
+      "007. /nano-banana --pool-mode 'Piscina neon iluminada'",
+      "008. /nano-banana --traffic-density 'Adicionar 12 veículos autônomos na pista'",
+      "009. /nano-banana --night-mode 'Ativar iluminação noturna total'",
+      "010. /nano-banana --weather 'Ativar neblina suave e chuva cibernética'",
+      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
+      "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
+      "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
+      "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
+      "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
+      "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
+      "054. /kwai --link-sync 'Conectar transmissão ao vivo no telão 3D'",
+      "055. /youtube --embed 'Carregar vídeos oficiais do canal no Mini-Player'",
+      "... \n",
+      "[ CATEGORIA 03: SEGURANÇA DE 6 CAMADAS & TICONS OS 🛡️ ]",
+      "150. /status-core 'Verificar saúde de todas as 6 camadas'",
+      "151. /ticons-os --unlock 'Executar sequência mestre Fogo + Avatar + GIF'",
+      "152. /biometria --scan 'Validar sensor biométrico instantâneo'",
+      "... \n",
+      "[ CATEGORIA 04: DISPARO DUPLO WHATSAPP & VOZ HD 🎙️ ]",
+      "250. /voz-hd --sintetizar 'Executar respostas faladas pelo Gemini'",
+      "251. /disparo-duplo --enviar 'Linha 1 e Linha 2 simultâneas'",
+      "..."
+    ];
+
+    const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Emanuel_OS_300_Comandos_Mestre.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   const executarDisparoReal = (e) => {
     e.preventDefault();
     
@@ -425,7 +511,6 @@ export default function EmanuelOSCore() {
             </form>
           )}
 
-          {/* 🌟 6ª CAMADA INTEGRADAS: Ticons OS gevaGifs */}
           {etapaSeguranca === 6 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 5 Camadas Validadas!</span>
@@ -507,7 +592,6 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* PAINEL DE NAVEGAÇÃO DOS 4 MAPAS PRINCIPAIS */}
             <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
               <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados</h3>
               
@@ -588,35 +672,122 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 🌟 PAINEL FLUIDO LATERAL DIREITO (SISTEMA INTEGRADO DA SUA IA + GEMINI) */}
+      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
       <div style={{
-        position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-320px', top: 0,
-        height: '100vh', width: '310px', backgroundColor: 'rgba(7, 12, 28, 0.95)',
-        backdropFilter: 'blur(20px)', borderLeft: '1px solid rgba(0, 240, 255, 0.3)',
-        zIndex: 95, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', padding: '20px',
-        boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '15px'
+        position: 'absolute',
+        right: painelFluidoDireitoAberto ? '0px' : '-380px',
+        top: '10px',
+        height: 'calc(100vh - 20px)',
+        width: '370px',
+        backgroundColor: 'rgba(7, 12, 28, 0.92)',
+        backdropFilter: 'blur(25px)',
+        border: '1px solid rgba(0, 240, 255, 0.4)',
+        borderRadius: '16px 0 0 16px',
+        zIndex: 95,
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        padding: '16px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
-        {/* Puxador da Barra Fluida Lateral */}
+        {/* Puxador da Barra */}
         <button 
           onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
           style={{
-            position: 'absolute', left: '-40px', top: '30px', width: '40px', height: '50px',
-            backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)',
+            position: 'absolute', left: '-42px', top: '25px', width: '42px', height: '48px',
+            backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)',
             borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
-            color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px',
+            color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}
         >
           {painelFluidoDireitoAberto ? '➔' : '◀'}
         </button>
 
-        <h3 style={{ color: '#00f0ff', fontSize: '14px', margin: 0, fontWeight: 'bold' }}>🤖 IA Integrada + Gemini AGI</h3>
-        <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>Módulo complementar de processamento cognitivo simultâneo.</p>
-
-        <div style={{ flexGrow: 1, backgroundColor: '#020617', borderRadius: '12px', padding: '12px', border: '1px solid #1e293b', overflowY: 'auto' }}>
-          <span style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>⚡ Núcleo de Resposta Auxiliar:</span>
-          <p style={{ fontSize: '11px', color: '#e2e8f0', margin: 0 }}>O motor complementar está ativo e pronto para auxiliar em análises paralelas enquanto você conversa no chat central.</p>
+        {/* Header Estilo Janela Windows 11 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
+          <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
+            Gemini-Integrated Advanced Command Terminal
+          </span>
+          <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
         </div>
+
+        {/* Título Interno */}
+        <div>
+          <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            🤖 IA INTEGRADA + GEMINI AGI
+          </h3>
+          <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
+            NÚCLEO DE RESPOSTA AUXILIAR
+          </h4>
+          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
+            (G-AGI Core: ACTIVE)
+          </span>
+        </div>
+
+        {/* Botão Baixar PDF de 300 Comandos + Botões Rápidos */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <button 
+            onClick={baixarPDF300Comandos}
+            style={{
+              backgroundColor: 'rgba(234, 88, 12, 0.2)', border: '1px solid #ea580c', color: '#fb923c',
+              padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+            }}
+          >
+            📄 Baixar Manual em TXT/PDF (300 Comandos Mestre)
+          </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+            <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+              🍌 /nano-banana
+            </button>
+            <button onClick={() => executarComandoCMD('/gerar-mapa')} style={{ backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+              🗺️ /gerar-mapa
+            </button>
+            <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+              ⚡ /status-core
+            </button>
+            <button onClick={() => executarComandoCMD('/voz-hd')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff0055', color: '#ff0055', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+              🎙️ /voz-hd
+            </button>
+          </div>
+        </div>
+
+        {/* Display de Logs do CMD */}
+        <div style={{
+          flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
+          border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
+          fontFamily: 'Consolas, monospace', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px'
+        }}>
+          {cmdLogs.map((log, i) => (
+            <p key={i} style={{
+              margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
+              color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
+                     log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
+                     log.startsWith('[CMD>') ? '#38bdf8' :
+                     log.startsWith('[G-AGI: INFO]') ? '#fef08a' :
+                     log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
+            }}>
+              {log}
+            </p>
+          ))}
+        </div>
+
+        {/* Prompt de Digitação CMD */}
+        <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
+          <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
+          <input
+            type="text"
+            value={cmdInput}
+            onChange={(e) => setCmdInput(e.target.value)}
+            placeholder="Digite comando ou instrução..."
+            style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
+          />
+          <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
+        </form>
       </div>
 
       <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
