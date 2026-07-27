@@ -73,7 +73,7 @@ export default function EmanuelOSCore() {
   // 📲 STATES DA 7ª CAMADA: QR Code & Animação de Montagem de Mapa
   const [qrCodeValidando, setQrCodeValidando] = useState(false);
   const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
-  const [qrPayload, setQrCodePayload] = useState('https://emanuel-os.vercel.app/auth/quantum-key-8888');
+  const [qrPayload, setQrCodePayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
 
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
