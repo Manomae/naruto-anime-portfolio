@@ -19,14 +19,15 @@ function FormularioCapturaEmanuelOS() {
 
     // Dispara o e-mail de confirmação direto para quem cadastrou!
     emailjs.send(
-      'service_94k276x',     // Seu Service ID
-      'template_6oe86ee',     // Seu Template ID
-      { 
-        email: email,         // Passa o e-mail para o {{email}} do template
-        user_email: email 
-      },
-      'MsHsmnoDh6w2fnYJ6'    // Sua Public Key
-    )
+  'service_94k276x',
+  'template_o11qtsf',
+  { 
+    email: email,
+    to_email: email,
+    user_email: email
+  },
+  'MsHsmnoDh6w2fnYJ6'
+)
     .then(() => {
       setCarregando(false);
       setEnviado(true);
