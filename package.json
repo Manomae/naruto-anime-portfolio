@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "firebase": "^10.0.0",

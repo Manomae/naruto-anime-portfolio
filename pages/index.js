@@ -2,42 +2,41 @@ import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
+import emailjs from '@emailjs/browser';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
-// 🎁 COMPONENTE DE CAPTURA SEGURA DE E-MAILS (WEB3FORMS)
+// 🎁 COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS 100% GRATUITO)
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!email) return;
     setCarregando(true);
 
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: 'cf62b7ef-c31d-4334-8a1f-e72bc41476f7', // Sua chave real ativada!
-          email: email,
-          subject: 'Novo Lead Registrado - Emanuel.OS 3D'
-        })
-      });
-
+    // Dispara o e-mail de confirmação direto para quem cadastrou!
+    emailjs.send(
+      'service_94k276x',     // Seu Service ID
+      'template_6oe86ee',     // Seu Template ID
+      { 
+        email: email,         // Passa o e-mail para o {{email}} do template
+        user_email: email 
+      },
+      'MsHsmnoDh6w2fnYJ6'    // Sua Public Key
+    )
+    .then(() => {
       setCarregando(false);
-      if (response.ok) {
-        setEnviado(true);
-        setEmail('');
-      } else {
-        alert('Erro ao registrar e-mail. Tente novamente.');
-      }
-    } catch (error) {
+      setEnviado(true);
+      setEmail('');
+    })
+    .catch((error) => {
       setCarregando(false);
-      alert('Ocorreu um erro de conexão.');
-    }
+      alert('Erro ao enviar e-mail de confirmação. Tente novamente!');
+      console.error('Erro EmailJS:', error);
+    });
   };
 
   return (
@@ -69,7 +68,7 @@ function FormularioCapturaEmanuelOS() {
           fontWeight: 'bold',
           textAlign: 'center'
         }}>
-          ✅ E-mail cadastrado com sucesso! Verifique sua caixa de entrada.
+          ✅ E-mail de confirmação enviado com sucesso! Verifique sua caixa de entrada.
         </div>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -103,7 +102,7 @@ function FormularioCapturaEmanuelOS() {
               cursor: 'pointer'
             }}
           >
-            {carregando ? '⏳ Cadastrando...' : '🚀 Quero Acesso Gratuito'}
+            {carregando ? '⏳ Enviando E-mail...' : '🚀 Quero Acesso Gratuito'}
           </button>
         </form>
       )}
@@ -741,7 +740,7 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* 🎁 NOVO COMPONENTE INSERIDO NA BARRA LATERAL */}
+            {/* 🎁 COMPONENTE DE E-MAIL COM EMAILJS INTEGRADO */}
             <FormularioCapturaEmanuelOS />
 
             <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
