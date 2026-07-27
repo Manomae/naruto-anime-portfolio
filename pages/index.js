@@ -5,6 +5,112 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
+// 🎁 COMPONENTE DE CAPTURA SEGURA DE E-MAILS (WEB3FORMS)
+function FormularioCapturaEmanuelOS() {
+  const [email, setEmail] = useState('');
+  const [enviado, setEnviado] = useState(false);
+  const [carregando, setCarregando] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setCarregando(true);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: 'cf62b7ef-c31d-4334-8a1f-e72bc41476f7', // Sua chave real ativada!
+          email: email,
+          subject: 'Novo Lead Registrado - Emanuel.OS 3D'
+        })
+      });
+
+      setCarregando(false);
+      if (response.ok) {
+        setEnviado(true);
+        setEmail('');
+      } else {
+        alert('Erro ao registrar e-mail. Tente novamente.');
+      }
+    } catch (error) {
+      setCarregando(false);
+      alert('Ocorreu um erro de conexão.');
+    }
+  };
+
+  return (
+    <div style={{
+      backgroundColor: 'rgba(15, 23, 42, 0.95)',
+      border: '1px solid #00f0ff',
+      borderRadius: '14px',
+      padding: '16px',
+      boxShadow: '0 0 20px rgba(0, 240, 255, 0.2)',
+      color: '#fff',
+      margin: '10px 0',
+      fontFamily: 'sans-serif'
+    }}>
+      <h3 style={{ color: '#00f0ff', margin: '0 0 6px 0', fontSize: '12px', fontWeight: 'bold' }}>
+        🎁 Baixar 300 Comandos Mestre + Mapas 3D
+      </h3>
+      <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
+        Cadastre seu e-mail para receber o e-book oficial do Emanuel.OS e convites VIPs para os mapas 3D.
+      </p>
+
+      {enviado ? (
+        <div style={{
+          backgroundColor: 'rgba(74, 222, 128, 0.1)',
+          border: '1px solid #4ade80',
+          borderRadius: '8px',
+          padding: '8px',
+          color: '#4ade80',
+          fontSize: '11px',
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
+          ✅ E-mail cadastrado com sucesso! Verifique sua caixa de entrada.
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <input
+            type="email"
+            required
+            placeholder="Digite seu e-mail aqui..."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              padding: '10px 12px',
+              backgroundColor: '#020617',
+              border: '1px solid #334155',
+              borderRadius: '6px',
+              color: '#fff',
+              fontSize: '11px',
+              outline: 'none'
+            }}
+          />
+          <button
+            type="submit"
+            disabled={carregando}
+            style={{
+              padding: '10px',
+              backgroundColor: '#00f0ff',
+              color: '#000',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: 'bold',
+              fontSize: '11px',
+              cursor: 'pointer'
+            }}
+          >
+            {carregando ? '⏳ Cadastrando...' : '🚀 Quero Acesso Gratuito'}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
   const p2 = palavra2.toLowerCase().trim();
@@ -210,7 +316,7 @@ export default function EmanuelOSCore() {
     const isCorrect = JSON.stringify(seq) === JSON.stringify(targetSequence);
 
     if (isCorrect || isAdmin) {
-      setEtapaSeguranca(7); // Avança para a 7ª Camada do QR Code
+      setEtapaSeguranca(7); 
     } else {
       if (!isAdmin) {
         const newAttempts = attemptsLeft - 1;
@@ -231,7 +337,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // 📡 Escanear e Autenticar via 7ª Camada QR Code
   const executarEscaneamentoQRCode7aCamada = () => {
     setQrCodeValidando(true);
     setTimeout(() => {
@@ -317,7 +422,6 @@ export default function EmanuelOSCore() {
     setChatInput('');
   };
 
-  // Funções do Terminal CMD Interativo
   const executarComandoCMD = (comandoDigitado) => {
     const cmd = comandoDigitado.trim();
     if (!cmd) return;
@@ -428,7 +532,6 @@ export default function EmanuelOSCore() {
             PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7)
           </span>
 
-          {/* Indicadores Visuais das 7 Etapas */}
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginBottom: '20px' }}>
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 1 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 2 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
@@ -540,7 +643,6 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* 🌟 7ª CAMADA: ESCANEAMENTO DE QR CODE & ANIMAÇÃO DE MAPEAMENTO 3D */}
           {etapaSeguranca === 7 && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 6 Camadas Validadas!</span>
@@ -639,6 +741,9 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
+            {/* 🎁 NOVO COMPONENTE INSERIDO NA BARRA LATERAL */}
+            <FormularioCapturaEmanuelOS />
+
             <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
               <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados</h3>
               
@@ -719,7 +824,7 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL (IGUAL À SUA MOCKUP) */}
+      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
       <div style={{
         position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
         height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
