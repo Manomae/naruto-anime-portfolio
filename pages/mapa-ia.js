@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function MapaIA() {
   const mountRef = useRef(null);
@@ -19,6 +20,7 @@ export default function MapaIA() {
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
+    "[G-AGI: QR-DECODER] Leitor de QR Code para injeção de links integrado ao cenário 3D.",
     "[CMD> G-AGI] User: Inicializando renderizador 3D do Mapa IA...[Complete]",
     "[G-AGI: INFO] Motor Nano Banana 🍌 e fios de chakra conectados.",
     "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
@@ -40,6 +42,10 @@ export default function MapaIA() {
     threadsLink: 'https://threads.net',
     tags: ['#naruto', '#vilaninja', '#chakranode', '#kwai', '#transito', '#mar']
   });
+
+  // Modal e Scanner de QR Code para Injeção no Mapa
+  const [modalQrCodeAberto, setModalQrCodeAberto] = useState(false);
+  const [qrInputLink, setQrInputLink] = useState('');
 
   const [savedMaps, setSavedMaps] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -64,7 +70,7 @@ export default function MapaIA() {
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
 
-  // Executar Comandos no Terminal CMD do Lado Direito
+  // Executar Comandos no Terminal CMD
   const executarComandoCMD = (comandoDigitado) => {
     const cmd = comandoDigitado.trim();
     if (!cmd) return;
@@ -79,9 +85,12 @@ export default function MapaIA() {
       generateMapFromPrompt(prompt);
       novosLogs.push("[G-AGI: STATUS] Elementos 3D e fios de chakra reajustados!");
     } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
-      novosLogs.push("[G-AGI: STATUS] Fios de Chakra: 100% Conectados | Telão 4K: Ativo | Trânsito: Fluido");
+      novosLogs.push("[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | QR Code & Ticons OS: ATIVOS | Matriz Gemini: STABLE (0.00%)");
     } else if (cmd.includes('/voz-hd')) {
       novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de som estéreo conectado ao Telão.");
+    } else if (cmd.includes('/qr-inject')) {
+      novosLogs.push("[G-AGI: QR CODE] Injetando link de rede social extraído do QR Code no mapa 3D ativo.");
+      setModalQrCodeAberto(true);
     } else {
       novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' executado com sucesso no núcleo auxiliar.`);
     }
@@ -106,29 +115,18 @@ export default function MapaIA() {
       "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
       "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
       "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
-      "005. /nano-banana --water-effects 'Reflexos da água e maré dinâmica'",
-      "006. /nano-banana --texture 'Paredes rústicas da vila com concreto e madeira'",
-      "007. /nano-banana --pool-mode 'Piscina neon iluminada'",
-      "008. /nano-banana --traffic-density 'Adicionar 12 veículos autônomos na pista'",
-      "009. /nano-banana --night-mode 'Ativar iluminação noturna total'",
-      "010. /nano-banana --weather 'Ativar neblina suave e chuva cibernética'",
+      "005. /nano-banana --qr-sync 'Lendo dados via QR Code e adicionando construção'",
       "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
       "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
       "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
       "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
       "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
       "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
-      "054. /kwai --link-sync 'Conectar transmissão ao vivo no telão 3D'",
-      "055. /youtube --embed 'Carregar vídeos oficiais do canal no Mini-Player'",
       "... \n",
-      "[ CATEGORIA 03: SEGURANÇA DE 6 CAMADAS & TICONS OS 🛡️ ]",
-      "150. /status-core 'Verificar saúde de todas as 6 camadas'",
-      "151. /ticons-os --unlock 'Executar sequência mestre Fogo + Avatar + GIF'",
-      "152. /biometria --scan 'Validar sensor biométrico instantâneo'",
-      "... \n",
-      "[ CATEGORIA 04: DISPARO DUPLO WHATSAPP & VOZ HD 🎙️ ]",
-      "250. /voz-hd --sintetizar 'Executar respostas faladas pelo Gemini'",
-      "251. /disparo-duplo --enviar 'Linha 1 e Linha 2 simultâneas'",
+      "[ CATEGORIA 03: SEGURANÇA DE 7 CAMADAS & QR CODE 🛡️ ]",
+      "150. /status-core 'Verificar saúde de todas as 7 camadas de segurança'",
+      "151. /qr-code --generate 'Gerar chave de acesso dinâmico'",
+      "152. /qr-code --scan-map 'Mapear e montar cena 3D via escaneamento'",
       "..."
     ];
 
@@ -140,6 +138,35 @@ export default function MapaIA() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  // Injetar Link Lido do QR Code na Matriz 3D
+  const handleInjetarLinkQrCode = (e) => {
+    e.preventDefault();
+    if (!qrInputLink.trim()) return;
+
+    setMapInfo(prev => ({
+      ...prev,
+      kwaiLink: qrInputLink.includes('kwai') ? qrInputLink : prev.kwaiLink,
+      youtubeLink: qrInputLink.includes('youtube') ? qrInputLink : prev.youtubeLink,
+      instagramLink: qrInputLink.includes('instagram') ? qrInputLink : prev.instagramLink,
+      googleLink: !qrInputLink.includes('kwai') && !qrInputLink.includes('youtube') && !qrInputLink.includes('instagram') ? qrInputLink : prev.googleLink
+    }));
+
+    // Adicionar um novo prédio representativo no cenário
+    if (cityGroupRef.current) {
+      const height = Math.random() * 10 + 8;
+      const geo = new THREE.BoxGeometry(4, height, 4);
+      const mat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.2, metalness: 0.8 });
+      const building = new THREE.Mesh(geo, mat);
+      building.position.set((Math.random() - 0.5) * 30, height / 2, (Math.random() - 0.5) * 30);
+      building.userData = { isBuilding: true, name: `Estrutura Injetada via QR Code (${qrInputLink.substring(0, 15)}...)` };
+      cityGroupRef.current.add(building);
+    }
+
+    setStatus(`📲 Link de QR Code injetado com sucesso no cenário 3D!`);
+    setModalQrCodeAberto(false);
+    setQrInputLink('');
   };
 
   // Carregar mapas salvos do localStorage
@@ -639,6 +666,13 @@ export default function MapaIA() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
+            onClick={() => setModalQrCodeAberto(true)}
+            style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#00f0ff', fontSize: '12px', padding: '8px 14px', borderRadius: '8px', border: '1px solid #00f0ff', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            📱 Injetar via QR Code
+          </button>
+
+          <button
             onClick={toggleAudio}
             style={{ backgroundColor: audioEnabled ? '#10b981' : '#f59e0b', color: '#000', fontSize: '12px', padding: '8px 14px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
           >
@@ -771,7 +805,6 @@ export default function MapaIA() {
           gap: '12px',
           boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
         }}>
-          {/* Puxador da Barra */}
           <button 
             onClick={() => setPainelCmdAberto(!painelCmdAberto)}
             style={{
@@ -785,7 +818,6 @@ export default function MapaIA() {
             {painelCmdAberto ? '➔' : '◀'}
           </button>
 
-          {/* Header Estilo Janela Windows 11 */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
             <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
               Gemini-Integrated Advanced Command Terminal
@@ -793,7 +825,6 @@ export default function MapaIA() {
             <button onClick={() => setPainelCmdAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
           </div>
 
-          {/* Título Interno */}
           <div>
             <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               🤖 IA INTEGRADA + GEMINI AGI
@@ -806,7 +837,6 @@ export default function MapaIA() {
             </span>
           </div>
 
-          {/* Botão Baixar PDF de 300 Comandos + Botões Rápidos */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <button 
               onClick={baixarPDF300Comandos}
@@ -829,13 +859,12 @@ export default function MapaIA() {
               <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
                 ⚡ /status-core
               </button>
-              <button onClick={() => executarComandoCMD('/voz-hd')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff0055', color: '#ff0055', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                🎙️ /voz-hd
+              <button onClick={() => executarComandoCMD('/qr-inject')} style={{ backgroundColor: '#0f172a', border: '1px solid #a855f7', color: '#c084fc', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                📱 /qr-inject
               </button>
             </div>
           </div>
 
-          {/* Display de Logs do CMD */}
           <div style={{
             flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
             border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
@@ -855,7 +884,6 @@ export default function MapaIA() {
             ))}
           </div>
 
-          {/* Prompt de Digitação CMD */}
           <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
             <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
             <input
@@ -868,6 +896,33 @@ export default function MapaIA() {
             <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
           </form>
         </div>
+
+        {/* Modal de Injeção via QR Code */}
+        {modalQrCodeAberto && (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 110, backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(20px)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '25px', width: '340px', boxShadow: '0 0 40px rgba(0, 240, 255, 0.4)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px', marginBottom: '15px' }}>
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#00f0ff', fontWeight: 'bold' }}>📱 Injetor de Links via QR Code</h3>
+              <button onClick={() => setModalQrCodeAberto(false)} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ padding: '10px', backgroundColor: '#fff', borderRadius: '12px', display: 'inline-block', marginBottom: '12px' }}>
+              <QRCodeSVG value={qrInputLink || 'https://emanuel-os.vercel.app/mapa-ia'} size={130} />
+            </div>
+
+            <form onSubmit={handleInjetarLinkQrCode} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <input
+                type="text"
+                value={qrInputLink}
+                onChange={(e) => setQrInputLink(e.target.value)}
+                placeholder="Cole a URL para gerar o QR Code..."
+                style={{ width: '100%', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '11px', boxSizing: 'border-box' }}
+              />
+              <button type="submit" style={{ padding: '12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)' }}>
+                ⚡ Injetar Dados no Mapa 3D
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* Controles da Câmera Virtual */}
         {walkMode && (

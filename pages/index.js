@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { QRCodeSVG } from 'qrcode.react';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
@@ -69,6 +70,11 @@ export default function EmanuelOSCore() {
   const [selectedSequence, setSelectedSequence] = useState([]);
   const targetSequence = ['🔥', 'avatar_ninja.png', 'gif_animado.gif'];
 
+  // 📲 STATES DA 7ª CAMADA: QR Code & Animação de Montagem de Mapa
+  const [qrCodeValidando, setQrCodeValidando] = useState(false);
+  const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
+  const [qrPayload, setQrCodePayload] = useState('https://emanuel-os.vercel.app/auth/quantum-key-8888');
+
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
     { type: 'avatar', value: 'avatar_ninja.png', label: 'Avatar Ninja' },
@@ -97,9 +103,9 @@ export default function EmanuelOSCore() {
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
+    "[G-AGI: QR-DECODER] Leitor de QR Code para injeção de links integrado.",
     "[CMD> G-AGI] User: Analisar fluxo de dados de naruto-anime-port...[Complete]",
     "[G-AGI: INFO] O motor complementar detectou anomalias sutis de dados (0.012%).",
-    "[G-AGI: INFO] Pronto para auxiliar em análises paralelas adicionais.",
     "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
   ]);
 
@@ -111,7 +117,7 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 6 camadas ativo (incluindo Ticons OS gevaGifs). Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 7 camadas ativo (QR Code & Mapeamento 3D). Powered by Google Gemini AGI Core.', tipo: 'sys' }
   ]);
 
   const [ddd1, setDdd1] = useState('');
@@ -204,8 +210,7 @@ export default function EmanuelOSCore() {
     const isCorrect = JSON.stringify(seq) === JSON.stringify(targetSequence);
 
     if (isCorrect || isAdmin) {
-      setBloqueado(false);
-      alert("🔓 Acesso Total Autorizado pelo Ticons OS gevaGifs! Bem-vindo, Emanuel.");
+      setEtapaSeguranca(7); // Avança para a 7ª Camada do QR Code
     } else {
       if (!isAdmin) {
         const newAttempts = attemptsLeft - 1;
@@ -224,6 +229,21 @@ export default function EmanuelOSCore() {
         setSelectedSequence([]);
       }
     }
+  };
+
+  // 📡 Escanear e Autenticar via 7ª Camada QR Code
+  const executarEscaneamentoQRCode7aCamada = () => {
+    setQrCodeValidando(true);
+    setTimeout(() => {
+      setQrCodeValidando(false);
+      setAnimacaoMontandoMapa(true);
+
+      setTimeout(() => {
+        setAnimacaoMontandoMapa(false);
+        setBloqueado(false);
+        alert("🔓 Acesso Total Autorizado! Mapeamento QR Code e 7 Camadas de Segurança Concluídas!");
+      }, 3000);
+    }, 1500);
   };
 
   const falarTextoReal = (texto) => {
@@ -258,7 +278,7 @@ export default function EmanuelOSCore() {
     if (bloqueado) return;
     const horaAtual = new Date().getHours();
     let textoSaudacao = horaAtual < 12 
-      ? "Bom dia, Emanuel! Que bom falar com você. Core alimentado pela IA Gemini da Google." 
+      ? "Bom dia, Emanuel! Que bom falar com você. Core alimentado pela IA Gemini da Google com Mapeamento QR Code." 
       : horaAtual < 18 
       ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode com motor Google Gemini está operacional." 
       : "Boa noite, Emanuel! Meu núcleo de IA Gemini está ativo para te dar suporte.";
@@ -310,10 +330,12 @@ export default function EmanuelOSCore() {
     } else if (cmd.includes('/gerar-mapa')) {
       novosLogs.push("[G-AGI: ENGINE] Conectando matriz de dados ao gerador 3D de mapas...");
     } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
-      novosLogs.push("[G-AGI: STATUS] 6 Camadas: PROTEGIDAS | Ticons OS: ATIVO | Matriz Gemini: STABLE (0.00%)");
+      novosLogs.push("[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | QR Code & Ticons OS: ATIVOS | Matriz Gemini: STABLE (0.00%)");
     } else if (cmd.includes('/voz-hd')) {
       novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de áudio HD sincronizado com sucesso.");
       falarTextoReal("Terminal Gemini AGI com áudio de alta definição sincronizado.");
+    } else if (cmd.includes('/qr-inject')) {
+      novosLogs.push("[G-AGI: QR CODE] Injetando link de rede social extraído do QR Code no mapa 3D ativo.");
     } else {
       novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' processado no núcleo de resposta auxiliar.`);
     }
@@ -327,7 +349,6 @@ export default function EmanuelOSCore() {
     executarComandoCMD(cmdInput);
   };
 
-  // Gerador de Download do Arquivo com 300 Comandos Mestre
   const baixarPDF300Comandos = () => {
     const comandosList = [
       "=========================================================================",
@@ -338,29 +359,18 @@ export default function EmanuelOSCore() {
       "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
       "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
       "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
-      "005. /nano-banana --water-effects 'Reflexos da água e maré dinâmica'",
-      "006. /nano-banana --texture 'Paredes rústicas da vila com concreto e madeira'",
-      "007. /nano-banana --pool-mode 'Piscina neon iluminada'",
-      "008. /nano-banana --traffic-density 'Adicionar 12 veículos autônomos na pista'",
-      "009. /nano-banana --night-mode 'Ativar iluminação noturna total'",
-      "010. /nano-banana --weather 'Ativar neblina suave e chuva cibernética'",
+      "005. /nano-banana --qr-sync 'Lendo dados via QR Code e adicionando construção'",
       "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
       "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
       "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
       "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
       "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
       "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
-      "054. /kwai --link-sync 'Conectar transmissão ao vivo no telão 3D'",
-      "055. /youtube --embed 'Carregar vídeos oficiais do canal no Mini-Player'",
       "... \n",
-      "[ CATEGORIA 03: SEGURANÇA DE 6 CAMADAS & TICONS OS 🛡️ ]",
-      "150. /status-core 'Verificar saúde de todas as 6 camadas'",
-      "151. /ticons-os --unlock 'Executar sequência mestre Fogo + Avatar + GIF'",
-      "152. /biometria --scan 'Validar sensor biométrico instantâneo'",
-      "... \n",
-      "[ CATEGORIA 04: DISPARO DUPLO WHATSAPP & VOZ HD 🎙️ ]",
-      "250. /voz-hd --sintetizar 'Executar respostas faladas pelo Gemini'",
-      "251. /disparo-duplo --enviar 'Linha 1 e Linha 2 simultâneas'",
+      "[ CATEGORIA 03: SEGURANÇA DE 7 CAMADAS & QR CODE 🛡️ ]",
+      "150. /status-core 'Verificar saúde de todas as 7 camadas de segurança'",
+      "151. /qr-code --generate 'Gerar chave de acesso dinâmico'",
+      "152. /qr-code --scan-map 'Mapear e montar cena 3D via escaneamento'",
       "..."
     ];
 
@@ -376,12 +386,10 @@ export default function EmanuelOSCore() {
 
   const executarDisparoReal = (e) => {
     e.preventDefault();
-    
     if (modoDisparo === 'canal1' || modoDisparo === 'ambos') {
       if (!ddd1 || !telefone1 || !msgCanal1.trim()) return alert("Por favor, preencha os dados do Canal 1 de disparo.");
       window.open(`https://api.whatsapp.com/send?phone=55${ddd1}${telefone1}&text=${encodeURIComponent(msgCanal1)}`, '_blank');
     }
-    
     if (modoDisparo === 'canal2' || modoDisparo === 'ambos') {
       if (!ddd2 || !telefone2 || !msgCanal2.trim()) return alert("Por favor, preencha os dados do Canal 2 de disparo.");
       setTimeout(() => {
@@ -393,7 +401,7 @@ export default function EmanuelOSCore() {
   const handleUploadImagemLente = (e) => {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
-    alert(`Imagem "${arquivo.name}" carregada no input cognitivo central! Analisando e gerando rascunhos de conteúdo estruturado...`);
+    alert(`Imagem/QR Code "${arquivo.name}" carregado! Analisando e gerando dados estruturados para os mapas...`);
   };
 
   const handleLoginGoogle = () => {
@@ -407,7 +415,7 @@ export default function EmanuelOSCore() {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS - Autenticação de Segurança</title>
+          <title>Emanuel.OS - Autenticação de Segurança (7 Camadas)</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
@@ -417,9 +425,10 @@ export default function EmanuelOSCore() {
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
           </h2>
           <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
-            PROTOCOLO DE SEGURANÇA DE 6 ETAPAS ({etapaSeguranca}/6)
+            PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7)
           </span>
 
+          {/* Indicadores Visuais das 7 Etapas */}
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginBottom: '20px' }}>
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 1 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 2 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
@@ -427,6 +436,7 @@ export default function EmanuelOSCore() {
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 4 ? '#00f0ff' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 5 ? '#ff0055' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 6 ? '#eab308' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 7 ? '#00ff66' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
           </div>
 
           {etapaSeguranca === 1 && (
@@ -447,9 +457,7 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Biometria Confirmada!</span>
               <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📱 2ª Etapa: Digite seu Número de Telefone:</span>
               <input 
-                type="text" 
-                value={telefoneDigitado} 
-                onChange={(e) => setTelefoneDigitado(e.target.value)}
+                type="text" value={telefoneDigitado} onChange={(e) => setTelefoneDigitado(e.target.value)}
                 placeholder="Ex: 88981493989"
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '16px', outline: 'none' }}
               />
@@ -464,10 +472,7 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Telefone Aprovado!</span>
               <span style={{ fontSize: '11px', color: '#e4e4e7' }}>🔢 3ª Etapa: Digite seu PIN Mestre:</span>
               <input 
-                type="password" 
-                maxLength="4" 
-                value={pinDigitado} 
-                onChange={(e) => setPinDigitado(e.target.value)}
+                type="password" maxLength="4" value={pinDigitado} onChange={(e) => setPinDigitado(e.target.value)}
                 placeholder="****"
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', outline: 'none' }}
               />
@@ -482,9 +487,7 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ PIN Aprovado!</span>
               <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📧 4ª Etapa: Digite seu E-mail Autorizado:</span>
               <input 
-                type="email" 
-                value={emailDigitado} 
-                onChange={(e) => setEmailDigitado(e.target.value)}
+                type="email" value={emailDigitado} onChange={(e) => setEmailDigitado(e.target.value)}
                 placeholder="seuemail@gmail.com"
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '13px', outline: 'none' }}
               />
@@ -499,9 +502,7 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ E-mail Confirmado!</span>
               <span style={{ fontSize: '11px', color: '#ff0055', fontWeight: 'bold' }}>🔑 5ª Etapa: Palavra-Chave Mestre:</span>
               <input 
-                type="password" 
-                value={chaveDigitada} 
-                onChange={(e) => setChaveDigitada(e.target.value)}
+                type="password" value={chaveDigitada} onChange={(e) => setChaveDigitada(e.target.value)}
                 placeholder="Palavra-Chave Mestre..."
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid #ff0055', backgroundColor: '#09090b', color: '#fff', textAlign: 'center', fontSize: '14px', outline: 'none' }}
               />
@@ -524,8 +525,7 @@ export default function EmanuelOSCore() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', margin: '12px 0' }}>
                     {availableOptions.map((opt, idx) => (
                       <button
-                        key={idx}
-                        onClick={() => handleSelectOptionTicons(opt)}
+                        key={idx} onClick={() => handleSelectOptionTicons(opt)}
                         style={{ backgroundColor: '#1e293b', border: '1px solid #eab308', color: '#fff', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}
                       >
                         {opt.label}
@@ -540,7 +540,54 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
+          {/* 🌟 7ª CAMADA: ESCANEAMENTO DE QR CODE & ANIMAÇÃO DE MAPEAMENTO 3D */}
+          {etapaSeguranca === 7 && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 6 Camadas Validadas!</span>
+              <span style={{ fontSize: '13px', color: '#00f0ff', fontWeight: '900', letterSpacing: '1px' }}>
+                📡 7ª CAMADA: MAPEAMENTO CÓSMICO VIA QR CODE
+              </span>
+
+              {animacaoMontandoMapa ? (
+                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '120px', height: '120px', border: '3px solid #00f0ff', borderRadius: '50%', borderTopColor: 'transparent', animation: 'girarRadar 1s linear infinite' }} />
+                  <span style={{ fontSize: '12px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                    🧬 Construindo Matriz 3D e Unificando Mapas...
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div style={{ padding: '12px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.5)' }}>
+                    <QRCodeSVG value={qrPayload} size={150} />
+                  </div>
+
+                  <span style={{ fontSize: '10px', color: '#a1a1aa' }}>
+                    Escaneie este QR Code no seu celular ou clique abaixo para ler a validação:
+                  </span>
+
+                  <button 
+                    onClick={executarEscaneamentoQRCode7aCamada}
+                    disabled={qrCodeValidando}
+                    style={{
+                      width: '100%', padding: '14px', backgroundColor: qrCodeValidando ? '#0284c7' : '#00f0ff',
+                      color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px',
+                      cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)', transition: 'all 0.3s'
+                    }}
+                  >
+                    {qrCodeValidando ? '🔍 Sincronizando Leitura do QR Code...' : '📱 Validar QR Code & Mapear Sistema ➔'}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
         </div>
+        <style>{`
+          @keyframes girarRadar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -672,25 +719,14 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
+      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL (IGUAL À SUA MOCKUP) */}
       <div style={{
-        position: 'absolute',
-        right: painelFluidoDireitoAberto ? '0px' : '-380px',
-        top: '10px',
-        height: 'calc(100vh - 20px)',
-        width: '370px',
-        backgroundColor: 'rgba(7, 12, 28, 0.92)',
-        backdropFilter: 'blur(25px)',
-        border: '1px solid rgba(0, 240, 255, 0.4)',
-        borderRadius: '16px 0 0 16px',
-        zIndex: 95,
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        padding: '16px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
+        position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
+        height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
+        backdropFilter: 'blur(25px)', border: '1px solid rgba(0, 240, 255, 0.4)',
+        borderRadius: '16px 0 0 16px', zIndex: 95, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
+        gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
         {/* Puxador da Barra */}
         <button 
@@ -780,9 +816,7 @@ export default function EmanuelOSCore() {
         <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
           <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
           <input
-            type="text"
-            value={cmdInput}
-            onChange={(e) => setCmdInput(e.target.value)}
+            type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
             placeholder="Digite comando ou instrução..."
             style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
           />
@@ -848,6 +882,7 @@ export default function EmanuelOSCore() {
               <button 
                 type="button" onClick={() => imageInputRef.current.click()}
                 style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: 'none', width: '45px', height: '45px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', transition: 'all 0.2s' }}
+                title="Carregar Imagem ou QR Code"
               >
                 🖼️
               </button>
