@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { QRCodeSVG } from 'qrcode.react';
 
 // 🚀 IMPORTAÇÃO LIMPA E DIRETA DA BASE DE DADOS
-import { pokedexData, yugiohWorldData } from './datapokedex-yugioh';
+import { pokedexData, yugiohWorldData } from '../datapokedex-yugioh';
 
 export default function MapaIA() {
   const mountRef = useRef(null);
