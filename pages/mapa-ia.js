@@ -3,6 +3,33 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { QRCodeSVG } from 'qrcode.react';
 
+// 📚 BASE DE DADOS FUTURISTA 2030: POKÉMONS COM AVATARES
+const pokedexData = [
+  { id: 1, nome: "Pikachu", tipo: "Elétrico", icone: "⚡", cor: 0xfacc15, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" },
+  { id: 2, nome: "Charizard", tipo: "Fogo / Voador", icone: "🔥", cor: 0xef4444, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" },
+  { id: 3, nome: "Mewtwo", tipo: "Psíquico", icone: "🔮", cor: 0xa855f7, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" },
+  { id: 4, nome: "Lucario", tipo: "Lutador / Aço", icone: "⚔️", cor: 0x3b82f6, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/448.png" },
+  { id: 5, nome: "Gengar", tipo: "Fantasma / Veneno", icone: "👻", cor: 0x7e22ce, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png" },
+  { id: 6, nome: "Rayquaza", tipo: "Dragão / Voador", icone: "🐉", cor: 0x22c55e, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png" },
+];
+
+// 🃏 BASE DE DADOS YU-GI-OH! MULTIVERSO 2030 COM MUNDOS & DUELISTAS
+const yugiohWorldData = {
+  mundos: [
+    { id: "neo-domino", nome: "NEO-DOMINO CITY (2030)", tema: "D-Wheels & Circuitos Neon", img: "https://images.ygoprodeck.com/images/cards/44508094.jpg" },
+    { id: "duel-academy", nome: "DUEL ACADEMY (GX 2030)", tema: "Academia de Duelos", img: "https://images.ygoprodeck.com/images/cards/21808381.jpg" },
+    { id: "vrains-world", nome: "VRAINS LINK WORLD (2030)", tema: "Rede Cyberse & Link", img: "https://images.ygoprodeck.com/images/cards/18616296.jpg" },
+    { id: "heartland", nome: "HEARTLAND CITY (ZEXAL)", tema: "Mundo Astral", img: "https://images.ygoprodeck.com/images/cards/84013237.jpg" }
+  ],
+  personagens: [
+    { id: "yugi", nome: "Yugi Muto", avatar: "https://images.ygoprodeck.com/images/cards/36996508.jpg" },
+    { id: "yugi-2030", nome: "Yugi Muto (2030)", avatar: "https://images.ygoprodeck.com/images/cards/36996508.jpg" },
+    { id: "jaden-2030", nome: "Jaden Yuki (2030)", avatar: "https://images.ygoprodeck.com/images/cards/21808381.jpg" },
+    { id: "yusaku", nome: "Yusaku Fujiki", avatar: "https://images.ygoprodeck.com/images/cards/18616296.jpg" },
+    { id: "yusaku-2030", nome: "Yusaku Fujiki (2030)", avatar: "https://images.ygoprodeck.com/images/cards/18616296.jpg" }
+  ]
+};
+
 export default function MapaIA() {
   const mountRef = useRef(null);
   const rendererRef = useRef(null);
@@ -10,20 +37,28 @@ export default function MapaIA() {
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
 
-  // State para Controle da Barra Fluida Superior
+  // States de Modais / Painéis Superiores e Flutuantes
   const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
+  const [painelAvatarSelectionAberto, setPainelAvatarSelectionAberto] = useState(true);
+  const [painelModuloAvatarAberto, setPainelModuloAvatarAberto] = useState(true);
+  const [painelCmdAberto, setPainelCmdAberto] = useState(false);
 
-  // 💻 Terminal Gemini Advanced Command + Nano Banana 🍌
-  const [painelCmdAberto, setPainelCmdAberto] = useState(true);
+  const [abaAvatarSelection, setAbaAvatarSelection] = useState('personagem'); 
+  const [abaModuloAvatar, setAbaModuloAvatar] = useState('personagem'); 
+
+  // Search e Seleções
+  const [buscaPersonagem, setBuscaPersonagem] = useState('');
+  const [personagemSelecionado, setPersonagemSelecionado] = useState(yugiohWorldData.personagens[3].id); 
+  const [mundoSelecionado, setMundoSelecionado] = useState(yugiohWorldData.mundos[0].id); 
+  const [pokemonSelecionado, setPokemonSelecionado] = useState(pokedexData[1]); 
+
+  // Terminal Logs G-AGI
   const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
-    "[G-AGI: LOG] System core operational.",
-    "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
-    "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
-    "[G-AGI: QR-DECODER] Leitor de QR Code para injeção de links integrado ao cenário 3D.",
-    "[CMD> G-AGI] User: Inicializando renderizador 3D do Mapa IA...[Complete]",
-    "[G-AGI: INFO] Motor Nano Banana 🍌 e fios de chakra conectados.",
-    "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
+    "[S-AGI: LOG] Nano Banana 3D asset generation for Card 'Chrono-Phoenix' completed.",
+    "[G-AGI: STATUS] Banana 3D asset generation for Card 'Phenix' completed.",
+    "[S-AGI: STATUS] Avatar 'Yusaku (2030)' synced with Neo-Domino City world.",
+    "[G-AGI: QUERY] Optimize 3D Pokémon rendering (Aether Charizard) for low-latency view?"
   ]);
 
   // States Oficiais do Mapa
@@ -40,7 +75,7 @@ export default function MapaIA() {
     facebookLink: 'https://facebook.com',
     tiktokLink: 'https://tiktok.com',
     threadsLink: 'https://threads.net',
-    tags: ['#naruto', '#vilaninja', '#chakranode', '#kwai', '#transito', '#mar']
+    tags: ['#naruto', '#vilaninja', '#chakranode', '#kwai', '#transito', '#mar', '#yugioh2030']
   });
 
   // Modal e Scanner de QR Code para Injeção no Mapa
@@ -70,6 +105,53 @@ export default function MapaIA() {
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
 
+  // 🚀 INJETAR ELEMENTO 3D NO CENÁRIO
+  const handleInjetarObjeto3D = (tipo, dados) => {
+    if (!cityGroupRef.current) return;
+    const x = (Math.random() - 0.5) * 25;
+    const z = (Math.random() - 0.5) * 25;
+
+    if (tipo === 'pokemon') {
+      const pGroup = new THREE.Group();
+      const bodyGeo = new THREE.SphereGeometry(1.5, 16, 16);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: dados.cor || 0xef4444, roughness: 0.3, metalness: 0.4 });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 1.5;
+      pGroup.add(body);
+
+      const auraGeo = new THREE.SphereGeometry(2.2, 16, 16);
+      const auraMat = new THREE.MeshBasicMaterial({ color: dados.cor || 0xef4444, wireframe: true, transparent: true, opacity: 0.3 });
+      const aura = new THREE.Mesh(auraGeo, auraMat);
+      aura.position.y = 1.5;
+      pGroup.add(aura);
+
+      pGroup.position.set(x, 0, z);
+      pGroup.userData = { isBuilding: true, name: `Pokémon 3D: ${dados.nome}` };
+      cityGroupRef.current.add(pGroup);
+
+      setStatus(`✨ Pokémon 3D ${dados.nome} gerado com sucesso no mapa!`);
+    } else if (tipo === 'yugioh_carta') {
+      const cardGroup = new THREE.Group();
+      const cardGeo = new THREE.BoxGeometry(3, 4.5, 0.1);
+      const cardMat = new THREE.MeshStandardMaterial({ color: 0xeab308, roughness: 0.1, metalness: 0.8 });
+      const card = new THREE.Mesh(cardGeo, cardMat);
+      card.position.y = 4;
+      cardGroup.add(card);
+
+      const holoGeo = new THREE.PlaneGeometry(3.2, 4.7);
+      const holoMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.5 });
+      const holo = new THREE.Mesh(holoGeo, holoMat);
+      holo.position.set(0, 4, 0.06);
+      cardGroup.add(holo);
+
+      cardGroup.position.set(x, 0, z);
+      cardGroup.userData = { isBuilding: true, name: `Carta 3D Yu-Gi-Oh!: ${dados.nome}` };
+      cityGroupRef.current.add(cardGroup);
+
+      setStatus(`🃏 Carta Holográfica 3D "${dados.nome}" injetada no mapa!`);
+    }
+  };
+
   // Executar Comandos no Terminal CMD
   const executarComandoCMD = (comandoDigitado) => {
     const cmd = comandoDigitado.trim();
@@ -79,7 +161,7 @@ export default function MapaIA() {
 
     if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
       novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
-      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Konoha Village, glowing cyan chakra wires, 8k resolution, raytracing photorealistic'");
+      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Avatar 2030, glowing cyan chakra wires, 8k resolution'");
     } else if (cmd.includes('/gerar-mapa') || cmd.includes('gerar')) {
       novosLogs.push("[G-AGI: ENGINE] Reconstruindo cenário 3D com base no prompt atual...");
       generateMapFromPrompt(prompt);
@@ -116,18 +198,7 @@ export default function MapaIA() {
       "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
       "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
       "005. /nano-banana --qr-sync 'Lendo dados via QR Code e adicionando construção'",
-      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
-      "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
-      "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
-      "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
-      "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
-      "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
-      "... \n",
-      "[ CATEGORIA 03: SEGURANÇA DE 7 CAMADAS & QR CODE 🛡️ ]",
-      "150. /status-core 'Verificar saúde de todas as 7 camadas de segurança'",
-      "151. /qr-code --generate 'Gerar chave de acesso dinâmico'",
-      "152. /qr-code --scan-map 'Mapear e montar cena 3D via escaneamento'",
-      "..."
+      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n"
     ];
 
     const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
@@ -153,7 +224,6 @@ export default function MapaIA() {
       googleLink: !qrInputLink.includes('kwai') && !qrInputLink.includes('youtube') && !qrInputLink.includes('instagram') ? qrInputLink : prev.googleLink
     }));
 
-    // Adicionar um novo prédio representativo no cenário
     if (cityGroupRef.current) {
       const height = Math.random() * 10 + 8;
       const geo = new THREE.BoxGeometry(4, height, 4);
@@ -173,11 +243,7 @@ export default function MapaIA() {
   useEffect(() => {
     const loaded = localStorage.getItem('naruto_ai_saved_maps');
     if (loaded) {
-      try {
-        setSavedMaps(JSON.parse(loaded));
-      } catch (e) {
-        console.error('Erro ao carregar mapas salvos:', e);
-      }
+      try { setSavedMaps(JSON.parse(loaded)); } catch (e) {}
     }
   }, []);
 
@@ -191,12 +257,7 @@ export default function MapaIA() {
     scene.background = new THREE.Color(0x0a0e17);
     scene.fog = new THREE.FogExp2(0x0a0e17, 0.012);
 
-    const camera = new THREE.PerspectiveCamera(
-      60,
-      currentMount.clientWidth / currentMount.clientHeight,
-      0.1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
     camera.position.set(35, 25, 45);
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
@@ -284,7 +345,10 @@ export default function MapaIA() {
       const intersects = raycasterRef.current.intersectObjects(cityGroupRef.current.children, true);
 
       if (intersects.length > 0) {
-        const clickedObj = intersects[0].object;
+        let clickedObj = intersects[0].object;
+        while (clickedObj.parent && clickedObj.parent !== cityGroupRef.current) {
+          clickedObj = clickedObj.parent;
+        }
         if (clickedObj.userData && clickedObj.userData.isBuilding) {
           setSelectedBuildingInfo({
             name: clickedObj.userData.name || 'Prédio da Rede Social',
@@ -592,7 +656,7 @@ export default function MapaIA() {
 
     setMapInfo((prev) => ({
       ...prev,
-      tags: Array.from(new Set([...generatedTags, '#chakra', '#kwai', '#3dmap', '#narutoai']))
+      tags: Array.from(new Set([...generatedTags, '#chakra', '#kwai', '#3dmap', '#narutoai', '#yugioh2030']))
     }));
   };
 
@@ -635,267 +699,202 @@ export default function MapaIA() {
     setStatus(`📂 Mapa "${saved.title}" carregado!`);
   };
 
+  const duelistasFiltrados = yugiohWorldData.personagens.filter(p => 
+    p.nome.toLowerCase().includes(buscaPersonagem.toLowerCase())
+  );
+
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#090d16', color: '#f1f5f9', fontFamily: 'Arial, sans-serif', position: 'relative' }}>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#020617', color: '#f1f5f9', fontFamily: 'sans-serif', position: 'relative' }}>
       
-      {/* Header Bar */}
-      <header style={{ zIndex: 20, position: 'relative', backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #1e293b', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <a
-            href="/"
-            title="Voltar ao Sistema Principal de Login"
-            style={{ backgroundColor: '#1e293b', color: '#e2e8f0', padding: '8px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #334155', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            🏠 <span>Core Login</span>
-          </a>
-
-          <a
-            href="/espacial"
-            style={{ backgroundColor: '#0f172a', color: '#38bdf8', padding: '8px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #0284c7' }}
-          >
-            🚀 Mapa Espacial
-          </a>
-
+      {/* 🟢 HEADER PRINCIPAL COM BOTÕES CYBERPUNK (Foto 1000080368) */}
+      <header style={{ zIndex: 20, position: 'relative', backgroundColor: 'rgba(7, 12, 28, 0.95)', borderBottom: '1px solid #00f0ff', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <a href="/" style={{ backgroundColor: '#1e293b', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #334155' }}>🏠 Core Login</a>
+          <a href="/espacial" style={{ backgroundColor: '#0f172a', color: '#38bdf8', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #0284c7' }}>🚀 Mapa Espacial</a>
           <div>
-            <h1 style={{ fontSize: '18px', margin: 0, fontWeight: 'bold', background: 'linear-gradient(to right, #fb923c, #fef08a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Gerador 3D de Mapas IA
-            </h1>
-            <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>Vila Ninja, Fios de Chakra, Kwai & Redes Sociais</p>
+            <h1 style={{ fontSize: '15px', margin: 0, fontWeight: 'bold', color: '#fb923c' }}>Gerador 3D de Mapas IA</h1>
+            <p style={{ fontSize: '9px', color: '#94a3b8', margin: 0 }}>Vila Ninja, Fios de Chakra, Kwai & Redes Sociais</p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button
-            onClick={() => setModalQrCodeAberto(true)}
-            style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#00f0ff', fontSize: '12px', padding: '8px 14px', borderRadius: '8px', border: '1px solid #00f0ff', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            📱 Injetar via QR Code
-          </button>
-
-          <button
-            onClick={toggleAudio}
-            style={{ backgroundColor: audioEnabled ? '#10b981' : '#f59e0b', color: '#000', fontSize: '12px', padding: '8px 14px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            {audioEnabled ? '🔊 Som Ligado' : '🔇 Ligar Áudio'}
-          </button>
-
-          <button
-            onClick={toggleWalkMode}
-            style={{ backgroundColor: walkMode ? '#ef4444' : '#00ffff', color: '#000', fontSize: '12px', padding: '8px 14px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px rgba(0,255,255,0.4)' }}
-          >
-            {walkMode ? '🚪 Sair do Passeio' : '📷 Câmera Virtual 3D'}
-          </button>
-
-          <a
-            href="/mapaaeroespacial"
-            style={{ backgroundColor: 'rgba(124, 58, 237, 0.2)', color: '#c084fc', padding: '8px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #9333ea' }}
-          >
-            🛰️ Central Aeroespacial
-          </a>
-
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            style={{ backgroundColor: '#4f46e5', color: '#fff', fontSize: '12px', padding: '8px 16px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            {isEditing ? 'Fechar Edição' : '✏️ Editar Info'}
-          </button>
-          
-          <button
-            onClick={handleSaveMap}
-            style={{ backgroundColor: '#059669', color: '#fff', fontSize: '12px', padding: '8px 16px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            💾 Salvar Mapa
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <button onClick={() => setModalQrCodeAberto(true)} style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#00f0ff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: '1px solid #00f0ff', fontWeight: 'bold', cursor: 'pointer' }}>📱 Injetar via QR Code</button>
+          <button onClick={toggleAudio} style={{ backgroundColor: audioEnabled ? '#10b981' : '#f59e0b', color: '#000', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{audioEnabled ? '🔊 Som Ligado' : '🔇 Ligar Áudio'}</button>
+          <button onClick={toggleWalkMode} style={{ backgroundColor: walkMode ? '#ef4444' : '#00ffff', color: '#000', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{walkMode ? '🚪 Sair do Passeio' : '📷 Câmera Virtual 3D'}</button>
+          <a href="/mapaaeroespacial" style={{ backgroundColor: 'rgba(124, 58, 237, 0.2)', color: '#c084fc', padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #9333ea' }}>🛰️ Central Aeroespacial</a>
+          <button onClick={() => setIsEditing(!isEditing)} style={{ backgroundColor: '#4f46e5', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{isEditing ? 'Fechar Edição' : '✏️ Editar Info'}</button>
+          <button onClick={() => setPainelAvatarSelectionAberto(!painelAvatarSelectionAberto)} style={{ backgroundColor: '#6366f1', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>👑 GERAR CARTA 3D (IA)</button>
+          <button onClick={() => setPainelModuloAvatarAberto(!painelModuloAvatarAberto)} style={{ backgroundColor: '#3b82f6', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>🎭 AVATAR EDITOR</button>
+          <button onClick={() => setPainelAvatarSelectionAberto(true)} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>🌐 MUNDO EXPLORER</button>
+          <button onClick={handleSaveMap} style={{ backgroundColor: '#059669', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>💾 Salvar Mapa</button>
         </div>
       </header>
 
-      {/* 3D Viewport Container */}
-      <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 60px)' }}>
+      {/* 🌌 VIEWPORT THREE.JS */}
+      <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 55px)' }}>
         <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 0 }} />
 
-        {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL (PUXAR DE CIMA PARA BAIXO) */}
-        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '90%', maxWidth: '680px' }}>
+        {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL */}
+        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 100, width: '80%', maxWidth: '600px' }}>
           <div 
             onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
-            style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
-              backdropFilter: 'blur(10px)',
-              borderBottomLeftRadius: '16px',
-              borderBottomRightRadius: '16px',
-              border: '1px solid rgba(0, 255, 255, 0.4)',
-              borderTop: 'none',
-              padding: '8px 24px',
-              textAlign: 'center',
-              cursor: 'pointer',
-              color: '#00ffff',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
+            style={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px', border: '1px solid #00f0ff', borderTop: 'none', padding: '6px 16px', textAlign: 'center', cursor: 'pointer', color: '#00f0ff', fontSize: '11px', fontWeight: 'bold' }}
           >
             <span>{isBarraFluidaOpen ? '▲ Recolher Painel Fluido' : '▼ Puxe para Baixo (Barra de Pesquisa & Tags IA)'}</span>
           </div>
 
           {isBarraFluidaOpen && (
-            <div style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(16px)',
-              padding: '16px',
-              borderRadius: '16px',
-              border: '1px solid rgba(249, 115, 22, 0.5)',
-              boxShadow: '0 20px 30px rgba(0,0,0,0.6)',
-              marginTop: '6px'
-            }}>
-              <form
-                onSubmit={handleGenerate}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}
-              >
+            <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(16px)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(249, 115, 22, 0.5)', marginTop: '6px' }}>
+              <form onSubmit={handleGenerate} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span style={{ color: '#fb923c', fontSize: '18px' }}>✨</span>
-                <input
-                  type="text"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Ex: vila ninja de naruto com carros, transito, mar e piscina..."
-                  style={{ backgroundColor: '#020617', border: '1px solid #334155', outline: 'none', fontSize: '12px', color: '#fff', width: '100%', padding: '10px', borderRadius: '10px' }}
-                />
-                <button
-                  type="submit"
-                  style={{ background: 'linear-gradient(to right, #ea580c, #d97706)', color: '#fff', fontSize: '12px', fontWeight: 'bold', padding: '10px 20px', borderRadius: '10px', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                >
-                  Gerar Mapa
-                </button>
+                <input type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Ex: vila ninja de naruto com carros, transito..." style={{ backgroundColor: '#020617', border: '1px solid #334155', outline: 'none', fontSize: '12px', color: '#fff', width: '100%', padding: '10px', borderRadius: '10px' }} />
+                <button type="submit" style={{ background: 'linear-gradient(to right, #ea580c, #d97706)', color: '#fff', fontSize: '12px', fontWeight: 'bold', padding: '10px 20px', borderRadius: '10px', border: 'none', cursor: 'pointer' }}>Gerar Mapa</button>
               </form>
 
               <div>
-                <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Palavras-Chave Detectadas das Construções:</span>
+                <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Palavras-Chave Detectadas:</span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {mapInfo.tags.map((tag, idx) => (
-                    <span key={idx} style={{ fontSize: '10px', backgroundColor: 'rgba(67, 20, 7, 0.8)', color: '#fdba74', padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(154, 52, 18, 0.5)' }}>
-                      {tag}
-                    </span>
+                    <span key={idx} style={{ fontSize: '10px', backgroundColor: 'rgba(67, 20, 7, 0.8)', color: '#fdba74', padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(154, 52, 18, 0.5)' }}>{tag}</span>
                   ))}
                 </div>
               </div>
-              <p style={{ textAlign: 'center', fontSize: '11px', color: '#fdba74', marginTop: '10px', marginBottom: 0, fontFamily: 'monospace' }}>{status}</p>
             </div>
           )}
         </div>
 
-        {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
-        <div style={{
-          position: 'absolute',
-          right: painelCmdAberto ? '0px' : '-380px',
-          top: '10px',
-          height: 'calc(100vh - 80px)',
-          width: '370px',
-          backgroundColor: 'rgba(7, 12, 28, 0.92)',
-          backdropFilter: 'blur(25px)',
-          border: '1px solid rgba(0, 240, 255, 0.4)',
-          borderRadius: '16px 0 0 16px',
-          zIndex: 95,
-          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-          padding: '16px',
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
-        }}>
-          <button 
-            onClick={() => setPainelCmdAberto(!painelCmdAberto)}
-            style={{
-              position: 'absolute', left: '-42px', top: '25px', width: '42px', height: '48px',
-              backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)',
-              borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
-              color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}
-          >
-            {painelCmdAberto ? '➔' : '◀'}
-          </button>
+        {/* 👈 PAINEL ESQUERDO DA MÍDIA E MAPAS SALVOS */}
+        <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10, width: '260px', backgroundColor: 'rgba(7, 12, 28, 0.9)', backdropFilter: 'blur(16px)', borderRadius: '12px', padding: '14px', border: '1px solid #1e293b' }}>
+          <h4 style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 6px 0', textTransform: 'uppercase' }}>Mídia do Telão no Prédio</h4>
+          <select value={selectedVideo} onChange={(e) => setSelectedVideo(e.target.value)} style={{ width: '100%', backgroundColor: '#020617', color: '#fff', border: '1px solid #334155', borderRadius: '6px', padding: '6px', fontSize: '10px' }}>
+            <option value="matrix">Clip 1: Neo-Domino Duel Arena 2030</option>
+            <option value="anime">Clip 2: Vila Ninja Feed & Kwai</option>
+          </select>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
-            <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
-              Gemini-Integrated Advanced Command Terminal
-            </span>
-            <button onClick={() => setPainelCmdAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
-          </div>
+          <h4 style={{ fontSize: '10px', color: '#94a3b8', margin: '12px 0 6px 0', textTransform: 'uppercase' }}>Meus Mapas Salvos ({savedMaps.length})</h4>
+          {savedMaps.length === 0 ? (
+            <p style={{ fontSize: '10px', color: '#64748b', fontStyle: 'italic', margin: 0 }}>Nenhum mapa salvo ainda.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {savedMaps.map((map) => (
+                <div key={map.id} style={{ backgroundColor: 'rgba(2, 6, 23, 0.8)', padding: '6px', borderRadius: '6px', border: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span onClick={() => handleLoadMap(map)} style={{ fontSize: '10px', color: '#fff', cursor: 'pointer' }}>{map.title}</span>
+                  <button onClick={() => handleDeleteMap(map.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '10px' }}>✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          <div>
-            <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              🤖 IA INTEGRADA + GEMINI AGI
-            </h3>
-            <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
-              NÚCLEO DE RESPOSTA AUXILIAR
-            </h4>
-            <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-              (G-AGI Core: ACTIVE)
-            </span>
-          </div>
+        {/* 🎯 PAINEL CENTRAL FLUTUANTE: AVATAR SELECTION (ESTILO DUEL LINKS 2030 - Foto 1000080368) */}
+        {painelAvatarSelectionAberto && (
+          <div style={{
+            position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-40%)', zIndex: 30,
+            width: '320px', backgroundColor: 'rgba(7, 12, 28, 0.95)', backdropFilter: 'blur(20px)',
+            border: '1px solid #00f0ff', borderRadius: '12px', padding: '14px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', textTransform: 'uppercase' }}>AVATAR SELECTION</span>
+              <button onClick={() => setPainelAvatarSelectionAberto(false)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <button 
-              onClick={baixarPDF300Comandos}
-              style={{
-                backgroundColor: 'rgba(234, 88, 12, 0.2)', border: '1px solid #ea580c', color: '#fb923c',
-                padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-              }}
+            <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
+              <button onClick={() => setAbaAvatarSelection('personagem')} style={{ flex: 1, padding: '5px', backgroundColor: abaAvatarSelection === 'personagem' ? '#0f766e' : '#1e293b', border: 'none', color: '#fff', fontSize: '9px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>PERSONAGEM</button>
+              <button onClick={() => setAbaAvatarSelection('carta')} style={{ flex: 1, padding: '5px', backgroundColor: abaAvatarSelection === 'carta' ? '#0f766e' : '#1e293b', border: 'none', color: '#fff', fontSize: '9px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>CARTA 3D</button>
+            </div>
+
+            <input 
+              type="text" 
+              placeholder="Search..."
+              value={buscaPersonagem}
+              onChange={(e) => setBuscaPersonagem(e.target.value)}
+              style={{ width: '100%', padding: '6px 8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', marginBottom: '8px', boxSizing: 'border-box' }}
+            />
+
+            {/* Lista de Duelistas com Avatares */}
+            <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '10px' }}>
+              {duelistasFiltrados.map(p => (
+                <div 
+                  key={p.id} 
+                  onClick={() => setPersonagemSelecionado(p.id)}
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 8px',
+                    backgroundColor: personagemSelecionado === p.id ? 'rgba(0,240,255,0.2)' : '#0f172a',
+                    border: '1px solid ' + (personagemSelecionado === p.id ? '#00f0ff' : '#1e293b'),
+                    borderRadius: '6px', cursor: 'pointer'
+                  }}
+                >
+                  <span style={{ fontSize: '10px', fontWeight: 'bold' }}>{p.nome}</span>
+                  <img src={p.avatar} alt={p.nome} style={{ width: '20px', height: '26px', objectFit: 'cover', borderRadius: '3px' }} />
+                </div>
+              ))}
+            </div>
+
+            <label style={{ fontSize: '9px', color: '#eab308', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>MUNDO SELECIONADO:</label>
+            <select 
+              value={mundoSelecionado}
+              onChange={(e) => setMundoSelecionado(e.target.value)}
+              style={{ width: '100%', padding: '6px', backgroundColor: '#020617', color: '#fff', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', outline: 'none' }}
             >
-              📄 Baixar Manual em TXT/PDF (300 Comandos Mestre)
-            </button>
+              {yugiohWorldData.mundos.map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            </select>
+          </div>
+        )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-              <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                🍌 /nano-banana
-              </button>
-              <button onClick={() => executarComandoCMD('/gerar-mapa')} style={{ backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                🗺️ /gerar-mapa
-              </button>
-              <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                ⚡ /status-core
-              </button>
-              <button onClick={() => executarComandoCMD('/qr-inject')} style={{ backgroundColor: '#0f172a', border: '1px solid #a855f7', color: '#c084fc', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                📱 /qr-inject
-              </button>
+        {/* 👉 PAINEL DIREITO: MÓDULO DE AVATAR INTEGRADO & POKÉDEX 3D (Foto 1000080368) */}
+        {painelModuloAvatarAberto && (
+          <div style={{
+            position: 'absolute', top: '10px', right: '10px', zIndex: 30,
+            width: '280px', backgroundColor: 'rgba(7, 12, 28, 0.95)', backdropFilter: 'blur(20px)',
+            border: '1px solid #00f0ff', borderRadius: '12px', padding: '12px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', textTransform: 'uppercase' }}>MÓDULO DE AVATAR INTEGRADO</span>
+              <button onClick={() => setPainelModuloAvatarAberto(false)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
+              <button onClick={() => setAbaModuloAvatar('personagem')} style={{ flex: 1, padding: '4px', backgroundColor: abaModuloAvatar === 'personagem' ? '#1d4ed8' : '#1e293b', border: 'none', color: '#fff', fontSize: '8px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>PERSONAGEM</button>
+              <button onClick={() => setAbaModuloAvatar('carta')} style={{ flex: 1, padding: '4px', backgroundColor: abaModuloAvatar === 'carta' ? '#1d4ed8' : '#1e293b', border: 'none', color: '#fff', fontSize: '8px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>CARTA 3D</button>
+              <button onClick={() => setAbaModuloAvatar('pokemon')} style={{ flex: 1, padding: '4px', backgroundColor: abaModuloAvatar === 'pokemon' ? '#ef4444' : '#1e293b', border: 'none', color: '#fff', fontSize: '8px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>POKÉMON 3D</button>
+            </div>
+
+            {/* ABA PERSONAGEM / CARTA 3D YU-GI-OH! */}
+            {(abaModuloAvatar === 'personagem' || abaModuloAvatar === 'carta') && (
+              <div style={{ textAlign: 'center', backgroundColor: '#020617', padding: '8px', borderRadius: '8px', border: '1px solid #334155', marginBottom: '8px' }}>
+                <img src="https://images.ygoprodeck.com/images/cards/36996508.jpg" alt="Carta Holográfica" style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #00f0ff', filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
+                <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>Alea Dragen, Chrono-Phoenix</span>
+                <span style={{ fontSize: '8px', color: '#eab308', display: 'block' }}>PROJETADO POR NANO BANANA & GEMINI</span>
+                <button 
+                  onClick={() => handleInjetarObjeto3D('yugioh_carta', { nome: 'Chrono-Phoenix' })}
+                  style={{ marginTop: '6px', width: '100%', padding: '5px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🚀 Injetar Carta 3D Holográfica
+                </button>
+              </div>
+            )}
+
+            {/* ABA POKÉDEX 3D */}
+            {abaModuloAvatar === 'pokemon' && (
+              <div style={{ backgroundColor: '#020617', padding: '8px', borderRadius: '8px', border: '1px solid #ef4444', textAlign: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>POKÉDEX 3D (2030)</span>
+                <img src={pokemonSelecionado.avatar} alt={pokemonSelecionado.nome} style={{ width: '70px', height: '70px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #ef4444)' }} />
+                <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold', display: 'block' }}>Aether {pokemonSelecionado.nome}</span>
+                <button 
+                  onClick={() => handleInjetarObjeto3D('pokemon', pokemonSelecionado)}
+                  style={{ marginTop: '6px', width: '100%', padding: '5px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🔴 Criar Pokémon 3D no Mapa
+                </button>
+              </div>
+            )}
+
+            {/* LOGS G-AGI TERMINAL */}
+            <div style={{ backgroundColor: '#020617', borderRadius: '6px', padding: '6px', fontSize: '8px', fontFamily: 'monospace', color: '#38bdf8', maxHeight: '70px', overflowY: 'auto' }}>
+              {cmdLogs.map((log, i) => <p key={i} style={{ margin: 0, lineHeight: '1.3' }}>{log}</p>)}
             </div>
           </div>
-
-          <div style={{
-            flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
-            border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
-            fontFamily: 'Consolas, monospace', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px'
-          }}>
-            {cmdLogs.map((log, i) => (
-              <p key={i} style={{
-                margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
-                color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
-                       log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
-                       log.startsWith('[CMD>') ? '#38bdf8' :
-                       log.startsWith('[G-AGI: INFO]') ? '#fef08a' :
-                       log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
-              }}>
-                {log}
-              </p>
-            ))}
-          </div>
-
-          <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
-            <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
-            <input
-              type="text"
-              value={cmdInput}
-              onChange={(e) => setCmdInput(e.target.value)}
-              placeholder="Digite comando ou instrução..."
-              style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
-            />
-            <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
-          </form>
-        </div>
+        )}
 
         {/* Modal de Injeção via QR Code */}
         {modalQrCodeAberto && (
@@ -938,69 +937,6 @@ export default function MapaIA() {
             </div>
           </div>
         )}
-
-        {/* Painel Lateral Esquerdo de Controles */}
-        <div style={{ position: 'absolute', top: '80px', left: '16px', zIndex: 10, width: '300px', backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '16px', padding: '16px', border: '1px solid #1e293b', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)', maxHeight: 'calc(100vh - 160px)', overflowY: 'auto' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              Mídia do Telão no Prédio
-            </h3>
-            <select
-              value={selectedVideo}
-              onChange={(e) => setSelectedVideo(e.target.value)}
-              style={{ width: '100%', backgroundColor: '#020617', border: '1px solid #1e293b', fontSize: '12px', color: '#e2e8f0', borderRadius: '8px', padding: '8px', outline: 'none' }}
-            >
-              <option value="matrix">Vídeo 1: Cyberpunk / Redes Sociais</option>
-              <option value="anime">Vídeo 2: Vila Ninja Feed & Kwai</option>
-              <option value="stream">Vídeo 3: Transmissão ao Vivo Google</option>
-            </select>
-          </div>
-
-          <div style={{ marginBottom: '16px' }}>
-            <h4 style={{ fontSize: '11px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>Palavras-Chave Detectadas</h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-              {mapInfo.tags.map((tag, idx) => (
-                <span key={idx} style={{ fontSize: '10px', backgroundColor: 'rgba(67, 20, 7, 0.8)', color: '#fdba74', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(154, 52, 18, 0.5)' }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ borderTop: '1px solid #1e293b', paddingTop: '12px' }}>
-            <h3 style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              Meus Mapas Salvos ({savedMaps.length})
-            </h3>
-
-            {savedMaps.length === 0 ? (
-              <p style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', margin: 0 }}>Nenhum mapa salvo ainda.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {savedMaps.map((map) => (
-                  <div
-                    key={map.id}
-                    style={{ backgroundColor: 'rgba(2, 6, 23, 0.8)', padding: '10px', borderRadius: '12px', border: '1px solid #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}
-                  >
-                    <div
-                      onClick={() => handleLoadMap(map)}
-                      style={{ cursor: 'pointer', flexGrow: 1, overflow: 'hidden' }}
-                    >
-                      <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#e2e8f0', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{map.title}</p>
-                      <p style={{ fontSize: '10px', color: '#64748b', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{map.prompt}</p>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteMap(map.id)}
-                      style={{ background: 'none', border: 'none', color: '#f43f5e', cursor: 'pointer', fontSize: '12px' }}
-                      title="Excluir Mapa"
-                    >
-                      ❌
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Modal Futurista ao Clicar nos Prédios 3D */}
         {selectedBuildingInfo && (
@@ -1084,6 +1020,7 @@ export default function MapaIA() {
           <button onClick={() => handleZoom(-5)} style={{ padding: '2px 8px', background: '#1e293b', color: '#00ffff', border: '1px solid #00ffff', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
           <button onClick={() => handleZoom(5)} style={{ padding: '2px 8px', background: '#1e293b', color: '#00ffff', border: '1px solid #00ffff', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
         </div>
+
       </div>
     </div>
   );

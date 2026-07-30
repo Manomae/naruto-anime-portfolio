@@ -6,7 +6,7 @@ import emailjs from '@emailjs/browser';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
-// 🎁 COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS 100% GRATUITO)
+// 🎁 COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS)
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
@@ -17,17 +17,16 @@ function FormularioCapturaEmanuelOS() {
     if (!email) return;
     setCarregando(true);
 
-    // Dispara o e-mail de confirmação direto para quem cadastrou!
     emailjs.send(
-  'service_94k276x',
-  'template_o11qtsf',
-  { 
-    email: email,
-    to_email: email,
-    user_email: email
-  },
-  'MsHsmnoDh6w2fnYJ6'
-)
+      'service_94k276x',
+      'template_o11qtsf',
+      { 
+        email: email,
+        to_email: email,
+        user_email: email
+      },
+      'MsHsmnoDh6w2fnYJ6'
+    )
     .then(() => {
       setCarregando(false);
       setEnviado(true);
@@ -200,10 +199,10 @@ export default function EmanuelOSCore() {
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
-  const [sidebarAberta, setSidebarAberta] = useState(true);
+  const [sidebarAberta, setSidebarAberta] = useState(false);
   
   // 💻 Terminal Gemini Advanced + Nano Banana 🍌
-  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(true);
+  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
   const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
     "[G-AGI: LOG] System core operational.",
@@ -223,9 +222,10 @@ export default function EmanuelOSCore() {
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
   const [mensagens, setMensagens] = useState([
-    { autor: 'SISTEMA', texto: '🧬 Sistema Emanuel.OS inicializado com protocolo de segurança de 7 camadas ativo (QR Code & Mapeamento 3D). Powered by Google Gemini AGI Core.', tipo: 'sys' }
+    { autor: 'IA EMANUEL (GEMINI)', texto: 'Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa', tipo: 'sys' }
   ]);
 
+  // States de Disparo Real
   const [ddd1, setDdd1] = useState('');
   const [telefone1, setTelefone1] = useState('');
   const [ddd2, setDdd2] = useState('');
@@ -234,7 +234,23 @@ export default function EmanuelOSCore() {
   const [msgCanal2, setMsgCanal2] = useState('');
   const [modoDisparo, setModoDisparo] = useState('ambos'); 
 
+  // Relógio Dinâmico Futurista (2030)
+  const [horaAtual, setHoraAtual] = useState('');
+
   const imageInputRef = useRef(null);
+
+  useEffect(() => {
+    const atualizarHorario = () => {
+      const agora = new Date();
+      const h = String(agora.getHours()).padStart(2, '0');
+      const m = String(agora.getMinutes()).padStart(2, '0');
+      const s = String(agora.getSeconds()).padStart(2, '0');
+      setHoraAtual(`14 Março 2030, ${h}:${m}:${s}`);
+    };
+    atualizarHorario();
+    const interval = setInterval(atualizarHorario, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const today = new Date().toDateString();
@@ -383,13 +399,13 @@ export default function EmanuelOSCore() {
     if (bloqueado) return;
     const horaAtual = new Date().getHours();
     let textoSaudacao = horaAtual < 12 
-      ? "Bom dia, Emanuel! Que bom falar com você. Core alimentado pela IA Gemini da Google com Mapeamento QR Code." 
+      ? "Bom dia, Emanuel! Núcleo v5.1 online. Conexão Neural Ativa." 
       : horaAtual < 18 
-      ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode com motor Google Gemini está operacional." 
-      : "Boa noite, Emanuel! Meu núcleo de IA Gemini está ativo para te dar suporte.";
+      ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode v5.1 está operacional." 
+      : "Boa noite, Emanuel! Meu núcleo de IA Gemini v5.1 está ativo.";
     
     setTimeout(() => {
-      setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: textoSaudacao, tipo: 'ia' }]);
+      setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: textoSaudacao, tipo: 'sys' }]);
       falarTextoReal(textoSaudacao);
     }, 1000);
   }, [vozAtiva, bloqueado]);
@@ -400,11 +416,11 @@ export default function EmanuelOSCore() {
     const resultadoDicionario = buscarNoDicionario(textoUsuario);
 
     if (resultadoDicionario) {
-      respostaTexto = `Rastreando dados cognitivos sobre o termo "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
+      respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
     } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
-      respostaTexto = "Olá, Emanuel! Como posso te ajudar a programar ou editar agora?";
+      respostaTexto = "Olá, Emanuel! Como posso te ajudar a programar ou controlar seus sistemas agora?";
     } else {
-      respostaTexto = `Entendido, Emanuel. Analisei seu comando "${textoUsuario}" no Live Mode via núcleo Google Gemini. Processando com a biblioteca central.`;
+      respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo v5.1. Sincronização neural 100% estável.`;
     }
 
     setTimeout(() => {
@@ -417,7 +433,7 @@ export default function EmanuelOSCore() {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    setMensagens(prev => [...prev, { autor: 'USER@EMANUEL', texto: chatInput, tipo: 'user' }]);
+    setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]);
     processarConversaReal(chatInput);
     setChatInput('');
   };
@@ -430,7 +446,7 @@ export default function EmanuelOSCore() {
 
     if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
       novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
-      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Ninja Village, glowing cyan chakra wires, 8k resolution, raytracing photorealistic'");
+      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Avatar 2030, glowing cyan chakra wires, 8k resolution, raytracing'");
     } else if (cmd.includes('/gerar-mapa')) {
       novosLogs.push("[G-AGI: ENGINE] Conectando matriz de dados ao gerador 3D de mapas...");
     } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
@@ -462,20 +478,7 @@ export default function EmanuelOSCore() {
       "001. /nano-banana --render 'Vila Ninja Cyberpunk em 8K'",
       "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
       "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
-      "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
-      "005. /nano-banana --qr-sync 'Lendo dados via QR Code e adicionando construção'",
-      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n",
-      "[ CATEGORIA 02: MAPAS INTEGRADOS & REDES SOCIAIS 🌐 ]",
-      "050. /gerar-mapa --naruto 'Konoha 3D com prédio, telão e veículos'",
-      "051. /gerar-mapa --espacial 'Estação orbital com planeta Terra'",
-      "052. /gerar-mapa --terrestre 'Usina Nuclear, Painéis Solares e Parque Eólico'",
-      "053. /gerar-mapa --aeroespacial 'Central de mineração e espécies'",
-      "... \n",
-      "[ CATEGORIA 03: SEGURANÇA DE 7 CAMADAS & QR CODE 🛡️ ]",
-      "150. /status-core 'Verificar saúde de todas as 7 camadas de segurança'",
-      "151. /qr-code --generate 'Gerar chave de acesso dinâmico'",
-      "152. /qr-code --scan-map 'Mapear e montar cena 3D via escaneamento'",
-      "..."
+      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n"
     ];
 
     const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
@@ -505,7 +508,7 @@ export default function EmanuelOSCore() {
   const handleUploadImagemLente = (e) => {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
-    alert(`Imagem/QR Code "${arquivo.name}" carregado! Analisando e gerando dados estruturados para os mapas...`);
+    alert(`Imagem/QR Code "${arquivo.name}" carregado! Analisando e gerando dados estruturados...`);
   };
 
   const handleLoginGoogle = () => {
@@ -515,6 +518,7 @@ export default function EmanuelOSCore() {
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
 
+  // 🔒 TELA DE SEGURANÇA DAS 7 CAMADAS
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
@@ -694,17 +698,57 @@ export default function EmanuelOSCore() {
     );
   }
 
+  // 🌐 INTERFACE PRINCIPAL DESBLOQUEADA COM DESIGN HOLOGRÁFICO 2030 (AVATAR HUD)
   return (
     <div style={{
-      minHeight: '100vh', backgroundColor: '#020204', color: '#e4e4e7',
-      fontFamily: '"Segoe UI", Roboto, system-ui, sans-serif', display: 'flex',
-      background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)',
-      overflow: 'hidden', position: 'relative'
+      width: '100vw',
+      height: '100vh',
+      backgroundColor: '#020617',
+      backgroundImage: 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)',
+      color: '#fff',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      justify: 'space-between',
+      padding: '20px',
+      boxSizing: 'border-box'
     }}>
       <Head>
-        <title>Emanuel.OS Core Principal - Powered by Google Gemini</title>
+        <title>Emanuel.OS Core 2030 | IA Principal</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
+      {/* 🌌 BACKGROUND DA IA HOLOGRÁFICA */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: 0.35,
+        zIndex: 0
+      }} />
+
+      {/* Efeito Glow Central */}
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '600px',
+        height: '600px',
+        background: 'radial-gradient(circle, rgba(0,240,255,0.15) 0%, rgba(0,0,0,0) 70%)',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: 1
+      }} />
+
+      {/* 👈 BOTÃO DE ABRIR SIDEBAR ESQUERDA */}
       <button 
         onClick={() => setSidebarAberta(!sidebarAberta)}
         style={{
@@ -719,12 +763,14 @@ export default function EmanuelOSCore() {
         {sidebarAberta ? '✕' : '☰'}
       </button>
 
+      {/* 👈 SIDEBAR ESQUERDA RETRÁTIL (EMAILJS, MAPAS 3D, DISPAROS & HISTÓRICO) */}
       <aside style={{
+        position: 'absolute', top: 0, left: 0,
         width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
-        backgroundColor: 'rgba(7, 7, 12, 0.92)', backdropFilter: 'blur(30px)',
-        borderRight: sidebarAberta ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
+        backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
+        borderRight: sidebarAberta ? '1px solid rgba(0, 240, 255, 0.2)' : 'none',
         padding: sidebarAberta ? '25px' : '0px', display: 'flex', flexDirection: 'column',
-        gap: '18px', height: '100vh', overflowY: 'auto', zIndex: 90,
+        gap: '18px', height: '100vh', overflowY: 'auto', zIndex: 90, boxSizing: 'border-box',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         {sidebarAberta && (
@@ -833,7 +879,7 @@ export default function EmanuelOSCore() {
         padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
         gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
-        {/* Puxador da Barra */}
+        {/* Puxador da Cestinha Direita */}
         <button 
           onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
           style={{
@@ -847,7 +893,6 @@ export default function EmanuelOSCore() {
           {painelFluidoDireitoAberto ? '➔' : '◀'}
         </button>
 
-        {/* Header Estilo Janela Windows 11 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
           <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
             Gemini-Integrated Advanced Command Terminal
@@ -855,7 +900,6 @@ export default function EmanuelOSCore() {
           <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
         </div>
 
-        {/* Título Interno */}
         <div>
           <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             🤖 IA INTEGRADA + GEMINI AGI
@@ -868,7 +912,6 @@ export default function EmanuelOSCore() {
           </span>
         </div>
 
-        {/* Botão Baixar PDF de 300 Comandos + Botões Rápidos */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <button 
             onClick={baixarPDF300Comandos}
@@ -897,7 +940,6 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* Display de Logs do CMD */}
         <div style={{
           flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
           border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
@@ -917,7 +959,6 @@ export default function EmanuelOSCore() {
           ))}
         </div>
 
-        {/* Prompt de Digitação CMD */}
         <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
           <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
           <input
@@ -929,100 +970,215 @@ export default function EmanuelOSCore() {
         </form>
       </div>
 
-      <main style={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
-        <header style={{ width: '100%', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 5 }}>
-          <button 
-            onClick={() => { setBloqueado(true); setEtapaSeguranca(1); }}
-            style={{ padding: '8px 16px', backgroundColor: 'rgba(255,0,85,0.15)', border: '1px solid #ff0055', color: '#ff0055', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            🔒 Travar Sistema
+      {/* 📊 TOPO: CARDS DE STATUS SCI-FI (HUD 2030) */}
+      <div style={{
+        display: 'flex',
+        justify: 'space-between',
+        alignItems: 'flex-start',
+        zIndex: 10,
+        width: '100%',
+        paddingLeft: sidebarAberta ? '420px' : '60px',
+        transition: 'padding-left 0.3s'
+      }}>
+        
+        {/* Card 1: Network Emanuel 2030 */}
+        <div style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)',
+          borderRadius: '12px',
+          padding: '12px 18px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
+          minWidth: '160px'
+        }}>
+          <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Network</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span style={{ color: '#00f0ff', fontSize: '14px' }}>📶 ⚡ 🌐</span>
+          </div>
+          <strong style={{ fontSize: '13px', color: '#00f0ff' }}>Emanuel 2030</strong>
+        </div>
+
+        {/* Card 2: Status Cognitivo do Robô */}
+        <div style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)',
+          borderRadius: '12px',
+          padding: '12px 18px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px'
+        }}>
+          <div>
+            <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block' }}>Robot Load</span>
+            <strong style={{ fontSize: '12px', color: '#38bdf8' }}>Cognitive 22%</strong>
+          </div>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '50%',
+            border: '3px solid #00f0ff',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            color: '#00f0ff',
+            boxShadow: '0 0 10px #00f0ff'
+          }}>
+            35%
+          </div>
+        </div>
+
+        {/* Card 3: Relógio Holográfico */}
+        <div style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)',
+          borderRadius: '12px',
+          padding: '12px 18px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span style={{ fontSize: '18px', color: '#00f0ff' }}>🕒</span>
+          <div>
+            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL</span>
+            <strong style={{ fontSize: '12px', color: '#fff', fontFamily: 'monospace' }}>
+              {horaAtual || '14 Março 2030, 22:15'}
+            </strong>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 🧠 CENTRO-ESQUERDA: CARD COGNITIVE LOAD */}
+      <div style={{
+        position: 'absolute',
+        top: '35%',
+        left: sidebarAberta ? '430px' : '20px',
+        zIndex: 10,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(0, 240, 255, 0.3)',
+        borderRadius: '12px',
+        padding: '12px 18px',
+        width: '200px',
+        transition: 'left 0.3s'
+      }}>
+        <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>Cognitive Load</span>
+        <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <span>Fian:</span> <strong>49%</strong>
+        </div>
+        <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
+          <span>Mecro-holographic:</span> <strong>1%</strong>
+        </div>
+      </div>
+
+      {/* 💬 BASE: CHAT DA IA PRINCIPAL E ENTRADA DE COMANDOS */}
+      <div style={{
+        zIndex: 10,
+        width: '100%',
+        maxWidth: '850px',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px'
+      }}>
+
+        {/* Histórico do Chat Holográfico */}
+        <div style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(244, 63, 94, 0.4)',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          boxShadow: '0 0 30px rgba(244, 63, 94, 0.2)',
+          maxHeight: '180px',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
+        }}>
+          {mensagens.map((item, index) => (
+            <div key={index}>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e',
+                letterSpacing: '1px',
+                display: 'block',
+                marginBottom: '2px'
+              }}>
+                {item.autor}
+              </span>
+              <p style={{ margin: 0, fontSize: '13px', color: '#f8fafc', lineHeight: '1.4' }}>
+                {item.texto}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Form de Envio com Microfone e Input Neural */}
+        <form onSubmit={handleEnviarMensagemTexto} style={{
+          backgroundColor: 'rgba(2, 6, 23, 0.9)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0, 240, 255, 0.5)',
+          borderRadius: '16px',
+          padding: '8px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
+        }}>
+          <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
+          
+          <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }} title="Anexar Imagem ou QR Code">
+            🖼️
+          </button>
+          
+          <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }} title="Comando de Voz Neural">
+            {estaOuvindo ? '🔴' : '🎙️'}
           </button>
 
-          <button 
-            onClick={handleLoginGoogle}
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Transmitir comandos neurais ou conversar com o Núcleo Gemini..."
             style={{
-              padding: '10px 22px', backgroundColor: usuarioLogado ? 'rgba(255, 0, 85, 0.1)' : '#fff',
-              color: usuarioLogado ? '#ff0055' : '#000', border: usuarioLogado ? '1px solid #ff0055' : 'none',
-              borderRadius: '25px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(255,255,255,0.05)', transition: 'all 0.3s'
+              backgroundColor: 'transparent',
+              border: 'none',
+              outline: 'none',
+              color: '#fff',
+              fontSize: '13px',
+              flexGrow: 1,
+              fontFamily: 'inherit'
+            }}
+          />
+
+          <button
+            type="submit"
+            style={{
+              background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
+              color: '#000',
+              border: 'none',
+              padding: '10px 24px',
+              borderRadius: '10px',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              cursor: 'pointer',
+              boxShadow: '0 0 15px rgba(0, 240, 255, 0.4)'
             }}
           >
-            {usuarioLogado ? '🛑 Desconectar Conta' : '🌐 Conectar com Google'}
+            Executar
           </button>
-        </header>
+        </form>
 
-        <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '40px', padding: '0 20px' }}>
-          <div style={{
-            width: '240px', height: '220px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(0,240,255,0.35) 0%, rgba(139,92,246,0.3) 55%, transparent 100%)',
-            boxShadow: '0 0 70px rgba(0,240,255,0.4), inset 0 0 40px rgba(139,92,246,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'orbeFlutuar 3s infinite alternate ease-in-out'
-          }}>
-            <div style={{ width: '140px', height: '140px', borderRadius: '50%', backgroundColor: '#030305', border: '2px solid rgba(0,240,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 30px rgba(0,240,255,0.3)' }}>
-              <span style={{ fontSize: '42px', animation: 'pulsarIcone 1.5s infinite alternate' }}>🔮</span>
-            </div>
-          </div>
+      </div>
 
-          <div style={{ width: '100%', maxWidth: '680px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {mensagens.slice(-2).map((m, i) => (
-              <div key={i} style={{ 
-                backgroundColor: 'rgba(7, 16, 37, 0.65)', borderRadius: '16px', 
-                border: '1px solid rgba(0, 240, 255, 0.3)', padding: '22px',
-                boxShadow: '0 6px 30px rgba(0, 240, 255, 0.1)', backdropFilter: 'blur(12px)'
-              }}>
-                <span style={{ color: m.tipo === 'user' ? '#00f0ff' : '#ff0055', fontWeight: '900', fontSize: '11px', display: 'block', marginBottom: '6px', letterSpacing: '1px' }}>
-                  {m.autor}
-                </span>
-                <p style={{ margin: 0, fontSize: '14px', color: m.tipo === 'user' ? '#00f0ff' : '#e4e4e7', lineHeight: '1.6' }}>
-                  {m.texto}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0 40px 40px 40px', boxSizing: 'border-box' }}>
-          <div style={{ width: '100%', maxWidth: '680px', background: 'rgba(7, 7, 12, 0.65)', padding: '14px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(15px)' }}>
-            <form onSubmit={handleEnviarMensagemTexto} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
-              <button 
-                type="button" onClick={() => imageInputRef.current.click()}
-                style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: 'none', width: '45px', height: '45px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', transition: 'all 0.2s' }}
-                title="Carregar Imagem ou QR Code"
-              >
-                🖼️
-              </button>
-
-              <button 
-                type="button" onClick={iniciarEscuta} 
-                style={{ 
-                  backgroundColor: estaOuvindo ? '#ff0055' : 'rgba(255,255,255,0.05)', 
-                  border: 'none', width: '45px', height: '45px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', transition: 'all 0.3s'
-                }}
-              >
-                {estaOuvindo ? '🔴' : '🎙️'}
-              </button>
-
-              <input 
-                type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)}
-                placeholder={`Mandar ordens cognitivas ou conversar com o Google Gemini...`}
-                style={{ flexGrow: 1, padding: '14px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '14px' }}
-              />
-              <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '0 25px', height: '45px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Executar</button>
-            </form>
-          </div>
-        </div>
-
-        <style>{`
-          @keyframes orbeFlutuar {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(-15px) scale(1.03); }
-          }
-          @keyframes pulsarIcone {
-            0% { transform: scale(1); filter: drop-shadow(0 0 2px #00f0ff); }
-            100% { transform: scale(1.12); filter: drop-shadow(0 0 12px #00f0ff); }
-          }
-        `}</style>
-      </main>
     </div>
   );
 }
