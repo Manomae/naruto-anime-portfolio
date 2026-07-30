@@ -3,32 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { QRCodeSVG } from 'qrcode.react';
 
-// 📚 BASE DE DADOS FUTURISTA 2030: POKÉMONS COM AVATARES
-const pokedexData = [
-  { id: 1, nome: "Pikachu", tipo: "Elétrico", icone: "⚡", cor: 0xfacc15, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" },
-  { id: 2, nome: "Charizard", tipo: "Fogo / Voador", icone: "🔥", cor: 0xef4444, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" },
-  { id: 3, nome: "Mewtwo", tipo: "Psíquico", icone: "🔮", cor: 0xa855f7, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" },
-  { id: 4, nome: "Lucario", tipo: "Lutador / Aço", icone: "⚔️", cor: 0x3b82f6, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/448.png" },
-  { id: 5, nome: "Gengar", tipo: "Fantasma / Veneno", icone: "👻", cor: 0x7e22ce, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png" },
-  { id: 6, nome: "Rayquaza", tipo: "Dragão / Voador", icone: "🐉", cor: 0x22c55e, avatar: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png" },
-];
-
-// 🃏 BASE DE DADOS YU-GI-OH! MULTIVERSO 2030 COM MUNDOS & DUELISTAS
-const yugiohWorldData = {
-  mundos: [
-    { id: "neo-domino", nome: "NEO-DOMINO CITY (2030)", tema: "D-Wheels & Circuitos Neon", img: "https://images.ygoprodeck.com/images/cards/44508094.jpg" },
-    { id: "duel-academy", nome: "DUEL ACADEMY (GX 2030)", tema: "Academia de Duelos", img: "https://images.ygoprodeck.com/images/cards/21808381.jpg" },
-    { id: "vrains-world", nome: "VRAINS LINK WORLD (2030)", tema: "Rede Cyberse & Link", img: "https://images.ygoprodeck.com/images/cards/18616296.jpg" },
-    { id: "heartland", nome: "HEARTLAND CITY (ZEXAL)", tema: "Mundo Astral", img: "https://images.ygoprodeck.com/images/cards/84013237.jpg" }
-  ],
-  personagens: [
-    { id: "yugi", nome: "Yugi Muto", avatar: "https://images.ygoprodeck.com/images/cards/36996508.jpg" },
-    { id: "yugi-2030", nome: "Yugi Muto (2030)", avatar: "https://images.ygoprodeck.com/images/cards/36996508.jpg" },
-    { id: "jaden-2030", nome: "Jaden Yuki (2030)", avatar: "https://images.ygoprodeck.com/images/cards/21808381.jpg" },
-    { id: "yusaku", nome: "Yusaku Fujiki", avatar: "https://images.ygoprodeck.com/images/cards/18616296.jpg" },
-    { id: "yusaku-2030", nome: "Yusaku Fujiki (2030)", avatar: "https://images.ygoprodeck.com/images/cards/18616296.jpg" }
-  ]
-};
+// 🚀 IMPORTAÇÃO LIMPA E DIRETA DA BASE DE DADOS
+import { pokedexData, yugiohWorldData } from './datapokedex-yugioh';
 
 export default function MapaIA() {
   const mountRef = useRef(null);
@@ -48,9 +24,9 @@ export default function MapaIA() {
 
   // Search e Seleções
   const [buscaPersonagem, setBuscaPersonagem] = useState('');
-  const [personagemSelecionado, setPersonagemSelecionado] = useState(yugiohWorldData.personagens[3].id); 
-  const [mundoSelecionado, setMundoSelecionado] = useState(yugiohWorldData.mundos[0].id); 
-  const [pokemonSelecionado, setPokemonSelecionado] = useState(pokedexData[1]); 
+  const [personagemSelecionado, setPersonagemSelecionado] = useState(yugiohWorldData.personagens[0]?.id || 'yugi'); 
+  const [mundoSelecionado, setMundoSelecionado] = useState(yugiohWorldData.mundos[0]?.id || 'neo-domino'); 
+  const [pokemonSelecionado, setPokemonSelecionado] = useState(pokedexData[0] || { nome: 'Pikachu', avatar: '' }); 
 
   // Terminal Logs G-AGI
   const [cmdInput, setCmdInput] = useState('');
@@ -699,14 +675,14 @@ export default function MapaIA() {
     setStatus(`📂 Mapa "${saved.title}" carregado!`);
   };
 
-  const duelistasFiltrados = yugiohWorldData.personagens.filter(p => 
+  const duelistasFiltrados = (yugiohWorldData.personagens || []).filter(p => 
     p.nome.toLowerCase().includes(buscaPersonagem.toLowerCase())
   );
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#020617', color: '#f1f5f9', fontFamily: 'sans-serif', position: 'relative' }}>
       
-      {/* 🟢 HEADER PRINCIPAL COM BOTÕES CYBERPUNK (Foto 1000080368) */}
+      {/* 🟢 HEADER PRINCIPAL COM BOTÕES CYBERPUNK */}
       <header style={{ zIndex: 20, position: 'relative', backgroundColor: 'rgba(7, 12, 28, 0.95)', borderBottom: '1px solid #00f0ff', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <a href="/" style={{ backgroundColor: '#1e293b', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #334155' }}>🏠 Core Login</a>
@@ -786,7 +762,7 @@ export default function MapaIA() {
           )}
         </div>
 
-        {/* 🎯 PAINEL CENTRAL FLUTUANTE: AVATAR SELECTION (ESTILO DUEL LINKS 2030 - Foto 1000080368) */}
+        {/* 🎯 PAINEL CENTRAL FLUTUANTE: AVATAR SELECTION */}
         {painelAvatarSelectionAberto && (
           <div style={{
             position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-40%)', zIndex: 30,
@@ -825,7 +801,7 @@ export default function MapaIA() {
                   }}
                 >
                   <span style={{ fontSize: '10px', fontWeight: 'bold' }}>{p.nome}</span>
-                  <img src={p.avatar} alt={p.nome} style={{ width: '20px', height: '26px', objectFit: 'cover', borderRadius: '3px' }} />
+                  {p.avatar && <img src={p.avatar} alt={p.nome} style={{ width: '20px', height: '26px', objectFit: 'cover', borderRadius: '3px' }} />}
                 </div>
               ))}
             </div>
@@ -836,12 +812,12 @@ export default function MapaIA() {
               onChange={(e) => setMundoSelecionado(e.target.value)}
               style={{ width: '100%', padding: '6px', backgroundColor: '#020617', color: '#fff', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', outline: 'none' }}
             >
-              {yugiohWorldData.mundos.map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
+              {(yugiohWorldData.mundos || []).map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
             </select>
           </div>
         )}
 
-        {/* 👉 PAINEL DIREITO: MÓDULO DE AVATAR INTEGRADO & POKÉDEX 3D (Foto 1000080368) */}
+        {/* 👉 PAINEL DIREITO: MÓDULO DE AVATAR INTEGRADO & POKÉDEX 3D */}
         {painelModuloAvatarAberto && (
           <div style={{
             position: 'absolute', top: '10px', right: '10px', zIndex: 30,
@@ -878,8 +854,8 @@ export default function MapaIA() {
             {abaModuloAvatar === 'pokemon' && (
               <div style={{ backgroundColor: '#020617', padding: '8px', borderRadius: '8px', border: '1px solid #ef4444', textAlign: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>POKÉDEX 3D (2030)</span>
-                <img src={pokemonSelecionado.avatar} alt={pokemonSelecionado.nome} style={{ width: '70px', height: '70px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #ef4444)' }} />
-                <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold', display: 'block' }}>Aether {pokemonSelecionado.nome}</span>
+                {pokemonSelecionado?.avatar && <img src={pokemonSelecionado.avatar} alt={pokemonSelecionado.nome} style={{ width: '70px', height: '70px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #ef4444)' }} />}
+                <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold', display: 'block' }}>Aether {pokemonSelecionado?.nome}</span>
                 <button 
                   onClick={() => handleInjetarObjeto3D('pokemon', pokemonSelecionado)}
                   style={{ marginTop: '6px', width: '100%', padding: '5px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
