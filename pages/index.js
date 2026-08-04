@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
+import * as THREE from 'three';
 
 import dicionarioNinja from './dicionario-ninja.json';
 
@@ -158,6 +159,7 @@ function buscarNoDicionario(perguntaUsuario) {
 }
 
 export default function EmanuelOSCore() {
+  // --- STATES DE SEGURANÇA (7 CAMADAS) ---
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
   const [biometriaLendo, setBiometriaLendo] = useState(false);
@@ -167,7 +169,6 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  // 🛡️ STATES DA 6ª CAMADA: Ticons OS gevaGifs
   const [isAdmin, setIsAdmin] = useState(true); 
   const [attemptsLeft, setAttemptsLeft] = useState(2);
   const [isLockedTicons, setIsLockedTicons] = useState(false);
@@ -175,7 +176,6 @@ export default function EmanuelOSCore() {
   const [selectedSequence, setSelectedSequence] = useState([]);
   const targetSequence = ['🔥', 'avatar_ninja.png', 'gif_animado.gif'];
 
-  // 📲 STATES DA 7ª CAMADA: QR Code & Animação de Montagem de Mapa
   const [qrCodeValidando, setQrCodeValidando] = useState(false);
   const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
   const [qrPayload, setQrCodePayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
@@ -194,23 +194,32 @@ export default function EmanuelOSCore() {
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
   const CHAVE_MESTRE = "ASD-DDD-888";
 
+  // --- STATES DA INTERFACE PRINCIPAL ---
   const [modo, setModo] = useState('live'); 
   const [vozAtiva, setVozAtiva] = useState('Emanuel'); 
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [sidebarAberta, setSidebarAberta] = useState(false);
-  
-  // 💻 Terminal Gemini Advanced + Nano Banana 🍌
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
+
+  // States do Browser Cyberpunk & Módulos 3D (Pokédex/Yu-Gi-Oh)
+  const [browserAsset, setBrowserAsset] = useState({
+    titulo: 'Emanuel.OS',
+    subtitulo: 'Native Browser',
+    imagem: null,
+    conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto.'
+  });
+
+  // Terminal Gemini Commands Logs
   const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
     "[G-AGI: QR-DECODER] Leitor de QR Code para injeção de links integrado.",
-    "[CMD> G-AGI] User: Analisar fluxo de dados de naruto-anime-port...[Complete]",
-    "[G-AGI: INFO] O motor complementar detectou anomalias sutis de dados (0.012%).",
+    "[CMD> G-AGI] User: Analisar fluxo de dados do sistema...[Complete]",
+    "[G-AGI: INFO] Motor Nano Banana e fios de chakra conectados.",
     "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
   ]);
 
@@ -221,6 +230,7 @@ export default function EmanuelOSCore() {
     { id: 3, titulo: 'Teoria do Chakra e Linhagens', data: '17/07/2026', origem: 'google' },
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
+
   const [mensagens, setMensagens] = useState([
     { autor: 'IA EMANUEL (GEMINI)', texto: 'Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa', tipo: 'sys' }
   ]);
@@ -234,11 +244,221 @@ export default function EmanuelOSCore() {
   const [msgCanal2, setMsgCanal2] = useState('');
   const [modoDisparo, setModoDisparo] = useState('ambos'); 
 
-  // Relógio Dinâmico Futurista (2030)
+  // Relógio Dinâmico
   const [horaAtual, setHoraAtual] = useState('');
-
   const imageInputRef = useRef(null);
 
+  // Referências Three.js (Cena 3D e Câmera)
+  const mountRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const avatarMeshRef = useRef(null);
+
+  // --- INICIALIZAÇÃO DO THREE.JS (AVATAR HOLOGRÁFICO CENTRAL 3D) ---
+  useEffect(() => {
+    if (bloqueado || !mountRef.current) return;
+
+    const width = mountRef.current.clientWidth;
+    const height = mountRef.current.clientHeight;
+
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+    cameraRef.current = camera;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Iluminação Cyberpunk Neon Ciano / Magenta
+    const cyanLight = new THREE.PointLight(0x00f0ff, 3, 100);
+    cyanLight.position.set(-5, 5, 5);
+    scene.add(cyanLight);
+
+    const magentaLight = new THREE.PointLight(0xff007f, 3, 100);
+    magentaLight.position.set(5, -5, 5);
+    scene.add(magentaLight);
+
+    const ambientLight = new THREE.AmbientLight(0x1e293b, 1.5);
+    scene.add(ambientLight);
+
+    // Geometria e Material Holográfico 3D
+    const geometry = new THREE.IcosahedronGeometry(2, 4);
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x00f0ff,
+      wireframe: true,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 0.35,
+      transparent: true,
+      opacity: 0.85
+    });
+    const avatarMesh = new THREE.Mesh(geometry, material);
+    scene.add(avatarMesh);
+    avatarMeshRef.current = avatarMesh;
+
+    let animationFrameId;
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      avatarMesh.rotation.y += 0.005;
+      avatarMesh.rotation.x += 0.002;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      if (!mountRef.current) return;
+      const newWidth = mountRef.current.clientWidth;
+      const newHeight = mountRef.current.clientHeight;
+      camera.aspect = newWidth / newHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newWidth, newHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+      if (mountRef.current && renderer.domElement) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, [bloqueado]);
+
+  // CONTROLE DE CÂMERA 3D VIA COMANDOS NEURAIS
+  const controlarCamera3D = (acao) => {
+    const camera = cameraRef.current;
+    if (!camera) return;
+
+    switch (acao) {
+      case 'zoom_in':
+        camera.position.z = Math.max(camera.position.z - 2, 2);
+        break;
+      case 'zoom_out':
+        camera.position.z += 2;
+        break;
+      case 'top_view':
+        camera.position.set(0, 8, 0.1);
+        camera.lookAt(0, 0, 0);
+        break;
+      case 'rotate':
+        if (avatarMeshRef.current) {
+          avatarMeshRef.current.rotation.y += Math.PI / 4;
+        }
+        break;
+      default:
+        camera.position.set(0, 0, 5);
+        camera.lookAt(0, 0, 0);
+        break;
+    }
+  };
+
+  // --- SÍNTESE DE VOZ ---
+  const falarTextoReal = (texto) => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = 'pt-BR';
+      utterance.pitch = 0.95;
+      utterance.rate = 1.05;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // --- RECONHECIMENTO DE VOZ (MICROFONE) ---
+  const iniciarEscuta = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
+
+    const reconhecimento = new SpeechRecognition();
+    reconhecimento.lang = 'pt-BR';
+
+    reconhecimento.onstart = () => setEstaOuvindo(true);
+    reconhecimento.onend = () => setEstaOuvindo(false);
+
+    reconhecimento.onresult = (event) => {
+      const transcricao = event.results[0][0].transcript;
+      setChatInput(transcricao);
+      processarConversaReal(transcricao);
+    };
+
+    reconhecimento.start();
+  };
+
+  // --- PROCESSAMENTO PRINCIPAL DE IA & COMANDOS ---
+  const processarConversaReal = async (textoUsuario) => {
+    const textoLimpo = textoUsuario.toLowerCase();
+
+    // 1. Controle da Câmera 3D
+    if (textoLimpo.includes('zoom') || textoLimpo.includes('girar') || textoLimpo.includes('câmera') || textoLimpo.includes('topo')) {
+      let acao = 'reset';
+      if (textoLimpo.includes('aproximar') || textoLimpo.includes('in')) acao = 'zoom_in';
+      else if (textoLimpo.includes('afastar') || textoLimpo.includes('out')) acao = 'zoom_out';
+      else if (textoLimpo.includes('girar') || textoLimpo.includes('rotacionar')) acao = 'rotate';
+      else if (textoLimpo.includes('topo') || textoLimpo.includes('superior')) acao = 'top_view';
+
+      controlarCamera3D(acao);
+      const resp = `Câmera 3D ajustada: Modo [${acao.toUpperCase()}].`;
+      setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: resp, tipo: 'ia' }]);
+      falarTextoReal(resp);
+      return;
+    }
+
+    // 2. Módulo Pokédex / Pokémon 3D
+    if (textoLimpo.includes('pokémon') || textoLimpo.includes('pokemon') || textoLimpo.includes('pokedex')) {
+      const pokeNome = textoLimpo.replace(/gerar|buscar|pokémon|pokemon|pokedex|3d|no mapa/gi, '').trim() || 'charizard';
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeNome}`);
+        if (res.ok) {
+          const data = await res.json();
+          setBrowserAsset({
+            titulo: `Pokédex 3D: ${data.name.toUpperCase()}`,
+            subtitulo: `ID: #${data.id} | Tipo: ${data.types.map(t => t.type.name).join('/')}`,
+            imagem: data.sprites.other['official-artwork'].front_default,
+            conteudoTexto: `Asset 3D do Pokémon ${data.name.toUpperCase()} pronto para renderização no mapa!`
+          });
+          const msg = `Pokémon ${data.name.toUpperCase()} localizado e injetado no Native Browser!`;
+          setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: msg, tipo: 'ia' }]);
+          falarTextoReal(msg);
+          return;
+        }
+      } catch (err) {
+        console.error("Erro na Pokédex:", err);
+      }
+    }
+
+    // 3. Resposta via Dicionário Ninja / Padrão Neural
+    let respostaTexto = "";
+    const resultadoDicionario = buscarNoDicionario(textoUsuario);
+
+    if (resultadoDicionario) {
+      respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
+    } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
+      respostaTexto = "Olá, Emanuel! Como posso te ajudar a gerenciar seus mapas e sistemas agora?";
+    } else {
+      respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS Core v5.1. Sincronização neural a 100%.`;
+    }
+
+    setBrowserAsset(prev => ({
+      ...prev,
+      conteudoTexto: respostaTexto
+    }));
+
+    setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
+    falarTextoReal(respostaTexto);
+  };
+
+  const handleEnviarMensagemTexto = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]);
+    processarConversaReal(chatInput);
+    setChatInput('');
+  };
+
+  // --- MÉTODOS DE SEGURANÇA E AUXILIARES ---
   useEffect(() => {
     const atualizarHorario = () => {
       const agora = new Date();
@@ -363,79 +583,8 @@ export default function EmanuelOSCore() {
         setAnimacaoMontandoMapa(false);
         setBloqueado(false);
         alert("🔓 Acesso Total Autorizado! Mapeamento QR Code e 7 Camadas de Segurança Concluídas!");
-      }, 3000);
+      }, 2500);
     }, 1500);
-  };
-
-  const falarTextoReal = (texto) => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(texto);
-      utterance.lang = 'pt-BR';
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  const iniciarEscuta = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
-
-    const reconhecimento = new SpeechRecognition();
-    reconhecimento.lang = 'pt-BR';
-
-    reconhecimento.onstart = () => setEstaOuvindo(true);
-    reconhecimento.onend = () => setEstaOuvindo(false);
-
-    reconhecimento.onresult = (event) => {
-      const transcricao = event.results[0][0].transcript;
-      setChatInput(transcricao);
-      processarConversaReal(transcricao);
-    };
-
-    reconhecimento.start();
-  };
-
-  useEffect(() => {
-    if (bloqueado) return;
-    const horaAtual = new Date().getHours();
-    let textoSaudacao = horaAtual < 12 
-      ? "Bom dia, Emanuel! Núcleo v5.1 online. Conexão Neural Ativa." 
-      : horaAtual < 18 
-      ? "Boa tarde, Emanuel! O sistema Emanuel Live Mode v5.1 está operacional." 
-      : "Boa noite, Emanuel! Meu núcleo de IA Gemini v5.1 está ativo.";
-    
-    setTimeout(() => {
-      setMensagens([{ autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: textoSaudacao, tipo: 'sys' }]);
-      falarTextoReal(textoSaudacao);
-    }, 1000);
-  }, [vozAtiva, bloqueado]);
-
-  const processarConversaReal = (textoUsuario) => {
-    let respostaTexto = "";
-    const textoLimpo = textoUsuario.toLowerCase();
-    const resultadoDicionario = buscarNoDicionario(textoUsuario);
-
-    if (resultadoDicionario) {
-      respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
-    } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
-      respostaTexto = "Olá, Emanuel! Como posso te ajudar a programar ou controlar seus sistemas agora?";
-    } else {
-      respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo v5.1. Sincronização neural 100% estável.`;
-    }
-
-    setTimeout(() => {
-      setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
-      falarTextoReal(respostaTexto);
-    }, 600);
-  };
-
-  const handleEnviarMensagemTexto = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-
-    setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]);
-    processarConversaReal(chatInput);
-    setChatInput('');
   };
 
   const executarComandoCMD = (comandoDigitado) => {
@@ -509,11 +658,6 @@ export default function EmanuelOSCore() {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
     alert(`Imagem/QR Code "${arquivo.name}" carregado! Analisando e gerando dados estruturados...`);
-  };
-
-  const handleLoginGoogle = () => {
-    if (usuarioLogado) setUsuarioLogado(null);
-    else setUsuarioLogado({ nome: 'Emanuel da Silva', email: 'leeheroi123@gmail.com' });
   };
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
@@ -708,45 +852,26 @@ export default function EmanuelOSCore() {
       color: '#fff',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       position: 'relative',
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      justify: 'space-between',
-      padding: '20px',
-      boxSizing: 'border-box'
+      overflow: 'hidden'
     }}>
       <Head>
         <title>Emanuel.OS Core 2030 | IA Principal</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      {/* 🌌 BACKGROUND DA IA HOLOGRÁFICA */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        opacity: 0.35,
-        zIndex: 0
-      }} />
-
-      {/* Efeito Glow Central */}
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '600px',
-        height: '600px',
-        background: 'radial-gradient(circle, rgba(0,240,255,0.15) 0%, rgba(0,0,0,0) 70%)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        zIndex: 1
-      }} />
+      {/* 🌌 CANVAS THREE.JS (AVATAR HOLOGRÁFICO CENTRAL 3D) */}
+      <div 
+        ref={mountRef} 
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} 
+      />
 
       {/* 👈 BOTÃO DE ABRIR SIDEBAR ESQUERDA */}
       <button 
@@ -972,60 +1097,35 @@ export default function EmanuelOSCore() {
 
       {/* 📊 TOPO: CARDS DE STATUS SCI-FI (HUD 2030) */}
       <div style={{
-        display: 'flex',
-        justify: 'space-between',
-        alignItems: 'flex-start',
-        zIndex: 10,
-        width: '100%',
-        paddingLeft: sidebarAberta ? '420px' : '60px',
-        transition: 'padding-left 0.3s'
+        position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '80px', right: '400px',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
+        transition: 'left 0.3s'
       }}>
         
         {/* Card 1: Network Emanuel 2030 */}
         <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
-          borderRadius: '12px',
-          padding: '12px 18px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
-          minWidth: '160px'
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', minWidth: '150px'
         }}>
-          <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Network</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ color: '#00f0ff', fontSize: '14px' }}>📶 ⚡ 🌐</span>
-          </div>
-          <strong style={{ fontSize: '13px', color: '#00f0ff' }}>Emanuel 2030</strong>
+          <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network</span>
+          <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel 2030</strong>
         </div>
 
-        {/* Card 2: Status Cognitivo do Robô */}
+        {/* Card 2: Robot Load */}
         <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
-          borderRadius: '12px',
-          padding: '12px 18px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px'
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '12px'
         }}>
           <div>
-            <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block' }}>Robot Load</span>
-            <strong style={{ fontSize: '12px', color: '#38bdf8' }}>Cognitive 22%</strong>
+            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Robot Load</span>
+            <strong style={{ fontSize: '11px', color: '#38bdf8' }}>Cognitive 22%</strong>
           </div>
           <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            border: '3px solid #00f0ff',
-            display: 'flex',
-            alignItems: 'center',
-            justify: 'center',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            color: '#00f0ff',
-            boxShadow: '0 0 10px #00f0ff'
+            width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #00f0ff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '10px', fontWeight: 'bold', color: '#00f0ff'
           }}>
             35%
           </div>
@@ -1033,20 +1133,14 @@ export default function EmanuelOSCore() {
 
         {/* Card 3: Relógio Holográfico */}
         <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
-          borderRadius: '12px',
-          padding: '12px 18px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '8px'
         }}>
-          <span style={{ fontSize: '18px', color: '#00f0ff' }}>🕒</span>
+          <span style={{ fontSize: '16px', color: '#00f0ff' }}>🕒</span>
           <div>
-            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL</span>
-            <strong style={{ fontSize: '12px', color: '#fff', fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL</span>
+            <strong style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace' }}>
               {horaAtual || '14 Março 2030, 22:15'}
             </strong>
           </div>
@@ -1056,121 +1150,111 @@ export default function EmanuelOSCore() {
 
       {/* 🧠 CENTRO-ESQUERDA: CARD COGNITIVE LOAD */}
       <div style={{
-        position: 'absolute',
-        top: '35%',
-        left: sidebarAberta ? '430px' : '20px',
-        zIndex: 10,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(0, 240, 255, 0.3)',
-        borderRadius: '12px',
-        padding: '12px 18px',
-        width: '200px',
-        transition: 'left 0.3s'
+        position: 'absolute', top: '100px', left: sidebarAberta ? '430px' : '80px', zIndex: 10,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 18px',
+        width: '180px', transition: 'left 0.3s'
       }}>
         <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>Cognitive Load</span>
         <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span>Fian:</span> <strong>49%</strong>
+          <span>Fian:</span> <strong>45%</strong>
         </div>
         <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
           <span>Mecro-holographic:</span> <strong>1%</strong>
         </div>
       </div>
 
-      {/* 💬 BASE: CHAT DA IA PRINCIPAL E ENTRADA DE COMANDOS */}
+      {/* 📱 HUD DIREITO: INTERNET EM.COM (NATIVE BROWSER) */}
       <div style={{
-        zIndex: 10,
-        width: '100%',
-        maxWidth: '850px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
+        position: 'absolute', top: '90px', right: '400px', zIndex: 10,
+        backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '14px', padding: '14px',
+        width: '280px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
       }}>
+        <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: '10px' }}>
+          <span style={{ fontSize: '10px', color: '#00f0ff', marginRight: '6px' }}>🌐</span>
+          <input type="text" readOnly value="Internet Em.com" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
+          <span style={{ fontSize: '10px', color: '#00f0ff' }}>🔍</span>
+        </div>
+
+        <div>
+          <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
+          <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo}</p>
+
+          {browserAsset.imagem && (
+            <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+              <img src={browserAsset.imagem} alt="Asset Preview" style={{ width: '100px', height: '100px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
+            </div>
+          )}
+
+          <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
+            {browserAsset.conteudoTexto}
+          </div>
+        </div>
+      </div>
+
+      {/* 💬 BASE: CHAT E HISTÓRICO HOLOGRÁFICO */}
+      <div style={{
+        position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+        zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
+      }}>
+
+        {/* Banner Status IA */}
+        <div style={{
+          backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '12px', padding: '8px 20px',
+          textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
+        }}>
+          <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
+            IA EMANUEL (GEMINI)
+          </span>
+          <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
+            Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa
+          </span>
+        </div>
 
         {/* Histórico do Chat Holográfico */}
         <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(244, 63, 94, 0.4)',
-          borderRadius: '16px',
-          padding: '16px 20px',
-          boxShadow: '0 0 30px rgba(244, 63, 94, 0.2)',
-          maxHeight: '180px',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
+          backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 16px',
+          maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px'
         }}>
           {mensagens.map((item, index) => (
             <div key={index}>
-              <span style={{
-                fontSize: '10px',
-                fontWeight: 'bold',
-                color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e',
-                letterSpacing: '1px',
-                display: 'block',
-                marginBottom: '2px'
-              }}>
+              <span style={{ fontSize: '9px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e', letterSpacing: '0.5px' }}>
                 {item.autor}
               </span>
-              <p style={{ margin: 0, fontSize: '13px', color: '#f8fafc', lineHeight: '1.4' }}>
+              <p style={{ margin: 0, fontSize: '11px', color: '#f8fafc', lineHeight: '1.3' }}>
                 {item.texto}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Form de Envio com Microfone e Input Neural */}
+        {/* Barra de Envio e Microfone */}
         <form onSubmit={handleEnviarMensagemTexto} style={{
-          backgroundColor: 'rgba(2, 6, 23, 0.9)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 240, 255, 0.5)',
-          borderRadius: '16px',
-          padding: '8px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
+          backgroundColor: 'rgba(5, 12, 24, 0.9)', backdropFilter: 'blur(20px)',
+          border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px',
+          display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.25)'
         }}>
+          <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>🖼️</button>
+          <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>{estaOuvindo ? '🔴' : '🎙️'}</button>
           <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
-          
-          <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }} title="Anexar Imagem ou QR Code">
-            🖼️
-          </button>
-          
-          <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }} title="Comando de Voz Neural">
-            {estaOuvindo ? '🔴' : '🎙️'}
-          </button>
 
           <input
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             placeholder="Transmitir comandos neurais ou conversar com o Núcleo Gemini..."
-            style={{
-              backgroundColor: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: '#fff',
-              fontSize: '13px',
-              flexGrow: 1,
-              fontFamily: 'inherit'
-            }}
+            style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
           />
 
           <button
             type="submit"
             style={{
-              background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
-              color: '#000',
-              border: 'none',
-              padding: '10px 24px',
-              borderRadius: '10px',
-              fontWeight: 'bold',
-              fontSize: '12px',
-              cursor: 'pointer',
-              boxShadow: '0 0 15px rgba(0, 240, 255, 0.4)'
+              backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 18px',
+              borderRadius: '18px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+              boxShadow: '0 0 10px #00f0ff'
             }}
           >
             Executar
