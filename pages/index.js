@@ -111,6 +111,197 @@ function FormularioCapturaEmanuelOS() {
   );
 }
 
+// ⚡ COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD COM SETINHA RETRÁTIL)
+function QuickActionsWidget({ onActionClick }) {
+  const [painelAberto, setPainelAberto] = useState(true);
+
+  return (
+    <div style={{
+      position: 'absolute',
+      right: painelAberto ? '20px' : '-375px',
+      bottom: '120px',
+      width: '360px',
+      backgroundColor: 'rgba(8, 15, 30, 0.9)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(0, 240, 255, 0.4)',
+      borderRadius: '16px 0 0 16px',
+      padding: '16px',
+      boxShadow: '-10px 0 30px rgba(0, 240, 255, 0.25)',
+      zIndex: 25,
+      color: '#fff',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+    }}>
+      {/* Botão Retrátil Lateral (Setinha para esconder/mostrar) */}
+      <button 
+        onClick={() => setPainelAberto(!painelAberto)}
+        style={{
+          position: 'absolute',
+          left: '-42px',
+          top: '25px',
+          width: '42px',
+          height: '48px',
+          backgroundColor: 'rgba(7, 12, 28, 0.95)',
+          border: '1px solid rgba(0, 240, 255, 0.4)',
+          borderRight: 'none',
+          borderTopLeftRadius: '12px',
+          borderBottomLeftRadius: '12px',
+          color: '#00f0ff',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '-5px 0 15px rgba(0, 240, 255, 0.2)'
+        }}
+      >
+        {painelAberto ? '➔' : '◀'}
+      </button>
+
+      <h3 style={{
+        fontSize: '14px',
+        fontWeight: 'bold',
+        margin: '0 0 12px 0',
+        color: '#fff',
+        letterSpacing: '0.5px'
+      }}>
+        Emanuel.OS Quick Actions
+      </h3>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '10px',
+        marginBottom: '10px'
+      }}>
+        <div 
+          onClick={() => onActionClick('gerar_imagem')}
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            border: '1px solid rgba(0, 240, 255, 0.25)',
+            borderRadius: '12px',
+            padding: '10px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '90px'
+          }}
+        >
+          <div style={{ fontSize: '18px', color: '#00f0ff' }}>🖼️✨</div>
+          <div>
+            <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Com modelo EM 1.0</span>
+          </div>
+        </div>
+
+        <div 
+          onClick={() => onActionClick('editar_codigo')}
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            border: '1px solid rgba(0, 240, 255, 0.25)',
+            borderRadius: '12px',
+            padding: '10px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '90px'
+          }}
+        >
+          <div style={{ fontSize: '18px', color: '#38bdf8' }}>✏️&lt;/&gt;</div>
+          <div>
+            <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Códigos e textos</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '10px'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          border: '1px solid rgba(0, 240, 255, 0.25)',
+          borderRadius: '12px',
+          padding: '6px',
+          height: '100px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: '8px',
+            background: 'linear-gradient(135deg, #0284c7 0%, #030712 100%)',
+            border: '1px solid #00f0ff',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            boxShadow: 'inset 0 0 15px rgba(0, 240, 255, 0.4)'
+          }}>
+            <span style={{ fontSize: '26px' }}>🧊</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div 
+            onClick={() => onActionClick('pesquisar_web')}
+            style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              border: '1px solid rgba(0, 240, 255, 0.25)',
+              borderRadius: '8px',
+              padding: '6px 8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <span style={{ fontSize: '14px', color: '#00f0ff' }}>🌐</span>
+            <strong style={{ fontSize: '9px', color: '#fff' }}>Pesquise na Internet</strong>
+          </div>
+
+          <div style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            border: '1px solid rgba(0, 240, 255, 0.25)',
+            borderRadius: '8px',
+            padding: '6px 8px'
+          }}>
+            <span style={{ fontSize: '8px', color: '#fff', fontWeight: 'bold', display: 'block', marginBottom: '3px' }}>
+              Processamento EM v1.0
+            </span>
+            <div style={{
+              width: '100%',
+              height: '3px',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              borderRadius: '2px',
+              overflow: 'hidden',
+              marginBottom: '3px'
+            }}>
+              <div style={{
+                width: '65%',
+                height: '100%',
+                backgroundColor: '#00f0ff',
+                boxShadow: '0 0 8px #00f0ff'
+              }} />
+            </div>
+            <span style={{ fontSize: '7px', color: '#94a3b8' }}>
+              Status: EM v1.0 Active | Processing...
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
   const p2 = palavra2.toLowerCase().trim();
@@ -210,7 +401,7 @@ export default function EmanuelOSCore() {
   const [carregandoSuporte, setCarregandoSuporte] = useState(false);
   const [respostaSuporte, setRespostaSuporte] = useState(null);
 
-  // States do Browser Cyberpunk & Módulos 3D (Pokédex/Yu-Gi-Oh)
+  // States do Browser Cyberpunk & Módulos 3D
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS',
     subtitulo: 'Native Browser',
@@ -260,6 +451,20 @@ export default function EmanuelOSCore() {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const avatarMeshRef = useRef(null);
+
+  // --- DISPARADOR DE AÇÕES RÁPIDAS (QUICK ACTIONS) ---
+  const dispararQuickAction = (tipo) => {
+    if (tipo === 'gerar_imagem') {
+      const promptImg = 'Gerar imagem holográfica 3D no modelo EM 1.0';
+      setChatInput(promptImg);
+      processarConversaReal(promptImg);
+    } else if (tipo === 'editar_codigo') {
+      setModalSuporteAberto(true);
+      setAbaSuporteAtiva('codigo');
+    } else if (tipo === 'pesquisar_web') {
+      setChatInput('Pesquisar dados na internet...');
+    }
+  };
 
   // --- INTEGRANDO SUPORTE IA REAL NO BACKEND ---
   const processarSuporteIA = async () => {
@@ -946,6 +1151,9 @@ export default function EmanuelOSCore() {
       >
         🛠️ Suporte EM IA
       </button>
+
+      {/* ⚡ WIDGET DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD COM SETINHA LATERÁVEL) */}
+      <QuickActionsWidget onActionClick={dispararQuickAction} />
 
       {/* 👈 SIDEBAR ESQUERDA RETRÁTIL */}
       <aside style={{
