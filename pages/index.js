@@ -203,6 +203,13 @@ export default function EmanuelOSCore() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
 
+  // States da Central de Suporte EM-AI
+  const [modalSuporteAberto, setModalSuporteAberto] = useState(false);
+  const [abaSuporteAtiva, setAbaSuporteAtiva] = useState('diagnostico');
+  const [inputProblemaSuporte, setInputProblemaSuporte] = useState('');
+  const [carregandoSuporte, setCarregandoSuporte] = useState(false);
+  const [respostaSuporte, setRespostaSuporte] = useState(null);
+
   // States do Browser Cyberpunk & Módulos 3D (Pokédex/Yu-Gi-Oh)
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS',
@@ -248,13 +255,58 @@ export default function EmanuelOSCore() {
   const [horaAtual, setHoraAtual] = useState('');
   const imageInputRef = useRef(null);
 
-  // Referências Three.js (Cena 3D e Câmera)
+  // Referências Three.js
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const avatarMeshRef = useRef(null);
 
-  // --- INICIALIZAÇÃO DO THREE.JS (AVATAR HOLOGRÁFICO CENTRAL 3D) ---
+  // --- INTEGRANDO SUPORTE IA REAL NO BACKEND ---
+  const processarSuporteIA = async () => {
+    if (!inputProblemaSuporte.trim()) return;
+    setCarregandoSuporte(true);
+    setRespostaSuporte(null);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/suporte/ia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ problema: inputProblemaSuporte })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setRespostaSuporte({
+          diagnostico: data.diagnostico,
+          codigo: data.codigo,
+          documento: `Relatório gerado: ${data.documentoTitulo}`,
+          avatarVideo: "Avatar holográfico pronto para sintetizar aula em vídeo.",
+          protocolo: data.protocolo
+        });
+      } else {
+        setRespostaSuporte({
+          diagnostico: data.diagnostico || "Erro identificado no processamento.",
+          codigo: data.codigo || "// Sem código disponível",
+          documento: "Documento indisponível no momento.",
+          avatarVideo: "Sistema em modo de espera.",
+          protocolo: data.protocolo || "Aguarde 1 hora ou entre em contato com o suporte."
+        });
+      }
+    } catch (err) {
+      setRespostaSuporte({
+        diagnostico: "Erro de conexão com o servidor de suporte da EM IA.",
+        codigo: "// Verifique se o servidor backend está rodando na porta 3001",
+        documento: "N/A",
+        avatarVideo: "N/A",
+        protocolo: "Resolvido em 90% via IA. Se o erro persistir, aguarde 1 hora ou entre em contato."
+      });
+    } finally {
+      setCarregandoSuporte(false);
+    }
+  };
+
+  // --- INICIALIZAÇÃO DO THREE.JS ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -273,7 +325,6 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(window.devicePixelRatio);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Iluminação Cyberpunk Neon Ciano / Magenta
     const cyanLight = new THREE.PointLight(0x00f0ff, 3, 100);
     cyanLight.position.set(-5, 5, 5);
     scene.add(cyanLight);
@@ -285,7 +336,6 @@ export default function EmanuelOSCore() {
     const ambientLight = new THREE.AmbientLight(0x1e293b, 1.5);
     scene.add(ambientLight);
 
-    // Geometria e Material Holográfico 3D
     const geometry = new THREE.IcosahedronGeometry(2, 4);
     const material = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
@@ -327,7 +377,7 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // CONTROLE DE CÂMERA 3D VIA COMANDOS NEURAIS
+  // CONTROLE DE CÂMERA 3D
   const controlarCamera3D = (acao) => {
     const camera = cameraRef.current;
     if (!camera) return;
@@ -355,7 +405,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- SÍNTESE DE VOZ ---
   const falarTextoReal = (texto) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -367,7 +416,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- RECONHECIMENTO DE VOZ (MICROFONE) ---
   const iniciarEscuta = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
@@ -387,11 +435,9 @@ export default function EmanuelOSCore() {
     reconhecimento.start();
   };
 
-  // --- PROCESSAMENTO PRINCIPAL DE IA & COMANDOS ---
   const processarConversaReal = async (textoUsuario) => {
     const textoLimpo = textoUsuario.toLowerCase();
 
-    // 1. Controle da Câmera 3D
     if (textoLimpo.includes('zoom') || textoLimpo.includes('girar') || textoLimpo.includes('câmera') || textoLimpo.includes('topo')) {
       let acao = 'reset';
       if (textoLimpo.includes('aproximar') || textoLimpo.includes('in')) acao = 'zoom_in';
@@ -406,7 +452,6 @@ export default function EmanuelOSCore() {
       return;
     }
 
-    // 2. Módulo Pokédex / Pokémon 3D
     if (textoLimpo.includes('pokémon') || textoLimpo.includes('pokemon') || textoLimpo.includes('pokedex')) {
       const pokeNome = textoLimpo.replace(/gerar|buscar|pokémon|pokemon|pokedex|3d|no mapa/gi, '').trim() || 'charizard';
       try {
@@ -429,7 +474,6 @@ export default function EmanuelOSCore() {
       }
     }
 
-    // 3. Resposta via Dicionário Ninja / Padrão Neural
     let respostaTexto = "";
     const resultadoDicionario = buscarNoDicionario(textoUsuario);
 
@@ -458,7 +502,6 @@ export default function EmanuelOSCore() {
     setChatInput('');
   };
 
-  // --- MÉTODOS DE SEGURANÇA E AUXILIARES ---
   useEffect(() => {
     const atualizarHorario = () => {
       const agora = new Date();
@@ -603,8 +646,9 @@ export default function EmanuelOSCore() {
     } else if (cmd.includes('/voz-hd')) {
       novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de áudio HD sincronizado com sucesso.");
       falarTextoReal("Terminal Gemini AGI com áudio de alta definição sincronizado.");
-    } else if (cmd.includes('/qr-inject')) {
-      novosLogs.push("[G-AGI: QR CODE] Injetando link de rede social extraído do QR Code no mapa 3D ativo.");
+    } else if (cmd.includes('/suporte')) {
+      setModalSuporteAberto(true);
+      novosLogs.push("[G-AGI: SUPORTE] Central de Ajuda EM IA iniciada na interface.");
     } else {
       novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' processado no núcleo de resposta auxiliar.`);
     }
@@ -888,7 +932,22 @@ export default function EmanuelOSCore() {
         {sidebarAberta ? '✕' : '☰'}
       </button>
 
-      {/* 👈 SIDEBAR ESQUERDA RETRÁTIL (EMAILJS, MAPAS 3D, DISPAROS & HISTÓRICO) */}
+      {/* 🛠️ BOTÃO DA CENTRAL DE SUPORTE EM IA */}
+      <button 
+        onClick={() => setModalSuporteAberto(true)}
+        style={{
+          position: 'absolute', top: '23px', left: sidebarAberta ? '475px' : '70px',
+          zIndex: 100, backgroundColor: 'rgba(255, 0, 127, 0.2)', border: '1px solid #ff007f',
+          color: '#ff007f', padding: '0 15px', height: '40px', borderRadius: '20px',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(255, 0, 127, 0.3)',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        🛠️ Suporte EM IA
+      </button>
+
+      {/* 👈 SIDEBAR ESQUERDA RETRÁTIL */}
       <aside style={{
         position: 'absolute', top: 0, left: 0,
         width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
@@ -912,7 +971,6 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* 🎁 COMPONENTE DE E-MAIL COM EMAILJS INTEGRADO */}
             <FormularioCapturaEmanuelOS />
 
             <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
@@ -995,7 +1053,78 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 💻 PAINEL LATERAL DIREITO: GEMINI ADVANCED COMMAND TERMINAL */}
+      {/* 🛠️ MODAL DE SUPORTE E ASSISTÊNCIA EM IA */}
+      {modalSuporteAberto && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(15px)',
+          zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '1px solid #00f0ff',
+            borderRadius: '16px', padding: '25px', width: '100%', maxWidth: '700px',
+            boxShadow: '0 0 35px rgba(0, 240, 255, 0.25)', position: 'relative'
+          }}>
+            <button 
+              onClick={() => setModalSuporteAberto(false)}
+              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#00f0ff', fontSize: '18px', cursor: 'pointer' }}
+            >
+              ✕
+            </button>
+
+            <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 4px 0', letterSpacing: '1px' }}>
+              EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 15px 0' }}>
+              Resolução Autônoma de Bugs, Compatibilidade de Apps, Documentos e Códigos de Ajuda
+            </p>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', flexWrap: 'wrap' }}>
+              <button onClick={() => setAbaSuporteAtiva('diagnostico')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'diagnostico' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'diagnostico' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🛠️ Diagnóstico</button>
+              <button onClick={() => setAbaSuporteAtiva('codigo')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'codigo' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'codigo' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>💻 Códigos</button>
+              <button onClick={() => setAbaSuporteAtiva('avatar')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'avatar' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'avatar' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🎥 Vídeo-Aula</button>
+              <button onClick={() => setAbaSuporteAtiva('feedback')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'feedback' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'feedback' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>⭐ Feedbacks</button>
+            </div>
+
+            <textarea 
+              value={inputProblemaSuporte}
+              onChange={(e) => setInputProblemaSuporte(e.target.value)}
+              placeholder="Descreva seu bug, problema de compatibilidade ou solicitação..."
+              style={{ width: '100%', height: '80px', backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', padding: '10px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }}
+            />
+
+            <button 
+              onClick={processarSuporteIA}
+              disabled={carregandoSuporte}
+              style={{ width: '100%', marginTop: '10px', padding: '10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(255, 0, 127, 0.4)' }}
+            >
+              {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini...' : '🚀 Executar Solução IA (90%)'}
+            </button>
+
+            {respostaSuporte && (
+              <div style={{ marginTop: '15px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '12px', borderRadius: '6px', fontSize: '11px' }}>
+                <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico:</strong>
+                <p style={{ margin: '0 0 8px 0', color: '#cbd5e1' }}>{respostaSuporte.diagnostico}</p>
+
+                {respostaSuporte.codigo && (
+                  <pre style={{ backgroundColor: '#010409', padding: '8px', borderRadius: '4px', color: '#38bdf8', overflowX: 'auto', fontSize: '10px', margin: '6px 0' }}>
+                    {respostaSuporte.codigo}
+                  </pre>
+                )}
+
+                <p style={{ color: '#4ade80', margin: '4px 0' }}>📄 {respostaSuporte.documento}</p>
+                <p style={{ color: '#fb923c', margin: '4px 0' }}>🎥 {respostaSuporte.avatarVideo}</p>
+                
+                <div style={{ marginTop: '8px', padding: '6px', backgroundColor: 'rgba(255,0,127,0.1)', border: '1px dashed #ff007f', borderRadius: '4px', color: '#ff007f', fontSize: '10px' }}>
+                  ⚠️ {respostaSuporte.protocolo}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 💻 PAINEL LATERAL DIREITO TERMINAL GEMINI */}
       <div style={{
         position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
         height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
@@ -1004,7 +1133,6 @@ export default function EmanuelOSCore() {
         padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
         gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
-        {/* Puxador da Cestinha Direita */}
         <button 
           onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
           style={{
@@ -1059,8 +1187,8 @@ export default function EmanuelOSCore() {
             <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
               ⚡ /status-core
             </button>
-            <button onClick={() => executarComandoCMD('/voz-hd')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff0055', color: '#ff0055', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              🎙️ /voz-hd
+            <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+              🛠️ /suporte
             </button>
           </div>
         </div>
@@ -1095,14 +1223,13 @@ export default function EmanuelOSCore() {
         </form>
       </div>
 
-      {/* 📊 TOPO: CARDS DE STATUS SCI-FI (HUD 2030) */}
+      {/* 📊 TOPO: CARDS DE STATUS SCI-FI HUD */}
       <div style={{
-        position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '80px', right: '400px',
+        position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '180px', right: '400px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
         transition: 'left 0.3s'
       }}>
         
-        {/* Card 1: Network Emanuel 2030 */}
         <div style={{
           backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
@@ -1112,7 +1239,6 @@ export default function EmanuelOSCore() {
           <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel 2030</strong>
         </div>
 
-        {/* Card 2: Robot Load */}
         <div style={{
           backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
@@ -1131,7 +1257,6 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* Card 3: Relógio Holográfico */}
         <div style={{
           backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
@@ -1164,7 +1289,7 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
-      {/* 📱 HUD DIREITO: INTERNET EM.COM (NATIVE BROWSER) */}
+      {/* 📱 HUD DIREITO: NATIVE BROWSER */}
       <div style={{
         position: 'absolute', top: '90px', right: '400px', zIndex: 10,
         backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
@@ -1199,7 +1324,6 @@ export default function EmanuelOSCore() {
         zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
       }}>
 
-        {/* Banner Status IA */}
         <div style={{
           backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '12px', padding: '8px 20px',
@@ -1213,7 +1337,6 @@ export default function EmanuelOSCore() {
           </span>
         </div>
 
-        {/* Histórico do Chat Holográfico */}
         <div style={{
           backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)',
           border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 16px',
@@ -1231,7 +1354,6 @@ export default function EmanuelOSCore() {
           ))}
         </div>
 
-        {/* Barra de Envio e Microfone */}
         <form onSubmit={handleEnviarMensagemTexto} style={{
           backgroundColor: 'rgba(5, 12, 24, 0.9)', backdropFilter: 'blur(20px)',
           border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px',
