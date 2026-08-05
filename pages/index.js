@@ -121,7 +121,7 @@ function FormularioCapturaEmanuelOS() {
   );
 }
 
-// --- COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD RETRÁTIL) ---
+// --- COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD RETRÁTIL EXPANDIDO) ---
 function QuickActionsWidget({ onActionClick }) {
   const [minimizado, setMinimizado] = useState(false);
 
@@ -130,7 +130,9 @@ function QuickActionsWidget({ onActionClick }) {
       position: 'absolute',
       right: '80px',
       bottom: '120px',
-      width: '390px',
+      width: '410px',
+      maxHeight: 'calc(100vh - 220px)',
+      overflowY: 'auto',
       backgroundColor: 'rgba(8, 15, 30, 0.90)',
       backdropFilter: 'blur(20px)',
       border: '1px solid rgba(0, 240, 255, 0.4)',
@@ -142,7 +144,7 @@ function QuickActionsWidget({ onActionClick }) {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      {/* Cabeçalho com Seta para Ocultar/Exibir o Painel */}
+      {/* Cabeçalho do Widget com Seta para Ocultar/Exibir */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -178,7 +180,7 @@ function QuickActionsWidget({ onActionClick }) {
 
       {!minimizado && (
         <>
-          {/* Grid Principal dos 4 Cards Solicitados */}
+          {/* Grid Principal dos Cards Interativos */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -192,96 +194,196 @@ function QuickActionsWidget({ onActionClick }) {
                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                 border: '1px solid rgba(0, 240, 255, 0.3)',
                 borderRadius: '12px',
-                padding: '12px',
+                padding: '10px',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 justify: 'space-between',
-                height: '95px'
+                height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#ff007f'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
             >
-              <div style={{ fontSize: '22px' }}>🖼️</div>
+              <div style={{ fontSize: '20px' }}>🖼️</div>
               <div>
-                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG e Hologramas</span>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG com modelo EM 1.0</span>
               </div>
             </div>
 
-            {/* Card 2: Escreva ou edite */}
+            {/* Card 2: Crie um Vídeo */}
+            <div 
+              onClick={() => onActionClick('crie_video')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '90px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#a855f7'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '20px' }}>🎬</div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere vídeos a partir de prompts</span>
+              </div>
+            </div>
+
+            {/* Card 3: Crie GIFs Animados */}
+            <div 
+              onClick={() => onActionClick('crie_gif')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '90px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#eab308'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '20px' }}>🎞️</div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Animações e stickers personalizados</span>
+              </div>
+            </div>
+
+            {/* Card 4: Escreva ou edite */}
             <div 
               onClick={() => onActionClick('escreva_edite')}
               style={{
                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                 border: '1px solid rgba(0, 240, 255, 0.3)',
                 borderRadius: '12px',
-                padding: '12px',
+                padding: '10px',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 justify: 'space-between',
-                height: '95px'
+                height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#38bdf8'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
             >
-              <div style={{ fontSize: '22px' }}>✏️</div>
+              <div style={{ fontSize: '20px' }}>✏️</div>
               <div>
-                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Poemas e Textos em .docx</span>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e poemas em .docx</span>
               </div>
             </div>
 
-            {/* Card 3: Pesquise na Internet */}
+            {/* Card 5: Pesquise na Internet */}
             <div 
               onClick={() => onActionClick('pesquise_internet')}
               style={{
                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                 border: '1px solid rgba(0, 240, 255, 0.3)',
                 borderRadius: '12px',
-                padding: '12px',
+                padding: '10px',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 justify: 'space-between',
-                height: '95px'
+                height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4ade80'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
             >
-              <div style={{ fontSize: '22px' }}>🌐</div>
+              <div style={{ fontSize: '20px' }}>🌐</div>
               <div>
-                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca e Análise G-AGI</span>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web em tempo real via G-AGI</span>
               </div>
             </div>
 
-            {/* Card 4: Processamento EM v1.0 */}
+            {/* Card 6: Tradutor de Documentos */}
+            <div 
+              onClick={() => onActionClick('traduzir_documentos')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '90px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#00f0ff'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '20px' }}>📄⇄🌍</div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Documentos</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PowerPoint</span>
+              </div>
+            </div>
+
+            {/* Card 7: Tradutor de Áudio */}
+            <div 
+              onClick={() => onActionClick('traduzir_audio')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '90px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#f43f5e'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '20px' }}>🎙️⇄🌍</div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Áudio</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Tradução de áudio para qualquer idioma</span>
+              </div>
+            </div>
+
+            {/* Card 8: Processamento EM v1.0 */}
             <div 
               onClick={() => onActionClick('processamento_em')}
               style={{
                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                 border: '1px solid rgba(0, 240, 255, 0.3)',
                 borderRadius: '12px',
-                padding: '12px',
+                padding: '10px',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 justify: 'space-between',
-                height: '95px'
+                height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#fb923c'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
             >
-              <div style={{ fontSize: '22px' }}>⚡</div>
+              <div style={{ fontSize: '20px' }}>⚡</div>
               <div>
-                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Processamento EM v1.0</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Obras Científicas & PPTX</span>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Processamento EM v1.0</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Obras Científicas, Poemas e PPTX</span>
               </div>
             </div>
           </div>
@@ -524,12 +626,28 @@ export default function EmanuelOSCore() {
       const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
       setChatInput(prompt);
       processarConversaReal(prompt);
+    } else if (tipo === 'crie_video') {
+      const prompt = 'Gerar vídeo animado holográfico 3D da Vila Ninja em MP4';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'crie_gif') {
+      const prompt = 'Gerar GIF animado com efeito de fluxo de Chakra Cyberpunk';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
     } else if (tipo === 'escreva_edite' || tipo === 'gerar_word') {
       const prompt = 'Escrever poema épico e teor literário em formato Word (.docx)';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'pesquise_internet') {
       const prompt = 'Pesquisar na Internet novidades sobre Inteligência Artificial Geral e Emanuel.OS 2030';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'traduzir_documentos') {
+      const prompt = 'Traduzir documento PDF/Word para o idioma selecionado via G-AGI Multimodal';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'traduzir_audio') {
+      const prompt = 'Iniciar tradução em tempo real de áudio capturado para múltiplos idiomas';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'processamento_em' || tipo === 'gerar_pdf') {
@@ -1357,7 +1475,7 @@ export default function EmanuelOSCore() {
         🛠️ Suporte EM IA
       </button>
 
-      {/* ⚡ WIDGET EMANUEL.OS QUICK ACTIONS (PAINEL SOLICITADO RETRÁTIL) */}
+      {/* ⚡ WIDGET EMANUEL.OS QUICK ACTIONS (PAINEL EXPANDIDO COM OS CARDS SOLICITADOS) */}
       <QuickActionsWidget onActionClick={dispararQuickAction} />
 
       {/* 👈 SIDEBAR ESQUERDA RETRÁTIL */}
