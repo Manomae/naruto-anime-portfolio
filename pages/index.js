@@ -121,6 +121,131 @@ function FormularioCapturaEmanuelOS() {
   );
 }
 
+// --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
+function GoogleMeetAvatarManager({ addLog }) {
+  const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
+  const [avatarEscolhido, setAvatarEscolhido] = useState('Avatar Emanuel (Cyberpunk 3D)');
+  const [telefoneConvidado, setTelefoneConvidado] = useState('');
+  const [dddConvidado, setDddConvidado] = useState('');
+  const [linkGerado, setLinkGerado] = useState('');
+  const [reuniaoAgendada, setReuniaoAgendada] = useState(false);
+
+  const criarReuniaoInstantanea = () => {
+    if (!temaReuniao.trim()) return alert("Defina o tema da reunião no Emanuel.OS.");
+    
+    const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + 
+                       Math.random().toString(36).substring(2, 6) + '-' + 
+                       Math.random().toString(36).substring(2, 5);
+    
+    const urlMeet = `https://meet.google.com/${codigoMeet}`;
+    setLinkGerado(urlMeet);
+    setReuniaoAgendada(true);
+
+    if (addLog) {
+      addLog(`[G-AGI: MEET] Reunião criada: "${temaReuniao}"`);
+      addLog(`[G-AGI: AVATAR] IA Atribuída: ${avatarEscolhido}`);
+      addLog(`[G-AGI: LINK] Google Meet gerado: ${urlMeet}`);
+    }
+  };
+
+  const enviarConviteTelefone = () => {
+    if (!telefoneConvidado || !dddConvidado) {
+      return alert("Insira o DDD e o Número de Telefone válido.");
+    }
+    if (!linkGerado) {
+      return alert("Gere uma reunião do Google Meet primeiro!");
+    }
+
+    const mensagem = `Olá! Você foi convidado por Emanuel para a reunião "${temaReuniao}" no Emanuel.OS.\n\n🤖 Avatar IA: ${avatarEscolhido}\n🔗 Google Meet: ${linkGerado}`;
+    
+    const urlWhatsapp = `https://api.whatsapp.com/send?phone=55${dddConvidado}${telefoneConvidado}&text=${encodeURIComponent(mensagem)}`;
+    window.open(urlWhatsapp, '_blank');
+
+    if (addLog) {
+      addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para (55) ${dddConvidado} ${telefoneConvidado}`);
+    }
+  };
+
+  return (
+    <div style={{
+      backgroundColor: 'rgba(15, 23, 42, 0.95)',
+      border: '1px solid rgba(0, 240, 255, 0.4)',
+      borderRadius: '14px',
+      padding: '16px',
+      color: '#fff',
+      margin: '10px 0',
+      fontFamily: 'sans-serif',
+      boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
+    }}>
+      <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        🎥 Google Meet + Avatares IA & Mapas
+      </h3>
+      <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
+        Gerenciador de chamadas de grupo, index principal e links via número de telefone.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+        <input 
+          type="text" 
+          value={temaReuniao} 
+          onChange={(e) => setTemaReuniao(e.target.value)}
+          placeholder="Tema / Index principal..."
+          style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}
+        />
+
+        <select 
+          value={avatarEscolhido} 
+          onChange={(e) => setAvatarEscolhido(e.target.value)}
+          style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}
+        >
+          <option value="Avatar Emanuel (Cyberpunk 3D)">Avatar Emanuel (Cyberpunk 3D)</option>
+          <option value="Assistente G-AGI Multimodal">Assistente G-AGI Multimodal</option>
+          <option value="Avatar Ninja Holográfico">Avatar Ninja Holográfico</option>
+        </select>
+
+        <button 
+          onClick={criarReuniaoInstantanea}
+          style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}
+        >
+          ⚡ Gerar Meet & Sincronizar Index
+        </button>
+      </div>
+
+      {reuniaoAgendada && (
+        <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '8px', padding: '8px' }}>
+          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '2px' }}>✅ Link Pronto:</span>
+          <a href={linkGerado} target="_blank" rel="noreferrer" style={{ fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', display: 'block', marginBottom: '8px', textDecoration: 'underline' }}>
+            {linkGerado}
+          </a>
+
+          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
+            <input 
+              type="text" 
+              placeholder="DDD" 
+              value={dddConvidado} 
+              onChange={(e) => setDddConvidado(e.target.value)}
+              style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} 
+            />
+            <input 
+              type="text" 
+              placeholder="Número Celular" 
+              value={telefoneConvidado} 
+              onChange={(e) => setTelefoneConvidado(e.target.value)}
+              style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} 
+            />
+          </div>
+          <button 
+            onClick={enviarConviteTelefone}
+            style={{ width: '100%', padding: '7px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
+          >
+            📲 Enviar Convite via WhatsApp ID
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD RETRÁTIL EXPANDIDO) ---
 function QuickActionsWidget({ onActionClick }) {
   const [minimizado, setMinimizado] = useState(false);
@@ -144,7 +269,6 @@ function QuickActionsWidget({ onActionClick }) {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      {/* Cabeçalho do Widget com Seta para Ocultar/Exibir */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -180,14 +304,12 @@ function QuickActionsWidget({ onActionClick }) {
 
       {!minimizado && (
         <>
-          {/* Grid Principal dos Cards Interativos */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '10px',
             marginBottom: '12px'
           }}>
-            {/* Card 1: Crie uma Imagem */}
             <div 
               onClick={() => onActionClick('crie_imagem')}
               style={{
@@ -212,7 +334,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 2: Crie um Vídeo */}
             <div 
               onClick={() => onActionClick('crie_video')}
               style={{
@@ -237,7 +358,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 3: Crie GIFs Animados */}
             <div 
               onClick={() => onActionClick('crie_gif')}
               style={{
@@ -262,7 +382,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 4: Escreva ou edite */}
             <div 
               onClick={() => onActionClick('escreva_edite')}
               style={{
@@ -287,7 +406,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 5: Pesquise na Internet */}
             <div 
               onClick={() => onActionClick('pesquise_internet')}
               style={{
@@ -312,7 +430,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 6: Tradutor de Documentos */}
             <div 
               onClick={() => onActionClick('traduzir_documentos')}
               style={{
@@ -337,7 +454,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 7: Tradutor de Áudio */}
             <div 
               onClick={() => onActionClick('traduzir_audio')}
               style={{
@@ -362,7 +478,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* Card 8: Processamento EM v1.0 */}
             <div 
               onClick={() => onActionClick('processamento_em')}
               style={{
@@ -388,7 +503,6 @@ function QuickActionsWidget({ onActionClick }) {
             </div>
           </div>
 
-          {/* Sub-Barra de Geração Instantânea de Arquivos */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
@@ -421,7 +535,6 @@ function QuickActionsWidget({ onActionClick }) {
             </button>
           </div>
 
-          {/* Status de Processamento EM v1.0 */}
           <div style={{
             backgroundColor: 'rgba(15, 23, 42, 0.9)',
             border: '1px solid rgba(0, 240, 255, 0.25)',
@@ -517,7 +630,6 @@ function buscarNoDicionario(perguntaUsuario) {
 
 // --- COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS ---
 export default function EmanuelOSCore() {
-  // --- STATES DE SEGURANÇA (7 CAMADAS) ---
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
   const [biometriaLendo, setBiometriaLendo] = useState(false);
@@ -552,7 +664,6 @@ export default function EmanuelOSCore() {
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
   const CHAVE_MESTRE = "ASD-DDD-888";
 
-  // --- STATES DA INTERFACE PRINCIPAL ---
   const [modo, setModo] = useState('live'); 
   const [vozAtiva] = useState('Emanuel'); 
   const [pesquisaChat, setPesquisaChat] = useState('');
@@ -560,14 +671,12 @@ export default function EmanuelOSCore() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
 
-  // States da Central de Suporte EM-AI
   const [modalSuporteAberto, setModalSuporteAberto] = useState(false);
   const [abaSuporteAtiva, setAbaSuporteAtiva] = useState('diagnostico');
   const [inputProblemaSuporte, setInputProblemaSuporte] = useState('');
   const [carregandoSuporte, setCarregandoSuporte] = useState(false);
   const [respostaSuporte, setRespostaSuporte] = useState(null);
 
-  // States do Browser Cyberpunk & Módulos 3D
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS',
     subtitulo: 'Native Browser',
@@ -575,7 +684,6 @@ export default function EmanuelOSCore() {
     conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto.'
   });
 
-  // Terminal Gemini Commands Logs
   const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
     "[G-AGI: LOG] System core operational.",
@@ -599,7 +707,6 @@ export default function EmanuelOSCore() {
     { autor: 'IA EMANUEL (GEMINI)', texto: 'Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa', tipo: 'sys' }
   ]);
 
-  // States de Disparo Real
   const [ddd1, setDdd1] = useState('');
   const [telefone1, setTelefone1] = useState('');
   const [ddd2, setDdd2] = useState('');
@@ -608,17 +715,18 @@ export default function EmanuelOSCore() {
   const [msgCanal2, setMsgCanal2] = useState('');
   const [modoDisparo, setModoDisparo] = useState('ambos'); 
 
-  // Relógio Dinâmico
   const [horaAtual, setHoraAtual] = useState('');
   const imageInputRef = useRef(null);
 
-  // Referências Three.js
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const avatarMeshRef = useRef(null);
 
-  // --- DISPARADOR DE AÇÕES RÁPIDAS (QUICK ACTIONS INTEGRADO) ---
+  const addLogTerminal = (novoLog) => {
+    setCmdLogs(prev => [...prev, novoLog]);
+  };
+
   const dispararQuickAction = (tipo) => {
     setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
     
@@ -661,7 +769,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- INTEGRANDO SUPORTE IA REAL NO BACKEND ---
   const processarSuporteIA = async () => {
     if (!inputProblemaSuporte.trim()) return;
     setCarregandoSuporte(true);
@@ -706,7 +813,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- INICIALIZAÇÃO DO THREE.JS (AVATAR 3D) ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -777,7 +883,6 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // CONTROLE DE CÂMERA 3D
   const controlarCamera3D = (acao) => {
     const camera = cameraRef.current;
     if (!camera) return;
@@ -805,7 +910,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- SÍNTESE E RECONHECIMENTO DE VOZ ---
   const falarTextoReal = (texto) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -836,16 +940,13 @@ export default function EmanuelOSCore() {
     reconhecimento.start();
   };
 
-  // --- PROCESSAMENTO CENTRAL DA CONVERSA (GERAÇÃO DE OBRAS E DOCUMENTOS) ---
   const processarConversaReal = async (textoUsuario) => {
     const textoLimpo = textoUsuario.toLowerCase();
     let respostaTexto = "";
     let comandoExecutado = false;
 
-    // Log no Terminal Gemini
     setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${textoUsuario}`]);
 
-    // 1. Controles de Câmera 3D
     if (textoLimpo.includes('zoom') || textoLimpo.includes('girar') || textoLimpo.includes('câmera') || textoLimpo.includes('topo')) {
       let acao = 'reset';
       if (textoLimpo.includes('aproximar') || textoLimpo.includes('in')) acao = 'zoom_in';
@@ -858,7 +959,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // 2. Pesquisa na Internet (Native Browser HUD)
     if (!comandoExecutado && (textoLimpo.includes('pesquisar na internet') || textoLimpo.includes('pesquise na internet') || textoLimpo.includes('busca'))) {
       setBrowserAsset({
         titulo: 'Pesquisa Web G-AGI',
@@ -870,7 +970,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // 3. GERAÇÃO DE OBRAS EM PDF (Científica / Literária)
     if (!comandoExecutado && (textoLimpo.includes('pdf') || textoLimpo.includes('obra científica') || textoLimpo.includes('processamento em'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: PDF_ENGINE] Sintetizando Obra Científica em PDF...`]);
       
@@ -895,7 +994,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // 4. GERAÇÃO DE OBRAS EM WORD (.docx) (Poema / Literário)
     if (!comandoExecutado && (textoLimpo.includes('word') || textoLimpo.includes('docx') || textoLimpo.includes('poema') || textoLimpo.includes('escreva ou edite'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: WORD_ENGINE] Gerando Poema e Obra Literária em Word...`]);
 
@@ -946,7 +1044,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // 5. GERAÇÃO DE OBRAS EM JPG (Artística / Imagem)
     if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('imagem') || textoLimpo.includes('crie uma imagem') || textoLimpo.includes('arte'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
       
@@ -955,7 +1052,6 @@ export default function EmanuelOSCore() {
       canvas.height = 600;
       const ctx = canvas.getContext('2d');
       
-      // Fundo Gradiente Cyberpunk
       const gradient = ctx.createLinearGradient(0, 0, 800, 600);
       gradient.addColorStop(0, '#020617');
       gradient.addColorStop(0.5, '#0f172a');
@@ -963,7 +1059,6 @@ export default function EmanuelOSCore() {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 800, 600);
 
-      // Desenho Neon
       ctx.strokeStyle = '#ff007f';
       ctx.lineWidth = 4;
       ctx.strokeRect(40, 40, 720, 520);
@@ -988,7 +1083,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // 6. GERAÇÃO DE PRESENTATION POWERPOINT (.pptx)
     if (!comandoExecutado && (textoLimpo.includes('power point') || textoLimpo.includes('pptx') || textoLimpo.includes('apresentação'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: PPTX_ENGINE] Estruturando Apresentação PPTX...`]);
 
@@ -1010,7 +1104,6 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    // Fallback: Dicionário ou Gemini Geral
     if (!comandoExecutado) {
       const resultadoDicionario = buscarNoDicionario(textoUsuario);
 
@@ -1058,7 +1151,6 @@ export default function EmanuelOSCore() {
     setCmdInput('');
   };
 
-  // --- EFEITOS DE INICIALIZAÇÃO ---
   useEffect(() => {
     const atualizarHorario = () => {
       const agora = new Date();
@@ -1089,7 +1181,6 @@ export default function EmanuelOSCore() {
     }
   }, [isAdmin]);
 
-  // --- FUNÇÕES DE SEGURANÇA (7 CAMADAS) ---
   const acionarBiometriaWhatsapp = () => {
     setBiometriaLendo(true);
     setTimeout(() => {
@@ -1234,7 +1325,6 @@ export default function EmanuelOSCore() {
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
 
-  // 🔒 TELA DE SEGURANÇA DAS 7 CAMADAS
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
@@ -1414,7 +1504,6 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // --- INTERFACE PRINCIPAL DESBLOQUEADA COM EMANUEL.OS QUICK ACTIONS ---
   return (
     <div style={{
       width: '100vw',
@@ -1431,7 +1520,6 @@ export default function EmanuelOSCore() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      {/* 🌌 CANVAS THREE.JS (AVATAR HOLOGRÁFICO CENTRAL 3D) */}
       <div 
         ref={mountRef} 
         style={{
@@ -1445,7 +1533,6 @@ export default function EmanuelOSCore() {
         }} 
       />
 
-      {/* 👈 BOTÃO DE ABRIR SIDEBAR ESQUERDA */}
       <button 
         onClick={() => setSidebarAberta(!sidebarAberta)}
         style={{
@@ -1460,7 +1547,6 @@ export default function EmanuelOSCore() {
         {sidebarAberta ? '✕' : '☰'}
       </button>
 
-      {/* 🛠️ BOTÃO DA CENTRAL DE SUPORTE EM IA */}
       <button 
         onClick={() => setModalSuporteAberto(true)}
         style={{
@@ -1475,10 +1561,8 @@ export default function EmanuelOSCore() {
         🛠️ Suporte EM IA
       </button>
 
-      {/* ⚡ WIDGET EMANUEL.OS QUICK ACTIONS (PAINEL EXPANDIDO COM OS CARDS SOLICITADOS) */}
       <QuickActionsWidget onActionClick={dispararQuickAction} />
 
-      {/* 👈 SIDEBAR ESQUERDA RETRÁTIL */}
       <aside style={{
         position: 'absolute', top: 0, left: 0,
         width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
@@ -1494,13 +1578,16 @@ export default function EmanuelOSCore() {
               <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
                 Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
               </h1>
-              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & DOCUMENT ENGINE | Core v5.1</span>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & MEET ENGINE | Core v5.1</span>
             </div>
 
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
               <button onClick={() => setModo('live')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>📡 LIVE MODE</button>
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
+
+            {/* MÓDULO INTEGRADO DE GOOGLE MEET + AVATARES */}
+            <GoogleMeetAvatarManager addLog={addLogTerminal} />
 
             <FormularioCapturaEmanuelOS />
 
@@ -1584,7 +1671,6 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
-      {/* 🛠️ MODAL DE SUPORTE E ASSISTÊNCIA EM IA */}
       {modalSuporteAberto && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -1655,7 +1741,6 @@ export default function EmanuelOSCore() {
         </div>
       )}
 
-      {/* 💻 PAINEL LATERAL DIREITO: TERMINAL GEMINI COM SETA RETRÁTIL */}
       <div style={{
         position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
         height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
@@ -1664,7 +1749,6 @@ export default function EmanuelOSCore() {
         padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
         gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
-        {/* Puxador com a Seta para Ocultar/Exibir o Terminal */}
         <button 
           onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
           style={{
@@ -1755,7 +1839,6 @@ export default function EmanuelOSCore() {
         </form>
       </div>
 
-      {/* 📊 TOPO: CARDS DE STATUS SCI-FI HUD */}
       <div style={{
         position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '180px', right: '400px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
@@ -1803,7 +1886,6 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
-      {/* 📱 HUD DIREITO: NATIVE BROWSER */}
       <div style={{
         position: 'absolute', top: '90px', right: '400px', zIndex: 10,
         backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
@@ -1832,7 +1914,6 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
-      {/* 💬 BASE: CHAT E ENTRADA MULTIMODAL */}
       <div style={{
         position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
         zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
