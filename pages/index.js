@@ -5,9 +5,19 @@ import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 
-import dicionarioNinja from './dicionario-ninja.json';
+// Bibliotecas para geração de documentos
+import { jsPDF } from "jspdf";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+import pptxgen from "pptxgenjs";
 
-// 🎁 COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS)
+// Dicionário Ninja local seguro para fallback
+const dicionarioNinjaLocal = [
+  { termo: "chakra", categoria: "Energia Neural", significado: "Massa de energia biológica e espiritual combinada para execução de técnicas e comandos neurais." },
+  { termo: "sharingan", categoria: "Linhagem Sanguínea", significado: "Dōjutsu do Clã Uchiha capaz de perceber, copiar e prever fluxos de informação e movimento." },
+  { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
+];
+
+// --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) ---
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
@@ -111,197 +121,252 @@ function FormularioCapturaEmanuelOS() {
   );
 }
 
-// ⚡ COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD COM SETINHA RETRÁTIL)
+// --- COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD RETRÁTIL) ---
 function QuickActionsWidget({ onActionClick }) {
-  const [painelAberto, setPainelAberto] = useState(true);
+  const [minimizado, setMinimizado] = useState(false);
 
   return (
     <div style={{
       position: 'absolute',
-      right: painelAberto ? '20px' : '-375px',
+      right: '80px',
       bottom: '120px',
-      width: '360px',
-      backgroundColor: 'rgba(8, 15, 30, 0.9)',
+      width: '390px',
+      backgroundColor: 'rgba(8, 15, 30, 0.90)',
       backdropFilter: 'blur(20px)',
       border: '1px solid rgba(0, 240, 255, 0.4)',
-      borderRadius: '16px 0 0 16px',
-      padding: '16px',
-      boxShadow: '-10px 0 30px rgba(0, 240, 255, 0.25)',
-      zIndex: 25,
+      borderRadius: '18px',
+      padding: minimizado ? '12px 18px' : '18px',
+      boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+      zIndex: 80,
       color: '#fff',
       fontFamily: 'system-ui, -apple-system, sans-serif',
-      transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      {/* Botão Retrátil Lateral (Setinha para esconder/mostrar) */}
-      <button 
-        onClick={() => setPainelAberto(!painelAberto)}
-        style={{
-          position: 'absolute',
-          left: '-42px',
-          top: '25px',
-          width: '42px',
-          height: '48px',
-          backgroundColor: 'rgba(7, 12, 28, 0.95)',
-          border: '1px solid rgba(0, 240, 255, 0.4)',
-          borderRight: 'none',
-          borderTopLeftRadius: '12px',
-          borderBottomLeftRadius: '12px',
-          color: '#00f0ff',
-          cursor: 'pointer',
+      {/* Cabeçalho com Seta para Ocultar/Exibir o Painel */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: minimizado ? '0px' : '14px',
+        cursor: 'pointer'
+      }} onClick={() => setMinimizado(!minimizado)}>
+        <h3 style={{
+          fontSize: '13px',
           fontWeight: 'bold',
-          fontSize: '16px',
+          margin: 0,
+          color: '#fff',
+          letterSpacing: '0.5px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '-5px 0 15px rgba(0, 240, 255, 0.2)'
-        }}
-      >
-        {painelAberto ? '➔' : '◀'}
-      </button>
-
-      <h3 style={{
-        fontSize: '14px',
-        fontWeight: 'bold',
-        margin: '0 0 12px 0',
-        color: '#fff',
-        letterSpacing: '0.5px'
-      }}>
-        Emanuel.OS Quick Actions
-      </h3>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '10px',
-        marginBottom: '10px'
-      }}>
-        <div 
-          onClick={() => onActionClick('gerar_imagem')}
+          gap: '6px'
+        }}>
+          ⚡ Emanuel.OS Quick Actions <span style={{ fontSize: '10px', color: '#00f0ff' }}>(v1.0)</span>
+        </h3>
+        <button 
           style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(0, 240, 255, 0.25)',
-            borderRadius: '12px',
-            padding: '10px',
+            background: 'none',
+            border: 'none',
+            color: '#00f0ff',
+            fontSize: '14px',
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            height: '90px'
+            fontWeight: 'bold'
           }}
         >
-          <div style={{ fontSize: '18px', color: '#00f0ff' }}>🖼️✨</div>
-          <div>
-            <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Com modelo EM 1.0</span>
-          </div>
-        </div>
-
-        <div 
-          onClick={() => onActionClick('editar_codigo')}
-          style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(0, 240, 255, 0.25)',
-            borderRadius: '12px',
-            padding: '10px',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            height: '90px'
-          }}
-        >
-          <div style={{ fontSize: '18px', color: '#38bdf8' }}>✏️&lt;/&gt;</div>
-          <div>
-            <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
-            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Códigos e textos</span>
-          </div>
-        </div>
+          {minimizado ? '▲' : '▼'}
+        </button>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '10px'
-      }}>
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-          border: '1px solid rgba(0, 240, 255, 0.25)',
-          borderRadius: '12px',
-          padding: '6px',
-          height: '100px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+      {!minimizado && (
+        <>
+          {/* Grid Principal dos 4 Cards Solicitados */}
           <div style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: '8px',
-            background: 'linear-gradient(135deg, #0284c7 0%, #030712 100%)',
-            border: '1px solid #00f0ff',
-            display: 'flex',
-            alignItems: 'center',
-            justify: 'center',
-            boxShadow: 'inset 0 0 15px rgba(0, 240, 255, 0.4)'
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '10px',
+            marginBottom: '12px'
           }}>
-            <span style={{ fontSize: '26px' }}>🧊</span>
-          </div>
-        </div>
+            {/* Card 1: Crie uma Imagem */}
+            <div 
+              onClick={() => onActionClick('crie_imagem')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '95px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#ff007f'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '22px' }}>🖼️</div>
+              <div>
+                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG e Hologramas</span>
+              </div>
+            </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <div 
-            onClick={() => onActionClick('pesquisar_web')}
-            style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
-              border: '1px solid rgba(0, 240, 255, 0.25)',
-              borderRadius: '8px',
-              padding: '6px 8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <span style={{ fontSize: '14px', color: '#00f0ff' }}>🌐</span>
-            <strong style={{ fontSize: '9px', color: '#fff' }}>Pesquise na Internet</strong>
+            {/* Card 2: Escreva ou edite */}
+            <div 
+              onClick={() => onActionClick('escreva_edite')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '95px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#38bdf8'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '22px' }}>✏️</div>
+              <div>
+                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Poemas e Textos em .docx</span>
+              </div>
+            </div>
+
+            {/* Card 3: Pesquise na Internet */}
+            <div 
+              onClick={() => onActionClick('pesquise_internet')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '95px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4ade80'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '22px' }}>🌐</div>
+              <div>
+                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca e Análise G-AGI</span>
+              </div>
+            </div>
+
+            {/* Card 4: Processamento EM v1.0 */}
+            <div 
+              onClick={() => onActionClick('processamento_em')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '95px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#fb923c'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '22px' }}>⚡</div>
+              <div>
+                <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Processamento EM v1.0</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Obras Científicas & PPTX</span>
+              </div>
+            </div>
           </div>
 
+          {/* Sub-Barra de Geração Instantânea de Arquivos */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '6px',
+            marginBottom: '10px'
+          }}>
+            <button 
+              onClick={() => onActionClick('gerar_pdf')}
+              style={{ padding: '6px 4px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
+            >
+              📄 PDF
+            </button>
+            <button 
+              onClick={() => onActionClick('gerar_jpg')}
+              style={{ padding: '6px 4px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
+            >
+              🖼️ JPG
+            </button>
+            <button 
+              onClick={() => onActionClick('gerar_word')}
+              style={{ padding: '6px 4px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
+            >
+              📝 WORD
+            </button>
+            <button 
+              onClick={() => onActionClick('gerar_pptx')}
+              style={{ padding: '6px 4px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
+            >
+              📊 PPTX
+            </button>
+          </div>
+
+          {/* Status de Processamento EM v1.0 */}
           <div style={{
             backgroundColor: 'rgba(15, 23, 42, 0.9)',
             border: '1px solid rgba(0, 240, 255, 0.25)',
-            borderRadius: '8px',
-            padding: '6px 8px'
+            borderRadius: '10px',
+            padding: '8px 10px'
           }}>
-            <span style={{ fontSize: '8px', color: '#fff', fontWeight: 'bold', display: 'block', marginBottom: '3px' }}>
-              Processamento EM v1.0
-            </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <span style={{ fontSize: '9px', color: '#fff', fontWeight: 'bold' }}>
+                Processamento EM v1.0 Engine
+              </span>
+              <span style={{ fontSize: '8px', color: '#00f0ff', fontFamily: 'monospace' }}>ACTIVE</span>
+            </div>
             <div style={{
               width: '100%',
-              height: '3px',
+              height: '4px',
               backgroundColor: 'rgba(255,255,255,0.1)',
               borderRadius: '2px',
               overflow: 'hidden',
-              marginBottom: '3px'
+              marginBottom: '4px'
             }}>
               <div style={{
-                width: '65%',
+                width: '100%',
                 height: '100%',
                 backgroundColor: '#00f0ff',
-                boxShadow: '0 0 8px #00f0ff'
+                boxShadow: '0 0 8px #00f0ff',
+                animation: 'pulseStatus 2s infinite'
               }} />
             </div>
-            <span style={{ fontSize: '7px', color: '#94a3b8' }}>
-              Status: EM v1.0 Active | Processing...
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>
+              Suporta: Obras científicas, literárias, artísticas e poemas em PDF, JPG, WORD e PPTX.
             </span>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes pulseStatus {
+          0% { opacity: 0.6; }
+          50% { opacity: 1; }
+          100% { opacity: 0.6; }
+        }
+      `}</style>
     </div>
   );
 }
 
+// --- FUNÇÕES DE AUXÍLIO E BUSCA ---
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
   const p2 = palavra2.toLowerCase().trim();
@@ -324,13 +389,12 @@ function calcularDiferencaLetras(palavra1, palavra2) {
 }
 
 function buscarNoDicionario(perguntaUsuario) {
-  if (!dicionarioNinja) return null;
   const palavrasDigitadas = perguntaUsuario.toLowerCase().split(" ");
   let melhorResultado = null;
   let menorDistancia = 3;
 
-  for (const item of dicionarioNinja) {
-    const combinacoes = [item.termo, ...(item.sinonimos || [])];
+  for (const item of dicionarioNinjaLocal) {
+    const combinacoes = [item.termo];
 
     for (const termoValido of combinacoes) {
       for (const palavraDigitada of palavrasDigitadas) {
@@ -349,6 +413,7 @@ function buscarNoDicionario(perguntaUsuario) {
   return melhorResultado;
 }
 
+// --- COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS ---
 export default function EmanuelOSCore() {
   // --- STATES DE SEGURANÇA (7 CAMADAS) ---
   const [bloqueado, setBloqueado] = useState(true);
@@ -360,7 +425,7 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  const [isAdmin, setIsAdmin] = useState(true); 
+  const [isAdmin, setIsAdmin] = useState(true);
   const [attemptsLeft, setAttemptsLeft] = useState(2);
   const [isLockedTicons, setIsLockedTicons] = useState(false);
   const [statusTicons, setStatusTicons] = useState('🔐 Selecione a sequência correta do Ticons OS gevaGifs');
@@ -369,7 +434,7 @@ export default function EmanuelOSCore() {
 
   const [qrCodeValidando, setQrCodeValidando] = useState(false);
   const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
-  const [qrPayload, setQrCodePayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
+  const [qrPayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
 
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
@@ -387,10 +452,9 @@ export default function EmanuelOSCore() {
 
   // --- STATES DA INTERFACE PRINCIPAL ---
   const [modo, setModo] = useState('live'); 
-  const [vozAtiva, setVozAtiva] = useState('Emanuel'); 
+  const [vozAtiva] = useState('Emanuel'); 
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
-  const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
 
@@ -415,14 +479,14 @@ export default function EmanuelOSCore() {
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
-    "[G-AGI: QR-DECODER] Leitor de QR Code para injeção de links integrado.",
+    "[G-AGI: QUICK_ACTIONS] Painel Emanuel.OS Quick Actions v1.0 ativo.",
     "[CMD> G-AGI] User: Analisar fluxo de dados do sistema...[Complete]",
     "[G-AGI: INFO] Motor Nano Banana e fios de chakra conectados.",
     "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
   ]);
 
   const [chatInput, setChatInput] = useState('');
-  const [historicoChats, setHistoricoChats] = useState([
+  const [historicoChats] = useState([
     { id: 1, titulo: 'Conversa Geral sobre IA', data: '18/07/2026', origem: 'recente' },
     { id: 2, titulo: 'Discussão sobre Clãs Ninjas', data: '18/07/2026', origem: 'recente' },
     { id: 3, titulo: 'Teoria do Chakra e Linhagens', data: '17/07/2026', origem: 'google' },
@@ -452,17 +516,30 @@ export default function EmanuelOSCore() {
   const cameraRef = useRef(null);
   const avatarMeshRef = useRef(null);
 
-  // --- DISPARADOR DE AÇÕES RÁPIDAS (QUICK ACTIONS) ---
+  // --- DISPARADOR DE AÇÕES RÁPIDAS (QUICK ACTIONS INTEGRADO) ---
   const dispararQuickAction = (tipo) => {
-    if (tipo === 'gerar_imagem') {
-      const promptImg = 'Gerar imagem holográfica 3D no modelo EM 1.0';
-      setChatInput(promptImg);
-      processarConversaReal(promptImg);
-    } else if (tipo === 'editar_codigo') {
-      setModalSuporteAberto(true);
-      setAbaSuporteAtiva('codigo');
-    } else if (tipo === 'pesquisar_web') {
-      setChatInput('Pesquisar dados na internet...');
+    setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
+    
+    if (tipo === 'crie_imagem' || tipo === 'gerar_jpg') {
+      const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'escreva_edite' || tipo === 'gerar_word') {
+      const prompt = 'Escrever poema épico e teor literário em formato Word (.docx)';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'pesquise_internet') {
+      const prompt = 'Pesquisar na Internet novidades sobre Inteligência Artificial Geral e Emanuel.OS 2030';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'processamento_em' || tipo === 'gerar_pdf') {
+      const prompt = 'Processar obra científica sobre Física Quântica e Chakra em formato PDF';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'gerar_pptx') {
+      const prompt = 'Gerar apresentação de Power Point (.pptx) sobre o sistema Emanuel.OS HUD 2030';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
     }
   };
 
@@ -511,7 +588,7 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- INICIALIZAÇÃO DO THREE.JS ---
+  // --- INICIALIZAÇÃO DO THREE.JS (AVATAR 3D) ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -610,6 +687,7 @@ export default function EmanuelOSCore() {
     }
   };
 
+  // --- SÍNTESE E RECONHECIMENTO DE VOZ ---
   const falarTextoReal = (texto) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -640,9 +718,16 @@ export default function EmanuelOSCore() {
     reconhecimento.start();
   };
 
+  // --- PROCESSAMENTO CENTRAL DA CONVERSA (GERAÇÃO DE OBRAS E DOCUMENTOS) ---
   const processarConversaReal = async (textoUsuario) => {
     const textoLimpo = textoUsuario.toLowerCase();
+    let respostaTexto = "";
+    let comandoExecutado = false;
 
+    // Log no Terminal Gemini
+    setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${textoUsuario}`]);
+
+    // 1. Controles de Câmera 3D
     if (textoLimpo.includes('zoom') || textoLimpo.includes('girar') || textoLimpo.includes('câmera') || textoLimpo.includes('topo')) {
       let acao = 'reset';
       if (textoLimpo.includes('aproximar') || textoLimpo.includes('in')) acao = 'zoom_in';
@@ -651,44 +736,174 @@ export default function EmanuelOSCore() {
       else if (textoLimpo.includes('topo') || textoLimpo.includes('superior')) acao = 'top_view';
 
       controlarCamera3D(acao);
-      const resp = `Câmera 3D ajustada: Modo [${acao.toUpperCase()}].`;
-      setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: resp, tipo: 'ia' }]);
-      falarTextoReal(resp);
-      return;
+      respostaTexto = `Câmera 3D ajustada: Modo [${acao.toUpperCase()}]. Conexão neural estável.`;
+      comandoExecutado = true;
     }
 
-    if (textoLimpo.includes('pokémon') || textoLimpo.includes('pokemon') || textoLimpo.includes('pokedex')) {
-      const pokeNome = textoLimpo.replace(/gerar|buscar|pokémon|pokemon|pokedex|3d|no mapa/gi, '').trim() || 'charizard';
-      try {
-        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeNome}`);
-        if (res.ok) {
-          const data = await res.json();
-          setBrowserAsset({
-            titulo: `Pokédex 3D: ${data.name.toUpperCase()}`,
-            subtitulo: `ID: #${data.id} | Tipo: ${data.types.map(t => t.type.name).join('/')}`,
-            imagem: data.sprites.other['official-artwork'].front_default,
-            conteudoTexto: `Asset 3D do Pokémon ${data.name.toUpperCase()} pronto para renderização no mapa!`
-          });
-          const msg = `Pokémon ${data.name.toUpperCase()} localizado e injetado no Native Browser!`;
-          setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: msg, tipo: 'ia' }]);
-          falarTextoReal(msg);
-          return;
-        }
-      } catch (err) {
-        console.error("Erro na Pokédex:", err);
+    // 2. Pesquisa na Internet (Native Browser HUD)
+    if (!comandoExecutado && (textoLimpo.includes('pesquisar na internet') || textoLimpo.includes('pesquise na internet') || textoLimpo.includes('busca'))) {
+      setBrowserAsset({
+        titulo: 'Pesquisa Web G-AGI',
+        subtitulo: 'Internet Em.com v5.1',
+        imagem: null,
+        conteudoTexto: `Módulo de busca conectado. Resultados em tempo real processados para: "${textoUsuario}".`
+      });
+      respostaTexto = `Pesquisa na Internet executada com sucesso via motor Gemini AGI. Dados atualizados carregados no Native Browser!`;
+      comandoExecutado = true;
+    }
+
+    // 3. GERAÇÃO DE OBRAS EM PDF (Científica / Literária)
+    if (!comandoExecutado && (textoLimpo.includes('pdf') || textoLimpo.includes('obra científica') || textoLimpo.includes('processamento em'))) {
+      setCmdLogs(prev => [...prev, `[G-AGI: PDF_ENGINE] Sintetizando Obra Científica em PDF...`]);
+      
+      const doc = new jsPDF();
+      doc.setFontSize(22);
+      doc.text("Emanuel.OS - Obra Científica 2030", 20, 20);
+      doc.setFontSize(16);
+      doc.text("Tema: Mecânica Quântica e Integração Neural EM v1.0", 20, 30);
+      doc.setFontSize(12);
+      doc.text("Resumo Estruturado pelo Núcleo G-AGI:", 20, 45);
+      
+      const linhasCorpo = [
+        "Este documento registra a obra científica produzida no ecossistema Emanuel.OS.",
+        "Analisa a convergência de ondas neurais com processadores quânticos.",
+        "Sincronização realizada com 100% de estabilidade.",
+        "Autor/Arquiteto: Emanuel da Silva - Ano 2030."
+      ];
+      doc.text(linhasCorpo, 20, 55);
+      doc.save("EmanuelOS_Obra_Cientifica.pdf");
+
+      respostaTexto = "Obra científica em formato PDF gerada e baixada com sucesso (EmanuelOS_Obra_Cientifica.pdf).";
+      comandoExecutado = true;
+    }
+
+    // 4. GERAÇÃO DE OBRAS EM WORD (.docx) (Poema / Literário)
+    if (!comandoExecutado && (textoLimpo.includes('word') || textoLimpo.includes('docx') || textoLimpo.includes('poema') || textoLimpo.includes('escreva ou edite'))) {
+      setCmdLogs(prev => [...prev, `[G-AGI: WORD_ENGINE] Gerando Poema e Obra Literária em Word...`]);
+
+      const poemaCorpo = `
+        CANTO LITERÁRIO EMANUEL.OS (SINTETIZADOR AG)
+
+        Nas linhas do código, o pulso do saber,
+        Emanuel.OS desperta o amanhecer.
+        Entre o ciberespaço e o chakra do pensamento,
+        A inteligência cria em cada momento.
+
+        Seja um poema, uma arte ou ciência sem fim,
+        O futuro responde: "O comando está em mim!"
+        
+        Registrado no Núcleo v5.1 | Ano 2030
+      `;
+
+      const docWord = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ text: "EMANUEL.OS - OBRA LITERÁRIA & POEMA", bold: true, size: 28, color: "00f0ff" }),
+              ],
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: poemaCorpo, size: 22, color: "1e293b" }),
+              ],
+            }),
+          ],
+        }],
+      });
+
+      Packer.toBlob(docWord).then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "EmanuelOS_Obra_Literaria_Poema.docx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      respostaTexto = "Obra literária/poema gerado em formato Word (.docx) com sucesso (EmanuelOS_Obra_Literaria_Poema.docx).";
+      comandoExecutado = true;
+    }
+
+    // 5. GERAÇÃO DE OBRAS EM JPG (Artística / Imagem)
+    if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('imagem') || textoLimpo.includes('crie uma imagem') || textoLimpo.includes('arte'))) {
+      setCmdLogs(prev => [...prev, `[G-AGI: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+      
+      // Fundo Gradiente Cyberpunk
+      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+      gradient.addColorStop(0, '#020617');
+      gradient.addColorStop(0.5, '#0f172a');
+      gradient.addColorStop(1, '#00f0ff');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 800, 600);
+
+      // Desenho Neon
+      ctx.strokeStyle = '#ff007f';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(40, 40, 720, 520);
+
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.fillText('EMANUEL.OS - ARTE HOLOGRÁFICA JPG', 80, 120);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '20px sans-serif';
+      ctx.fillText('Gerado via Motor G-AGI Multimodal v1.0', 80, 180);
+
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'EmanuelOS_Arte_Holografica.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      respostaTexto = "Obra artística em JPG renderizada e salva no seu dispositivo (EmanuelOS_Arte_Holografica.jpg).";
+      comandoExecutado = true;
+    }
+
+    // 6. GERAÇÃO DE PRESENTATION POWERPOINT (.pptx)
+    if (!comandoExecutado && (textoLimpo.includes('power point') || textoLimpo.includes('pptx') || textoLimpo.includes('apresentação'))) {
+      setCmdLogs(prev => [...prev, `[G-AGI: PPTX_ENGINE] Estruturando Apresentação PPTX...`]);
+
+      const pres = new pptxgen();
+      const slide1 = pres.addSlide();
+      slide1.addText("EMANUEL.OS QUICK ACTIONS", { x: 1, y: 1, fontSize: 32, color: "00f0ff", bold: true, align: "center" });
+      slide1.addText("Apresentação de Processamento EM v1.0", { x: 1, y: 2.2, fontSize: 18, color: "a1a1aa", align: "center" });
+      
+      const slide2 = pres.addSlide();
+      slide2.addText("MODULOS INTEGRADOS", { x: 0.5, y: 0.5, fontSize: 24, color: "ff0055", bold: true });
+      slide2.addText("1. Crie uma imagem (JPG)", { x: 1, y: 1.5, fontSize: 16, color: "ffffff" });
+      slide2.addText("2. Escreva ou edite (Word .docx)", { x: 1, y: 2.2, fontSize: 16, color: "ffffff" });
+      slide2.addText("3. Pesquise na Internet (G-AGI)", { x: 1, y: 2.9, fontSize: 16, color: "ffffff" });
+      slide2.addText("4. Processamento EM v1.0 (PDF)", { x: 1, y: 3.6, fontSize: 16, color: "ffffff" });
+
+      pres.writeFile("EmanuelOS_Apresentacao_v1.pptx");
+
+      respostaTexto = "Apresentação PowerPoint (.pptx) gerada e baixada com sucesso (EmanuelOS_Apresentacao_v1.pptx).";
+      comandoExecutado = true;
+    }
+
+    // Fallback: Dicionário ou Gemini Geral
+    if (!comandoExecutado) {
+      const resultadoDicionario = buscarNoDicionario(textoUsuario);
+
+      if (resultadoDicionario) {
+        respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
+      } else {
+        respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS v5.1. Sincronização em 100%. Aguardando novas instruções.`;
       }
     }
 
-    let respostaTexto = "";
-    const resultadoDicionario = buscarNoDicionario(textoUsuario);
-
-    if (resultadoDicionario) {
-      respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
-    } else if (textoLimpo.includes('bom dia') || textoLimpo.includes('boa tarde') || textoLimpo.includes('boa noite')) {
-      respostaTexto = "Olá, Emanuel! Como posso te ajudar a gerenciar seus mapas e sistemas agora?";
-    } else {
-      respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS Core v5.1. Sincronização neural a 100%.`;
-    }
+    setCmdLogs(prev => [...prev, `[G-AGI: QUERY] ${respostaTexto}`]);
 
     setBrowserAsset(prev => ({
       ...prev,
@@ -696,6 +911,7 @@ export default function EmanuelOSCore() {
     }));
 
     setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
+    
     falarTextoReal(respostaTexto);
   };
 
@@ -707,6 +923,24 @@ export default function EmanuelOSCore() {
     setChatInput('');
   };
 
+  const executarComandoCMD = (cmd) => {
+    setCmdInput(cmd);
+    setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${cmd}`]);
+    if (cmd.includes('nano-banana')) {
+      setCmdLogs(prev => [...prev, "[G-AGI: NANO BANANA 🍌] Renderizador 3D Octane ativo."]);
+    } else if (cmd.includes('gerar-mapa')) {
+      setCmdLogs(prev => [...prev, "[G-AGI: ENGINE] Matriz de dados unificada ao gerador de mapas 3D."]);
+    } else if (cmd.includes('status-core')) {
+      setCmdLogs(prev => [...prev, "[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | G-AGI: STABLE | Quick Actions: ONLINE"]);
+    } else if (cmd.includes('suporte')) {
+      setModalSuporteAberto(true);
+    } else if (cmd.includes('gerar-pdf')) {
+      dispararQuickAction('gerar_pdf');
+    }
+    setCmdInput('');
+  };
+
+  // --- EFEITOS DE INICIALIZAÇÃO ---
   useEffect(() => {
     const atualizarHorario = () => {
       const agora = new Date();
@@ -737,6 +971,7 @@ export default function EmanuelOSCore() {
     }
   }, [isAdmin]);
 
+  // --- FUNÇÕES DE SEGURANÇA (7 CAMADAS) ---
   const acionarBiometriaWhatsapp = () => {
     setBiometriaLendo(true);
     setTimeout(() => {
@@ -830,41 +1065,10 @@ export default function EmanuelOSCore() {
       setTimeout(() => {
         setAnimacaoMontandoMapa(false);
         setBloqueado(false);
-        alert("🔓 Acesso Total Autorizado! Mapeamento QR Code e 7 Camadas de Segurança Concluídas!");
-      }, 2500);
+        alert("🔓 Acesso Total Autorizado! Emanuel.OS Quick Actions e 7 Camadas Concluídas! Bem-vindo, Mestre Emanuel.");
+        falarTextoReal("Acesso Total Autorizado! Bem-vindo ao Emanuel.OS.");
+      }, 2000);
     }, 1500);
-  };
-
-  const executarComandoCMD = (comandoDigitado) => {
-    const cmd = comandoDigitado.trim();
-    if (!cmd) return;
-
-    const novosLogs = [...cmdLogs, `[CMD> G-AGI] User: ${cmd}`];
-
-    if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
-      novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
-      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Avatar 2030, glowing cyan chakra wires, 8k resolution, raytracing'");
-    } else if (cmd.includes('/gerar-mapa')) {
-      novosLogs.push("[G-AGI: ENGINE] Conectando matriz de dados ao gerador 3D de mapas...");
-    } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
-      novosLogs.push("[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | QR Code & Ticons OS: ATIVOS | Matriz Gemini: STABLE (0.00%)");
-    } else if (cmd.includes('/voz-hd')) {
-      novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de áudio HD sincronizado com sucesso.");
-      falarTextoReal("Terminal Gemini AGI com áudio de alta definição sincronizado.");
-    } else if (cmd.includes('/suporte')) {
-      setModalSuporteAberto(true);
-      novosLogs.push("[G-AGI: SUPORTE] Central de Ajuda EM IA iniciada na interface.");
-    } else {
-      novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' processado no núcleo de resposta auxiliar.`);
-    }
-
-    setCmdLogs(novosLogs);
-    setCmdInput('');
-  };
-
-  const handleCmdSubmit = (e) => {
-    e.preventDefault();
-    executarComandoCMD(cmdInput);
   };
 
   const baixarPDF300Comandos = () => {
@@ -872,11 +1076,12 @@ export default function EmanuelOSCore() {
       "=========================================================================",
       "  EMANUEL.OS & GOOGLE GEMINI AGI CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
       "=========================================================================\n",
-      "[ CATEGORIA 01: ENGINE NANO BANANA 🍌 & RENDERIZAÇÃO 3D ]",
-      "001. /nano-banana --render 'Vila Ninja Cyberpunk em 8K'",
-      "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
-      "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
-      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n"
+      "[ CATEGORIA 01: QUICK ACTIONS & DOCUMENT ENGINE ]",
+      "001. /gerar-pdf --tema 'Obra Científica Quântica'",
+      "002. /gerar-word --tema 'Poema Épico e Teor Literário'",
+      "003. /gerar-jpg --tema 'Arte Holográfica Cyberpunk 8K'",
+      "004. /gerar-pptx --tema 'Apresentação de Impacto'",
+      "... (300 Comandos catalogados no ecossistema Emanuel.OS)\n"
     ];
 
     const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
@@ -906,7 +1111,7 @@ export default function EmanuelOSCore() {
   const handleUploadImagemLente = (e) => {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
-    alert(`Imagem/QR Code "${arquivo.name}" carregado! Analisando e gerando dados estruturados...`);
+    alert(`Arquivo "${arquivo.name}" carregado! Analisando via motor Gemini Multimodal...`);
   };
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
@@ -916,7 +1121,7 @@ export default function EmanuelOSCore() {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS - Autenticação de Segurança (7 Camadas)</title>
+          <title>Emanuel.OS v5.1 - Autenticação de Segurança (7 Camadas) | 2030</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
@@ -926,7 +1131,7 @@ export default function EmanuelOSCore() {
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
           </h2>
           <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
-            PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7)
+            PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7) | CORE v5.1
           </span>
 
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginBottom: '20px' }}>
@@ -941,7 +1146,7 @@ export default function EmanuelOSCore() {
 
           {etapaSeguranca === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>☝️ 1ª Etapa: Confirmação Biometria / Aparelho:</span>
+              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>☝️ 1ª Etapa: Confirmação Biometria / Aparelho (Whatsapp ID):</span>
               <button 
                 onClick={acionarBiometriaWhatsapp}
                 disabled={biometriaLendo}
@@ -1044,14 +1249,14 @@ export default function EmanuelOSCore() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 6 Camadas Validadas!</span>
               <span style={{ fontSize: '13px', color: '#00f0ff', fontWeight: '900', letterSpacing: '1px' }}>
-                📡 7ª CAMADA: MAPEAMENTO CÓSMICO VIA QR CODE
+                📡 7ª CAMADA: MAPEAMENTO CÓSMICO VIA QR CODE | DECODER v5.1
               </span>
 
               {animacaoMontandoMapa ? (
                 <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '120px', height: '120px', border: '3px solid #00f0ff', borderRadius: '50%', borderTopColor: 'transparent', animation: 'girarRadar 1s linear infinite' }} />
                   <span style={{ fontSize: '12px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                    🧬 Construindo Matriz 3D e Unificando Mapas...
+                    🧬 Construindo Matriz 3D, Unificando Mapas e Sincronizando Quick Actions...
                   </span>
                 </div>
               ) : (
@@ -1061,7 +1266,7 @@ export default function EmanuelOSCore() {
                   </div>
 
                   <span style={{ fontSize: '10px', color: '#a1a1aa' }}>
-                    Escaneie este QR Code no seu celular ou clique abaixo para ler a validação:
+                    Escaneie este QR Code no seu celular ou clique abaixo para liberar o sistema:
                   </span>
 
                   <button 
@@ -1073,7 +1278,7 @@ export default function EmanuelOSCore() {
                       cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)', transition: 'all 0.3s'
                     }}
                   >
-                    {qrCodeValidando ? '🔍 Sincronizando Leitura do QR Code...' : '📱 Validar QR Code & Mapear Sistema ➔'}
+                    {qrCodeValidando ? '🔍 Sincronizando Leitura do QR Code Decoder v5.1...' : '📱 Validar QR Code & Mapear Sistema ➔'}
                   </button>
                 </>
               )}
@@ -1091,7 +1296,7 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // 🌐 INTERFACE PRINCIPAL DESBLOQUEADA COM DESIGN HOLOGRÁFICO 2030 (AVATAR HUD)
+  // --- INTERFACE PRINCIPAL DESBLOQUEADA COM EMANUEL.OS QUICK ACTIONS ---
   return (
     <div style={{
       width: '100vw',
@@ -1104,7 +1309,7 @@ export default function EmanuelOSCore() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Emanuel.OS Core 2030 | IA Principal</title>
+        <title>Emanuel.OS Core v5.1 | Quick Actions Integrado | Gemini AGI</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
@@ -1152,7 +1357,7 @@ export default function EmanuelOSCore() {
         🛠️ Suporte EM IA
       </button>
 
-      {/* ⚡ WIDGET DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD COM SETINHA LATERÁVEL) */}
+      {/* ⚡ WIDGET EMANUEL.OS QUICK ACTIONS (PAINEL SOLICITADO RETRÁTIL) */}
       <QuickActionsWidget onActionClick={dispararQuickAction} />
 
       {/* 👈 SIDEBAR ESQUERDA RETRÁTIL */}
@@ -1171,7 +1376,7 @@ export default function EmanuelOSCore() {
               <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
                 Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
               </h1>
-              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>SISTEMA MULTIMODAL AGI | POWERED BY GOOGLE GEMINI</span>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & DOCUMENT ENGINE | Core v5.1</span>
             </div>
 
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -1182,7 +1387,7 @@ export default function EmanuelOSCore() {
             <FormularioCapturaEmanuelOS />
 
             <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
-              <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados</h3>
+              <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados (2030)</h3>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <Link href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
@@ -1205,7 +1410,7 @@ export default function EmanuelOSCore() {
 
             <input 
               type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
-              placeholder="🔍 Pesquisar no histórico..."
+              placeholder="🔍 Pesquisar no histórico cósmico..."
               style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '12px', boxSizing: 'border-box' }}
             />
 
@@ -1220,7 +1425,7 @@ export default function EmanuelOSCore() {
               </div>
 
               <div>
-                <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🌐 SALVAS VIA CONTA GOOGLE</span>
+                <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🌐 SALVAS VIA CONTA GOOGLE (AGI-SYNC)</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {chatsFiltrados.filter(c => c.origem === 'google').map(c => (
                     <div key={c.id} style={{ fontSize: '11px', color: '#e4e4e7', padding: '8px 10px', background: 'rgba(255,0,85,0.03)', borderRadius: '6px', border: '1px solid rgba(255,0,85,0.1)' }}>🌟 {c.titulo}</div>
@@ -1230,7 +1435,7 @@ export default function EmanuelOSCore() {
             </div>
 
             <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (LINHA DUPLA)</span>
+              <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (WHATSAPP ID)</span>
               <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <input type="text" placeholder="DDD 1" value={ddd1} onChange={(e) => setDdd1(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
@@ -1245,17 +1450,17 @@ export default function EmanuelOSCore() {
                 <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                 
                 <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '7px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '11px' }}>
-                  <option value="ambos">Disparar as duas linhas juntas</option>
+                  <option value="ambos">Disparar as duas linhas juntas (ID v5.1)</option>
                   <option value="canal1">Disparar somente Linha 1</option>
                   <option value="canal2">Disparar somente Linha 2</option>
                 </select>
-                <button type="submit" style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Executar Disparo Sem Simulação</button>
+                <button type="submit" style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Executar Disparo Real G-AGI ID ➔</button>
               </form>
             </div>
 
             <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
-              <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA</span>
-              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI</span>
+              <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA | ANO: 2030</span>
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI Core v5.1</span>
             </div>
           </>
         )}
@@ -1281,23 +1486,23 @@ export default function EmanuelOSCore() {
             </button>
 
             <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 4px 0', letterSpacing: '1px' }}>
-              EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030
+              EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030 | Core v5.1
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 15px 0' }}>
-              Resolução Autônoma de Bugs, Compatibilidade de Apps, Documentos e Códigos de Ajuda
+              Resolução Autônoma de Bugs (90% IA), Compatibilidade de Apps, Documentos e Códigos G-AGI
             </p>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', flexWrap: 'wrap' }}>
               <button onClick={() => setAbaSuporteAtiva('diagnostico')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'diagnostico' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'diagnostico' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🛠️ Diagnóstico</button>
-              <button onClick={() => setAbaSuporteAtiva('codigo')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'codigo' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'codigo' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>💻 Códigos</button>
-              <button onClick={() => setAbaSuporteAtiva('avatar')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'avatar' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'avatar' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🎥 Vídeo-Aula</button>
-              <button onClick={() => setAbaSuporteAtiva('feedback')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'feedback' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'feedback' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>⭐ Feedbacks</button>
+              <button onClick={() => setAbaSuporteAtiva('codigo')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'codigo' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'codigo' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>💻 Códigos G-AGI</button>
+              <button onClick={() => setAbaSuporteAtiva('avatar')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'avatar' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'avatar' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🎥 Vídeo-Aula Holográfica</button>
+              <button onClick={() => setAbaSuporteAtiva('feedback')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'feedback' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'feedback' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>⭐ Feedbacks Cósmicos</button>
             </div>
 
             <textarea 
               value={inputProblemaSuporte}
               onChange={(e) => setInputProblemaSuporte(e.target.value)}
-              placeholder="Descreva seu bug, problema de compatibilidade ou solicitação..."
+              placeholder="Descreva seu bug, problema de compatibilidade ou solicitação G-AGI..."
               style={{ width: '100%', height: '80px', backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', padding: '10px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }}
             />
 
@@ -1306,12 +1511,12 @@ export default function EmanuelOSCore() {
               disabled={carregandoSuporte}
               style={{ width: '100%', marginTop: '10px', padding: '10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(255, 0, 127, 0.4)' }}
             >
-              {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini...' : '🚀 Executar Solução IA (90%)'}
+              {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini AGI v5.1...' : '🚀 Executar Solução IA v5.1 (90%)'}
             </button>
 
             {respostaSuporte && (
               <div style={{ marginTop: '15px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '12px', borderRadius: '6px', fontSize: '11px' }}>
-                <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico:</strong>
+                <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico G-AGI:</strong>
                 <p style={{ margin: '0 0 8px 0', color: '#cbd5e1' }}>{respostaSuporte.diagnostico}</p>
 
                 {respostaSuporte.codigo && (
@@ -1324,7 +1529,7 @@ export default function EmanuelOSCore() {
                 <p style={{ color: '#fb923c', margin: '4px 0' }}>🎥 {respostaSuporte.avatarVideo}</p>
                 
                 <div style={{ marginTop: '8px', padding: '6px', backgroundColor: 'rgba(255,0,127,0.1)', border: '1px dashed #ff007f', borderRadius: '4px', color: '#ff007f', fontSize: '10px' }}>
-                  ⚠️ {respostaSuporte.protocolo}
+                  ⚠️ Protocolo de Segurança v5.1: {respostaSuporte.protocolo}
                 </div>
               </div>
             )}
@@ -1332,7 +1537,7 @@ export default function EmanuelOSCore() {
         </div>
       )}
 
-      {/* 💻 PAINEL LATERAL DIREITO TERMINAL GEMINI */}
+      {/* 💻 PAINEL LATERAL DIREITO: TERMINAL GEMINI COM SETA RETRÁTIL */}
       <div style={{
         position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
         height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
@@ -1341,6 +1546,7 @@ export default function EmanuelOSCore() {
         padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
         gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
       }}>
+        {/* Puxador com a Seta para Ocultar/Exibir o Terminal */}
         <button 
           onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
           style={{
@@ -1355,21 +1561,21 @@ export default function EmanuelOSCore() {
         </button>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
-          <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'monospace' }}>
-            Gemini-Integrated Advanced Command Terminal
+          <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
+            Gemini-Integrated Advanced Command Terminal | Core v5.1
           </span>
           <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
         </div>
 
         <div>
           <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            🤖 IA INTEGRADA + GEMINI AGI
+            🤖 IA INTEGRADA + GEMINI AGI Core v5.1
           </h3>
           <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
-            NÚCLEO DE RESPOSTA AUXILIAR
+            NÚCLEO DE RESPOSTA AUXILIAR Multimodal
           </h4>
           <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-            (G-AGI Core: ACTIVE)
+            (G-AGI Core: ACTIVE | Matrix stable)
           </span>
         </div>
 
@@ -1382,7 +1588,7 @@ export default function EmanuelOSCore() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
           >
-            📄 Baixar Manual em TXT/PDF (300 Comandos Mestre)
+            📄 Baixar Manual G-AGI Mestre (300 Comandos)
           </button>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -1396,7 +1602,7 @@ export default function EmanuelOSCore() {
               ⚡ /status-core
             </button>
             <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              🛠️ /suporte
+              🛠️ /suporte G-AGI
             </button>
           </div>
         </div>
@@ -1412,7 +1618,7 @@ export default function EmanuelOSCore() {
               color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
                      log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
                      log.startsWith('[CMD>') ? '#38bdf8' :
-                     log.startsWith('[G-AGI: INFO]') ? '#fef08a' :
+                     log.startsWith('[G-AGI: QUICK_ACTION]') ? '#ff007f' :
                      log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
             }}>
               {log}
@@ -1420,14 +1626,14 @@ export default function EmanuelOSCore() {
           ))}
         </div>
 
-        <form onSubmit={handleCmdSubmit} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
-          <span style={{ color: '#00f0ff', fontSize: '11px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
+        <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
+          <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
           <input
             type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-            placeholder="Digite comando ou instrução..."
+            placeholder="Comando ou instrução G-AGI..."
             style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
           />
-          <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
+          <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
         </form>
       </div>
 
@@ -1437,14 +1643,13 @@ export default function EmanuelOSCore() {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
         transition: 'left 0.3s'
       }}>
-        
         <div style={{
           backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
           border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
           boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', minWidth: '150px'
         }}>
-          <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network</span>
-          <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel 2030</strong>
+          <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network G-AGI Sync</span>
+          <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel Sync 2030 v5.1</strong>
         </div>
 
         <div style={{
@@ -1453,8 +1658,8 @@ export default function EmanuelOSCore() {
           boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '12px'
         }}>
           <div>
-            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Robot Load</span>
-            <strong style={{ fontSize: '11px', color: '#38bdf8' }}>Cognitive 22%</strong>
+            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Cognitive Load</span>
+            <strong style={{ fontSize: '11px', color: '#38bdf8' }}>G-AGI Core 22%</strong>
           </div>
           <div style={{
             width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #00f0ff',
@@ -1472,28 +1677,11 @@ export default function EmanuelOSCore() {
         }}>
           <span style={{ fontSize: '16px', color: '#00f0ff' }}>🕒</span>
           <div>
-            <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL</span>
+            <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL v5.1</span>
             <strong style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace' }}>
               {horaAtual || '14 Março 2030, 22:15'}
             </strong>
           </div>
-        </div>
-
-      </div>
-
-      {/* 🧠 CENTRO-ESQUERDA: CARD COGNITIVE LOAD */}
-      <div style={{
-        position: 'absolute', top: '100px', left: sidebarAberta ? '430px' : '80px', zIndex: 10,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 18px',
-        width: '180px', transition: 'left 0.3s'
-      }}>
-        <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>Cognitive Load</span>
-        <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span>Fian:</span> <strong>45%</strong>
-        </div>
-        <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
-          <span>Mecro-holographic:</span> <strong>1%</strong>
         </div>
       </div>
 
@@ -1506,17 +1694,17 @@ export default function EmanuelOSCore() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: '10px' }}>
           <span style={{ fontSize: '10px', color: '#00f0ff', marginRight: '6px' }}>🌐</span>
-          <input type="text" readOnly value="Internet Em.com" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
+          <input type="text" readOnly value="Internet Em.com v5.1" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
           <span style={{ fontSize: '10px', color: '#00f0ff' }}>🔍</span>
         </div>
 
         <div>
           <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
-          <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo}</p>
+          <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
 
           {browserAsset.imagem && (
             <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-              <img src={browserAsset.imagem} alt="Asset Preview" style={{ width: '100px', height: '100px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
+              <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100px', height: '100px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
             </div>
           )}
 
@@ -1526,7 +1714,7 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
-      {/* 💬 BASE: CHAT E HISTÓRICO HOLOGRÁFICO */}
+      {/* 💬 BASE: CHAT E ENTRADA MULTIMODAL */}
       <div style={{
         position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
         zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
@@ -1538,10 +1726,10 @@ export default function EmanuelOSCore() {
           textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
         }}>
           <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
-            IA EMANUEL (GEMINI)
+            IA EMANUEL (GEMINI AGI Core v5.1 Multimodal)
           </span>
           <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
-            Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa
+            Emanuel.OS Core v5.1 | Quick Actions Active | Ano: 2030
           </span>
         </div>
 
@@ -1575,7 +1763,7 @@ export default function EmanuelOSCore() {
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Transmitir comandos neurais ou conversar com o Núcleo Gemini..."
+            placeholder="Transmitir comandos neurais, prompts para Quick Actions ou solicitar documentos..."
             style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
           />
 
@@ -1587,7 +1775,7 @@ export default function EmanuelOSCore() {
               boxShadow: '0 0 10px #00f0ff'
             }}
           >
-            Executar
+            Executar G-AGI ➔
           </button>
         </form>
 
