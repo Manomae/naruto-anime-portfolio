@@ -501,6 +501,31 @@ function QuickActionsWidget({ onActionClick }) {
                 <span style={{ fontSize: '9px', color: '#94a3b8' }}>Obras Científicas, Poemas e PPTX</span>
               </div>
             </div>
+
+            {/* CARD NOVO: RESSONÂNCIA 3D COM RESPIRAÇÃO LIVRE */}
+            <div 
+              onClick={() => onActionClick('gerar_ressonancia_3d')}
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justify: 'space-between',
+                height: '90px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#10b981'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
+            >
+              <div style={{ fontSize: '20px' }}>🧠</div>
+              <div>
+                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Mapa Ressonância 3D</strong>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Filtro de movimento e reconstrução via G-AGI</span>
+              </div>
+            </div>
           </div>
 
           <div style={{
@@ -764,6 +789,10 @@ export default function EmanuelOSCore() {
       processarConversaReal(prompt);
     } else if (tipo === 'gerar_pptx') {
       const prompt = 'Gerar apresentação de Power Point (.pptx) sobre o sistema Emanuel.OS HUD 2030';
+      setChatInput(prompt);
+      processarConversaReal(prompt);
+    } else if (tipo === 'gerar_ressonancia_3d') {
+      const prompt = 'Carregar módulo de Mapa Ressonância 3D médica com inteligência artificial e filtro de movimento';
       setChatInput(prompt);
       processarConversaReal(prompt);
     }
@@ -1586,7 +1615,6 @@ export default function EmanuelOSCore() {
               <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
             </div>
 
-            {/* MÓDULO INTEGRADO DE GOOGLE MEET + AVATARES */}
             <GoogleMeetAvatarManager addLog={addLogTerminal} />
 
             <FormularioCapturaEmanuelOS />
@@ -1609,6 +1637,22 @@ export default function EmanuelOSCore() {
 
                 <Link href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                   🛸 Aeroespacial Futuro
+                </Link>
+
+                {/* NOVO LINK ADICIONADO PARA O MAPA MÉDICO DE RESSONÂNCIA */}
+                <Link href="/mapa-ressonancia" style={{ 
+                  padding: '10px', 
+                  backgroundColor: '#0f172a', 
+                  border: '1px solid #10b981', 
+                  color: '#34d399', 
+                  borderRadius: '8px', 
+                  textDecoration: 'none', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  textAlign: 'center',
+                  gridColumn: 'span 2'
+                }}>
+                  🧠 Ressonância 3D (IA)
                 </Link>
               </div>
             </div>
