@@ -246,7 +246,7 @@ function GoogleMeetAvatarManager({ addLog }) {
   );
 }
 
-// --- COMPONENTE DE AÇÕES RÁPIDAS (EMANUEL.OS QUICK ACTIONS HUD RETRÁTIL EXPANDIDO) ---
+// --- COMPONENTE DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD RETRÁTIL EXPANDIDO) ---
 function QuickActionsWidget({ onActionClick }) {
   const [minimizado, setMinimizado] = useState(false);
 
@@ -321,7 +321,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#ff007f'}
@@ -330,7 +330,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🖼️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG via OpenAI/API Real</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Múltiplas versões ultra realistas</span>
               </div>
             </div>
 
@@ -354,7 +354,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🎬</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere vídeos a partir de prompts</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Resoluções 4K + Sem Marca d'água</span>
               </div>
             </div>
 
@@ -378,7 +378,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🎞️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca e inserção real via Giphy API</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca real com várias versões</span>
               </div>
             </div>
 
@@ -701,10 +701,22 @@ export default function EmanuelOSCore() {
   const [carregandoSuporte, setCarregandoSuporte] = useState(false);
   const [respostaSuporte, setRespostaSuporte] = useState(null);
 
+  // --- ESTADO FUTURISTA DE GERAÇÃO EM TEMPO REAL ---
+  const [gerandoMidia, setGerandoMidia] = useState(false);
+  const [progressoRender, setProgressoRender] = useState(0);
+  const [tipoMidiaAtual, setTipoMidiaAtual] = useState('');
+  const [versoesAtivas, setVersoesAtivas] = useState([]);
+  const [versaoSelecionada, setVersaoSelecionada] = useState(0);
+
+  // Configurações de Vídeo
+  const [resolucaoVideo, setResolucaoVideo] = useState('1080p Full HD');
+  const [semMarcaDagua, setSemMarcaDagua] = useState(true);
+
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS',
-    subtitulo: 'Native Browser',
+    subtitulo: 'Native Browser v5.1',
     imagem: null,
+    videoUrl: null,
     conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto.'
   });
 
@@ -713,10 +725,7 @@ export default function EmanuelOSCore() {
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
-    "[G-AGI: QUICK_ACTIONS] Painel Emanuel.OS Quick Actions v1.0 ativo.",
-    "[CMD> G-AGI] User: Analisar fluxo de dados do sistema...[Complete]",
-    "[G-AGI: INFO] Motor Nano Banana e fios de chakra conectados.",
-    "[G-AGI: QUERY] Fornecer resumo de dados ou aguardar instruções adicionais?"
+    "[G-AGI: QUICK_ACTIONS] Painel Emanuel.OS Quick Actions v1.0 ativo."
   ]);
 
   const [chatInput, setChatInput] = useState('');
@@ -751,53 +760,86 @@ export default function EmanuelOSCore() {
     setCmdLogs(prev => [...prev, novoLog]);
   };
 
-  // --- MÓDULO DE REQUISIÇÃO REAL DE MÍDIA (API ROUTE INTERNAL FETCH) ---
+  // --- MOTOR FUTURISTA DE RENDERIZAÇÃO REAL EM TEMPO REAL ---
   const executarGeracaoReal = async (promptTexto, tipoAcao) => {
-    try {
-      setCmdLogs(prev => [...prev, `[G-AGI: API] Enviando requisição real para ${tipoAcao.toUpperCase()}...`]);
+    setGerandoMidia(true);
+    setProgressoRender(10);
+    setTipoMidiaAtual(tipoAcao);
+    setCmdLogs(prev => [...prev, `[G-AGI: ENGINE] Iniciando síntese quantum para ${tipoAcao.toUpperCase()}...`]);
 
+    const interval = setInterval(() => {
+      setProgressoRender(prev => {
+        if (prev >= 90) {
+          clearInterval(interval);
+          return 90;
+        }
+        return prev + 20;
+      });
+    }, 300);
+
+    try {
       const res = await fetch('/api/gerar-midia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptTexto, tipo: tipoAcao })
+        body: JSON.stringify({
+          prompt: promptTexto,
+          tipo: tipoAcao,
+          resolucao: resolucaoVideo,
+          semMarcaDagua: semMarcaDagua
+        })
       });
 
       const data = await res.json();
+      clearInterval(interval);
+      setProgressoRender(100);
 
-      if (data.success && data.url) {
-        setBrowserAsset({
-          titulo: 'Mídia Gerada em Tempo Real',
-          subtitulo: `Provedor: ${tipoAcao.toUpperCase()}`,
-          imagem: data.url,
-          conteudoTexto: data.mensagem
-        });
+      setTimeout(() => {
+        setGerandoMidia(false);
 
-        setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] Mídia real recebida: ${data.url}`]);
-      } else {
-        setCmdLogs(prev => [...prev, `[G-AGI: WARN] Resposta da API: ${data.error || 'Executando via simulador local.'}`]);
-      }
+        if (data.success) {
+          if (tipoAcao === 'crie_video') {
+            setBrowserAsset({
+              titulo: 'Vídeo Ultra Realista Renderizado',
+              subtitulo: `Resolução: ${data.resolucao} | ${data.semMarcaDagua ? 'Sem Marca d\'Água' : 'Com Marca d\'Água'}`,
+              imagem: null,
+              videoUrl: data.videoUrl,
+              conteudoTexto: data.mensagem
+            });
+          } else {
+            const versoes = data.versoes || [{ id: 1, url: data.url, rotulo: 'Versão 1' }];
+            setVersoesAtivas(versoes);
+            setVersaoSelecionada(0);
+
+            setBrowserAsset({
+              titulo: `${tipoAcao === 'crie_gif' ? 'GIF' : 'Imagem'} Real Sintetizado`,
+              subtitulo: `Provedor: ${tipoAcao.toUpperCase()} | Versões: ${versoes.length}`,
+              imagem: versoes[0].url,
+              videoUrl: null,
+              conteudoTexto: data.mensagem
+            });
+          }
+
+          setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] Síntese concluída com 100% de precisão!`]);
+        } else {
+          setCmdLogs(prev => [...prev, `[G-AGI: WARN] Resposta da API: ${data.error || 'Falha ao sintetizar mídia.'}`]);
+        }
+      }, 500);
+
     } catch (err) {
+      clearInterval(interval);
+      setGerandoMidia(false);
       console.error('Erro ao conectar com API real:', err);
-      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha na conexão com a API de geração.`]);
+      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha no servidor de renderização.`]);
     }
   };
 
   const dispararQuickAction = (tipo) => {
     setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
     
-    if (tipo === 'crie_imagem' || tipo === 'crie_gif') {
-      const prompt = tipo === 'crie_imagem' 
-        ? 'Cyberpunk Emanuel OS Avatar 8k' 
-        : 'Cyberpunk Chakra Energy Flow';
-      
-      setChatInput(prompt);
-      executarGeracaoReal(prompt, tipo);
+    if (tipo === 'crie_imagem' || tipo === 'crie_gif' || tipo === 'crie_video') {
+      executarGeracaoReal('Cyberpunk Emanuel OS Avatar 8k', tipo);
     } else if (tipo === 'gerar_jpg') {
       const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
-      setChatInput(prompt);
-      processarConversaReal(prompt);
-    } else if (tipo === 'crie_video') {
-      const prompt = 'Gerar vídeo animado holográfico 3D da Vila Ninja em MP4';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'escreva_edite' || tipo === 'gerar_word') {
@@ -1004,6 +1046,30 @@ export default function EmanuelOSCore() {
 
   const processarConversaReal = async (textoUsuario) => {
     const textoLimpo = textoUsuario.toLowerCase();
+
+    // Detecção flexível que aceita erros de digitação (gif, gfi, gyf, imagem, imge, foto, fotto, video)
+    const eGif = /gif|gfi|gyf|animad/i.test(textoLimpo);
+    const eImagem = /imagem|imge|foto|fotto|desenho|art/i.test(textoLimpo);
+    const eVideo = /video|vídeo|filme|animacao/i.test(textoLimpo);
+
+    if (eGif) {
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Renderizando GIF em tempo real para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      executarGeracaoReal(textoUsuario, 'crie_gif');
+      return;
+    }
+
+    if (eImagem) {
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Sintetizando imagem ultra realista para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      executarGeracaoReal(textoUsuario, 'crie_imagem');
+      return;
+    }
+
+    if (eVideo) {
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Processando render de vídeo em ${resolucaoVideo} para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      executarGeracaoReal(textoUsuario, 'crie_video');
+      return;
+    }
+
     let respostaTexto = "";
     let comandoExecutado = false;
 
@@ -1026,6 +1092,7 @@ export default function EmanuelOSCore() {
         titulo: 'Pesquisa Web G-AGI',
         subtitulo: 'Internet Em.com v5.1',
         imagem: null,
+        videoUrl: null,
         conteudoTexto: `Módulo de busca conectado. Resultados em tempo real processados para: "${textoUsuario}".`
       });
       respostaTexto = `Pesquisa na Internet executada com sucesso via motor Gemini AGI. Dados atualizados carregados no Native Browser!`;
@@ -1106,7 +1173,7 @@ export default function EmanuelOSCore() {
       comandoExecutado = true;
     }
 
-    if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('imagem') || textoLimpo.includes('crie uma imagem') || textoLimpo.includes('arte'))) {
+    if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('arte'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
       
       const canvas = document.createElement('canvas');
@@ -1172,7 +1239,7 @@ export default function EmanuelOSCore() {
       if (resultadoDicionario) {
         respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
       } else {
-        respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS v5.1. Sincronização em 100%. Aguardando novas instruções.`;
+        respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS v5.1. Sincronização em 100%.`;
       }
     }
 
@@ -1199,6 +1266,28 @@ export default function EmanuelOSCore() {
   const executarComandoCMD = (cmd) => {
     setCmdInput(cmd);
     setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${cmd}`]);
+
+    if (cmd.startsWith('/gif ')) {
+      const termo = cmd.replace('/gif ', '');
+      executarGeracaoReal(termo, 'crie_gif');
+      setCmdInput('');
+      return;
+    }
+    
+    if (cmd.startsWith('/img ')) {
+      const termo = cmd.replace('/img ', '');
+      executarGeracaoReal(termo, 'crie_imagem');
+      setCmdInput('');
+      return;
+    }
+
+    if (cmd.startsWith('/video ')) {
+      const termo = cmd.replace('/video ', '');
+      executarGeracaoReal(termo, 'crie_video');
+      setCmdInput('');
+      return;
+    }
+
     if (cmd.includes('nano-banana')) {
       setCmdLogs(prev => [...prev, "[G-AGI: NANO BANANA 🍌] Renderizador 3D Octane ativo."]);
     } else if (cmd.includes('gerar-mapa')) {
@@ -1908,7 +1997,7 @@ export default function EmanuelOSCore() {
           <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
           <input
             type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-            placeholder="Comando ou instrução G-AGI..."
+            placeholder="Comando ou instrução G-AGI... (ex: /gif naruto)"
             style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
           />
           <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
@@ -1962,11 +2051,12 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
+      {/* --- BROWSER NATIVE COM HUD FUTURISTA DE GERAÇÃO ULTRA REALISTA --- */}
       <div style={{
         position: 'absolute', top: '90px', right: '400px', zIndex: 10,
         backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '14px', padding: '14px',
-        width: '280px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
+        width: '300px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: '10px' }}>
           <span style={{ fontSize: '10px', color: '#00f0ff', marginRight: '6px' }}>🌐</span>
@@ -1978,10 +2068,62 @@ export default function EmanuelOSCore() {
           <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
           <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
 
-          {browserAsset.imagem && (
-            <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-              <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100px', height: '100px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
+          {/* ANIMAÇÃO DE PROCESSAMENTO FUTURISTA */}
+          {gerandoMidia ? (
+            <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
+              <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
+              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
+                SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
+              </span>
+              
+              <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
+                <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
+              </div>
+              
+              <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
             </div>
+          ) : (
+            <>
+              {/* VÍDEO REAL COM CONTROLES DE RESOLUÇÃO E MARCA D'ÁGUA */}
+              {browserAsset.videoUrl && (
+                <div style={{ margin: '8px 0' }}>
+                  <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
+                  
+                  <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
+                        <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                          {res}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                      {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* IMAGEM OU GIF REAL COM SELETOR DE VERSÕES */}
+              {browserAsset.imagem && (
+                <div>
+                  <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+                    <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
+                  </div>
+
+                  {versoesAtivas.length > 1 && (
+                    <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
+                      {versoesAtivas.map((v, i) => (
+                        <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          {v.rotulo}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
@@ -2038,7 +2180,7 @@ export default function EmanuelOSCore() {
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Transmitir comandos neurais, prompts para Quick Actions ou solicitar documentos..."
+            placeholder="Digite mensagens ou peça gifs/imagens (ex: 'gif do naruto', 'imagem de carro cyberpunk', 'video vila')..."
             style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
           />
 
@@ -2055,6 +2197,14 @@ export default function EmanuelOSCore() {
         </form>
 
       </div>
+
+      <style>{`
+        @keyframes spinPulse {
+          0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+          50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+          100% { transform: scale(1) rotate(360deg); opacity: 0.8; }
+        }
+      `}</style>
 
     </div>
   );
