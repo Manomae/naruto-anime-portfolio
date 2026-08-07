@@ -330,7 +330,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🖼️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG com modelo EM 1.0</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Gere artes em JPG via OpenAI/API Real</span>
               </div>
             </div>
 
@@ -378,7 +378,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🎞️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Animações e stickers personalizados</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca e inserção real via Giphy API</span>
               </div>
             </div>
 
@@ -502,7 +502,6 @@ function QuickActionsWidget({ onActionClick }) {
               </div>
             </div>
 
-            {/* CARD NOVO: RESSONÂNCIA 3D COM RESPIRAÇÃO LIVRE */}
             <div 
               onClick={() => onActionClick('gerar_ressonancia_3d')}
               style={{
@@ -752,19 +751,53 @@ export default function EmanuelOSCore() {
     setCmdLogs(prev => [...prev, novoLog]);
   };
 
+  // --- MÓDULO DE REQUISIÇÃO REAL DE MÍDIA (API ROUTE INTERNAL FETCH) ---
+  const executarGeracaoReal = async (promptTexto, tipoAcao) => {
+    try {
+      setCmdLogs(prev => [...prev, `[G-AGI: API] Enviando requisição real para ${tipoAcao.toUpperCase()}...`]);
+
+      const res = await fetch('/api/gerar-midia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptTexto, tipo: tipoAcao })
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.url) {
+        setBrowserAsset({
+          titulo: 'Mídia Gerada em Tempo Real',
+          subtitulo: `Provedor: ${tipoAcao.toUpperCase()}`,
+          imagem: data.url,
+          conteudoTexto: data.mensagem
+        });
+
+        setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] Mídia real recebida: ${data.url}`]);
+      } else {
+        setCmdLogs(prev => [...prev, `[G-AGI: WARN] Resposta da API: ${data.error || 'Executando via simulador local.'}`]);
+      }
+    } catch (err) {
+      console.error('Erro ao conectar com API real:', err);
+      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha na conexão com a API de geração.`]);
+    }
+  };
+
   const dispararQuickAction = (tipo) => {
     setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
     
-    if (tipo === 'crie_imagem' || tipo === 'gerar_jpg') {
+    if (tipo === 'crie_imagem' || tipo === 'crie_gif') {
+      const prompt = tipo === 'crie_imagem' 
+        ? 'Cyberpunk Emanuel OS Avatar 8k' 
+        : 'Cyberpunk Chakra Energy Flow';
+      
+      setChatInput(prompt);
+      executarGeracaoReal(prompt, tipo);
+    } else if (tipo === 'gerar_jpg') {
       const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'crie_video') {
       const prompt = 'Gerar vídeo animado holográfico 3D da Vila Ninja em MP4';
-      setChatInput(prompt);
-      processarConversaReal(prompt);
-    } else if (tipo === 'crie_gif') {
-      const prompt = 'Gerar GIF animado com efeito de fluxo de Chakra Cyberpunk';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'escreva_edite' || tipo === 'gerar_word') {
@@ -1639,7 +1672,6 @@ export default function EmanuelOSCore() {
                   🛸 Aeroespacial Futuro
                 </Link>
 
-                {/* NOVO LINK ADICIONADO PARA O MAPA MÉDICO DE RESSONÂNCIA */}
                 <Link href="/mapa-ressonancia" style={{ 
                   padding: '10px', 
                   backgroundColor: '#0f172a', 
