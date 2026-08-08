@@ -10,7 +10,7 @@ import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
-// Dicionário Ninja local seguro para fallback
+// Dicionário Ninja local para fallback
 const dicionarioNinjaLocal = [
   { termo: "chakra", categoria: "Energia Neural", significado: "Massa de energia biológica e espiritual combinada para execução de técnicas e comandos neurais." },
   { termo: "sharingan", categoria: "Linhagem Sanguínea", significado: "Dōjutsu do Clã Uchiha capaz de perceber, copiar e prever fluxos de informação e movimento." },
@@ -159,7 +159,9 @@ function GoogleMeetAvatarManager({ addLog }) {
     const mensagem = `Olá! Você foi convidado por Emanuel para a reunião "${temaReuniao}" no Emanuel.OS.\n\n🤖 Avatar IA: ${avatarEscolhido}\n🔗 Google Meet: ${linkGerado}`;
     
     const urlWhatsapp = `https://api.whatsapp.com/send?phone=55${dddConvidado}${telefoneConvidado}&text=${encodeURIComponent(mensagem)}`;
-    window.open(urlWhatsapp, '_blank');
+    if (typeof window !== 'undefined') {
+      window.open(urlWhatsapp, '_blank');
+    }
 
     if (addLog) {
       addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para (55) ${dddConvidado} ${telefoneConvidado}`);
@@ -271,7 +273,7 @@ function QuickActionsWidget({ onActionClick }) {
     }}>
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between', // CORRIGIDO: Corrigido de "justify" para "justifyContent"
         alignItems: 'center',
         marginBottom: minimizado ? '0px' : '14px',
         cursor: 'pointer'
@@ -330,7 +332,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🖼️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Múltiplas versões ultra realistas</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM 1.0 Realista</span>
               </div>
             </div>
 
@@ -345,7 +347,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#a855f7'}
@@ -354,7 +356,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🎬</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Resoluções 4K + Sem Marca d'água</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM HD/4K Pro</span>
               </div>
             </div>
 
@@ -369,7 +371,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#eab308'}
@@ -378,7 +380,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🎞️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca real com várias versões</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo GIEM 1.0 Sync</span>
               </div>
             </div>
 
@@ -393,7 +395,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#38bdf8'}
@@ -402,7 +404,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>✏️</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e poemas em .docx</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e .docx</span>
               </div>
             </div>
 
@@ -417,7 +419,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4ade80'}
@@ -426,7 +428,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>🌐</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web em tempo real via G-AGI</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web via G-AGI</span>
               </div>
             </div>
 
@@ -441,7 +443,7 @@ function QuickActionsWidget({ onActionClick }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 height: '90px'
               }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = '#00f0ff'}
@@ -450,79 +452,7 @@ function QuickActionsWidget({ onActionClick }) {
               <div style={{ fontSize: '20px' }}>📄⇄🌍</div>
               <div>
                 <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Documentos</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PowerPoint</span>
-              </div>
-            </div>
-
-            <div 
-              onClick={() => onActionClick('traduzir_audio')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justify: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#f43f5e'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
-              <div style={{ fontSize: '20px' }}>🎙️⇄🌍</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Áudio</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Tradução de áudio para qualquer idioma</span>
-              </div>
-            </div>
-
-            <div 
-              onClick={() => onActionClick('processamento_em')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justify: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#fb923c'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
-              <div style={{ fontSize: '20px' }}>⚡</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Processamento EM v1.0</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Obras Científicas, Poemas e PPTX</span>
-              </div>
-            </div>
-
-            <div 
-              onClick={() => onActionClick('gerar_ressonancia_3d')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justify: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#10b981'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
-              <div style={{ fontSize: '20px' }}>🧠</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Mapa Ressonância 3D</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Filtro de movimento e reconstrução via G-AGI</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PPTX</span>
               </div>
             </div>
           </div>
@@ -588,7 +518,7 @@ function QuickActionsWidget({ onActionClick }) {
               }} />
             </div>
             <span style={{ fontSize: '8px', color: '#94a3b8' }}>
-              Suporta: Obras científicas, literárias, artísticas e poemas em PDF, JPG, WORD e PPTX.
+              Suporta palavras-chave: Animes, Futebol, Cidades, Filmes, Atores, Memes, Exatas e Programação.
             </span>
           </div>
         </>
@@ -705,6 +635,8 @@ export default function EmanuelOSCore() {
   const [gerandoMidia, setGerandoMidia] = useState(false);
   const [progressoRender, setProgressoRender] = useState(0);
   const [tipoMidiaAtual, setTipoMidiaAtual] = useState('');
+  const [termoBuscaHeader, setTermoBuscaHeader] = useState('');
+  const [statusEngineHeader, setStatusEngineHeader] = useState('');
   const [versoesAtivas, setVersoesAtivas] = useState([]);
   const [versaoSelecionada, setVersaoSelecionada] = useState(0);
 
@@ -765,7 +697,29 @@ export default function EmanuelOSCore() {
     setGerandoMidia(true);
     setProgressoRender(10);
     setTipoMidiaAtual(tipoAcao);
-    setCmdLogs(prev => [...prev, `[G-AGI: ENGINE] Iniciando síntese quantum para ${tipoAcao.toUpperCase()}...`]);
+    setTermoBuscaHeader(promptTexto);
+
+    let textoHeader = '';
+    let modeloNome = '';
+
+    if (tipoAcao === 'crie_video') {
+      textoHeader = `Gerando vídeo com modelo EM...`;
+      modeloNome = 'EM';
+    } else if (tipoAcao === 'crie_imagem') {
+      textoHeader = `Gerando imagens com modelo EM 1.0...`;
+      modeloNome = 'EM 1.0';
+    } else if (tipoAcao === 'crie_gif') {
+      textoHeader = `Gerando gifs animados com modelo GIEM 1.0...`;
+      modeloNome = 'GIEM 1.0';
+    }
+
+    setStatusEngineHeader(textoHeader);
+    
+    setCmdLogs(prev => [
+      ...prev, 
+      `[ENGINE] ${textoHeader}`,
+      `[ENGINE: ${modeloNome}] Adicionando suporte para: animes, ninja, Naruto, Sasuke, luta, futebol, paises, cidades, memes, exatas, faculdade (v1.0)...`
+    ]);
 
     const interval = setInterval(() => {
       setProgressoRender(prev => {
@@ -775,7 +729,7 @@ export default function EmanuelOSCore() {
         }
         return prev + 20;
       });
-    }, 300);
+    }, 250);
 
     try {
       const res = await fetch('/api/gerar-midia', {
@@ -798,9 +752,10 @@ export default function EmanuelOSCore() {
 
         if (data.success) {
           if (tipoAcao === 'crie_video') {
+            setVersoesAtivas([]);
             setBrowserAsset({
-              titulo: 'Vídeo Ultra Realista Renderizado',
-              subtitulo: `Resolução: ${data.resolucao} | ${data.semMarcaDagua ? 'Sem Marca d\'Água' : 'Com Marca d\'Água'}`,
+              titulo: `Vídeo Ultra Realista (${data.categoria || 'Sintetizado'})`,
+              subtitulo: `Modelo EM | ${data.resolucao} | ${data.semMarcaDagua ? 'Sem Marca d\'Água' : 'Com Marca d\'Água'}`,
               imagem: null,
               videoUrl: data.videoUrl,
               conteudoTexto: data.mensagem
@@ -811,25 +766,25 @@ export default function EmanuelOSCore() {
             setVersaoSelecionada(0);
 
             setBrowserAsset({
-              titulo: `${tipoAcao === 'crie_gif' ? 'GIF' : 'Imagem'} Real Sintetizado`,
-              subtitulo: `Provedor: ${tipoAcao.toUpperCase()} | Versões: ${versoes.length}`,
+              titulo: `${tipoAcao === 'crie_gif' ? 'GIF Animado' : 'Imagem Real'} (${data.categoria || 'Geral'})`,
+              subtitulo: `Modelo ${data.modelo} | Versões Disponíveis: ${versoes.length}`,
               imagem: versoes[0].url,
               videoUrl: null,
               conteudoTexto: data.mensagem
             });
           }
 
-          setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] Síntese concluída com 100% de precisão!`]);
+          setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] ${data.mensagem}`]);
         } else {
-          setCmdLogs(prev => [...prev, `[G-AGI: WARN] Resposta da API: ${data.error || 'Falha ao sintetizar mídia.'}`]);
+          setCmdLogs(prev => [...prev, `[G-AGI: WARN] ${data.error || 'Falha ao sintetizar mídia.'}`]);
         }
-      }, 500);
+      }, 400);
 
     } catch (err) {
       clearInterval(interval);
       setGerandoMidia(false);
       console.error('Erro ao conectar com API real:', err);
-      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha no servidor de renderização.`]);
+      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha de conexão no servidor de renderização.`]);
     }
   };
 
@@ -837,7 +792,7 @@ export default function EmanuelOSCore() {
     setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
     
     if (tipo === 'crie_imagem' || tipo === 'crie_gif' || tipo === 'crie_video') {
-      executarGeracaoReal('Cyberpunk Emanuel OS Avatar 8k', tipo);
+      executarGeracaoReal('Naruto lutando com Sasuke', tipo);
     } else if (tipo === 'gerar_jpg') {
       const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
       setChatInput(prompt);
@@ -1026,6 +981,7 @@ export default function EmanuelOSCore() {
   };
 
   const iniciarEscuta = () => {
+    if (typeof window === 'undefined') return;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
 
@@ -1047,25 +1003,24 @@ export default function EmanuelOSCore() {
   const processarConversaReal = async (textoUsuario) => {
     const textoLimpo = textoUsuario.toLowerCase();
 
-    // Detecção flexível que aceita erros de digitação (gif, gfi, gyf, imagem, imge, foto, fotto, video)
     const eGif = /gif|gfi|gyf|animad/i.test(textoLimpo);
     const eImagem = /imagem|imge|foto|fotto|desenho|art/i.test(textoLimpo);
-    const eVideo = /video|vídeo|filme|animacao/i.test(textoLimpo);
+    const eVideo = /video|vídeo|filme|animacao|luta/i.test(textoLimpo);
 
     if (eGif) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Renderizando GIF em tempo real para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Renderizando GIF animado [Modelo GIEM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_gif');
       return;
     }
 
     if (eImagem) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Sintetizando imagem ultra realista para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Sintetizando imagem ultra realista [Modelo EM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_imagem');
       return;
     }
 
     if (eVideo) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Processando render de vídeo em ${resolucaoVideo} para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Processando render de vídeo [Modelo EM] em ${resolucaoVideo} para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_video');
       return;
     }
@@ -1222,12 +1177,12 @@ export default function EmanuelOSCore() {
       
       const slide2 = pres.addSlide();
       slide2.addText("MODULOS INTEGRADOS", { x: 0.5, y: 0.5, fontSize: 24, color: "ff0055", bold: true });
-      slide2.addText("1. Crie uma imagem (JPG)", { x: 1, y: 1.5, fontSize: 16, color: "ffffff" });
-      slide2.addText("2. Escreva ou edite (Word .docx)", { x: 1, y: 2.2, fontSize: 16, color: "ffffff" });
-      slide2.addText("3. Pesquise na Internet (G-AGI)", { x: 1, y: 2.9, fontSize: 16, color: "ffffff" });
-      slide2.addText("4. Processamento EM v1.0 (PDF)", { x: 1, y: 3.6, fontSize: 16, color: "ffffff" });
+      slide2.addText("1. Crie uma imagem (JPG) - Modelo EM 1.0", { x: 1, y: 1.5, fontSize: 16, color: "ffffff" });
+      slide2.addText("2. Crie GIFs animados - Modelo GIEM 1.0", { x: 1, y: 2.2, fontSize: 16, color: "ffffff" });
+      slide2.addText("3. Crie um vídeo HD/4K - Modelo EM", { x: 1, y: 2.9, fontSize: 16, color: "ffffff" });
+      slide2.addText("4. Processamento EM v1.0 (PDF, Word, PPTX)", { x: 1, y: 3.6, fontSize: 16, color: "ffffff" });
 
-      pres.writeFile("EmanuelOS_Apresentacao_v1.pptx");
+      pres.writeFile({ fileName: "EmanuelOS_Apresentacao_v1.pptx" });
 
       respostaTexto = "Apresentação PowerPoint (.pptx) gerada e baixada com sucesso (EmanuelOS_Apresentacao_v1.pptx).";
       comandoExecutado = true;
@@ -1316,6 +1271,7 @@ export default function EmanuelOSCore() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const today = new Date().toDateString();
     const savedData = JSON.parse(localStorage.getItem('ticons_auth_data') || '{}');
 
@@ -1441,6 +1397,9 @@ export default function EmanuelOSCore() {
       "002. /gerar-word --tema 'Poema Épico e Teor Literário'",
       "003. /gerar-jpg --tema 'Arte Holográfica Cyberpunk 8K'",
       "004. /gerar-pptx --tema 'Apresentação de Impacto'",
+      "005. /video 'Naruto lutando com Sasuke' --modelo EM",
+      "006. /img 'Cidades futuristas' --modelo EM 1.0",
+      "007. /gif 'Memes e reações' --modelo GIEM 1.0",
       "... (300 Comandos catalogados no ecossistema Emanuel.OS)\n"
     ];
 
@@ -1536,7 +1495,7 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Telefone Aprovado!</span>
               <span style={{ fontSize: '11px', color: '#e4e4e7' }}>🔢 3ª Etapa: Digite seu PIN Mestre:</span>
               <input 
-                type="password" maxLength="4" value={pinDigitado} onChange={(e) => setPinDigitado(e.target.value)}
+                type="password" maxLength={4} value={pinDigitado} onChange={(e) => setPinDigitado(e.target.value)}
                 placeholder="****"
                 style={{ padding: '14px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.4)', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', outline: 'none' }}
               />
@@ -1667,7 +1626,7 @@ export default function EmanuelOSCore() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Emanuel.OS Core v5.1 | Quick Actions Integrado | Gemini AGI</title>
+        <title>Emanuel.OS Core v5.1 | Quick Actions & Engine Unificado</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
@@ -1773,7 +1732,7 @@ export default function EmanuelOSCore() {
                   textAlign: 'center',
                   gridColumn: 'span 2'
                 }}>
-                  🧠 Ressonância 3D (IA)
+                  🧠 Ressonância
                 </Link>
               </div>
             </div>
@@ -2051,7 +2010,6 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
-      {/* --- BROWSER NATIVE COM HUD FUTURISTA DE GERAÇÃO ULTRA REALISTA --- */}
       <div style={{
         position: 'absolute', top: '90px', right: '400px', zIndex: 10,
         backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
@@ -2068,7 +2026,6 @@ export default function EmanuelOSCore() {
           <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
           <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
 
-          {/* ANIMAÇÃO DE PROCESSAMENTO FUTURISTA */}
           {gerandoMidia ? (
             <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
               <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
@@ -2084,7 +2041,6 @@ export default function EmanuelOSCore() {
             </div>
           ) : (
             <>
-              {/* VÍDEO REAL COM CONTROLES DE RESOLUÇÃO E MARCA D'ÁGUA */}
               {browserAsset.videoUrl && (
                 <div style={{ margin: '8px 0' }}>
                   <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
@@ -2105,7 +2061,6 @@ export default function EmanuelOSCore() {
                 </div>
               )}
 
-              {/* IMAGEM OU GIF REAL COM SELETOR DE VERSÕES */}
               {browserAsset.imagem && (
                 <div>
                   <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
