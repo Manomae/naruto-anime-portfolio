@@ -273,7 +273,7 @@ function QuickActionsWidget({ onActionClick }) {
     }}>
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between', // CORRIGIDO: Corrigido de "justify" para "justifyContent"
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: minimizado ? '0px' : '14px',
         cursor: 'pointer'
@@ -1733,6 +1733,22 @@ export default function EmanuelOSCore() {
                   gridColumn: 'span 2'
                 }}>
                   🧠 Ressonância
+                </Link>
+
+                {/* NOVO LINK INTEGRADO DO MAPA MATEMÁTICO QUÂNTICO */}
+                <Link href="/mapa-quantico" style={{ 
+                  padding: '10px', 
+                  backgroundColor: '#0f172a', 
+                  border: '1px solid #8b5cf6', 
+                  color: '#c084fc', 
+                  borderRadius: '8px', 
+                  textDecoration: 'none', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  textAlign: 'center',
+                  gridColumn: 'span 2'
+                }}>
+                  ⚛️ Mapa Matemático Quântico
                 </Link>
               </div>
             </div>
