@@ -3,6 +3,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import * as THREE from 'three';
 
+// Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 export default function MapaRessonancia3D() {
   const mountRef = useRef(null);
   const [respiracaoLivre, setRespiracaoLivre] = useState(true);
@@ -156,6 +159,9 @@ export default function MapaRessonancia3D() {
           <strong>Status do Sistema:</strong> {statusExame}
         </div>
       </div>
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
     </div>
   );
 }

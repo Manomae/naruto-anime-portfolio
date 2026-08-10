@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import * as THREE from 'three';
 
+// Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 export default function MapaTerrestreEmanuel() {
   const mountRef = useRef(null);
   const [localSelecionado, setLocalSelecionado] = useState(null);
@@ -406,7 +409,7 @@ export default function MapaTerrestreEmanuel() {
             boxShadow: '0 10px 25px rgba(0,240,255,0.3)',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
+            justifyContent: 'center',
             gap: '8px'
           }}
         >
@@ -597,6 +600,9 @@ export default function MapaTerrestreEmanuel() {
           </div>
         </aside>
       )}
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
     </div>
   );
 }

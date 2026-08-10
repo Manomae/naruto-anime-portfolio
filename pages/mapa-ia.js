@@ -6,6 +6,9 @@ import { QRCodeSVG } from 'qrcode.react';
 // 🚀 IMPORTAÇÃO LIMPA E DIRETA DA BASE DE DADOS
 import { pokedexData, yugiohWorldData } from '../datapokedex-yugioh';
 
+// Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 export default function MapaIA() {
   const mountRef = useRef(null);
   const rendererRef = useRef(null);
@@ -998,6 +1001,10 @@ export default function MapaIA() {
         </div>
 
       </div>
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
+
     </div>
   );
 }

@@ -85,7 +85,7 @@ export default async function handler(req, res) {
         rotulo: `Versão ${versoes.length + 1} - Modelo EM 1.0 (Variante Holográfica)`
       });
 
-      // Provedor Backup Pexels / Dynamic Image Frames
+      // Provedor Backup Frame Web
       versoes.push({
         id: versoes.length + 1,
         url: `https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1080&q=80&sig=${termoEncoded}`,
@@ -104,7 +104,7 @@ export default async function handler(req, res) {
 
     // --- B. MODELO GIEM 1.0: GIFS ANIMADOS REAIS ---
     if (tipo === 'crie_gif') {
-      const giphyApiKey = process.env.GIPHY_API_KEY || 'dc6zaTOxFJmzC'; // API Key pública para busca de GIFs
+      const giphyApiKey = process.env.GIPHY_API_KEY || 'dc6zaTOxFJmzC';
       
       let response = await fetch(
         `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${termoEncoded}&limit=6&rating=g`
@@ -112,7 +112,6 @@ export default async function handler(req, res) {
       let data = await response.json();
 
       if (!data.data || data.data.length === 0) {
-        // Fallback em caso de termos raros
         response = await fetch(
           `https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=cyberpunk+anime&limit=6`
         );
@@ -140,7 +139,6 @@ export default async function handler(req, res) {
       const resEscolhida = resolucao || '1080p Full HD';
       const marcaDaguaStatus = semMarcaDagua ? 'Sem Marca d\'Água (Clean PRO)' : 'Com Marca d\'Água Emanuel.OS';
 
-      // Repositório de vídeos de amostra em alta qualidade
       const colecaoVideos = [
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',

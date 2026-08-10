@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import * as THREE from 'three';
 
+// Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 export default function MapaEspacialEmanuelOS() {
   const mountRef = useRef(null);
   const [missaoSelecionada, setMissaoSelecionada] = useState(null);
@@ -260,7 +263,7 @@ export default function MapaEspacialEmanuelOS() {
             boxShadow: '0 10px 25px rgba(0,240,255,0.3)',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
+            justifyContent: 'center',
             gap: '8px'
           }}
         >
@@ -451,6 +454,9 @@ export default function MapaEspacialEmanuelOS() {
           <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
         </div>
       </aside>
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
     </div>
   );
 }

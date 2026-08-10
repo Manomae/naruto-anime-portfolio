@@ -10,6 +10,9 @@ import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
+// Importação da nova Janela Futurista (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 // Dicionário Ninja local para fallback
 const dicionarioNinjaLocal = [
   { termo: "chakra", categoria: "Energia Neural", significado: "Massa de energia biológica e espiritual combinada para execução de técnicas e comandos neurais." },
@@ -1735,7 +1738,7 @@ export default function EmanuelOSCore() {
                   🧠 Ressonância
                 </Link>
 
-                {/* NOVO LINK INTEGRADO DO MAPA MATEMÁTICO QUÂNTICO */}
+                {/* LINK INTEGRADO DO MAPA MATEMÁTICO QUÂNTICO */}
                 <Link href="/mapa-quantico" style={{ 
                   padding: '10px', 
                   backgroundColor: '#0f172a', 
@@ -2168,6 +2171,9 @@ export default function EmanuelOSCore() {
         </form>
 
       </div>
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
 
       <style>{`
         @keyframes spinPulse {
