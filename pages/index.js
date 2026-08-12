@@ -779,6 +779,9 @@ export default function EmanuelOSCore() {
   // --- ESTADO DO NOVO EM CREATOR STUDIO IA ---
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
 
+  // --- ESTADO DO NATIVE BROWSER (EXPANDIDO / RECOLHIDO) ---
+  const [browserExpandido, setBrowserExpandido] = useState(true);
+
   // --- ESTADO FUTURISTA DE GERAÇÃO EM TEMPO REAL ---
   const [gerandoMidia, setGerandoMidia] = useState(false);
   const [progressoRender, setProgressoRender] = useState(0);
@@ -1819,6 +1822,21 @@ export default function EmanuelOSCore() {
         🛠️ Suporte EM IA
       </button>
 
+      {/* BOTÃO PARA ABRIR O EM CREATOR STUDIO IA */}
+      <button 
+        onClick={() => setModalCreatorStudioAberto(true)}
+        style={{
+          position: 'absolute', top: '23px', left: sidebarAberta ? '615px' : '210px',
+          zIndex: 100, backgroundColor: 'rgba(0, 240, 255, 0.2)', border: '1px solid #00f0ff',
+          color: '#00f0ff', padding: '0 15px', height: '40px', borderRadius: '20px',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        📊 EM Creator Studio IA
+      </button>
+
       <QuickActionsWidget onActionClick={dispararQuickAction} />
 
       <aside style={{
@@ -2191,81 +2209,109 @@ export default function EmanuelOSCore() {
         </div>
       </div>
 
+      {/* --- EMANUEL.OS NATIVE BROWSER COM SETINHA DE EXPANDIR / ESCONDER (RETRÁTIL) --- */}
       <div style={{
         position: 'absolute', top: '90px', right: '400px', zIndex: 10,
         backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '14px', padding: '14px',
-        width: '300px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
+        width: '300px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: '10px' }}>
-          <span style={{ fontSize: '10px', color: '#00f0ff', marginRight: '6px' }}>🌐</span>
-          <input type="text" readOnly value="Internet Em.com v5.1" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
-          <span style={{ fontSize: '10px', color: '#00f0ff' }}>🔍</span>
-        </div>
-
-        <div>
-          <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
-          <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
-
-          {gerandoMidia ? (
-            <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
-              <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
-              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
-                SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
-              </span>
-              
-              <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
-                <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
-              </div>
-              
-              <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
-            </div>
-          ) : (
-            <>
-              {browserAsset.videoUrl && (
-                <div style={{ margin: '8px 0' }}>
-                  <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
-                  
-                  <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
-                        <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                          {res}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-                      {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {browserAsset.imagem && (
-                <div>
-                  <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-                    <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
-                  </div>
-
-                  {versoesAtivas.length > 1 && (
-                    <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
-                      {versoesAtivas.map((v, i) => (
-                        <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                          {v.rotulo}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-
-          <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
-            {browserAsset.conteudoTexto}
+        {/* BARRA DE NAVEGAÇÃO SUPERIOR DO NATIVE BROWSER */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
+            <span style={{ fontSize: '10px', color: '#00f0ff' }}>🌐</span>
+            <input type="text" readOnly value="Internet Em.com v5.1" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '10px', color: '#00f0ff' }}>🔍</span>
+            {/* BOTÃO RETRÁTIL DO NATIVE BROWSER */}
+            <button
+              onClick={() => setBrowserExpandido(!browserExpandido)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#00f0ff',
+                fontSize: '12px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                padding: '0 4px',
+                lineHeight: 1
+              }}
+              title={browserExpandido ? "Recolher Native Browser" : "Expandir Native Browser"}
+            >
+              {browserExpandido ? '▲' : '▼'}
+            </button>
           </div>
         </div>
+
+        {/* CONTEÚDO EXPANDÍVEL DO BROWSER */}
+        {browserExpandido && (
+          <div>
+            <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
+            <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
+
+            {gerandoMidia ? (
+              <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
+                <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
+                <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
+                  SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
+                </span>
+                
+                <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
+                  <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
+                </div>
+                
+                <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
+              </div>
+            ) : (
+              <>
+                {browserAsset.videoUrl && (
+                  <div style={{ margin: '8px 0' }}>
+                    <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
+                    
+                    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
+                          <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                            {res}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                        {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {browserAsset.imagem && (
+                  <div>
+                    <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+                      <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
+                    </div>
+
+                    {versoesAtivas.length > 1 && (
+                      <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
+                        {versoesAtivas.map((v, i) => (
+                          <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            {v.rotulo}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
+              {browserAsset.conteudoTexto}
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={{

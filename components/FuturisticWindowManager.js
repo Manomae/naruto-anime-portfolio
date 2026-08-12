@@ -1,17 +1,70 @@
 import React, { useState } from 'react';
+import { jsPDF } from "jspdf";
 
 export default function FuturisticWindowManager() {
   const [painelAberto, setPainelAberto] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('cmd'); // 'cmd', 'notepad', 'android'
   const [cmdInputWindow, setCmdInputWindow] = useState('');
+  const [copiadoIdx, setCopiadoIdx] = useState(null);
+
   const [cmdLogsWindow, setCmdLogsWindow] = useState([
     "[SYSTEM: WIN11_CORE] Windows 11 Cyber Kernel v10.0 active.",
     "[SYSTEM: ANDROID_HUD] Subsystem Android 15 Neural Sync: ONLINE.",
     "[SYSTEM: DEV_STUDIO] Code Editor ready. JS/Next.js/Three.js mode enabled."
   ]);
+
   const [textoNotas, setTextoNotas] = useState(
     `// Emanuel.OS - DevStudio Notepad\n// Digite rascunhos de código ou anotações aqui\n\nfunction inicializarMatrizQuantica() {\n  console.log("Qubits sincronizados com Gemini AGI Core v5.1");\n}`
   );
+
+  // Copiar texto para a área de transferência
+  const copiarParaTransferencia = (texto, index) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto);
+      setCopiadoIdx(index);
+      setTimeout(() => setCopiadoIdx(null), 2000);
+    }
+  };
+
+  // Gerar Códigos de Exemplo via IA
+  const gerarCodigoIA = (tipo) => {
+    let codigoGerado = '';
+    if (tipo === 'react') {
+      codigoGerado = `// Componente React Autônomo Emanuel.OS\nimport React, { useState } from 'react';\n\nexport default function QuantumWidget() {\n  const [status, setStatus] = useState("SYNC_OK");\n  return (\n    <div style={{ color: '#00f0ff', padding: '10px' }}>\n      <h3>Status do Qubit: {status}</h3>\n    </div>\n  );\n}`;
+    } else if (tipo === 'three') {
+      codigoGerado = `// Animação 3D Three.js Emanuel.OS\nconst scene = new THREE.Scene();\nconst geometry = new THREE.IcosahedronGeometry(2, 4);\nconst material = new THREE.MeshStandardMaterial({ color: 0x00f0ff, wireframe: true });\nconst mesh = new THREE.Mesh(geometry, material);\nscene.add(mesh);`;
+    } else if (tipo === 'python') {
+      codigoGerado = `# Script Python AI Emanuel.OS\nimport numpy as np\n\ndef processar_matriz_neural(dados):\n    print("Processando tensores AGI v5.1...")\n    return np.array(dados) * 1.618`;
+    }
+
+    setTextoNotas(prev => `${prev}\n\n${codigoGerado}`);
+    setCmdLogsWindow(prev => [...prev, `[G-AGI CODE] Modelo de código (${tipo.toUpperCase()}) gerado no DevStudio!`]);
+  };
+
+  // Exportar conteúdo do Dev Notepad em PDF
+  const baixarCodigoPDF = () => {
+    const doc = new jsPDF();
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, 210, 30, 'F');
+
+    doc.setTextColor(0, 240, 255);
+    doc.setFontSize(16);
+    doc.text("EMANUEL.OS - DEVSTUDIO CODE REPORT", 15, 18);
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text("REGISTRO DE CÓDIGO E NOTAS DO DESENVOLVEDOR", 15, 25);
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(10);
+    doc.setFont("courier", "normal");
+
+    const linhasCodigo = doc.splitTextToSize(textoNotas, 180);
+    doc.text(linhasCodigo, 15, 40);
+
+    doc.save("EmanuelOS_DevStudio_Code.pdf");
+    setCmdLogsWindow(prev => [...prev, "[PDF] Código do Dev Notepad exportado com sucesso (.PDF)!"]);
+  };
 
   const rodarComandoWindow = (e) => {
     e.preventDefault();
@@ -37,7 +90,7 @@ export default function FuturisticWindowManager() {
       bottom: '20px',
       left: painelAberto ? '20px' : '-440px',
       width: '430px',
-      height: '380px',
+      height: '420px',
       backgroundColor: 'rgba(8, 15, 30, 0.92)',
       backdropFilter: 'blur(20px)',
       border: '1px solid rgba(0, 240, 255, 0.4)',
@@ -82,7 +135,7 @@ export default function FuturisticWindowManager() {
         padding: '10px 14px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         alignItems: 'center',
         background: 'rgba(2, 6, 23, 0.6)',
         borderRadius: '16px 16px 0 0'
@@ -147,7 +200,7 @@ export default function FuturisticWindowManager() {
       {/* Conteúdo das Janelas */}
       <div style={{ flexGrow: 1, padding: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         
-        {/* JANELA 1: CMD WINDOWS 11 CIBERESPACIAL */}
+        {/* JANELA 1: CMD WINDOWS 11 CIBERESPACIAL COM BOTÃO DE CÓPIA 📋 */}
         {abaAtiva === 'cmd' && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{
@@ -162,10 +215,28 @@ export default function FuturisticWindowManager() {
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '4px'
+              gap: '6px'
             }}>
               {cmdLogsWindow.map((log, i) => (
-                <div key={i}>{log}</div>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ wordBreak: 'break-all' }}>{log}</span>
+                  <button
+                    onClick={() => copiarParaTransferencia(log, i)}
+                    title="Copiar mensagem"
+                    style={{
+                      backgroundColor: 'rgba(0,240,255,0.1)',
+                      border: '1px solid rgba(0,240,255,0.3)',
+                      color: copiadoIdx === i ? '#4ade80' : '#00f0ff',
+                      borderRadius: '4px',
+                      padding: '2px 6px',
+                      fontSize: '9px',
+                      cursor: 'pointer',
+                      flexShrink: 0
+                    }}
+                  >
+                    {copiadoIdx === i ? '✓' : '📋'}
+                  </button>
+                </div>
               ))}
             </div>
             <form onSubmit={rodarComandoWindow} style={{ display: 'flex', marginTop: '8px', gap: '6px' }}>
@@ -205,9 +276,23 @@ export default function FuturisticWindowManager() {
           </div>
         )}
 
-        {/* JANELA 2: DEVSTUDIO NOTEPAD & IDE */}
+        {/* JANELA 2: DEVSTUDIO NOTEPAD (GERAÇÃO DE CÓDIGOS, CÓPIA 📋 E DOWNLOAD EM PDF) */}
         {abaAtiva === 'notepad' && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            
+            {/* BOTÕES DE GERAÇÃO RÁPIDA DE CÓDIGO POR IA */}
+            <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
+              <button onClick={() => gerarCodigoIA('react')} style={{ flex: 1, padding: '4px', backgroundColor: 'rgba(56,189,248,0.2)', border: '1px solid #38bdf8', color: '#38bdf8', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                ⚡ Gerar React
+              </button>
+              <button onClick={() => gerarCodigoIA('three')} style={{ flex: 1, padding: '4px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                ⚡ Gerar Three.js
+              </button>
+              <button onClick={() => gerarCodigoIA('python')} style={{ flex: 1, padding: '4px', backgroundColor: 'rgba(234,179,8,0.2)', border: '1px solid #eab308', color: '#fef08a', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                ⚡ Gerar Python
+              </button>
+            </div>
+
             <textarea
               value={textoNotas}
               onChange={(e) => setTextoNotas(e.target.value)}
@@ -225,12 +310,44 @@ export default function FuturisticWindowManager() {
                 lineHeight: '1.4'
               }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-              <span style={{ fontSize: '9px', color: '#94a3b8' }}>Editor de Código Integrado (UTF-8)</span>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', gap: '6px' }}>
+              <button
+                onClick={() => copiarParaTransferencia(textoNotas, 'notepad')}
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: 'rgba(0,240,255,0.15)',
+                  border: '1px solid #00f0ff',
+                  color: '#00f0ff',
+                  borderRadius: '6px',
+                  fontSize: '9px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                📋 Copiar Código
+              </button>
+
+              <button
+                onClick={baixarCodigoPDF}
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                  border: '1px solid #ef4444',
+                  color: '#fca5a5',
+                  borderRadius: '6px',
+                  fontSize: '9px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                📄 Baixar PDF
+              </button>
+
               <button
                 onClick={() => alert("Rascunho salvo na memória cache do Emanuel.OS!")}
                 style={{
-                  padding: '5px 12px',
+                  padding: '6px 10px',
                   backgroundColor: 'rgba(168, 85, 247, 0.2)',
                   border: '1px solid #a855f7',
                   color: '#d8b4fe',
