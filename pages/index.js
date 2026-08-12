@@ -10,7 +10,7 @@ import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
-// Importação da nova Janela Futurista (Win11 CMD, Dev Notepad & Android HUD)
+// Importação da Janela Futurista (Win11 CMD, Dev Notepad & Android HUD)
 import FuturisticWindowManager from '../components/FuturisticWindowManager';
 
 // Dicionário Ninja local para fallback
@@ -19,6 +19,148 @@ const dicionarioNinjaLocal = [
   { termo: "sharingan", categoria: "Linhagem Sanguínea", significado: "Dōjutsu do Clã Uchiha capaz de perceber, copiar e prever fluxos de informação e movimento." },
   { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
 ];
+
+// --- 📊 COMPONENTE: EM CREATOR STUDIO IA (ANALYTICS & AUDIÊNCIA MULTIMODAL) ---
+function EMCreatorStudio({ onClose }) {
+  const [metricas, setMetricas] = useState({
+    textosConversas: 1240,
+    audiosGerações: 380,
+    fotosRenders: 890,
+    videosRenderizados: 215,
+    memesGifsEngajados: 560,
+    audienciaAtiva: 'Alta (89% retenção)',
+    resolucaoProblemasIA: '94.2% Autônomo'
+  });
+
+  const [sugestoesAGI, setSugestoesAGI] = useState([
+    { id: 1, tipo: '🎬 Vídeos & YouTube Shorts', acao: 'Criar Shorts de Naruto vs Sasuke em 4K. O público responde 40% melhor a conteúdos com áudio sincronizado.', prioridade: 'Alta' },
+    { id: 2, tipo: '🖼️ Imagens Realistas', acao: 'Aumentar a geração de artes Cyberpunk via modelo EM 1.0. Detectado pico de engajamento nos prompts de animes.', prioridade: 'Média' },
+    { id: 3, tipo: '📄 Automação .DOCX / PDF', acao: 'Sintetizar relatórios automatizados de código diretamente no DevStudio. Economia de 3.5h de desenvolvimento.', prioridade: 'Crítica' }
+  ]);
+
+  const [executandoAcao, setExecutandoAcao] = useState(null);
+
+  const aplicarAcaoAutonoma = (id) => {
+    setExecutandoAcao(id);
+    setTimeout(() => {
+      setSugestoesAGI(prev => prev.filter(item => item.id !== id));
+      setExecutandoAcao(null);
+      alert(`🚀 Ação Autônoma da IA executada e aplicada na estrutura do Emanuel.OS!`);
+    }, 1500);
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+      backgroundColor: 'rgba(2, 6, 23, 0.88)', backdropFilter: 'blur(20px)',
+      zIndex: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}>
+      <div style={{
+        backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #00f0ff',
+        borderRadius: '20px', padding: '25px', width: '100%', maxWidth: '850px',
+        maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 0 40px rgba(0, 240, 255, 0.3)',
+        color: '#fff', position: 'relative'
+      }}>
+        <button 
+          onClick={onClose}
+          style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: '#00f0ff', fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          ✕
+        </button>
+
+        <div style={{ borderBottom: '1px solid rgba(0,240,255,0.2)', paddingBottom: '12px', marginBottom: '16px' }}>
+          <h2 style={{ color: '#00f0ff', fontSize: '18px', margin: 0, fontWeight: '900', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            📊 EM CREATOR STUDIO IA <span style={{ fontSize: '10px', color: '#ff007f', border: '1px solid #ff007f', padding: '2px 8px', borderRadius: '10px' }}>AGI Core v5.1</span>
+          </h2>
+          <p style={{ color: '#94a3b8', fontSize: '11px', margin: '4px 0 0 0' }}>
+            Análise de desempenho multimodal, diagnóstico de audiência e tomada de ações autônomas para projetos e estruturas.
+          </p>
+        </div>
+
+        {/* METRICAS MULTIMODAIS DO USUÁRIO */}
+        <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+          📈 DESEMPENHO E UTILIZAÇÃO DE FERRAMENTAS MULTIMODAIS
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '20px' }}>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>💬</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#00f0ff', marginTop: '4px' }}>{metricas.textosConversas}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Textos / Chat</span>
+          </div>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>🎙️</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginTop: '4px' }}>{metricas.audiosGerações}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Áudios / Voz</span>
+          </div>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>🖼️</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#ff007f', marginTop: '4px' }}>{metricas.fotosRenders}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Fotos / Renders</span>
+          </div>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>🎬</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#eab308', marginTop: '4px' }}>{metricas.videosRenderizados}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Vídeos HD/4K</span>
+          </div>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>🎞️</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#4ade80', marginTop: '4px' }}>{metricas.memesGifsEngajados}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Memes & GIFs</span>
+          </div>
+        </div>
+
+        {/* AUDIÊNCIA E RESOLUÇÃO DE PROBLEMAS */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+          <div style={{ background: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px' }}>
+            <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>🎯 COMPORTAMENTO DA AUDIÊNCIA</span>
+            <h4 style={{ margin: '4px 0', fontSize: '14px', color: '#00f0ff' }}>{metricas.audienciaAtiva}</h4>
+            <p style={{ margin: 0, fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>
+              Os usuários interagem ativamente com atalhos de áudio e geração de mídias para TikTok, YouTube Shorts e Kwai.
+            </p>
+          </div>
+
+          <div style={{ background: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(255, 0, 127, 0.3)', borderRadius: '12px', padding: '12px' }}>
+            <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>🧠 AUTONOMIA NA RESOLUÇÃO DE BUGS</span>
+            <h4 style={{ margin: '4px 0', fontSize: '14px', color: '#ff007f' }}>{metricas.resolucaoProblemasIA}</h4>
+            <p style={{ margin: 0, fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>
+              Resolução de problemas de estrutura e sintaxe efetuados pelo motor Gemini AGI sem necessidade de intervenção.
+            </p>
+          </div>
+        </div>
+
+        {/* SUGESTÕES DE AÇÃO AUTOMÁTICA DA AGI */}
+        <span style={{ fontSize: '11px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+          💡 SUGESTÕES DE AÇÕES AUTOMÁTICAS E OTIMIZAÇÕES DE PROJETO
+        </span>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {sugestoesAGI.map(item => (
+            <div key={item.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>{item.tipo}</span>
+                <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#e2e8f0', lineHeight: '1.3' }}>{item.acao}</p>
+              </div>
+
+              <button
+                onClick={() => aplicarAcaoAutonoma(item.id)}
+                disabled={executandoAcao === item.id}
+                style={{
+                  padding: '8px 14px', backgroundColor: executandoAcao === item.id ? '#4c1d95' : '#00f0ff',
+                  color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px',
+                  cursor: 'pointer', whiteSpace: 'nowrap', marginLeft: '12px'
+                }}
+              >
+                {executandoAcao === item.id ? '⚡ Aplicando...' : '🚀 Executar Ação'}
+              </button>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+}
 
 // --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) ---
 function FormularioCapturaEmanuelOS() {
@@ -633,6 +775,9 @@ export default function EmanuelOSCore() {
   const [inputProblemaSuporte, setInputProblemaSuporte] = useState('');
   const [carregandoSuporte, setCarregandoSuporte] = useState(false);
   const [respostaSuporte, setRespostaSuporte] = useState(null);
+
+  // --- ESTADO DO NOVO EM CREATOR STUDIO IA ---
+  const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
 
   // --- ESTADO FUTURISTA DE GERAÇÃO EM TEMPO REAL ---
   const [gerandoMidia, setGerandoMidia] = useState(false);
@@ -1694,9 +1839,21 @@ export default function EmanuelOSCore() {
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & MEET ENGINE | Core v5.1</span>
             </div>
 
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <button onClick={() => setModo('live')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>📡 LIVE MODE</button>
-              <button onClick={() => setModo('studio')} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'studio' ? '#ff0055' : 'transparent', color: modo === 'studio' ? '#fff' : '#a1a1aa', transition: 'all 0.2s', fontSize: '11px' }}>🎬 STUDIO MODE</button>
+            {/* BARRA DA LATERAL: MODO LIVE & EM CREATOR STUDIO IA (SUBSTITUINDO O STUDIO MODE E AJUSTADO PROPORCIONALMENTE) */}
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '3px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', gap: '4px' }}>
+              <button 
+                onClick={() => setModo('live')} 
+                style={{ flex: '1 1 35%', padding: '8px 4px', border: 'none', borderRadius: '9px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '10px', whiteSpace: 'nowrap' }}
+              >
+                📡 LIVE MODE
+              </button>
+              
+              <button 
+                onClick={() => setModalCreatorStudioAberto(true)} 
+                style={{ flex: '1 1 65%', padding: '8px 4px', border: 'none', borderRadius: '9px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(0, 240, 255, 0.15)', border: '1px solid #00f0ff', color: '#00f0ff', transition: 'all 0.2s', fontSize: '10px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+              >
+                📊 EM Creator Studio IA
+              </button>
             </div>
 
             <GoogleMeetAvatarManager addLog={addLogTerminal} />
@@ -1738,7 +1895,6 @@ export default function EmanuelOSCore() {
                   🧠 Ressonância
                 </Link>
 
-                {/* LINK INTEGRADO DO MAPA MATEMÁTICO QUÂNTICO */}
                 <Link href="/mapa-quantico" style={{ 
                   padding: '10px', 
                   backgroundColor: '#0f172a', 
@@ -1814,6 +1970,7 @@ export default function EmanuelOSCore() {
         )}
       </aside>
 
+      {/* MODAL SUPORTE EM IA */}
       {modalSuporteAberto && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -1882,6 +2039,11 @@ export default function EmanuelOSCore() {
             )}
           </div>
         </div>
+      )}
+
+      {/* MODAL EM CREATOR STUDIO IA */}
+      {modalCreatorStudioAberto && (
+        <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />
       )}
 
       <div style={{
