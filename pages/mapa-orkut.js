@@ -23,7 +23,7 @@ export default function MapaOrkutSocial3D() {
     statusBio: "Criando a nova era das Redes Sociais 3D e Matriz G-AGI 2030 🚀",
     confiavel: 100, // %
     legal: 100,     // %
-    sexy: 98,       // %
+    poderosoInteligente: 98, // %
     fasCount: 2450,
     amigosCount: 890,
     comunidadesCount: 142
@@ -55,7 +55,7 @@ export default function MapaOrkutSocial3D() {
   ];
 
   const palavrasChaveOrkut = [
-    "#comunidades", "#depoimentos", "#scraps", "#confiavel100%", "#legal100%", "#sexy98%", "#fas", "#orkut2030"
+    "#comunidades", "#depoimentos", "#scraps", "#confiavel100%", "#legal100%", "#poderosointeligente", "#fas", "#orkut2030"
   ];
 
   // Cenário Three.js (Matriz Orkut 3D Magenta & Neon)
@@ -225,7 +225,7 @@ export default function MapaOrkutSocial3D() {
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     doc.text(`Status Bio: ${perfilUsuario.statusBio}`, 14, 52);
-    doc.text(`Avaliações: 😇 Confiável (${perfilUsuario.confiavel}%) | 😎 Legal (${perfilUsuario.legal}%) | 🔥 Sexy (${perfilUsuario.sexy}%)`, 14, 60);
+    doc.text(`Avaliações: 😇 Confiável (${perfilUsuario.confiavel}%) | 😎 Legal (${perfilUsuario.legal}%) | 🔥 Poderoso/Inteligente (${perfilUsuario.poderosoInteligente}%)`, 14, 60);
     doc.text(`Métricas: ❤️ ${perfilUsuario.fasCount} Fãs | 👥 ${perfilUsuario.amigosCount} Amigos | 🌐 ${perfilUsuario.comunidadesCount} Comunidades`, 14, 67);
 
     // Linha de Divisão
@@ -392,7 +392,7 @@ export default function MapaOrkutSocial3D() {
       {/* CANVAS THREE.JS DE FUNDO */}
       <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
 
-      {/* PAINEL ESQUERDO: CARTÃO DE PERFIL ORKUT NOSTÁLGICO */}
+      {/* PAINEL ESQUERDO: CARTÃO DE PERFIL ORKUT COM A NOVA LOGO */}
       <div style={{
         position: 'absolute', top: '75px', left: '20px', width: '310px',
         backgroundColor: 'rgba(15, 5, 25, 0.90)', backdropFilter: 'blur(20px)',
@@ -400,29 +400,41 @@ export default function MapaOrkutSocial3D() {
         boxShadow: '0 0 30px rgba(255, 0, 127, 0.25)', zIndex: 10
       }}>
         <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px', marginBottom: '12px' }}>
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(45deg, #ff007f, #00f0ff)', margin: '0 auto 8px auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', boxShadow: '0 0 15px #ff007f' }}>
-            👑
+          {/* FOTO PRINCIPAL / LOGO ATUALIZADA DO MAPA ORKUT */}
+          <div style={{ margin: '0 auto 8px auto', display: 'flex', justifyContent: 'center' }}>
+            <img 
+              src="/logo-orkut.png" 
+              alt="Orkut EM Social 3D" 
+              style={{ 
+                width: '100%', 
+                maxWidth: '220px', 
+                borderRadius: '12px', 
+                border: '1px solid rgba(0, 240, 255, 0.5)',
+                filter: 'drop-shadow(0 0 10px rgba(255, 0, 127, 0.5))',
+                objectFit: 'contain'
+              }} 
+            />
           </div>
-          <h3 style={{ margin: 0, fontSize: '13px', color: '#fff', fontWeight: 'bold' }}>{perfilUsuario.nome}</h3>
+          <h3 style={{ margin: '6px 0 0 0', fontSize: '13px', color: '#fff', fontWeight: 'bold' }}>{perfilUsuario.nome}</h3>
           <span style={{ fontSize: '9px', color: '#00f0ff', display: 'block', marginTop: '2px' }}>{perfilUsuario.statusBio}</span>
         </div>
 
-        {/* SELOS CLÁSSICOS: CONFIÁVEL, LEGAL, SEXY */}
+        {/* SELOS CLÁSSICOS: CONFIÁVEL, LEGAL, PODEROSO E INTELIGENTE */}
         <span style={{ fontSize: '10px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
           ⭐ AVALIAÇÕES ORKUT (MÉTRICAS):
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '14px', textAlign: 'center' }}>
           <div style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.3)' }}>
-            <span style={{ fontSize: '10px', display: 'block' }}>😇 Confiável</span>
+            <span style={{ fontSize: '9px', display: 'block' }}>😇 Confiável</span>
             <strong style={{ fontSize: '11px', color: '#00f0ff' }}>{perfilUsuario.confiavel}%</strong>
           </div>
           <div style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(234,179,8,0.3)' }}>
-            <span style={{ fontSize: '10px', display: 'block' }}>😎 Legal</span>
+            <span style={{ fontSize: '9px', display: 'block' }}>😎 Legal</span>
             <strong style={{ fontSize: '11px', color: '#eab308' }}>{perfilUsuario.legal}%</strong>
           </div>
           <div style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(255,0,127,0.3)' }}>
-            <span style={{ fontSize: '10px', display: 'block' }}>🔥 Sexy</span>
-            <strong style={{ fontSize: '11px', color: '#ff007f' }}>{perfilUsuario.sexy}%</strong>
+            <span style={{ fontSize: '8px', display: 'block' }}>🔥 Poderoso/Intel.</span>
+            <strong style={{ fontSize: '11px', color: '#ff007f' }}>{perfilUsuario.poderosoInteligente}%</strong>
           </div>
         </div>
 
