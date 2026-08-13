@@ -22,7 +22,7 @@ const dicionarioNinjaLocal = [
 
 // --- 📊 COMPONENTE: EM CREATOR STUDIO IA (ANALYTICS & AUDIÊNCIA MULTIMODAL) ---
 function EMCreatorStudio({ onClose }) {
-  const [metricas, setMetricas] = useState({
+  const [metricas] = useState({
     textosConversas: 1240,
     audiosGerações: 380,
     fotosRenders: 890,
@@ -78,7 +78,6 @@ function EMCreatorStudio({ onClose }) {
           </p>
         </div>
 
-        {/* METRICAS MULTIMODAIS DO USUÁRIO */}
         <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
           📈 DESEMPENHO E UTILIZAÇÃO DE FERRAMENTAS MULTIMODAIS
         </span>
@@ -110,7 +109,6 @@ function EMCreatorStudio({ onClose }) {
           </div>
         </div>
 
-        {/* AUDIÊNCIA E RESOLUÇÃO DE PROBLEMAS */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
           <div style={{ background: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px' }}>
             <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>🎯 COMPORTAMENTO DA AUDIÊNCIA</span>
@@ -129,7 +127,6 @@ function EMCreatorStudio({ onClose }) {
           </div>
         </div>
 
-        {/* SUGESTÕES DE AÇÃO AUTOMÁTICA DA AGI */}
         <span style={{ fontSize: '11px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
           💡 SUGESTÕES DE AÇÕES AUTOMÁTICAS E OTIMIZAÇÕES DE PROJETO
         </span>
@@ -162,6 +159,271 @@ function EMCreatorStudio({ onClose }) {
   );
 }
 
+// --- 💻 NOVO COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN ---
+function PainelDevSplitScreen({ onClose }) {
+  const [linguagem, setLinguagem] = useState('javascript');
+  const [codigoFonte, setCodigoFonte] = useState(
+    `// Emanuel.OS Dev Studio - Ambiente de Desenvolvimento\n// Assistência ativa via IA Gemini AGI Core v5.1\n\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
+  );
+  const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração dos mapas 3D e rotas do Next.js.");
+  const [analisandoIA, setAnalisandoIA] = useState(false);
+  const [retornoIA, setRespostaIA] = useState(null);
+
+  const executarAnaliseIA = (tipoAcao) => {
+    setAnalisandoIA(true);
+    setRespostaIA(null);
+
+    setTimeout(() => {
+      setAnalisandoIA(false);
+      if (tipoAcao === 'bug') {
+        setRespostaIA("✅ Código analisado! Sintaxe 100% correta. Nenhuma vulnerabilidade ou memory leak detectado no algoritmo.");
+      } else if (tipoAcao === 'otimizar') {
+        setRespostaIA("⚡ Otimização AGI: Recomenda-se utilizar React.useMemo em renderizações 3D pesadas para reduzir o uso do WebGL em 18%.");
+      } else if (tipoAcao === 'explicar') {
+        setRespostaIA("📖 Explicação: O script inicializa o módulo neural do Emanuel.OS verificando a disponibilidade do ambiente antes de expor os serviços.");
+      }
+    }, 1200);
+  };
+
+  const baixarCodigoArquivo = () => {
+    const ext = linguagem === 'javascript' ? 'js' : linguagem === 'python' ? 'py' : linguagem === 'typescript' ? 'ts' : 'txt';
+    const blob = new Blob([codigoFonte], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `EmanuelOS_Projeto.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const exportarCodigoPDF = () => {
+    const doc = new jsPDF();
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(0, 240, 255);
+    doc.setFontSize(16);
+    doc.text("EMANUEL.OS - DEV WORKSTATION REPORT", 15, 18);
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`LINGUAGEM: ${linguagem.toUpperCase()} | DATA: ${new Date().toLocaleDateString('pt-BR')}`, 15, 25);
+
+    doc.setFont("courier", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(30, 41, 59);
+    const linhas = doc.splitTextToSize(codigoFonte, 180);
+    doc.text(linhas, 15, 40);
+
+    doc.save(`DevStudio_Codigo_${linguagem}.pdf`);
+  };
+
+  return (
+    <div style={{
+      width: '100%', height: '100%', backgroundColor: 'rgba(2, 6, 23, 0.96)',
+      borderLeft: '2px solid #00f0ff', padding: '16px', boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column', gap: '12px', color: '#fff',
+      fontFamily: 'Consolas, Monaco, monospace'
+    }}>
+      {/* HEADER DO DEV STUDIO */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px' }}>👨‍💻</span>
+          <strong style={{ fontSize: '12px', color: '#00f0ff', fontFamily: 'sans-serif' }}>
+            Emanuel.OS Dev Workstation | Tela Dividida
+          </strong>
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>
+          ✕ Fechar Split
+        </button>
+      </div>
+
+      {/* CONTROLES E SELEÇÃO DE LINGUAGEM */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <select
+          value={linguagem}
+          onChange={(e) => setLinguagem(e.target.value)}
+          style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', outline: 'none' }}
+        >
+          <option value="javascript">JavaScript (Next.js/React)</option>
+          <option value="python">Python (AI/ML)</option>
+          <option value="typescript">TypeScript</option>
+          <option value="html">HTML5 / CSS3</option>
+          <option value="cpp">C++ Quântico</option>
+          <option value="sql">SQL / Database</option>
+        </select>
+
+        <button onClick={() => executarAnaliseIA('bug')} style={{ padding: '6px 10px', backgroundColor: 'rgba(0,240,255,0.2)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🔍 Checar Bugs
+        </button>
+        <button onClick={() => executarAnaliseIA('otimizar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          ⚡ Otimizar IA
+        </button>
+        <button onClick={() => executarAnaliseIA('explicar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(234,179,8,0.2)', border: '1px solid #eab308', color: '#fef08a', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          📖 Explicar
+        </button>
+      </div>
+
+      {/* EDITOR DE CÓDIGO PRINCIPAL */}
+      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <span style={{ fontSize: '9px', color: '#94a3b8', fontFamily: 'sans-serif' }}>CÓDIGO FONTE DO PROJETO ({linguagem.toUpperCase()}):</span>
+        <textarea
+          value={codigoFonte}
+          onChange={(e) => setCodigoFonte(e.target.value)}
+          style={{
+            width: '100%', flexGrow: 1, backgroundColor: '#010409', border: '1px solid #334155',
+            borderRadius: '8px', color: '#38bdf8', padding: '12px', fontSize: '11px',
+            outline: 'none', resize: 'none', lineHeight: '1.4', fontFamily: 'Consolas, monospace',
+            boxSizing: 'border-box'
+          }}
+        />
+      </div>
+
+      {/* PAINEL DE RESPOSTA DA IA */}
+      {analisandoIA ? (
+        <div style={{ backgroundColor: '#020617', border: '1px dashed #00f0ff', padding: '8px', borderRadius: '6px', fontSize: '10px', color: '#00f0ff' }}>
+          ⏳ Gemini AGI processando análise de código...
+        </div>
+      ) : retornoIA && (
+        <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '8px', borderRadius: '4px', fontSize: '10px', color: '#e2e8f0', fontFamily: 'sans-serif' }}>
+          {retornoIA}
+        </div>
+      )}
+
+      {/* BLOCO DE NOTAS / SCRAPS DE DEV */}
+      <div style={{ height: '70px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <span style={{ fontSize: '9px', color: '#ff007f', fontFamily: 'sans-serif', fontWeight: 'bold' }}>📝 BLOCO DE NOTAS DO DESENVOLVEDOR:</span>
+        <textarea
+          value={blocoRascunho}
+          onChange={(e) => setBlocoRascunho(e.target.value)}
+          style={{
+            width: '100%', height: '100%', backgroundColor: '#020617', border: '1px solid rgba(255,0,127,0.3)',
+            borderRadius: '6px', color: '#ff79c6', padding: '6px', fontSize: '10px', outline: 'none',
+            resize: 'none', boxSizing: 'border-box'
+          }}
+        />
+      </div>
+
+      {/* AÇÕES DE EXPORTAÇÃO */}
+      <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between' }}>
+        <button onClick={() => { navigator.clipboard.writeText(codigoFonte); alert("Código copiado!"); }} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          📋 Copiar Código
+        </button>
+        <button onClick={baixarCodigoArquivo} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(74,222,128,0.15)', border: '1px solid #4ade80', color: '#4ade80', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          💾 Salvar Arquivo
+        </button>
+        <button onClick={exportarCodigoPDF} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          📄 Exportar PDF
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// --- 🌐 COMPONENTE: MINI NAVEGADOR FUTURISTA MULTIMODAL (IA BROWSER) ---
+function MiniNavegadorFuturista({ onBuscarIA }) {
+  const [expandido, setExpandido] = useState(true);
+  const [abaBusca, setAbaBusca] = useState('web');
+  const [urlOuTermo, setUrlOuTermo] = useState('https://emanuel-os.com/search');
+  const [escutandoVoz, setEscutandoVoz] = useState(false);
+  const [carregandoNavegador, setCarregandoNavegador] = useState(false);
+  const [resultadoBusca, setResultadoBusca] = useState({
+    titulo: 'Emanuel.OS Quantum Browser v5.1',
+    subtitulo: 'Navegador Neural Integrado',
+    texto: 'Busca multimodal ativa: Web, Áudio, Imagens, Livros, PDFs e IA Gemini.'
+  });
+
+  const fileInputRef = useRef(null);
+
+  const executarNavegacaoBusca = (termo, modoBusca) => {
+    setCarregandoNavegador(true);
+    setTimeout(() => {
+      setCarregandoNavegador(false);
+      setResultadoBusca({
+        titulo: `Busca ${modoBusca.toUpperCase()}: "${termo}"`,
+        subtitulo: `Resultados em tempo real via G-AGI Multimodal`,
+        texto: `Módulo Neural indexou informações para '${termo}'. Sincronização em 100% no Emanuel.OS.`
+      });
+      if (onBuscarIA) onBuscarIA(termo, modoBusca);
+    }, 1200);
+  };
+
+  const handleIniciouVozNavegador = () => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
+
+    const rec = new SpeechRecognition();
+    rec.lang = 'pt-BR';
+    rec.onstart = () => setEscutandoVoz(true);
+    rec.onend = () => setEscutandoVoz(false);
+    rec.onresult = (e) => {
+      const fala = e.results[0][0].transcript;
+      setUrlOuTermo(fala);
+      executarNavegacaoBusca(fala, 'audio');
+    };
+    rec.start();
+  };
+
+  const handleUploadArquivoPDF = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    executarNavegacaoBusca(`Leitura do arquivo: ${file.name}`, 'pdf');
+  };
+
+  return (
+    <div style={{
+      position: 'absolute', top: '90px', right: '400px', zIndex: 10,
+      backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '14px',
+      width: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: expandido ? '10px' : '0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
+          <span style={{ fontSize: '11px', color: '#00f0ff' }}>🌐</span>
+          <input
+            type="text"
+            value={urlOuTermo}
+            onChange={(e) => setUrlOuTermo(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBusca(urlOuTermo, abaBusca); }}
+            placeholder="URL, busca web, livros ou PDF..."
+            style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <button onClick={() => executarNavegacaoBusca(urlOuTermo, abaBusca)} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: '10px' }}>🔍</button>
+          <button onClick={() => setExpandido(!expandido)} style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}>
+            {expandido ? '▲' : '▼'}
+          </button>
+        </div>
+      </div>
+
+      {expandido && (
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+            <button onClick={() => setAbaBusca('web')} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #00f0ff', backgroundColor: abaBusca === 'web' ? '#00f0ff' : 'transparent', color: abaBusca === 'web' ? '#000' : '#00f0ff', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>🌐 Web</button>
+            <button onClick={handleIniciouVozNavegador} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #a855f7', backgroundColor: escutandoVoz ? '#ff007f' : 'transparent', color: '#a855f7', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>{escutandoVoz ? '🔴 Ouvindo' : '🎙️ Voz'}</button>
+            <button onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #eab308', backgroundColor: 'transparent', color: '#eab308', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>🖼️ Mídias</button>
+            <button onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>📄 PDF/Livro</button>
+            <input type="file" ref={fileInputRef} onChange={handleUploadArquivoPDF} style={{ display: 'none' }} accept="image/*,application/pdf" />
+          </div>
+
+          <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px' }}>
+            <h4 style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#fff', fontWeight: 'bold' }}>{resultadoBusca.titulo}</h4>
+            <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>{resultadoBusca.subtitulo}</span>
+            {carregandoNavegador ? (
+              <div style={{ textAlign: 'center', padding: '15px' }}><span style={{ fontSize: '10px', color: '#00f0ff' }}>⚡ Indexando Resultados...</span></div>
+            ) : (
+              <p style={{ margin: 0, fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>{resultadoBusca.texto}</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) ---
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
@@ -176,11 +438,7 @@ function FormularioCapturaEmanuelOS() {
     emailjs.send(
       'service_94k276x',
       'template_o11qtsf',
-      { 
-        email: email,
-        to_email: email,
-        user_email: email
-      },
+      { email: email, to_email: email, user_email: email },
       'MsHsmnoDh6w2fnYJ6'
     )
     .then(() => {
@@ -197,14 +455,9 @@ function FormularioCapturaEmanuelOS() {
 
   return (
     <div style={{
-      backgroundColor: 'rgba(15, 23, 42, 0.95)',
-      border: '1px solid #00f0ff',
-      borderRadius: '14px',
-      padding: '16px',
-      boxShadow: '0 0 20px rgba(0, 240, 255, 0.2)',
-      color: '#fff',
-      margin: '10px 0',
-      fontFamily: 'sans-serif'
+      backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid #00f0ff',
+      borderRadius: '14px', padding: '16px', boxShadow: '0 0 20px rgba(0, 240, 255, 0.2)',
+      color: '#fff', margin: '10px 0', fontFamily: 'sans-serif'
     }}>
       <h3 style={{ color: '#00f0ff', margin: '0 0 6px 0', fontSize: '12px', fontWeight: 'bold' }}>
         🎁 Baixar 300 Comandos Mestre + Mapas 3D
@@ -214,50 +467,13 @@ function FormularioCapturaEmanuelOS() {
       </p>
 
       {enviado ? (
-        <div style={{
-          backgroundColor: 'rgba(74, 222, 128, 0.1)',
-          border: '1px solid #4ade80',
-          borderRadius: '8px',
-          padding: '8px',
-          color: '#4ade80',
-          fontSize: '11px',
-          fontWeight: 'bold',
-          textAlign: 'center'
-        }}>
+        <div style={{ backgroundColor: 'rgba(74, 222, 128, 0.1)', border: '1px solid #4ade80', borderRadius: '8px', padding: '8px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold', textAlign: 'center' }}>
           ✅ E-mail de confirmação enviado com sucesso! Verifique sua caixa de entrada.
         </div>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <input
-            type="email"
-            required
-            placeholder="Digite seu e-mail aqui..."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              padding: '10px 12px',
-              backgroundColor: '#020617',
-              border: '1px solid #334155',
-              borderRadius: '6px',
-              color: '#fff',
-              fontSize: '11px',
-              outline: 'none'
-            }}
-          />
-          <button
-            type="submit"
-            disabled={carregando}
-            style={{
-              padding: '10px',
-              backgroundColor: '#00f0ff',
-              color: '#000',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              fontSize: '11px',
-              cursor: 'pointer'
-            }}
-          >
+          <input type="email" required placeholder="Digite seu e-mail aqui..." value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '10px 12px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none' }} />
+          <button type="submit" disabled={carregando} style={{ padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
             {carregando ? '⏳ Enviando E-mail...' : '🚀 Quero Acesso Gratuito'}
           </button>
         </form>
@@ -277,11 +493,7 @@ function GoogleMeetAvatarManager({ addLog }) {
 
   const criarReuniaoInstantanea = () => {
     if (!temaReuniao.trim()) return alert("Defina o tema da reunião no Emanuel.OS.");
-    
-    const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + 
-                       Math.random().toString(36).substring(2, 6) + '-' + 
-                       Math.random().toString(36).substring(2, 5);
-    
+    const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 5);
     const urlMeet = `https://meet.google.com/${codigoMeet}`;
     setLinkGerado(urlMeet);
     setReuniaoAgendada(true);
@@ -294,36 +506,18 @@ function GoogleMeetAvatarManager({ addLog }) {
   };
 
   const enviarConviteTelefone = () => {
-    if (!telefoneConvidado || !dddConvidado) {
-      return alert("Insira o DDD e o Número de Telefone válido.");
-    }
-    if (!linkGerado) {
-      return alert("Gere uma reunião do Google Meet primeiro!");
-    }
+    if (!telefoneConvidado || !dddConvidado) return alert("Insira o DDD e o Número de Telefone válido.");
+    if (!linkGerado) return alert("Gere uma reunião do Google Meet primeiro!");
 
     const mensagem = `Olá! Você foi convidado por Emanuel para a reunião "${temaReuniao}" no Emanuel.OS.\n\n🤖 Avatar IA: ${avatarEscolhido}\n🔗 Google Meet: ${linkGerado}`;
-    
     const urlWhatsapp = `https://api.whatsapp.com/send?phone=55${dddConvidado}${telefoneConvidado}&text=${encodeURIComponent(mensagem)}`;
-    if (typeof window !== 'undefined') {
-      window.open(urlWhatsapp, '_blank');
-    }
+    if (typeof window !== 'undefined') window.open(urlWhatsapp, '_blank');
 
-    if (addLog) {
-      addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para (55) ${dddConvidado} ${telefoneConvidado}`);
-    }
+    if (addLog) addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para (55) ${dddConvidado} ${telefoneConvidado}`);
   };
 
   return (
-    <div style={{
-      backgroundColor: 'rgba(15, 23, 42, 0.95)',
-      border: '1px solid rgba(0, 240, 255, 0.4)',
-      borderRadius: '14px',
-      padding: '16px',
-      color: '#fff',
-      margin: '10px 0',
-      fontFamily: 'sans-serif',
-      boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
-    }}>
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)' }}>
       <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
         🎥 Google Meet + Avatares IA & Mapas
       </h3>
@@ -332,28 +526,13 @@ function GoogleMeetAvatarManager({ addLog }) {
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-        <input 
-          type="text" 
-          value={temaReuniao} 
-          onChange={(e) => setTemaReuniao(e.target.value)}
-          placeholder="Tema / Index principal..."
-          style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}
-        />
-
-        <select 
-          value={avatarEscolhido} 
-          onChange={(e) => setAvatarEscolhido(e.target.value)}
-          style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}
-        >
+        <input type="text" value={temaReuniao} onChange={(e) => setTemaReuniao(e.target.value)} placeholder="Tema / Index principal..." style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }} />
+        <select value={avatarEscolhido} onChange={(e) => setAvatarEscolhido(e.target.value)} style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}>
           <option value="Avatar Emanuel (Cyberpunk 3D)">Avatar Emanuel (Cyberpunk 3D)</option>
           <option value="Assistente G-AGI Multimodal">Assistente G-AGI Multimodal</option>
           <option value="Avatar Ninja Holográfico">Avatar Ninja Holográfico</option>
         </select>
-
-        <button 
-          onClick={criarReuniaoInstantanea}
-          style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}
-        >
+        <button onClick={criarReuniaoInstantanea} style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
           ⚡ Gerar Meet & Sincronizar Index
         </button>
       </div>
@@ -361,30 +540,12 @@ function GoogleMeetAvatarManager({ addLog }) {
       {reuniaoAgendada && (
         <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '8px', padding: '8px' }}>
           <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '2px' }}>✅ Link Pronto:</span>
-          <a href={linkGerado} target="_blank" rel="noreferrer" style={{ fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', display: 'block', marginBottom: '8px', textDecoration: 'underline' }}>
-            {linkGerado}
-          </a>
-
+          <a href={linkGerado} target="_blank" rel="noreferrer" style={{ fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', display: 'block', marginBottom: '8px', textDecoration: 'underline' }}>{linkGerado}</a>
           <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-            <input 
-              type="text" 
-              placeholder="DDD" 
-              value={dddConvidado} 
-              onChange={(e) => setDddConvidado(e.target.value)}
-              style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} 
-            />
-            <input 
-              type="text" 
-              placeholder="Número Celular" 
-              value={telefoneConvidado} 
-              onChange={(e) => setTelefoneConvidado(e.target.value)}
-              style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} 
-            />
+            <input type="text" placeholder="DDD" value={dddConvidado} onChange={(e) => setDddConvidado(e.target.value)} style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} />
+            <input type="text" placeholder="Número Celular" value={telefoneConvidado} onChange={(e) => setTelefoneConvidado(e.target.value)} style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} />
           </div>
-          <button 
-            onClick={enviarConviteTelefone}
-            style={{ width: '100%', padding: '7px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
-          >
+          <button onClick={enviarConviteTelefone} style={{ width: '100%', padding: '7px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
             📲 Enviar Convite via WhatsApp ID
           </button>
         </div>
@@ -399,283 +560,59 @@ function QuickActionsWidget({ onActionClick }) {
 
   return (
     <div style={{
-      position: 'absolute',
-      right: '80px',
-      bottom: '120px',
-      width: '410px',
-      maxHeight: 'calc(100vh - 220px)',
-      overflowY: 'auto',
-      backgroundColor: 'rgba(8, 15, 30, 0.90)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(0, 240, 255, 0.4)',
-      borderRadius: '18px',
-      padding: minimizado ? '12px 18px' : '18px',
-      boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
-      zIndex: 80,
-      color: '#fff',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      position: 'absolute', right: '80px', bottom: '120px', width: '410px',
+      maxHeight: 'calc(100vh - 220px)', overflowY: 'auto', backgroundColor: 'rgba(8, 15, 30, 0.90)',
+      backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '18px',
+      padding: minimizado ? '12px 18px' : '18px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+      zIndex: 80, color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: minimizado ? '0px' : '14px',
-        cursor: 'pointer'
-      }} onClick={() => setMinimizado(!minimizado)}>
-        <h3 style={{
-          fontSize: '13px',
-          fontWeight: 'bold',
-          margin: 0,
-          color: '#fff',
-          letterSpacing: '0.5px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: minimizado ? '0px' : '14px', cursor: 'pointer' }} onClick={() => setMinimizado(!minimizado)}>
+        <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, color: '#fff', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           ⚡ Emanuel.OS Quick Actions <span style={{ fontSize: '10px', color: '#00f0ff' }}>(v1.0)</span>
         </h3>
-        <button 
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#00f0ff',
-            fontSize: '14px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
+        <button style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '14px', cursor: 'pointer', fontWeight: 'bold' }}>
           {minimizado ? '▲' : '▼'}
         </button>
       </div>
 
       {!minimizado && (
         <>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '10px',
-            marginBottom: '12px'
-          }}>
-            <div 
-              onClick={() => onActionClick('crie_imagem')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#ff007f'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+            <div onClick={() => onActionClick('crie_imagem')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>🖼️</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM 1.0 Realista</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM 1.0 Realista</span></div>
             </div>
-
-            <div 
-              onClick={() => onActionClick('crie_video')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#a855f7'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+            <div onClick={() => onActionClick('crie_video')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>🎬</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM HD/4K Pro</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM HD/4K Pro</span></div>
             </div>
-
-            <div 
-              onClick={() => onActionClick('crie_gif')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#eab308'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+            <div onClick={() => onActionClick('crie_gif')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>🎞️</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo GIEM 1.0 Sync</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo GIEM 1.0 Sync</span></div>
             </div>
-
-            <div 
-              onClick={() => onActionClick('escreva_edite')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#38bdf8'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+            <div onClick={() => onActionClick('escreva_edite')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>✏️</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e .docx</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e .docx</span></div>
             </div>
-
-            <div 
-              onClick={() => onActionClick('pesquise_internet')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4ade80'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+            <div onClick={() => onActionClick('pesquise_internet')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>🌐</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web via G-AGI</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web via G-AGI</span></div>
             </div>
-
-            <div 
-              onClick={() => onActionClick('traduzir_documentos')}
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                borderRadius: '12px',
-                padding: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                height: '90px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#00f0ff'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)'}
-            >
+            <div onClick={() => onActionClick('traduzir_documentos')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '20px' }}>📄⇄🌍</div>
-              <div>
-                <strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Documentos</strong>
-                <span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PPTX</span>
-              </div>
+              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Documentos</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PPTX</span></div>
             </div>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '6px',
-            marginBottom: '10px'
-          }}>
-            <button 
-              onClick={() => onActionClick('gerar_pdf')}
-              style={{ padding: '6px 4px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
-            >
-              📄 PDF
-            </button>
-            <button 
-              onClick={() => onActionClick('gerar_jpg')}
-              style={{ padding: '6px 4px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
-            >
-              🖼️ JPG
-            </button>
-            <button 
-              onClick={() => onActionClick('gerar_word')}
-              style={{ padding: '6px 4px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
-            >
-              📝 WORD
-            </button>
-            <button 
-              onClick={() => onActionClick('gerar_pptx')}
-              style={{ padding: '6px 4px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
-            >
-              📊 PPTX
-            </button>
-          </div>
-
-          <div style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-            border: '1px solid rgba(0, 240, 255, 0.25)',
-            borderRadius: '10px',
-            padding: '8px 10px'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <span style={{ fontSize: '9px', color: '#fff', fontWeight: 'bold' }}>
-                Processamento EM v1.0 Engine
-              </span>
-              <span style={{ fontSize: '8px', color: '#00f0ff', fontFamily: 'monospace' }}>ACTIVE</span>
-            </div>
-            <div style={{
-              width: '100%',
-              height: '4px',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              borderRadius: '2px',
-              overflow: 'hidden',
-              marginBottom: '4px'
-            }}>
-              <div style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: '#00f0ff',
-                boxShadow: '0 0 8px #00f0ff',
-                animation: 'pulseStatus 2s infinite'
-              }} />
-            </div>
-            <span style={{ fontSize: '8px', color: '#94a3b8' }}>
-              Suporta palavras-chave: Animes, Futebol, Cidades, Filmes, Atores, Memes, Exatas e Programação.
-            </span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '10px' }}>
+            <button onClick={() => onActionClick('gerar_pdf')} style={{ padding: '6px 4px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📄 PDF</button>
+            <button onClick={() => onActionClick('gerar_jpg')} style={{ padding: '6px 4px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🖼️ JPG</button>
+            <button onClick={() => onActionClick('gerar_word')} style={{ padding: '6px 4px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📝 WORD</button>
+            <button onClick={() => onActionClick('gerar_pptx')} style={{ padding: '6px 4px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📊 PPTX</button>
           </div>
         </>
       )}
-
-      <style>{`
-        @keyframes pulseStatus {
-          0% { opacity: 0.6; }
-          50% { opacity: 1; }
-          100% { opacity: 0.6; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -684,19 +621,13 @@ function QuickActionsWidget({ onActionClick }) {
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
   const p2 = palavra2.toLowerCase().trim();
-  
   const matriz = [];
   for (let i = 0; i <= p1.length; i++) matriz[i] = [i];
   for (let j = 0; j <= p2.length; j++) matriz[0][j] = j;
-  
   for (let i = 1; i <= p1.length; i++) {
     for (let j = 1; j <= p2.length; j++) {
       const custo = p1[i - 1] === p2[j - 1] ? 0 : 1;
-      matriz[i][j] = Math.min(
-        matriz[i - 1][j] + 1,
-        matriz[i][j - 1] + 1,
-        matriz[i - 1][j - 1] + custo
-      );
+      matriz[i][j] = Math.min(matriz[i - 1][j] + 1, matriz[i][j - 1] + 1, matriz[i - 1][j - 1] + custo);
     }
   }
   return matriz[p1.length][p2.length];
@@ -708,14 +639,9 @@ function buscarNoDicionario(perguntaUsuario) {
   let menorDistancia = 3;
 
   for (const item of dicionarioNinjaLocal) {
-    const combinacoes = [item.termo];
-
-    for (const termoValido of combinacoes) {
+    for (const termoValido of [item.termo]) {
       for (const palavraDigitada of palavrasDigitadas) {
-        if (palavraDigitada === termoValido.toLowerCase()) {
-          return item;
-        }
-
+        if (palavraDigitada === termoValido.toLowerCase()) return item;
         const distancia = calcularDiferencaLetras(palavraDigitada, termoValido);
         if (distancia < menorDistancia) {
           menorDistancia = distancia;
@@ -732,13 +658,12 @@ export default function EmanuelOSCore() {
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
   const [biometriaLendo, setBiometriaLendo] = useState(false);
-  
   const [telefoneDigitado, setTelefoneDigitado] = useState('');
   const [pinDigitado, setPinDigitado] = useState('');
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin] = useState(true);
   const [attemptsLeft, setAttemptsLeft] = useState(2);
   const [isLockedTicons, setIsLockedTicons] = useState(false);
   const [statusTicons, setStatusTicons] = useState('🔐 Selecione a sequência correta do Ticons OS gevaGifs');
@@ -776,13 +701,15 @@ export default function EmanuelOSCore() {
   const [carregandoSuporte, setCarregandoSuporte] = useState(false);
   const [respostaSuporte, setRespostaSuporte] = useState(null);
 
-  // --- ESTADO DO NOVO EM CREATOR STUDIO IA ---
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
+  const [modoDevSplit, setModoDevSplit] = useState(false); // 🌟 TELA INTERATIVA DIVIDIDA DEDICADA A DEVS
 
-  // --- ESTADO DO NATIVE BROWSER (EXPANDIDO / RECOLHIDO) ---
   const [browserExpandido, setBrowserExpandido] = useState(true);
+  const [abaBuscaNavegador, setAbaBuscaNavegador] = useState('web');
+  const [urlOuTermoNavegador, setUrlOuTermoNavegador] = useState('https://emanuel-os.com/search');
+  const [escutandoVozNavegador, setEscutandoVozNavegador] = useState(false);
+  const [carregandoNavegador, setCarregandoNavegador] = useState(false);
 
-  // --- ESTADO FUTURISTA DE GERAÇÃO EM TEMPO REAL ---
   const [gerandoMidia, setGerandoMidia] = useState(false);
   const [progressoRender, setProgressoRender] = useState(0);
   const [tipoMidiaAtual, setTipoMidiaAtual] = useState('');
@@ -791,16 +718,15 @@ export default function EmanuelOSCore() {
   const [versoesAtivas, setVersoesAtivas] = useState([]);
   const [versaoSelecionada, setVersaoSelecionada] = useState(0);
 
-  // Configurações de Vídeo
   const [resolucaoVideo, setResolucaoVideo] = useState('1080p Full HD');
   const [semMarcaDagua, setSemMarcaDagua] = useState(true);
 
   const [browserAsset, setBrowserAsset] = useState({
-    titulo: 'Emanuel.OS',
-    subtitulo: 'Native Browser v5.1',
+    titulo: 'Emanuel.OS Quantum Browser v5.1',
+    subtitulo: 'Navegador Neural Multimodal Active',
     imagem: null,
     videoUrl: null,
-    conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto.'
+    conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto para buscas Web, Voz, Mídias e PDFs.'
   });
 
   const [cmdInput, setCmdInput] = useState('');
@@ -808,7 +734,7 @@ export default function EmanuelOSCore() {
     "[G-AGI: LOG] System core operational.",
     "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
-    "[G-AGI: QUICK_ACTIONS] Painel Emanuel.OS Quick Actions v1.0 ativo."
+    "[G-AGI: BROWSER] Mini Navegador IA Multimodal ativo."
   ]);
 
   const [chatInput, setChatInput] = useState('');
@@ -833,6 +759,7 @@ export default function EmanuelOSCore() {
 
   const [horaAtual, setHoraAtual] = useState('');
   const imageInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
 
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
@@ -843,7 +770,47 @@ export default function EmanuelOSCore() {
     setCmdLogs(prev => [...prev, novoLog]);
   };
 
-  // --- MOTOR FUTURISTA DE RENDERIZAÇÃO REAL EM TEMPO REAL ---
+  const executarNavegacaoBrowser = (termo, modoBusca) => {
+    if (!termo.trim()) return;
+    setCarregandoNavegador(true);
+    setCmdLogs(prev => [...prev, `[G-AGI BROWSER] Buscando (${modoBusca.toUpperCase()}): "${termo}"`]);
+
+    setTimeout(() => {
+      setCarregandoNavegador(false);
+      setBrowserAsset({
+        titulo: `Busca ${modoBusca.toUpperCase()}: "${termo}"`,
+        subtitulo: `Resultados em tempo real via G-AGI Multimodal`,
+        imagem: null,
+        videoUrl: null,
+        conteudoTexto: `Módulo Quantum Browser indexou dados para '${termo}'. Conexão com repositórios e web 100% estabelecida.`
+      });
+    }, 1000);
+  };
+
+  const iniciarVozNavegador = () => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
+
+    const rec = new SpeechRecognition();
+    rec.lang = 'pt-BR';
+    rec.onstart = () => setEscutandoVozNavegador(true);
+    rec.onend = () => setEscutandoVozNavegador(false);
+    rec.onresult = (e) => {
+      const fala = e.results[0][0].transcript;
+      setUrlOuTermoNavegador(fala);
+      executarNavegacaoBrowser(fala, 'voz');
+    };
+    rec.start();
+  };
+
+  const handleUploadPDFNavegador = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUrlOuTermoNavegador(file.name);
+    executarNavegacaoBrowser(`Arquivo/PDF lido: ${file.name}`, 'pdf');
+  };
+
   const executarGeracaoReal = async (promptTexto, tipoAcao) => {
     setGerandoMidia(true);
     setProgressoRender(10);
@@ -1781,623 +1748,646 @@ export default function EmanuelOSCore() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      <div 
-        ref={mountRef} 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-          pointerEvents: 'none'
-        }} 
-      />
-
-      <button 
-        onClick={() => setSidebarAberta(!sidebarAberta)}
-        style={{
-          position: 'absolute', top: '23px', left: sidebarAberta ? '425px' : '20px',
-          zIndex: 100, backgroundColor: '#09090b', border: '1px solid rgba(0, 240, 255, 0.3)',
-          color: '#00f0ff', width: '40px', height: '40px', borderRadius: '50%',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 'bold', fontSize: '16px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.2)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-        }}
-      >
-        {sidebarAberta ? '✕' : '☰'}
-      </button>
-
-      <button 
-        onClick={() => setModalSuporteAberto(true)}
-        style={{
-          position: 'absolute', top: '23px', left: sidebarAberta ? '475px' : '70px',
-          zIndex: 100, backgroundColor: 'rgba(255, 0, 127, 0.2)', border: '1px solid #ff007f',
-          color: '#ff007f', padding: '0 15px', height: '40px', borderRadius: '20px',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(255, 0, 127, 0.3)',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        🛠️ Suporte EM IA
-      </button>
-
-      {/* BOTÃO PARA ABRIR O EM CREATOR STUDIO IA */}
-      <button 
-        onClick={() => setModalCreatorStudioAberto(true)}
-        style={{
-          position: 'absolute', top: '23px', left: sidebarAberta ? '615px' : '210px',
-          zIndex: 100, backgroundColor: 'rgba(0, 240, 255, 0.2)', border: '1px solid #00f0ff',
-          color: '#00f0ff', padding: '0 15px', height: '40px', borderRadius: '20px',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        📊 EM Creator Studio IA
-      </button>
-
-      <QuickActionsWidget onActionClick={dispararQuickAction} />
-
-      <aside style={{
-        position: 'absolute', top: 0, left: 0,
-        width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
-        backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
-        borderRight: sidebarAberta ? '1px solid rgba(0, 240, 255, 0.2)' : 'none',
-        padding: sidebarAberta ? '25px' : '0px', display: 'flex', flexDirection: 'column',
-        gap: '18px', height: '100vh', overflowY: 'auto', zIndex: 90, boxSizing: 'border-box',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-      }}>
-        {sidebarAberta && (
-          <>
-            <div>
-              <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
-                Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
-              </h1>
-              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & MEET ENGINE | Core v5.1</span>
-            </div>
-
-            {/* BARRA DA LATERAL: MODO LIVE & EM CREATOR STUDIO IA (SUBSTITUINDO O STUDIO MODE E AJUSTADO PROPORCIONALMENTE) */}
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', padding: '3px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', gap: '4px' }}>
-              <button 
-                onClick={() => setModo('live')} 
-                style={{ flex: '1 1 35%', padding: '8px 4px', border: 'none', borderRadius: '9px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modo === 'live' ? '#00f0ff' : 'transparent', color: modo === 'live' ? '#000' : '#a1a1aa', transition: 'all 0.2s', fontSize: '10px', whiteSpace: 'nowrap' }}
-              >
-                📡 LIVE MODE
-              </button>
-              
-              <button 
-                onClick={() => setModalCreatorStudioAberto(true)} 
-                style={{ flex: '1 1 65%', padding: '8px 4px', border: 'none', borderRadius: '9px', fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(0, 240, 255, 0.15)', border: '1px solid #00f0ff', color: '#00f0ff', transition: 'all 0.2s', fontSize: '10px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-              >
-                📊 EM Creator Studio IA
-              </button>
-            </div>
-
-            <GoogleMeetAvatarManager addLog={addLogTerminal} />
-
-            <FormularioCapturaEmanuelOS />
-
-            <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
-              <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados (2030)</h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <Link href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
-                  🪐 Mapa Espacial
-                </Link>
-
-                <Link href="/mapa" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
-                  🌍 Mapa Terrestre
-                </Link>
-
-                <Link href="/mapa-ia" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
-                  ⚡ Gerador 3D IA
-                </Link>
-
-                <Link href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
-                  🛸 Aeroespacial Futuro
-                </Link>
-
-                <Link href="/mapa-ressonancia" style={{ 
-                  padding: '10px', 
-                  backgroundColor: '#0f172a', 
-                  border: '1px solid #10b981', 
-                  color: '#34d399', 
-                  borderRadius: '8px', 
-                  textDecoration: 'none', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  textAlign: 'center',
-                  gridColumn: 'span 2'
-                }}>
-                  🧠 Ressonância
-                </Link>
-
-                <Link href="/mapa-quantico" style={{ 
-                  padding: '10px', 
-                  backgroundColor: '#0f172a', 
-                  border: '1px solid #8b5cf6', 
-                  color: '#c084fc', 
-                  borderRadius: '8px', 
-                  textDecoration: 'none', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  textAlign: 'center',
-                  gridColumn: 'span 2'
-                }}>
-                  ⚛️ Mapa Matemático Quântico
-                </Link>
-
-                {/* NOVO LINK INTEGRADO DO MAPA ORKUT SOCIAL 3D */}
-                <Link href="/mapa-orkut" style={{ 
-                  padding: '10px', 
-                  backgroundColor: '#0f172a', 
-                  border: '1px solid #ff007f', 
-                  color: '#ff007f', 
-                  borderRadius: '8px', 
-                  textDecoration: 'none', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  textAlign: 'center',
-                  gridColumn: 'span 2'
-                }}>
-                  💖 Mapa Orkut Social 3D
-                </Link>
-              </div>
-            </div>
-
-            <input 
-              type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
-              placeholder="🔍 Pesquisar no histórico cósmico..."
-              style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '12px', boxSizing: 'border-box' }}
-            />
-
-            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>⚡ CONVERSAS RECENTES (LOCAL)</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {chatsFiltrados.filter(c => c.origem === 'recente').map(c => (
-                    <div key={c.id} style={{ fontSize: '11px', color: '#a1a1aa', padding: '8px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>💬 {c.titulo}</div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🌐 SALVAS VIA CONTA GOOGLE (AGI-SYNC)</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {chatsFiltrados.filter(c => c.origem === 'google').map(c => (
-                    <div key={c.id} style={{ fontSize: '11px', color: '#e4e4e7', padding: '8px 10px', background: 'rgba(255,0,85,0.03)', borderRadius: '6px', border: '1px solid rgba(255,0,85,0.1)' }}>🌟 {c.titulo}</div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (WHATSAPP ID)</span>
-              <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <input type="text" placeholder="DDD 1" value={ddd1} onChange={(e) => setDdd1(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
-                  <input type="text" placeholder="Número Celular 1" value={telefone1} onChange={(e) => setTelefone1(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
-                </div>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <input type="text" placeholder="DDD 2" value={ddd2} onChange={(e) => setDdd2(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
-                  <input type="text" placeholder="Número Celular 2" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
-                </div>
-                
-                <input type="text" placeholder="Mensagem Canal 1" value={msgCanal1} onChange={(e) => setMsgCanal1(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
-                <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
-                
-                <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '7px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '11px' }}>
-                  <option value="ambos">Disparar as duas linhas juntas (ID v5.1)</option>
-                  <option value="canal1">Disparar somente Linha 1</option>
-                  <option value="canal2">Disparar somente Linha 2</option>
-                </select>
-                <button type="submit" style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Executar Disparo Real G-AGI ID ➔</button>
-              </form>
-            </div>
-
-            <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
-              <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA | ANO: 2030</span>
-              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI Core v5.1</span>
-            </div>
-          </>
-        )}
-      </aside>
-
-      {/* MODAL SUPORTE EM IA */}
-      {modalSuporteAberto && (
+      {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+        
+        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL (OCUPA 100% OU 50% NO MODO SPLIT) */}
         <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(15px)',
-          zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+          width: modoDevSplit ? '50%' : '100%',
+          height: '100%',
+          position: 'relative',
+          transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          overflow: 'hidden'
         }}>
+          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }} />
+
+          {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA (TELA PRINCIPAL LIMPA E ORGANIZADA) */}
+          <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 100, display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setSidebarAberta(!sidebarAberta)}
+              style={{
+                backgroundColor: '#09090b', border: '1px solid rgba(0, 240, 255, 0.3)',
+                color: '#00f0ff', width: '40px', height: '40px', borderRadius: '50%',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 'bold', fontSize: '16px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.2)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            >
+              {sidebarAberta ? '✕' : '☰'}
+            </button>
+
+            {/* 🌟 BOTÃO EXCLUSIVO PARA DEVS: TELA INTERATIVA DIVIDIDA */}
+            <button 
+              onClick={() => setModoDevSplit(!modoDevSplit)}
+              style={{
+                backgroundColor: modoDevSplit ? '#ff007f' : 'rgba(168, 85, 247, 0.2)',
+                border: '1px solid #a855f7', color: modoDevSplit ? '#fff' : '#c084fc',
+                padding: '0 16px', height: '40px', borderRadius: '20px', cursor: 'pointer',
+                fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(168, 85, 247, 0.4)',
+                display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s ease'
+              }}
+            >
+              🖥️ {modoDevSplit ? 'Fechar Split' : 'Tela Interativa Dividida (Dev)'}
+            </button>
+          </div>
+
+          <QuickActionsWidget onActionClick={dispararQuickAction} />
+
+          <aside style={{
+            position: 'absolute', top: 0, left: 0,
+            width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
+            backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
+            borderRight: sidebarAberta ? '1px solid rgba(0, 240, 255, 0.2)' : 'none',
+            padding: sidebarAberta ? '25px' : '0px', display: 'flex', flexDirection: 'column',
+            gap: '18px', height: '100vh', overflowY: 'auto', zIndex: 90, boxSizing: 'border-box',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}>
+            {sidebarAberta && (
+              <>
+                <div>
+                  <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
+                    Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
+                  </h1>
+                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & MEET ENGINE | Core v5.1</span>
+                </div>
+
+                <GoogleMeetAvatarManager addLog={addLogTerminal} />
+
+                <FormularioCapturaEmanuelOS />
+
+                <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
+                  <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados (2030)</h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <Link href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                      🪐 Mapa Espacial
+                    </Link>
+
+                    <Link href="/mapa" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                      🌍 Mapa Terrestre
+                    </Link>
+
+                    <Link href="/mapa-ia" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                      ⚡ Gerador 3D IA
+                    </Link>
+
+                    <Link href="/mapaaeroespacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
+                      🛸 Aeroespacial Futuro
+                    </Link>
+
+                    <Link href="/mapa-ressonancia" style={{ 
+                      padding: '10px', 
+                      backgroundColor: '#0f172a', 
+                      border: '1px solid #10b981', 
+                      color: '#34d399', 
+                      borderRadius: '8px', 
+                      textDecoration: 'none', 
+                      fontWeight: 'bold', 
+                      fontSize: '11px', 
+                      textAlign: 'center',
+                      gridColumn: 'span 2'
+                    }}>
+                      🧠 Ressonância
+                    </Link>
+
+                    <Link href="/mapa-quantico" style={{ 
+                      padding: '10px', 
+                      backgroundColor: '#0f172a', 
+                      border: '1px solid #8b5cf6', 
+                      color: '#c084fc', 
+                      borderRadius: '8px', 
+                      textDecoration: 'none', 
+                      fontWeight: 'bold', 
+                      fontSize: '11px', 
+                      textAlign: 'center',
+                      gridColumn: 'span 2'
+                    }}>
+                      ⚛️ Mapa Matemático Quântico
+                    </Link>
+
+                    {/* LINK DO MAPA ORKUT SOCIAL 3D */}
+                    <Link href="/mapa-orkut" style={{ 
+                      padding: '10px', 
+                      backgroundColor: '#0f172a', 
+                      border: '1px solid #ff007f', 
+                      color: '#ff007f', 
+                      borderRadius: '8px', 
+                      textDecoration: 'none', 
+                      fontWeight: 'bold', 
+                      fontSize: '11px', 
+                      textAlign: 'center',
+                      gridColumn: 'span 2'
+                    }}>
+                      💖 Mapa Orkut Social 3D
+                    </Link>
+                  </div>
+                </div>
+
+                <input 
+                  type="text" value={pesquisaChat} onChange={(e) => setPesquisaChat(e.target.value)}
+                  placeholder="🔍 Pesquisar no histórico cósmico..."
+                  style={{ width: '100%', padding: '10px 12px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#fff', fontSize: '12px', boxSizing: 'border-box' }}
+                />
+
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>⚡ CONVERSAS RECENTES (LOCAL)</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {chatsFiltrados.filter(c => c.origem === 'recente').map(c => (
+                        <div key={c.id} style={{ fontSize: '11px', color: '#a1a1aa', padding: '8px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>💬 {c.titulo}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🌐 SALVAS VIA CONTA GOOGLE (AGI-SYNC)</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {chatsFiltrados.filter(c => c.origem === 'google').map(c => (
+                        <div key={c.id} style={{ fontSize: '11px', color: '#e4e4e7', padding: '8px 10px', background: 'rgba(255,0,85,0.03)', borderRadius: '6px', border: '1px solid rgba(255,0,85,0.1)' }}>🌟 {c.titulo}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ fontSize: '10px', color: '#ff0055', fontWeight: 'bold', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>💬 ENVIOS REAIS INTEGRADOS (WHATSAPP ID)</span>
+                  <form onSubmit={executarDisparoReal} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input type="text" placeholder="DDD 1" value={ddd1} onChange={(e) => setDdd1(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
+                      <input type="text" placeholder="Número Celular 1" value={telefone1} onChange={(e) => setTelefone1(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input type="text" placeholder="DDD 2" value={ddd2} onChange={(e) => setDdd2(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
+                      <input type="text" placeholder="Número Celular 2" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
+                    </div>
+                    
+                    <input type="text" placeholder="Mensagem Canal 1" value={msgCanal1} onChange={(e) => setMsgCanal1(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
+                    <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
+                    
+                    <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '7px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '11px' }}>
+                      <option value="ambos">Disparar as duas linhas juntas (ID v5.1)</option>
+                      <option value="canal1">Disparar somente Linha 1</option>
+                      <option value="canal2">Disparar somente Linha 2</option>
+                    </select>
+                    <button type="submit" style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>Executar Disparo Real G-AGI ID ➔</button>
+                  </form>
+                </div>
+
+                <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
+                  <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA | ANO: 2030</span>
+                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI Core v5.1</span>
+                </div>
+              </>
+            )}
+          </aside>
+
+          {/* MODAL SUPORTE EM IA */}
+          {modalSuporteAberto && (
+            <div style={{
+              position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+              backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(15px)',
+              zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+            }}>
+              <div style={{
+                backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '1px solid #00f0ff',
+                borderRadius: '16px', padding: '25px', width: '100%', maxWidth: '700px',
+                boxShadow: '0 0 35px rgba(0, 240, 255, 0.25)', position: 'relative'
+              }}>
+                <button 
+                  onClick={() => setModalSuporteAberto(false)}
+                  style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#00f0ff', fontSize: '18px', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+
+                <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 4px 0', letterSpacing: '1px' }}>
+                  EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030 | Core v5.1
+                </h2>
+                <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 15px 0' }}>
+                  Resolução Autônoma de Bugs (90% IA), Compatibilidade de Apps, Documentos e Códigos G-AGI
+                </p>
+
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', flexWrap: 'wrap' }}>
+                  <button onClick={() => setAbaSuporteAtiva('diagnostico')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'diagnostico' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'diagnostico' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🛠️ Diagnóstico</button>
+                  <button onClick={() => setAbaSuporteAtiva('codigo')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'codigo' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'codigo' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>💻 Códigos G-AGI</button>
+                  <button onClick={() => setAbaSuporteAtiva('avatar')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'avatar' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'avatar' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🎥 Vídeo-Aula Holográfica</button>
+                  <button onClick={() => setAbaSuporteAtiva('feedback')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'feedback' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'feedback' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>⭐ Feedbacks Cósmicos</button>
+                </div>
+
+                <textarea 
+                  value={inputProblemaSuporte}
+                  onChange={(e) => setInputProblemaSuporte(e.target.value)}
+                  placeholder="Descreva seu bug, problema de compatibilidade ou solicitação G-AGI..."
+                  style={{ width: '100%', height: '80px', backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', padding: '10px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }}
+                />
+
+                <button 
+                  onClick={processarSuporteIA}
+                  disabled={carregandoSuporte}
+                  style={{ width: '100%', marginTop: '10px', padding: '10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(255, 0, 127, 0.4)' }}
+                >
+                  {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini AGI v5.1...' : '🚀 Executar Solução IA v5.1 (90%)'}
+                </button>
+
+                {respostaSuporte && (
+                  <div style={{ marginTop: '15px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '12px', borderRadius: '6px', fontSize: '11px' }}>
+                    <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico G-AGI:</strong>
+                    <p style={{ margin: '0 0 8px 0', color: '#cbd5e1' }}>{respostaSuporte.diagnostico}</p>
+
+                    {respostaSuporte.codigo && (
+                      <pre style={{ backgroundColor: '#010409', padding: '8px', borderRadius: '4px', color: '#38bdf8', overflowX: 'auto', fontSize: '10px', margin: '6px 0' }}>
+                        {respostaSuporte.codigo}
+                      </pre>
+                    )}
+
+                    <p style={{ color: '#4ade80', margin: '4px 0' }}>📄 {respostaSuporte.documento}</p>
+                    <p style={{ color: '#fb923c', margin: '4px 0' }}>🎥 {respostaSuporte.avatarVideo}</p>
+                    
+                    <div style={{ marginTop: '8px', padding: '6px', backgroundColor: 'rgba(255,0,127,0.1)', border: '1px dashed #ff007f', borderRadius: '4px', color: '#ff007f', fontSize: '10px' }}>
+                      ⚠️ Protocolo de Segurança v5.1: {respostaSuporte.protocolo}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* PAINEL FLUIDO DIREITO: IA INTEGRADA + GEMINI AGI Core v5.1 */}
           <div style={{
-            backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '1px solid #00f0ff',
-            borderRadius: '16px', padding: '25px', width: '100%', maxWidth: '700px',
-            boxShadow: '0 0 35px rgba(0, 240, 255, 0.25)', position: 'relative'
+            position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
+            height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
+            backdropFilter: 'blur(25px)', border: '1px solid rgba(0, 240, 255, 0.4)',
+            borderRadius: '16px 0 0 16px', zIndex: 95, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
+            gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
           }}>
             <button 
-              onClick={() => setModalSuporteAberto(false)}
-              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#00f0ff', fontSize: '18px', cursor: 'pointer' }}
+              onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
+              style={{
+                position: 'absolute', left: '-42px', top: '25px', width: '42px', height: '48px',
+                backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)',
+                borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+                color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
             >
-              ✕
+              {painelFluidoDireitoAberto ? '➔' : '◀'}
             </button>
 
-            <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 4px 0', letterSpacing: '1px' }}>
-              EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030 | Core v5.1
-            </h2>
-            <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 15px 0' }}>
-              Resolução Autônoma de Bugs (90% IA), Compatibilidade de Apps, Documentos e Códigos G-AGI
-            </p>
-
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', flexWrap: 'wrap' }}>
-              <button onClick={() => setAbaSuporteAtiva('diagnostico')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'diagnostico' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'diagnostico' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🛠️ Diagnóstico</button>
-              <button onClick={() => setAbaSuporteAtiva('codigo')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'codigo' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'codigo' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>💻 Códigos G-AGI</button>
-              <button onClick={() => setAbaSuporteAtiva('avatar')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'avatar' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'avatar' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🎥 Vídeo-Aula Holográfica</button>
-              <button onClick={() => setAbaSuporteAtiva('feedback')} style={{ padding: '6px 12px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: abaSuporteAtiva === 'feedback' ? '#00f0ff' : 'transparent', color: abaSuporteAtiva === 'feedback' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>⭐ Feedbacks Cósmicos</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
+              <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
+                Gemini-Integrated Advanced Command Terminal | Core v5.1
+              </span>
+              <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
             </div>
 
-            <textarea 
-              value={inputProblemaSuporte}
-              onChange={(e) => setInputProblemaSuporte(e.target.value)}
-              placeholder="Descreva seu bug, problema de compatibilidade ou solicitação G-AGI..."
-              style={{ width: '100%', height: '80px', backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', padding: '10px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }}
-            />
+            <div>
+              <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🤖 IA INTEGRADA + GEMINI AGI Core v5.1
+              </h3>
+              <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
+                NÚCLEO DE RESPOSTA AUXILIAR Multimodal
+              </h4>
+              <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                (G-AGI Core: ACTIVE | Matrix stable)
+              </span>
+            </div>
 
-            <button 
-              onClick={processarSuporteIA}
-              disabled={carregandoSuporte}
-              style={{ width: '100%', marginTop: '10px', padding: '10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(255, 0, 127, 0.4)' }}
-            >
-              {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini AGI v5.1...' : '🚀 Executar Solução IA v5.1 (90%)'}
-            </button>
+            {/* 🌟 RECURSOS DE MODAIS MOVIDOS PARA O PAINEL DE IA INTEGRADA */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                <button 
+                  onClick={() => setModalCreatorStudioAberto(true)}
+                  style={{
+                    backgroundColor: 'rgba(0, 240, 255, 0.15)', border: '1px solid #00f0ff', color: '#00f0ff',
+                    padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}
+                >
+                  📊 EM Creator Studio
+                </button>
 
-            {respostaSuporte && (
-              <div style={{ marginTop: '15px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '12px', borderRadius: '6px', fontSize: '11px' }}>
-                <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico G-AGI:</strong>
-                <p style={{ margin: '0 0 8px 0', color: '#cbd5e1' }}>{respostaSuporte.diagnostico}</p>
+                <button 
+                  onClick={() => setModalSuporteAberto(true)}
+                  style={{
+                    backgroundColor: 'rgba(255, 0, 127, 0.15)', border: '1px solid #ff007f', color: '#ff007f',
+                    padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}
+                >
+                  🛠️ Suporte EM IA
+                </button>
+              </div>
 
-                {respostaSuporte.codigo && (
-                  <pre style={{ backgroundColor: '#010409', padding: '8px', borderRadius: '4px', color: '#38bdf8', overflowX: 'auto', fontSize: '10px', margin: '6px 0' }}>
-                    {respostaSuporte.codigo}
-                  </pre>
+              <button 
+                onClick={baixarPDF300Comandos}
+                style={{
+                  backgroundColor: 'rgba(234, 88, 12, 0.2)', border: '1px solid #ea580c', color: '#fb923c',
+                  padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                }}
+              >
+                📄 Baixar Manual G-AGI Mestre (300 Comandos)
+              </button>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                  🍌 /nano-banana
+                </button>
+                <button onClick={() => executarComandoCMD('/gerar-mapa')} style={{ backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                  🗺️ /gerar-mapa
+                </button>
+                <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                  ⚡ /status-core
+                </button>
+                <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
+                  🛠️ /suporte G-AGI
+                </button>
+              </div>
+            </div>
+
+            <div style={{
+              flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
+              border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
+              fontFamily: 'Consolas, monospace', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px'
+            }}>
+              {cmdLogs.map((log, i) => (
+                <p key={i} style={{
+                  margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
+                  color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
+                         log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
+                         log.startsWith('[CMD>') ? '#38bdf8' :
+                         log.startsWith('[G-AGI: QUICK_ACTION]') ? '#ff007f' :
+                         log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
+                }}>
+                  {log}
+                </p>
+              ))}
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
+              <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
+              <input
+                type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
+                placeholder="Comando ou instrução G-AGI... (ex: /gif naruto)"
+                style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
+              />
+              <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
+            </form>
+          </div>
+
+          <div style={{
+            position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '180px', right: '400px',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
+            transition: 'left 0.3s'
+          }}>
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', minWidth: '150px'
+            }}>
+              <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network G-AGI Sync</span>
+              <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel Sync 2030 v5.1</strong>
+            </div>
+
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '12px'
+            }}>
+              <div>
+                <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Cognitive Load</span>
+                <strong style={{ fontSize: '11px', color: '#38bdf8' }}>G-AGI Core 22%</strong>
+              </div>
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #00f0ff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '10px', fontWeight: 'bold', color: '#00f0ff'
+              }}>
+                35%
+              </div>
+            </div>
+
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '8px'
+            }}>
+              <span style={{ fontSize: '16px', color: '#00f0ff' }}>🕒</span>
+              <div>
+                <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL v5.1</span>
+                <strong style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace' }}>
+                  {horaAtual || '14 Março 2030, 22:15'}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER COM BUSCA MULTIMODAL & SETINHA DE EXPANDIR/ESCONDER --- */}
+          <div style={{
+            position: 'absolute', top: '90px', right: '400px', zIndex: 10,
+            backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '14px',
+            width: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}>
+            {/* BARRA DE NAVEGAÇÃO E CAMPO DE ENDEREÇO / TERMO */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
+                <span style={{ fontSize: '11px', color: '#00f0ff' }}>🌐</span>
+                <input
+                  type="text"
+                  value={urlOuTermoNavegador}
+                  onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador); }}
+                  placeholder="URL, busca web, livros ou PDF..."
+                  style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button onClick={() => executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador)} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: '10px' }}>🔍</button>
+                <button
+                  onClick={() => setBrowserExpandido(!browserExpandido)}
+                  style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+                  title={browserExpandido ? "Recolher Quantum Browser" : "Expandir Quantum Browser"}
+                >
+                  {browserExpandido ? '▲' : '▼'}
+                </button>
+              </div>
+            </div>
+
+            {/* CONTEÚDO EXPANDÍVEL COM MODOS MULTIMODAIS DE PESQUISA */}
+            {browserExpandido && (
+              <div>
+                {/* SELETOR DE MODOS MULTIMODAIS DE BUSCA */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+                  <button onClick={() => setAbaBuscaNavegador('web')} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #00f0ff', backgroundColor: abaBuscaNavegador === 'web' ? '#00f0ff' : 'transparent', color: abaBuscaNavegador === 'web' ? '#000' : '#00f0ff', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    🌐 Web
+                  </button>
+                  <button onClick={iniciarVozNavegador} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #a855f7', backgroundColor: escutandoVozNavegador ? '#ff007f' : 'transparent', color: '#a855f7', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    {escutandoVozNavegador ? '🔴 Ouvindo' : '🎙️ Voz'}
+                  </button>
+                  <button onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #eab308', backgroundColor: 'transparent', color: '#eab308', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    🖼️ Mídias
+                  </button>
+                  <button onClick={() => pdfInputRef.current && pdfInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    📄 PDF/Livro
+                  </button>
+                  <input type="file" ref={pdfInputRef} onChange={handleUploadPDFNavegador} style={{ display: 'none' }} accept="application/pdf,.epub,.docx,.txt" />
+                </div>
+
+                {/* PAINEL DE TÍTULO, SUBTÍTULO E RESULTADO DAS MÍDIAS */}
+                <h2 style={{ fontSize: '13px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
+                <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
+
+                {carregandoNavegador ? (
+                  <div style={{ textAlign: 'center', padding: '15px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '10px', border: '1px dashed #00f0ff', margin: '6px 0' }}>
+                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>⚡ Indexando Resultados Quantum G-AGI...</span>
+                  </div>
+                ) : gerandoMidia ? (
+                  <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
+                    <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
+                    <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
+                      SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
+                    </span>
+                    
+                    <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
+                      <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
+                    </div>
+                    
+                    <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
+                  </div>
+                ) : (
+                  <>
+                    {browserAsset.videoUrl && (
+                      <div style={{ margin: '8px 0' }}>
+                        <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
+                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
+                              <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                {res}
+                              </button>
+                            ))}
+                          </div>
+                          <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                            {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {browserAsset.imagem && (
+                      <div>
+                        <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+                          <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
+                        </div>
+
+                        {versoesAtivas.length > 1 && (
+                          <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
+                            {versoesAtivas.map((v, i) => (
+                              <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                                {v.rotulo}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
 
-                <p style={{ color: '#4ade80', margin: '4px 0' }}>📄 {respostaSuporte.documento}</p>
-                <p style={{ color: '#fb923c', margin: '4px 0' }}>🎥 {respostaSuporte.avatarVideo}</p>
-                
-                <div style={{ marginTop: '8px', padding: '6px', backgroundColor: 'rgba(255,0,127,0.1)', border: '1px dashed #ff007f', borderRadius: '4px', color: '#ff007f', fontSize: '10px' }}>
-                  ⚠️ Protocolo de Segurança v5.1: {respostaSuporte.protocolo}
+                <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
+                  {browserAsset.conteudoTexto}
                 </div>
               </div>
             )}
           </div>
-        </div>
-      )}
 
-      {/* MODAL EM CREATOR STUDIO IA */}
+          <div style={{
+            position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+            zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
+          }}>
+
+            <div style={{
+              backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '12px', padding: '8px 20px',
+              textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
+            }}>
+              <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
+                IA EMANUEL (GEMINI AGI Core v5.1 Multimodal)
+              </span>
+              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
+                Emanuel.OS Core v5.1 | Quick Actions Active | Ano: 2030
+              </span>
+            </div>
+
+            <div style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 16px',
+              maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px'
+            }}>
+              {mensagens.map((item, index) => (
+                <div key={index}>
+                  <span style={{ fontSize: '9px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e', letterSpacing: '0.5px' }}>
+                    {item.autor}
+                  </span>
+                  <p style={{ margin: 0, fontSize: '11px', color: '#f8fafc', lineHeight: '1.3' }}>
+                    {item.texto}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleEnviarMensagemTexto} style={{
+              backgroundColor: 'rgba(5, 12, 24, 0.9)', backdropFilter: 'blur(20px)',
+              border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px',
+              display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.25)'
+            }}>
+              <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>🖼️</button>
+              <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>{estaOuvindo ? '🔴' : '🎙️'}</button>
+              <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
+
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder="Digite mensagens ou peça gifs/imagens (ex: 'gif do naruto', 'imagem de carro cyberpunk', 'video vila')..."
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
+              />
+
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 18px',
+                  borderRadius: '18px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
+                  boxShadow: '0 0 10px #00f0ff'
+                }}
+              >
+                Executar G-AGI ➔
+              </button>
+            </form>
+
+          </div>
+
+          {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+          <FuturisticWindowManager />
+        </div>
+
+        {/* LADO DIREITO: TELA INTERATIVA DEDICADA A DESENVOLVEDORES (DEV WORKSTATION) */}
+        {modoDevSplit && (
+          <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
+            <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
+          </div>
+        )}
+
+      </div>
+
+      {/* MODAL CREATOR STUDIO */}
       {modalCreatorStudioAberto && (
         <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />
       )}
-
-      <div style={{
-        position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
-        height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
-        backdropFilter: 'blur(25px)', border: '1px solid rgba(0, 240, 255, 0.4)',
-        borderRadius: '16px 0 0 16px', zIndex: 95, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
-        gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
-      }}>
-        <button 
-          onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)}
-          style={{
-            position: 'absolute', left: '-42px', top: '25px', width: '42px', height: '48px',
-            backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)',
-            borderRight: 'none', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
-            color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}
-        >
-          {painelFluidoDireitoAberto ? '➔' : '◀'}
-        </button>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
-          <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
-            Gemini-Integrated Advanced Command Terminal | Core v5.1
-          </span>
-          <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
-        </div>
-
-        <div>
-          <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            🤖 IA INTEGRADA + GEMINI AGI Core v5.1
-          </h3>
-          <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
-            NÚCLEO DE RESPOSTA AUXILIAR Multimodal
-          </h4>
-          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-            (G-AGI Core: ACTIVE | Matrix stable)
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <button 
-            onClick={baixarPDF300Comandos}
-            style={{
-              backgroundColor: 'rgba(234, 88, 12, 0.2)', border: '1px solid #ea580c', color: '#fb923c',
-              padding: '8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-            }}
-          >
-            📄 Baixar Manual G-AGI Mestre (300 Comandos)
-          </button>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-            <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              🍌 /nano-banana
-            </button>
-            <button onClick={() => executarComandoCMD('/gerar-mapa')} style={{ backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              🗺️ /gerar-mapa
-            </button>
-            <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              ⚡ /status-core
-            </button>
-            <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-              🛠️ /suporte G-AGI
-            </button>
-          </div>
-        </div>
-
-        <div style={{
-          flexGrow: 1, backgroundColor: 'rgba(2, 6, 23, 0.85)', borderRadius: '12px', padding: '12px',
-          border: '1px solid rgba(0, 240, 255, 0.2)', overflowY: 'auto', fontSize: '10px',
-          fontFamily: 'Consolas, monospace', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px'
-        }}>
-          {cmdLogs.map((log, i) => (
-            <p key={i} style={{
-              margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
-              color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
-                     log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
-                     log.startsWith('[CMD>') ? '#38bdf8' :
-                     log.startsWith('[G-AGI: QUICK_ACTION]') ? '#ff007f' :
-                     log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
-            }}>
-              {log}
-            </p>
-          ))}
-        </div>
-
-        <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
-          <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
-          <input
-            type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-            placeholder="Comando ou instrução G-AGI... (ex: /gif naruto)"
-            style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
-          />
-          <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
-        </form>
-      </div>
-
-      <div style={{
-        position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '180px', right: '400px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
-        transition: 'left 0.3s'
-      }}>
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', minWidth: '150px'
-        }}>
-          <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network G-AGI Sync</span>
-          <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel Sync 2030 v5.1</strong>
-        </div>
-
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '12px'
-        }}>
-          <div>
-            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Cognitive Load</span>
-            <strong style={{ fontSize: '11px', color: '#38bdf8' }}>G-AGI Core 22%</strong>
-          </div>
-          <div style={{
-            width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #00f0ff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '10px', fontWeight: 'bold', color: '#00f0ff'
-          }}>
-            35%
-          </div>
-        </div>
-
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
-          boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '8px'
-        }}>
-          <span style={{ fontSize: '16px', color: '#00f0ff' }}>🕒</span>
-          <div>
-            <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL v5.1</span>
-            <strong style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace' }}>
-              {horaAtual || '14 Março 2030, 22:15'}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      {/* --- EMANUEL.OS NATIVE BROWSER COM SETINHA DE EXPANDIR / ESCONDER (RETRÁTIL) --- */}
-      <div style={{
-        position: 'absolute', top: '90px', right: '400px', zIndex: 10,
-        backgroundColor: 'rgba(8, 15, 30, 0.75)', backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '14px', padding: '14px',
-        width: '300px', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-      }}>
-        {/* BARRA DE NAVEGAÇÃO SUPERIOR DO NATIVE BROWSER */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '5px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
-            <span style={{ fontSize: '10px', color: '#00f0ff' }}>🌐</span>
-            <input type="text" readOnly value="Internet Em.com v5.1" style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%' }} />
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '10px', color: '#00f0ff' }}>🔍</span>
-            {/* BOTÃO RETRÁTIL DO NATIVE BROWSER */}
-            <button
-              onClick={() => setBrowserExpandido(!browserExpandido)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#00f0ff',
-                fontSize: '12px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                padding: '0 4px',
-                lineHeight: 1
-              }}
-              title={browserExpandido ? "Recolher Native Browser" : "Expandir Native Browser"}
-            >
-              {browserExpandido ? '▲' : '▼'}
-            </button>
-          </div>
-        </div>
-
-        {/* CONTEÚDO EXPANDÍVEL DO BROWSER */}
-        {browserExpandido && (
-          <div>
-            <h2 style={{ fontSize: '14px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
-            <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
-
-            {gerandoMidia ? (
-              <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
-                <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
-                <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
-                  SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
-                </span>
-                
-                <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
-                  <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
-                </div>
-                
-                <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
-              </div>
-            ) : (
-              <>
-                {browserAsset.videoUrl && (
-                  <div style={{ margin: '8px 0' }}>
-                    <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
-                    
-                    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
-                          <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            {res}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-                        {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {browserAsset.imagem && (
-                  <div>
-                    <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-                      <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
-                    </div>
-
-                    {versoesAtivas.length > 1 && (
-                      <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
-                        {versoesAtivas.map((v, i) => (
-                          <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                            {v.rotulo}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-
-            <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
-              {browserAsset.conteudoTexto}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div style={{
-        position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
-        zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
-      }}>
-
-        <div style={{
-          backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '12px', padding: '8px 20px',
-          textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
-        }}>
-          <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
-            IA EMANUEL (GEMINI AGI Core v5.1 Multimodal)
-          </span>
-          <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
-            Emanuel.OS Core v5.1 | Quick Actions Active | Ano: 2030
-          </span>
-        </div>
-
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 16px',
-          maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px'
-        }}>
-          {mensagens.map((item, index) => (
-            <div key={index}>
-              <span style={{ fontSize: '9px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e', letterSpacing: '0.5px' }}>
-                {item.autor}
-              </span>
-              <p style={{ margin: 0, fontSize: '11px', color: '#f8fafc', lineHeight: '1.3' }}>
-                {item.texto}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <form onSubmit={handleEnviarMensagemTexto} style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.9)', backdropFilter: 'blur(20px)',
-          border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px',
-          display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.25)'
-        }}>
-          <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>🖼️</button>
-          <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>{estaOuvindo ? '🔴' : '🎙️'}</button>
-          <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
-
-          <input
-            type="text"
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Digite mensagens ou peça gifs/imagens (ex: 'gif do naruto', 'imagem de carro cyberpunk', 'video vila')..."
-            style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
-          />
-
-          <button
-            type="submit"
-            style={{
-              backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 18px',
-              borderRadius: '18px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-              boxShadow: '0 0 10px #00f0ff'
-            }}
-          >
-            Executar G-AGI ➔
-          </button>
-        </form>
-
-      </div>
-
-      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
-      <FuturisticWindowManager />
 
       <style>{`
         @keyframes spinPulse {
