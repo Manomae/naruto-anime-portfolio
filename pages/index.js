@@ -1927,6 +1927,22 @@ export default function EmanuelOSCore() {
                 }}>
                   ⚛️ Mapa Matemático Quântico
                 </Link>
+
+                {/* NOVO LINK INTEGRADO DO MAPA ORKUT SOCIAL 3D */}
+                <Link href="/mapa-orkut" style={{ 
+                  padding: '10px', 
+                  backgroundColor: '#0f172a', 
+                  border: '1px solid #ff007f', 
+                  color: '#ff007f', 
+                  borderRadius: '8px', 
+                  textDecoration: 'none', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  textAlign: 'center',
+                  gridColumn: 'span 2'
+                }}>
+                  💖 Mapa Orkut Social 3D
+                </Link>
               </div>
             </div>
 

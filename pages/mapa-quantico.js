@@ -4,6 +4,9 @@ import Link from 'next/link';
 import * as THREE from 'three';
 import { jsPDF } from "jspdf";
 
+// Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
 export default function MapaQuantico() {
   const mountRef = useRef(null);
   const [qubitState, setQubitState] = useState({ alpha: 0.707, beta: 0.707, entropia: 0.982 });
@@ -45,7 +48,7 @@ export default function MapaQuantico() {
     const ambientLight = new THREE.AmbientLight(0x0f172a, 1.5);
     scene.add(ambientLight);
 
-    // Esfera de Bloch (Representação Visual do Qubit Mestre)
+    // Esfera de Bloch
     const BlochGeometry = new THREE.SphereGeometry(1.8, 32, 32);
     const BlochMaterial = new THREE.MeshStandardMaterial({
       color: 0x8b5cf6,
@@ -58,7 +61,7 @@ export default function MapaQuantico() {
     const blochSphere = new THREE.Mesh(BlochGeometry, BlochMaterial);
     scene.add(blochSphere);
 
-    // Núcleo do Qubit (Icosaedro Quântico)
+    // Núcleo do Qubit
     const coreGeometry = new THREE.IcosahedronGeometry(0.8, 2);
     const coreMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
@@ -84,7 +87,7 @@ export default function MapaQuantico() {
     }
     scene.add(ringGroup);
 
-    // Nuvem de Partículas Quânticas (Probabilidade)
+    // Nuvem de Partículas Quânticas
     const particlesCount = 800;
     const positions = new Float32Array(particlesCount * 3);
     for (let i = 0; i < particlesCount * 3; i++) {
@@ -101,7 +104,6 @@ export default function MapaQuantico() {
     const particleSystem = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particleSystem);
 
-    // Animação Contínua
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -141,7 +143,6 @@ export default function MapaQuantico() {
     };
   }, []);
 
-  // --- FUNÇÕES DE SIMULAÇÃO QUÂNTICA ---
   const simularColapsoOnda = () => {
     setSimulandoColapso(true);
     setLogQuantico(prev => [...prev, "[QUBIT] Aplicando Porta Hadamard H_1... Colapsando função de onda..."]);
@@ -201,10 +202,8 @@ export default function MapaQuantico() {
         <title>Emanuel.OS | Mapa Matemático Quântico 3D (2030)</title>
       </Head>
 
-      {/* Cenário Three.js de Fundo */}
       <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }} />
 
-      {/* NAVEGAÇÃO E HEADER HUD */}
       <header style={{
         position: 'absolute', top: '20px', left: '20px', right: '20px',
         zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -233,7 +232,6 @@ export default function MapaQuantico() {
         </div>
       </header>
 
-      {/* PAINEL HUD ESQUERDO: CONTROLES & EQUAÇÕES */}
       <div style={{
         position: 'absolute', top: '80px', left: '20px', width: '360px',
         maxHeight: 'calc(100vh - 100px)', overflowY: 'auto', zIndex: 10,
@@ -248,7 +246,6 @@ export default function MapaQuantico() {
           Simulador de superposição e calculadora de estados quânticos em tempo real.
         </p>
 
-        {/* MÉTRICAS DO QUBIT */}
         <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
           <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
             📐 Estado Quântico Psi (|Ψ⟩)
@@ -268,7 +265,6 @@ export default function MapaQuantico() {
           </div>
         </div>
 
-        {/* AJUSTE DE FREQUÊNCIA */}
         <div style={{ marginBottom: '16px' }}>
           <label style={{ fontSize: '10px', color: '#a855f7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
             🔊 Frequência de Ressonância (Hz): {frequencia} Hz
@@ -280,7 +276,6 @@ export default function MapaQuantico() {
           />
         </div>
 
-        {/* BOTÕES DE AÇÃO */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button
             onClick={simularColapsoOnda}
@@ -308,7 +303,6 @@ export default function MapaQuantico() {
         </div>
       </div>
 
-      {/* PAINEL HUD DIREITO: TERMINAL QUÂNTICO */}
       <div style={{
         position: 'absolute', bottom: '20px', right: '20px', width: '420px',
         maxHeight: '220px', zIndex: 10, backgroundColor: 'rgba(8, 15, 30, 0.90)',
@@ -333,6 +327,9 @@ export default function MapaQuantico() {
           ))}
         </div>
       </div>
+
+      {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+      <FuturisticWindowManager />
     </div>
   );
 }
