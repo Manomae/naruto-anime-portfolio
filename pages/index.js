@@ -159,7 +159,7 @@ function EMCreatorStudio({ onClose }) {
   );
 }
 
-// --- 💻 NOVO COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN ---
+// --- 💻 COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN ---
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('javascript');
   const [codigoFonte, setCodigoFonte] = useState(
@@ -1710,7 +1710,7 @@ export default function EmanuelOSCore() {
                     disabled={qrCodeValidando}
                     style={{
                       width: '100%', padding: '14px', backgroundColor: qrCodeValidando ? '#0284c7' : '#00f0ff',
-                      color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px',
+                      color: '#00f0ff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px',
                       cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)', transition: 'all 0.3s'
                     }}
                   >
@@ -1750,7 +1750,7 @@ export default function EmanuelOSCore() {
 
       {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
-        
+
         {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL (OCUPA 100% OU 50% NO MODO SPLIT) */}
         <div style={{
           width: modoDevSplit ? '50%' : '100%',
@@ -1817,7 +1817,7 @@ export default function EmanuelOSCore() {
 
                 <div style={{ padding: '15px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
                   <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold' }}>🌐 Central de Mapas Integrados (2030)</h3>
-                  
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                     <Link href="/espacial" style={{ padding: '10px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '11px', textAlign: 'center' }}>
                       🪐 Mapa Espacial
@@ -1880,6 +1880,22 @@ export default function EmanuelOSCore() {
                     }}>
                       💖 Mapa Orkut Social 3D
                     </Link>
+
+                    {/* 🔬 NOVO MAPA DE PATOLOGIA & LABORATÓRIO 3D INTEGRADO */}
+                    <Link href="/mapa-patologia" style={{ 
+                      padding: '10px', 
+                      backgroundColor: '#0f172a', 
+                      border: '1px solid #00f0ff', 
+                      color: '#00f0ff', 
+                      borderRadius: '8px', 
+                      textDecoration: 'none', 
+                      fontWeight: 'bold', 
+                      fontSize: '11px', 
+                      textAlign: 'center',
+                      gridColumn: 'span 2'
+                    }}>
+                      🔬 Mapa de Patologia & Laboratório 3D
+                    </Link>
                   </div>
                 </div>
 
@@ -1920,10 +1936,10 @@ export default function EmanuelOSCore() {
                       <input type="text" placeholder="DDD 2" value={ddd2} onChange={(e) => setDdd2(e.target.value)} style={{ width: '55px', padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '11px' }} />
                       <input type="text" placeholder="Número Celular 2" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} style={{ flexGrow: 1, padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                     </div>
-                    
+
                     <input type="text" placeholder="Mensagem Canal 1" value={msgCanal1} onChange={(e) => setMsgCanal1(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
                     <input type="text" placeholder="Mensagem Canal 2" value={msgCanal2} onChange={(e) => setMsgCanal2(e.target.value)} style={{ padding: '7px', backgroundColor: '#09090b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', color: '#fff', fontSize: '11px' }} />
-                    
+
                     <select value={modoDisparo} onChange={(e) => setModoDisparo(e.target.value)} style={{ width: '100%', padding: '7px', backgroundColor: '#09090b', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: '11px' }}>
                       <option value="ambos">Disparar as duas linhas juntas (ID v5.1)</option>
                       <option value="canal1">Disparar somente Linha 1</option>
@@ -2002,7 +2018,7 @@ export default function EmanuelOSCore() {
 
                     <p style={{ color: '#4ade80', margin: '4px 0' }}>📄 {respostaSuporte.documento}</p>
                     <p style={{ color: '#fb923c', margin: '4px 0' }}>🎥 {respostaSuporte.avatarVideo}</p>
-                    
+
                     <div style={{ marginTop: '8px', padding: '6px', backgroundColor: 'rgba(255,0,127,0.1)', border: '1px dashed #ff007f', borderRadius: '4px', color: '#ff007f', fontSize: '10px' }}>
                       ⚠️ Protocolo de Segurança v5.1: {respostaSuporte.protocolo}
                     </div>
