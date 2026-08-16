@@ -14,10 +14,13 @@ export default function MapaRessonancia3D() {
   // Estados de Configuração Técnica da Ressonância
   const [respiracaoLivre, setRespiracaoLivre] = useState(true);
   const [filtroMovimento, setFiltroMovimento] = useState(true);
-  const [intensidadeTesla, setIntensidadeTesla] = useState(3.0); // 1.5T a 7.0T
-  const [frequenciaRadioMHz, setFrequenciaRadioMHz] = useState(128); // Pulsos de Rádio
+  const [intensidadeTesla, setIntensidadeTesla] = useState(3.0);
+  const [frequenciaRadioMHz, setFrequenciaRadioMHz] = useState(128);
   const [realceInflamatorio, setRealceInflamatorio] = useState(false);
   const [statusExame, setStatusExame] = useState('🟢 Aquisição Volumétrica em Tempo Real Estável (RM 3D)');
+
+  // 🌟 CONTROLE DA ABA LATERAL RETRÁTIL DO PACIENTE (ESTILO EMANUEL.OS WORKSTATION)
+  const [painelPacienteAberto, setPainelPacienteAberto] = useState(true);
 
   // CONTROLE DO PAINEL INFERIOR DE RM (EXPANDIDO / RECOLHIDO)
   const [painelRmExpandido, setPainelRmExpandido] = useState(true);
@@ -229,16 +232,32 @@ export default function MapaRessonancia3D() {
         <title>Mapa Ressonância 3D (IA) | Emanuel.OS</title>
       </Head>
 
-      <Link href="/" style={{
-        position: 'absolute', top: '20px', left: '20px', zIndex: 100,
-        padding: '10px 16px', backgroundColor: 'rgba(15, 23, 42, 0.85)',
-        border: '1px solid #10b981', color: '#34d399', borderRadius: '10px',
-        textDecoration: 'none', fontWeight: 'bold', fontSize: '12px',
-        boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)'
-      }}>
-        ⬅ Voltar ao Emanuel.OS Index
-      </Link>
+      {/* HEADER SUPERIOR */}
+      <header style={{ position: 'absolute', top: '15px', left: '20px', zIndex: 100, display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Link href="/" style={{
+          padding: '8px 14px', backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          border: '1px solid #10b981', color: '#34d399', borderRadius: '10px',
+          textDecoration: 'none', fontWeight: 'bold', fontSize: '11px',
+          boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)'
+        }}>
+          ⬅ Voltar ao Core
+        </Link>
+      </header>
 
+      {/* 🔬 BOTÃO DE CONEXÃO AO MAPA DE PATOLOGIA REPOSICIONADO: MAIS EMBAIXO, DO LADO DO DESIGN DA RM ANTES DO CENTRO */}
+      <div style={{ position: 'absolute', top: '75px', left: '20px', zIndex: 90 }}>
+        <Link href="/mapa-patologia" style={{
+          padding: '9px 16px', backgroundColor: 'rgba(8, 15, 30, 0.90)',
+          border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '12px',
+          textDecoration: 'none', fontWeight: 'bold', fontSize: '11px',
+          boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px',
+          backdropFilter: 'blur(15px)'
+        }}>
+          🔬 Conectar ao Mapa de Patologia e Laboratório 3D ➔
+        </Link>
+      </div>
+
+      {/* 🌟 BARRA FLUIDA SUPERIOR RETRÁTIL */}
       <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 110, width: '90%', maxWidth: '680px' }}>
         <div 
           onClick={() => setIsBarraFluidaOpen(!isBarraFluidaOpen)}
@@ -331,16 +350,34 @@ export default function MapaRessonancia3D() {
 
       <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
 
+      {/* 👤 PAINEL LATERAL ESQUERDO DO PACIENTE COM A SETA MAIOR DE LADO (ESTILO EMANUEL.OS WORKSTATION) */}
       <div style={{
-        position: 'absolute', top: '80px', left: '20px', width: '300px',
-        backgroundColor: 'rgba(8, 15, 30, 0.88)', backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '16px',
-        padding: '16px', zIndex: 10, boxShadow: '0 0 25px rgba(16, 185, 129, 0.2)'
+        position: 'absolute', top: '130px', left: painelPacienteAberto ? '20px' : '-310px', width: '310px',
+        backgroundColor: 'rgba(8, 15, 30, 0.92)', backdropFilter: 'blur(25px)',
+        border: '1px solid rgba(16, 185, 129, 0.5)', borderRadius: '16px',
+        padding: '16px', zIndex: 95, boxShadow: '0 0 30px rgba(16, 185, 129, 0.25)',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        <h3 style={{ color: '#34d399', fontSize: '13px', margin: '0 0 8px 0', fontWeight: 'bold' }}>
-          👤 Paciente Selecionado para RM 3D
+        {/* BOTÃO PROJETADO COM A SETA MAIOR DE LADO NA BORDA */}
+        <button
+          onClick={() => setPainelPacienteAberto(!painelPacienteAberto)}
+          style={{
+            position: 'absolute', right: '-38px', top: '15px', width: '38px', height: '44px',
+            backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '1px solid rgba(16, 185, 129, 0.5)',
+            borderLeft: 'none', borderTopRightRadius: '10px', borderBottomRightRadius: '10px',
+            color: '#34d399', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '5px 0 15px rgba(0,0,0,0.5)'
+          }}
+          title={painelPacienteAberto ? "Recolher Painel Paciente" : "Expandir Painel Paciente"}
+        >
+          {painelPacienteAberto ? '◀' : '➔'}
+        </button>
+
+        <h3 style={{ color: '#34d399', fontSize: '13px', margin: '0 0 10px 0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          👤 Paciente Selecionado (RM 3D)
         </h3>
-        
+
         <select 
           value={pacienteSelecionado.id}
           onChange={(e) => {
@@ -354,7 +391,7 @@ export default function MapaRessonancia3D() {
           ))}
         </select>
 
-        <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px', fontSize: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px', fontSize: '10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <div><span style={{ color: '#94a3b8' }}>Nome:</span> <b>{pacienteSelecionado.nome}</b></div>
           <div><span style={{ color: '#94a3b8' }}>Idade:</span> <b>{pacienteSelecionado.idade} anos</b></div>
           <div><span style={{ color: '#94a3b8' }}>Histórico:</span> <span style={{ color: '#cbd5e1' }}>{pacienteSelecionado.historico}</span></div>
@@ -371,7 +408,7 @@ export default function MapaRessonancia3D() {
         transition: 'all 0.3s ease'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: painelRmExpandido ? '10px' : '0' }}>
-          <h2 style={{ color: '#34d399', fontSize: '15px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ color: '#34d399', fontSize: '14px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             🧠 Módulo Físico de RM 3D: Campo Magnético & Ondas de Rádio
           </h2>
           

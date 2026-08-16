@@ -16,7 +16,6 @@ export default function MapaPatologiaLaboratorio3D() {
   const [filtroSistema, setFiltroSistema] = useState('todos');
   const [termoBusca, setTermoBusca] = useState('');
   const [sistemaSelecionado, setSistemaSelecionado] = useState(null);
-  const [isPainelAnaliseOpen, setIsPainelAnaliseOpen] = useState(true);
 
   // Base de Dados de Patologia e Análise Celular Educativa
   const catalogoBiologico = [
@@ -243,7 +242,7 @@ export default function MapaPatologiaLaboratorio3D() {
         <title>Mapa de Patologia & Laboratório 3D | Emanuel.OS</title>
       </Head>
 
-      {/* HEADER PRINCIPAL COM NAVEGAÇÃO */}
+      {/* HEADER PRINCIPAL COM NAVEGAÇÃO ENTRE MAPAS */}
       <header style={{ position: 'absolute', top: '15px', left: '20px', zIndex: 100, display: 'flex', alignItems: 'center', gap: '12px' }}>
         <Link href="/" style={{
           padding: '8px 14px', backgroundColor: 'rgba(15, 23, 42, 0.85)',
@@ -254,6 +253,7 @@ export default function MapaPatologiaLaboratorio3D() {
           ⬅ Voltar ao Core
         </Link>
 
+        {/* 🧠 CONECTAR AO MAPA RESSONÂNCIA 3D */}
         <Link href="/mapa-ressonancia" style={{
           padding: '8px 14px', backgroundColor: 'rgba(16, 185, 129, 0.2)',
           border: '1px solid #10b981', color: '#34d399', borderRadius: '10px',
