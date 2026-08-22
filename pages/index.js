@@ -29,7 +29,7 @@ function EMCreatorStudio({ onClose }) {
     videosRenderizados: 215,
     memesGifsEngajados: 560,
     audienciaAtiva: 'Alta (89% retenção)',
-    resolucaoProblemasIA: '94.2% Autônomo'
+    resolucaoProblemasIA: '94,2% Autônomos'
   });
 
   const [sugestoesAGI, setSugestoesAGI] = useState([
@@ -224,7 +224,6 @@ function PainelDevSplitScreen({ onClose }) {
       display: 'flex', flexDirection: 'column', gap: '12px', color: '#fff',
       fontFamily: 'Consolas, Monaco, monospace'
     }}>
-      {/* HEADER DO DEV STUDIO */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '14px' }}>👨‍💻</span>
@@ -237,7 +236,6 @@ function PainelDevSplitScreen({ onClose }) {
         </button>
       </div>
 
-      {/* CONTROLES E SELEÇÃO DE LINGUAGEM */}
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
         <select
           value={linguagem}
@@ -263,7 +261,6 @@ function PainelDevSplitScreen({ onClose }) {
         </button>
       </div>
 
-      {/* EDITOR DE CÓDIGO PRINCIPAL */}
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <span style={{ fontSize: '9px', color: '#94a3b8', fontFamily: 'sans-serif' }}>CÓDIGO FONTE DO PROJETO ({linguagem.toUpperCase()}):</span>
         <textarea
@@ -278,7 +275,6 @@ function PainelDevSplitScreen({ onClose }) {
         />
       </div>
 
-      {/* PAINEL DE RESPOSTA DA IA */}
       {analisandoIA ? (
         <div style={{ backgroundColor: '#020617', border: '1px dashed #00f0ff', padding: '8px', borderRadius: '6px', fontSize: '10px', color: '#00f0ff' }}>
           ⏳ Gemini AGI processando análise de código...
@@ -289,7 +285,6 @@ function PainelDevSplitScreen({ onClose }) {
         </div>
       )}
 
-      {/* BLOCO DE NOTAS / SCRAPS DE DEV */}
       <div style={{ height: '70px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <span style={{ fontSize: '9px', color: '#ff007f', fontFamily: 'sans-serif', fontWeight: 'bold' }}>📝 BLOCO DE NOTAS DO DESENVOLVEDOR:</span>
         <textarea
@@ -303,7 +298,6 @@ function PainelDevSplitScreen({ onClose }) {
         />
       </div>
 
-      {/* AÇÕES DE EXPORTAÇÃO */}
       <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between' }}>
         <button onClick={() => { navigator.clipboard.writeText(codigoFonte); alert("Código copiado!"); }} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
           📋 Copiar Código
@@ -315,111 +309,6 @@ function PainelDevSplitScreen({ onClose }) {
           📄 Exportar PDF
         </button>
       </div>
-    </div>
-  );
-}
-
-// --- 🌐 COMPONENTE: MINI NAVEGADOR FUTURISTA MULTIMODAL (IA BROWSER) ---
-function MiniNavegadorFuturista({ onBuscarIA }) {
-  const [expandido, setExpandido] = useState(true);
-  const [abaBusca, setAbaBusca] = useState('web');
-  const [urlOuTermo, setUrlOuTermo] = useState('https://emanuel-os.com/search');
-  const [escutandoVoz, setEscutandoVoz] = useState(false);
-  const [carregandoNavegador, setCarregandoNavegador] = useState(false);
-  const [resultadoBusca, setResultadoBusca] = useState({
-    titulo: 'Emanuel.OS Quantum Browser v5.1',
-    subtitulo: 'Navegador Neural Integrado',
-    texto: 'Busca multimodal ativa: Web, Áudio, Imagens, Livros, PDFs e IA Gemini.'
-  });
-
-  const fileInputRef = useRef(null);
-
-  const executarNavegacaoBusca = (termo, modoBusca) => {
-    setCarregandoNavegador(true);
-    setTimeout(() => {
-      setCarregandoNavegador(false);
-      setResultadoBusca({
-        titulo: `Busca ${modoBusca.toUpperCase()}: "${termo}"`,
-        subtitulo: `Resultados em tempo real via G-AGI Multimodal`,
-        texto: `Módulo Neural indexou informações para '${termo}'. Sincronização em 100% no Emanuel.OS.`
-      });
-      if (onBuscarIA) onBuscarIA(termo, modoBusca);
-    }, 1200);
-  };
-
-  const handleIniciouVozNavegador = () => {
-    if (typeof window === 'undefined') return;
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("Navegador não suporta reconhecimento de voz.");
-
-    const rec = new SpeechRecognition();
-    rec.lang = 'pt-BR';
-    rec.onstart = () => setEscutandoVoz(true);
-    rec.onend = () => setEscutandoVoz(false);
-    rec.onresult = (e) => {
-      const fala = e.results[0][0].transcript;
-      setUrlOuTermo(fala);
-      executarNavegacaoBusca(fala, 'audio');
-    };
-    rec.start();
-  };
-
-  const handleUploadArquivoPDF = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    executarNavegacaoBusca(`Leitura do arquivo: ${file.name}`, 'pdf');
-  };
-
-  return (
-    <div style={{
-      position: 'absolute', top: '90px', right: '400px', zIndex: 10,
-      backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '14px',
-      width: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: expandido ? '10px' : '0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
-          <span style={{ fontSize: '11px', color: '#00f0ff' }}>🌐</span>
-          <input
-            type="text"
-            value={urlOuTermo}
-            onChange={(e) => setUrlOuTermo(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBusca(urlOuTermo, abaBusca); }}
-            placeholder="URL, busca web, livros ou PDF..."
-            style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
-          />
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <button onClick={() => executarNavegacaoBusca(urlOuTermo, abaBusca)} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: '10px' }}>🔍</button>
-          <button onClick={() => setExpandido(!expandido)} style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}>
-            {expandido ? '▲' : '▼'}
-          </button>
-        </div>
-      </div>
-
-      {expandido && (
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
-            <button onClick={() => setAbaBusca('web')} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #00f0ff', backgroundColor: abaBusca === 'web' ? '#00f0ff' : 'transparent', color: abaBusca === 'web' ? '#000' : '#00f0ff', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>🌐 Web</button>
-            <button onClick={handleIniciouVozNavegador} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #a855f7', backgroundColor: escutandoVoz ? '#ff007f' : 'transparent', color: '#a855f7', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>{escutandoVoz ? '🔴 Ouvindo' : '🎙️ Voz'}</button>
-            <button onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #eab308', backgroundColor: 'transparent', color: '#eab308', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>🖼️ Mídias</button>
-            <button onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>📄 PDF/Livro</button>
-            <input type="file" ref={fileInputRef} onChange={handleUploadArquivoPDF} style={{ display: 'none' }} accept="image/*,application/pdf" />
-          </div>
-
-          <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px' }}>
-            <h4 style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#fff', fontWeight: 'bold' }}>{resultadoBusca.titulo}</h4>
-            <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>{resultadoBusca.subtitulo}</span>
-            {carregandoNavegador ? (
-              <div style={{ textAlign: 'center', padding: '15px' }}><span style={{ fontSize: '10px', color: '#00f0ff' }}>⚡ Indexando Resultados...</span></div>
-            ) : (
-              <p style={{ margin: 0, fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>{resultadoBusca.texto}</p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -702,7 +591,7 @@ export default function EmanuelOSCore() {
   const [respostaSuporte, setRespostaSuporte] = useState(null);
 
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
-  const [modoDevSplit, setModoDevSplit] = useState(false); // 🌟 TELA INTERATIVA DIVIDIDA DEDICADA A DEVS
+  const [modoDevSplit, setModoDevSplit] = useState(false);
 
   const [browserExpandido, setBrowserExpandido] = useState(true);
   const [abaBuscaNavegador, setAbaBuscaNavegador] = useState('web');
@@ -764,7 +653,8 @@ export default function EmanuelOSCore() {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
-  const avatarMeshRef = useRef(null);
+  const bolaHolograficaMeshRef = useRef(null);
+  const avatarGroupRef = useRef(null);
 
   const addLogTerminal = (novoLog) => {
     setCmdLogs(prev => [...prev, novoLog]);
@@ -970,7 +860,7 @@ export default function EmanuelOSCore() {
         });
       } else {
         setRespostaSuporte({
-          diagnostico: data.diagnostico || "Erro identificado no processamento.",
+          diagnostico: data.diagnostico || "Erro identified no processamento.",
           codigo: data.codigo || "// Sem código disponível",
           documento: "Documento indisponível no momento.",
           avatarVideo: "Sistema em modo de espera.",
@@ -990,6 +880,7 @@ export default function EmanuelOSCore() {
     }
   };
 
+  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA (AUTÔNOMA) + AVATAR 3D HUMANOIDE REALISTA (INTERATIVO VIA MOUSE/TOUCHPAD) ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -999,8 +890,8 @@ export default function EmanuelOSCore() {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 5);
+    const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 7.0);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -1008,35 +899,166 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(window.devicePixelRatio);
     mountRef.current.appendChild(renderer.domElement);
 
-    const cyanLight = new THREE.PointLight(0x00f0ff, 3, 100);
-    cyanLight.position.set(-5, 5, 5);
+    // ILUMINAÇÃO ESTÚDIO CYBERPUNK REALISTA
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    keyLight.position.set(-5, 5, 5);
+    scene.add(keyLight);
+
+    const cyanLight = new THREE.PointLight(0x00f0ff, 4, 20);
+    cyanLight.position.set(-3, 2, 3);
     scene.add(cyanLight);
 
-    const magentaLight = new THREE.PointLight(0xff007f, 3, 100);
-    magentaLight.position.set(5, -5, 5);
+    const magentaLight = new THREE.PointLight(0xff007f, 4, 20);
+    magentaLight.position.set(3, -2, 3);
     scene.add(magentaLight);
 
-    const ambientLight = new THREE.AmbientLight(0x1e293b, 1.5);
+    const ambientLight = new THREE.AmbientLight(0x1e293b, 1.8);
     scene.add(ambientLight);
 
-    const geometry = new THREE.IcosahedronGeometry(2, 4);
-    const material = new THREE.MeshStandardMaterial({
+    // --- 1. BOLA HOLOGRÁFICA 3D (DIREITA: x = 2.2) ---
+    const bolaGeometry = new THREE.IcosahedronGeometry(1.4, 4);
+    const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       wireframe: true,
       emissive: 0x00f0ff,
-      emissiveIntensity: 0.35,
+      emissiveIntensity: 0.6,
       transparent: true,
       opacity: 0.85
     });
-    const avatarMesh = new THREE.Mesh(geometry, material);
-    scene.add(avatarMesh);
-    avatarMeshRef.current = avatarMesh;
+    const bolaMesh = new THREE.Mesh(bolaGeometry, bolaMaterial);
+    bolaMesh.position.set(2.2, 0, 0);
+    scene.add(bolaMesh);
+    bolaHolograficaMeshRef.current = bolaMesh;
 
+    // --- 2. AVATAR 3D HUMANOIDE FUTURISTA REALISTA (ESQUERDA: x = -2.2) ---
+    const avatarGroup = new THREE.Group();
+    avatarGroup.position.set(-2.2, -1.2, 0);
+
+    // Materiais Realistas/Android Cyberpunk
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
+    const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.1, metalness: 0.9, emissive: 0x00f0ff, emissiveIntensity: 0.2 });
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
+
+    // Cabeça Anatômica Humana
+    const headGeo = new THREE.SphereGeometry(0.42, 32, 32);
+    headGeo.scale(1, 1.25, 1);
+    const headMesh = new THREE.Mesh(headGeo, skinMat);
+    headMesh.position.set(0, 2.3, 0);
+    avatarGroup.add(headMesh);
+
+    // Cabelo Estilizado Futurista
+    const hairGeo = new THREE.SphereGeometry(0.45, 16, 16);
+    hairGeo.scale(1.02, 0.9, 1.05);
+    const hairMesh = new THREE.Mesh(hairGeo, hairMat);
+    hairMesh.position.set(0, 2.45, -0.05);
+    avatarGroup.add(hairMesh);
+
+    // Olhos Realistas Neon
+    const eyeGeo = new THREE.SphereGeometry(0.05, 16, 16);
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.14, 2.32, 0.38);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.14, 2.32, 0.38);
+    avatarGroup.add(leftEye);
+    avatarGroup.add(rightEye);
+
+    // Pescoço Biônico
+    const neckGeo = new THREE.CylinderGeometry(0.15, 0.18, 0.3, 16);
+    const neckMesh = new THREE.Mesh(neckGeo, suitMat);
+    neckMesh.position.set(0, 1.95, 0);
+    avatarGroup.add(neckMesh);
+
+    // Tronco / Peitoral Android
+    const chestGeo = new THREE.BoxGeometry(0.9, 0.8, 0.5);
+    const chestMesh = new THREE.Mesh(chestGeo, suitMat);
+    chestMesh.position.set(0, 1.45, 0);
+    avatarGroup.add(chestMesh);
+
+    // Placa de Armadura Neon no Peito
+    const plateGeo = new THREE.BoxGeometry(0.7, 0.5, 0.08);
+    const plateMesh = new THREE.Mesh(plateGeo, armorMat);
+    plateMesh.position.set(0, 1.5, 0.24);
+    avatarGroup.add(plateMesh);
+
+    // Ombros Anatômicos
+    const shoulderGeo = new THREE.SphereGeometry(0.22, 16, 16);
+    const leftShoulder = new THREE.Mesh(shoulderGeo, armorMat);
+    leftShoulder.position.set(-0.55, 1.7, 0);
+    const rightShoulder = new THREE.Mesh(shoulderGeo, armorMat);
+    rightShoulder.position.set(0.55, 1.7, 0);
+    avatarGroup.add(leftShoulder);
+    avatarGroup.add(rightShoulder);
+
+    // Braços
+    const armGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.8, 16);
+    const leftArm = new THREE.Mesh(armGeo, suitMat);
+    leftArm.position.set(-0.55, 1.2, 0);
+    const rightArm = new THREE.Mesh(armGeo, suitMat);
+    rightArm.position.set(0.55, 1.2, 0);
+    avatarGroup.add(leftArm);
+    avatarGroup.add(rightArm);
+
+    scene.add(avatarGroup);
+    avatarGroupRef.current = avatarGroup;
+
+    // --- CONTROLE EXCLUSIVO DO AVATAR 3D VIA MOUSE / TOUCHPAD ---
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging || !avatarGroupRef.current) return;
+      const deltaX = e.clientX - previousMousePosition.x;
+      const deltaY = e.clientY - previousMousePosition.y;
+
+      avatarGroupRef.current.rotation.y += deltaX * 0.012;
+      avatarGroupRef.current.rotation.x += deltaY * 0.008;
+
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleWheel = (e) => {
+      if (cameraRef.current) {
+        cameraRef.current.position.z = Math.min(Math.max(cameraRef.current.position.z + e.deltaY * 0.005, 3), 12);
+      }
+    };
+
+    const domContainer = mountRef.current;
+    domContainer.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    domContainer.addEventListener('wheel', handleWheel, { passive: true });
+
+    // --- LOOP DE ANIMAÇÃO THREE.JS ---
     let animationFrameId;
+    let clock = new THREE.Clock();
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      avatarMesh.rotation.y += 0.005;
-      avatarMesh.rotation.x += 0.002;
+      const elapsedTime = clock.getElapsedTime();
+
+      // BOLA HOLOGRÁFICA (DIREITA): ANIMAÇÃO AUTOMÁTICA CONTINUA E FLUIDA
+      if (bolaHolograficaMeshRef.current) {
+        bolaHolograficaMeshRef.current.rotation.y += 0.008;
+        bolaHolograficaMeshRef.current.rotation.x += 0.004;
+        bolaHolograficaMeshRef.current.position.y = Math.sin(elapsedTime * 2) * 0.15;
+      }
+
+      // AVATAR 3D (ESQUERDA): LEVE RESPIRAÇÃO/FLUTUAÇÃO QUANDO NÃO ESTIVER SENDO ARRASTADO
+      if (avatarGroupRef.current && !isDragging) {
+        avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 1.5) * 0.05;
+      }
+
       renderer.render(scene, camera);
     };
     animate();
@@ -1054,6 +1076,10 @@ export default function EmanuelOSCore() {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      domContainer.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      domContainer.removeEventListener('wheel', handleWheel);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
@@ -1066,7 +1092,7 @@ export default function EmanuelOSCore() {
 
     switch (acao) {
       case 'zoom_in':
-        camera.position.z = Math.max(camera.position.z - 2, 2);
+        camera.position.z = Math.max(camera.position.z - 2, 3);
         break;
       case 'zoom_out':
         camera.position.z += 2;
@@ -1076,12 +1102,12 @@ export default function EmanuelOSCore() {
         camera.lookAt(0, 0, 0);
         break;
       case 'rotate':
-        if (avatarMeshRef.current) {
-          avatarMeshRef.current.rotation.y += Math.PI / 4;
+        if (avatarGroupRef.current) {
+          avatarGroupRef.current.rotation.y += Math.PI / 4;
         }
         break;
       default:
-        camera.position.set(0, 0, 5);
+        camera.position.set(0, 0, 7.0);
         camera.lookAt(0, 0, 0);
         break;
     }
@@ -1759,9 +1785,11 @@ export default function EmanuelOSCore() {
           transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           overflow: 'hidden'
         }}>
-          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }} />
+          
+          {/* CENA THREE.JS (AVATAR 3D HUMANOIDE + BOLA HOLOGRÁFICA LADO A LADO) */}
+          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} />
 
-          {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA (TELA PRINCIPAL LIMPA E ORGANIZADA) */}
+          {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA */}
           <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 100, display: 'flex', gap: '8px' }}>
             <button 
               onClick={() => setSidebarAberta(!sidebarAberta)}
@@ -1776,7 +1804,6 @@ export default function EmanuelOSCore() {
               {sidebarAberta ? '✕' : '☰'}
             </button>
 
-            {/* 🌟 BOTÃO EXCLUSIVO PARA DEVS: TELA INTERATIVA DIVIDIDA */}
             <button 
               onClick={() => setModoDevSplit(!modoDevSplit)}
               style={{
@@ -1865,7 +1892,6 @@ export default function EmanuelOSCore() {
                       ⚛️ Mapa Matemático Quântico
                     </Link>
 
-                    {/* LINK DO MAPA ORKUT SOCIAL 3D */}
                     <Link href="/mapa-orkut" style={{ 
                       padding: '10px', 
                       backgroundColor: '#0f172a', 
@@ -1881,7 +1907,6 @@ export default function EmanuelOSCore() {
                       💖 Mapa Orkut Social 3D
                     </Link>
 
-                    {/* 🔬 NOVO MAPA DE PATOLOGIA & LABORATÓRIO 3D INTEGRADO */}
                     <Link href="/mapa-patologia" style={{ 
                       padding: '10px', 
                       backgroundColor: '#0f172a', 
@@ -2069,7 +2094,6 @@ export default function EmanuelOSCore() {
               </span>
             </div>
 
-            {/* 🌟 RECURSOS DE MODAIS MOVIDOS PARA O PAINEL DE IA INTEGRADA */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                 <button 
@@ -2199,7 +2223,7 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER COM BUSCA MULTIMODAL & SETINHA DE EXPANDIR/ESCONDER --- */}
+          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER COM BUSCA MULTIMODAL --- */}
           <div style={{
             position: 'absolute', top: '90px', right: '400px', zIndex: 10,
             backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
@@ -2207,7 +2231,6 @@ export default function EmanuelOSCore() {
             width: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
-            {/* BARRA DE NAVEGAÇÃO E CAMPO DE ENDEREÇO / TERMO */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
                 <span style={{ fontSize: '11px', color: '#00f0ff' }}>🌐</span>
@@ -2233,10 +2256,8 @@ export default function EmanuelOSCore() {
               </div>
             </div>
 
-            {/* CONTEÚDO EXPANDÍVEL COM MODOS MULTIMODAIS DE PESQUISA */}
             {browserExpandido && (
               <div>
-                {/* SELETOR DE MODOS MULTIMODAIS DE BUSCA */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
                   <button onClick={() => setAbaBuscaNavegador('web')} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #00f0ff', backgroundColor: abaBuscaNavegador === 'web' ? '#00f0ff' : 'transparent', color: abaBuscaNavegador === 'web' ? '#000' : '#00f0ff', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
                     🌐 Web
@@ -2253,7 +2274,6 @@ export default function EmanuelOSCore() {
                   <input type="file" ref={pdfInputRef} onChange={handleUploadPDFNavegador} style={{ display: 'none' }} accept="application/pdf,.epub,.docx,.txt" />
                 </div>
 
-                {/* PAINEL DE TÍTULO, SUBTÍTULO E RESULTADO DAS MÍDIAS */}
                 <h2 style={{ fontSize: '13px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
                 <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
 
