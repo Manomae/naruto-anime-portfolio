@@ -81,7 +81,7 @@ function EMCreatorStudio({ onClose }) {
         <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
           📈 DESEMPENHO E UTILIZAÇÃO DE FERRAMENTAS MULTIMODAIS
         </span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px', marginBottom: '20px' }}>
           <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
             <span style={{ fontSize: '16px' }}>💬</span>
             <strong style={{ display: 'block', fontSize: '12px', color: '#00f0ff', marginTop: '4px' }}>{metricas.textosConversas}</strong>
@@ -109,7 +109,7 @@ function EMCreatorStudio({ onClose }) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px', marginBottom: '20px' }}>
           <div style={{ background: 'rgba(2, 6, 23, 0.8)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px' }}>
             <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>🎯 COMPORTAMENTO DA AUDIÊNCIA</span>
             <h4 style={{ margin: '4px 0', fontSize: '14px', color: '#00f0ff' }}>{metricas.audienciaAtiva}</h4>
@@ -133,7 +133,7 @@ function EMCreatorStudio({ onClose }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {sugestoesAGI.map(item => (
-            <div key={item.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={item.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <div>
                 <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>{item.tipo}</span>
                 <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#e2e8f0', lineHeight: '1.3' }}>{item.acao}</p>
@@ -145,7 +145,7 @@ function EMCreatorStudio({ onClose }) {
                 style={{
                   padding: '8px 14px', backgroundColor: executandoAcao === item.id ? '#4c1d95' : '#00f0ff',
                   color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px',
-                  cursor: 'pointer', whiteSpace: 'nowrap', marginLeft: '12px'
+                  cursor: 'pointer', whiteSpace: 'nowrap'
                 }}
               >
                 {executandoAcao === item.id ? '⚡ Aplicando...' : '🚀 Executar Ação'}
@@ -443,18 +443,18 @@ function GoogleMeetAvatarManager({ addLog }) {
   );
 }
 
-// --- COMPONENTE DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD RETRÁTIL EXPANDIDO) ---
+// --- COMPONENTE DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD RETRÁTIL EXPANDIDO RESPONSIVO) ---
 function QuickActionsWidget({ onActionClick }) {
   const [minimizado, setMinimizado] = useState(false);
 
   return (
-    <div style={{
-      position: 'absolute', right: '80px', bottom: '120px', width: '410px',
+    <div className="quick-actions-widget" style={{
+      position: 'absolute', right: '20px', bottom: '120px', width: 'calc(100% - 40px)', maxWidth: '410px',
       maxHeight: 'calc(100vh - 220px)', overflowY: 'auto', backgroundColor: 'rgba(8, 15, 30, 0.90)',
       backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '18px',
       padding: minimizado ? '12px 18px' : '18px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
       zIndex: 80, color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxSizing: 'border-box'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: minimizado ? '0px' : '14px', cursor: 'pointer' }} onClick={() => setMinimizado(!minimizado)}>
         <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, color: '#fff', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -880,7 +880,7 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA (AUTÔNOMA) + AVATAR 3D HUMANOIDE REALISTA (INTERATIVO VIA MOUSE/TOUCHPAD) ---
+  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA + AVATAR 3D HUMANOIDE REALISTA (AUTOGERENCIADO E RESPONSIVO) ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -891,12 +891,11 @@ export default function EmanuelOSCore() {
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 7.0);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
     // ILUMINAÇÃO ESTÚDIO CYBERPUNK REALISTA
@@ -915,8 +914,8 @@ export default function EmanuelOSCore() {
     const ambientLight = new THREE.AmbientLight(0x1e293b, 1.8);
     scene.add(ambientLight);
 
-    // --- 1. BOLA HOLOGRÁFICA 3D (DIREITA: x = 2.2) ---
-    const bolaGeometry = new THREE.IcosahedronGeometry(1.4, 4);
+    // --- 1. BOLA HOLOGRÁFICA 3D ---
+    const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
       wireframe: true,
@@ -926,13 +925,11 @@ export default function EmanuelOSCore() {
       opacity: 0.85
     });
     const bolaMesh = new THREE.Mesh(bolaGeometry, bolaMaterial);
-    bolaMesh.position.set(2.2, 0, 0);
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    // --- 2. AVATAR 3D HUMANOIDE FUTURISTA REALISTA (ESQUERDA: x = -2.2) ---
+    // --- 2. AVATAR 3D HUMANOIDE FUTURISTA REALISTA ---
     const avatarGroup = new THREE.Group();
-    avatarGroup.position.set(-2.2, -1.2, 0);
 
     // Materiais Realistas/Android Cyberpunk
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
@@ -1003,33 +1000,84 @@ export default function EmanuelOSCore() {
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
 
-    // --- CONTROLE EXCLUSIVO DO AVATAR 3D VIA MOUSE / TOUCHPAD ---
-    let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
+    // --- FUNÇÃO RESPONSIVA PARA AJUSTAR A POSIÇÃO DOS AVATARES NO ANDROID E DESKTOP ---
+    const atualizarPosicionamentoCena = () => {
+      const currentWidth = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
+      const currentHeight = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;
+      const isMobile = currentWidth < 768;
 
-    const handleMouseDown = (e) => {
-      isDragging = true;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+      if (isMobile) {
+        // EM DISPOSITIVOS MÓVEIS (ANDROID): EMPILHAR VERTICALMENTE E AJUSTAR ESCALA
+        camera.position.set(0, 0, 9.5);
+        if (avatarGroupRef.current) {
+          avatarGroupRef.current.position.set(0, 0.8, 0);
+          avatarGroupRef.current.scale.set(0.75, 0.75, 0.75);
+        }
+        if (bolaHolograficaMeshRef.current) {
+          bolaHolograficaMeshRef.current.position.set(0, -2.2, 0);
+          bolaHolograficaMeshRef.current.scale.set(0.8, 0.8, 0.8);
+        }
+      } else {
+        // EM DESKTOP / NOTEBOOK: LAYOUT PARALELO (LADO A LADO)
+        camera.position.set(0, 0, 7.0);
+        if (avatarGroupRef.current) {
+          avatarGroupRef.current.position.set(-2.2, -1.2, 0);
+          avatarGroupRef.current.scale.set(1, 1, 1);
+        }
+        if (bolaHolograficaMeshRef.current) {
+          bolaHolograficaMeshRef.current.position.set(2.2, 0, 0);
+          bolaHolograficaMeshRef.current.scale.set(1, 1, 1);
+        }
+      }
     };
 
-    const handleMouseMove = (e) => {
+    atualizarPosicionamentoCena();
+
+    // --- CONTROLE DO AVATAR VIA MOUSE / TOUCHPAD / TOUCH NO ANDROID ---
+    let isDragging = false;
+    let previousTouchPosition = { x: 0, y: 0 };
+
+    const handleStart = (clientX, clientY) => {
+      isDragging = true;
+      previousTouchPosition = { x: clientX, y: clientY };
+    };
+
+    const handleMove = (clientX, clientY) => {
       if (!isDragging || !avatarGroupRef.current) return;
-      const deltaX = e.clientX - previousMousePosition.x;
-      const deltaY = e.clientY - previousMousePosition.y;
+      const deltaX = clientX - previousTouchPosition.x;
+      const deltaY = clientY - previousTouchPosition.y;
 
       avatarGroupRef.current.rotation.y += deltaX * 0.012;
       avatarGroupRef.current.rotation.x += deltaY * 0.008;
 
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+      previousTouchPosition = { x: clientX, y: clientY };
     };
 
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       isDragging = false;
     };
 
+    const handleMouseDown = (e) => handleStart(e.clientX, e.clientY);
+    const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
+    const handleMouseUp = () => handleEnd();
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        handleStart(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const handleTouchEnd = () => handleEnd();
+
     const handleWheel = (e) => {
       if (cameraRef.current) {
-        cameraRef.current.position.z = Math.min(Math.max(cameraRef.current.position.z + e.deltaY * 0.005, 3), 12);
+        cameraRef.current.position.z = Math.min(Math.max(cameraRef.current.position.z + e.deltaY * 0.005, 3), 14);
       }
     };
 
@@ -1037,6 +1085,11 @@ export default function EmanuelOSCore() {
     domContainer.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    
+    domContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd);
+
     domContainer.addEventListener('wheel', handleWheel, { passive: true });
 
     // --- LOOP DE ANIMAÇÃO THREE.JS ---
@@ -1046,17 +1099,20 @@ export default function EmanuelOSCore() {
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
+      const isMobile = window.innerWidth < 768;
 
-      // BOLA HOLOGRÁFICA (DIREITA): ANIMAÇÃO AUTOMÁTICA CONTINUA E FLUIDA
+      // BOLA HOLOGRÁFICA: ANIMAÇÃO CONTINUA
       if (bolaHolograficaMeshRef.current) {
         bolaHolograficaMeshRef.current.rotation.y += 0.008;
         bolaHolograficaMeshRef.current.rotation.x += 0.004;
-        bolaHolograficaMeshRef.current.position.y = Math.sin(elapsedTime * 2) * 0.15;
+        const baseY = isMobile ? -2.2 : 0;
+        bolaHolograficaMeshRef.current.position.y = baseY + Math.sin(elapsedTime * 2) * 0.15;
       }
 
-      // AVATAR 3D (ESQUERDA): LEVE RESPIRAÇÃO/FLUTUAÇÃO QUANDO NÃO ESTIVER SENDO ARRASTADO
+      // AVATAR 3D: FLUTUAÇÃO QUANDO NÃO ARRASTADO
       if (avatarGroupRef.current && !isDragging) {
-        avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 1.5) * 0.05;
+        const baseY = isMobile ? 0.8 : -1.2;
+        avatarGroupRef.current.position.y = baseY + Math.sin(elapsedTime * 1.5) * 0.05;
       }
 
       renderer.render(scene, camera);
@@ -1070,6 +1126,7 @@ export default function EmanuelOSCore() {
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
+      atualizarPosicionamentoCena();
     };
     window.addEventListener('resize', handleResize);
 
@@ -1079,6 +1136,11 @@ export default function EmanuelOSCore() {
       domContainer.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      
+      domContainer.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+
       domContainer.removeEventListener('wheel', handleWheel);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
@@ -1586,7 +1648,7 @@ export default function EmanuelOSCore() {
           <title>Emanuel.OS v5.1 - Autenticação de Segurança (7 Camadas) | 2030</title>
         </Head>
 
-        <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center', boxSizing: 'border-box' }}>
           
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛡️</div>
           <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
@@ -1771,13 +1833,13 @@ export default function EmanuelOSCore() {
     }}>
       <Head>
         <title>Emanuel.OS Core v5.1 | Quick Actions & Engine Unificado</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
       {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL (OCUPA 100% OU 50% NO MODO SPLIT) */}
+        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL */}
         <div style={{
           width: modoDevSplit ? '50%' : '100%',
           height: '100%',
@@ -1786,11 +1848,11 @@ export default function EmanuelOSCore() {
           overflow: 'hidden'
         }}>
           
-          {/* CENA THREE.JS (AVATAR 3D HUMANOIDE + BOLA HOLOGRÁFICA LADO A LADO) */}
-          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} />
+          {/* CENA THREE.JS (AVATAR 3D HUMANOIDE + BOLA HOLOGRÁFICA COM LAYOUT RESPONSIVO DINÂMICO) */}
+          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab', touchAction: 'none' }} />
 
           {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA */}
-          <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 100, display: 'flex', gap: '8px' }}>
+          <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setSidebarAberta(!sidebarAberta)}
               style={{
@@ -1809,12 +1871,12 @@ export default function EmanuelOSCore() {
               style={{
                 backgroundColor: modoDevSplit ? '#ff007f' : 'rgba(168, 85, 247, 0.2)',
                 border: '1px solid #a855f7', color: modoDevSplit ? '#fff' : '#c084fc',
-                padding: '0 16px', height: '40px', borderRadius: '20px', cursor: 'pointer',
+                padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer',
                 fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(168, 85, 247, 0.4)',
                 display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s ease'
               }}
             >
-              🖥️ {modoDevSplit ? 'Fechar Split' : 'Tela Interativa Dividida (Dev)'}
+              🖥️ {modoDevSplit ? 'Fechar Split' : 'Dev Split'}
             </button>
           </div>
 
@@ -1822,7 +1884,7 @@ export default function EmanuelOSCore() {
 
           <aside style={{
             position: 'absolute', top: 0, left: 0,
-            width: sidebarAberta ? '400px' : '0px', opacity: sidebarAberta ? 1 : 0,
+            width: sidebarAberta ? '100%' : '0px', maxWidth: '400px', opacity: sidebarAberta ? 1 : 0,
             backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
             borderRight: sidebarAberta ? '1px solid rgba(0, 240, 255, 0.2)' : 'none',
             padding: sidebarAberta ? '25px' : '0px', display: 'flex', flexDirection: 'column',
@@ -2053,10 +2115,10 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* PAINEL FLUIDO DIREITO: IA INTEGRADA + GEMINI AGI Core v5.1 */}
+          {/* PAINEL FLUIDO DIREITO: IA INTEGRADA + GEMINI AGI Core v5.1 RESPONSIVO */}
           <div style={{
             position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
-            height: 'calc(100vh - 20px)', width: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
+            height: 'calc(100vh - 20px)', width: '100%', maxWidth: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
             backdropFilter: 'blur(25px)', border: '1px solid rgba(0, 240, 255, 0.4)',
             borderRadius: '16px 0 0 16px', zIndex: 95, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
             padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
@@ -2077,7 +2139,7 @@ export default function EmanuelOSCore() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
               <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
-                Gemini-Integrated Advanced Command Terminal | Core v5.1
+                Gemini-Integrated Command Terminal | Core v5.1
               </span>
               <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
             </div>
@@ -2169,67 +2231,49 @@ export default function EmanuelOSCore() {
               <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
               <input
                 type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-                placeholder="Comando ou instrução G-AGI... (ex: /gif naruto)"
+                placeholder="Comando G-AGI... (ex: /gif naruto)"
                 style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
               />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
             </form>
           </div>
 
-          <div style={{
-            position: 'absolute', top: '20px', left: sidebarAberta ? '430px' : '180px', right: '400px',
+          <div className="header-status-bar" style={{
+            position: 'absolute', top: '15px', left: sidebarAberta ? '420px' : '110px', right: '15px',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
-            transition: 'left 0.3s'
+            transition: 'left 0.3s', flexWrap: 'wrap', gap: '8px'
           }}>
             <div style={{
               backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', minWidth: '150px'
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px 12px',
+              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
             }}>
-              <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '2px' }}>Network G-AGI Sync</span>
-              <strong style={{ fontSize: '12px', color: '#00f0ff' }}>📶 Emanuel Sync 2030 v5.1</strong>
+              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>Network Sync</span>
+              <strong style={{ fontSize: '11px', color: '#00f0ff' }}>📶 Emanuel Sync 2030</strong>
             </div>
 
             <div style={{
               backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '12px'
-            }}>
-              <div>
-                <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>Cognitive Load</span>
-                <strong style={{ fontSize: '11px', color: '#38bdf8' }}>G-AGI Core 22%</strong>
-              </div>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #00f0ff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '10px', fontWeight: 'bold', color: '#00f0ff'
-              }}>
-                35%
-              </div>
-            </div>
-
-            <div style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px 16px',
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px 12px',
               boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)', display: 'flex', alignItems: 'center', gap: '8px'
             }}>
-              <span style={{ fontSize: '16px', color: '#00f0ff' }}>🕒</span>
+              <span style={{ fontSize: '14px', color: '#00f0ff' }}>🕒</span>
               <div>
-                <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL v5.1</span>
-                <strong style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace' }}>
-                  {horaAtual || '14 Março 2030, 22:15'}
+                <span style={{ fontSize: '8px', color: '#94a3b8', display: 'block' }}>TEMPO NEURAL</span>
+                <strong style={{ fontSize: '10px', color: '#fff', fontFamily: 'monospace' }}>
+                  {horaAtual || '14 Março 2030'}
                 </strong>
               </div>
             </div>
           </div>
 
-          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER COM BUSCA MULTIMODAL --- */}
-          <div style={{
-            position: 'absolute', top: '90px', right: '400px', zIndex: 10,
+          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER --- */}
+          <div className="quantum-browser-widget" style={{
+            position: 'absolute', top: '75px', right: '15px', zIndex: 10,
             backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '14px',
-            width: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '12px',
+            width: 'calc(100% - 30px)', maxWidth: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxSizing: 'border-box'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
@@ -2239,7 +2283,7 @@ export default function EmanuelOSCore() {
                   value={urlOuTermoNavegador}
                   onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador); }}
-                  placeholder="URL, busca web, livros ou PDF..."
+                  placeholder="URL, busca web ou PDF..."
                   style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
                 />
               </div>
@@ -2249,7 +2293,6 @@ export default function EmanuelOSCore() {
                 <button
                   onClick={() => setBrowserExpandido(!browserExpandido)}
                   style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
-                  title={browserExpandido ? "Recolher Quantum Browser" : "Expandir Quantum Browser"}
                 >
                   {browserExpandido ? '▲' : '▼'}
                 </button>
@@ -2269,46 +2312,46 @@ export default function EmanuelOSCore() {
                     🖼️ Mídias
                   </button>
                   <button onClick={() => pdfInputRef.current && pdfInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    📄 PDF/Livro
+                    📄 PDF
                   </button>
                   <input type="file" ref={pdfInputRef} onChange={handleUploadPDFNavegador} style={{ display: 'none' }} accept="application/pdf,.epub,.docx,.txt" />
                 </div>
 
-                <h2 style={{ fontSize: '13px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
-                <p style={{ fontSize: '10px', color: '#ff007f', margin: '2px 0 8px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
+                <h2 style={{ fontSize: '12px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
+                <p style={{ fontSize: '9px', color: '#ff007f', margin: '2px 0 6px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
 
                 {carregandoNavegador ? (
                   <div style={{ textAlign: 'center', padding: '15px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '10px', border: '1px dashed #00f0ff', margin: '6px 0' }}>
-                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>⚡ Indexando Resultados Quantum G-AGI...</span>
+                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>⚡ Indexando Resultados...</span>
                   </div>
                 ) : gerandoMidia ? (
-                  <div style={{ textAlign: 'center', padding: '20px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '8px 0' }}>
-                    <div style={{ fontSize: '28px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
-                    <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '8px 0 4px 0' }}>
+                  <div style={{ textAlign: 'center', padding: '15px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '6px 0' }}>
+                    <div style={{ fontSize: '24px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
+                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '6px 0 4px 0' }}>
                       SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
                     </span>
                     
-                    <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
+                    <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '6px 0' }}>
                       <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
                     </div>
                     
-                    <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Processamento Quantum: {progressoRender}%</span>
+                    <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Progresso: {progressoRender}%</span>
                   </div>
                 ) : (
                   <>
                     {browserAsset.videoUrl && (
-                      <div style={{ margin: '8px 0' }}>
+                      <div style={{ margin: '6px 0' }}>
                         <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
-                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           <div style={{ display: 'flex', gap: '4px' }}>
-                            {['720p HD', '1080p Full HD', '4K Ultra HD'].map((res) => (
+                            {['720p', '1080p', '4K'].map((res) => (
                               <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
                                 {res}
                               </button>
                             ))}
                           </div>
-                          <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '6px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            {semMarcaDagua ? '✨ Marca d\'Água Removida (Modo Clean)' : '🔒 Clique para Remover Marca d\'Água'}
+                          <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '4px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                            {semMarcaDagua ? '✨ Modo Clean (Sem Marca)' : '🔒 Com Marca d\'Água'}
                           </button>
                         </div>
                       </div>
@@ -2316,14 +2359,14 @@ export default function EmanuelOSCore() {
 
                     {browserAsset.imagem && (
                       <div>
-                        <div style={{ textAlign: 'center', margin: '8px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-                          <img src={browserAsset.imagem} alt="Asset Preview Multimodal" style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
+                        <div style={{ textAlign: 'center', margin: '6px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+                          <img src={browserAsset.imagem} alt="Preview" style={{ width: '100%', maxHeight: '140px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
                         </div>
 
                         {versoesAtivas.length > 1 && (
-                          <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', overflowX: 'auto' }}>
+                          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', overflowX: 'auto' }}>
                             {versoesAtivas.map((v, i) => (
-                              <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 8px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                              <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 6px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                                 {v.rotulo}
                               </button>
                             ))}
@@ -2334,7 +2377,7 @@ export default function EmanuelOSCore() {
                   </>
                 )}
 
-                <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
+                <div style={{ fontSize: '9px', color: '#cbd5e1', lineHeight: '1.3', background: 'rgba(0,0,0,0.3)', padding: '6px', borderRadius: '6px', maxHeight: '80px', overflowY: 'auto' }}>
                   {browserAsset.conteudoTexto}
                 </div>
               </div>
@@ -2342,34 +2385,34 @@ export default function EmanuelOSCore() {
           </div>
 
           <div style={{
-            position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
-            zIndex: 10, width: '100%', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '10px'
+            position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)',
+            zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '8px'
           }}>
 
             <div style={{
               backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '12px', padding: '8px 20px',
+              border: '1px solid rgba(255, 0, 127, 0.5)', borderRadius: '10px', padding: '6px 14px',
               textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
             }}>
-              <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
+              <span style={{ fontSize: '8px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
                 IA EMANUEL (GEMINI AGI Core v5.1 Multimodal)
               </span>
-              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
-                Emanuel.OS Core v5.1 | Quick Actions Active | Ano: 2030
+              <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
+                Emanuel.OS Core v5.1 | Quick Actions Active | 2030
               </span>
             </div>
 
             <div style={{
               backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '12px 16px',
-              maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px'
+              border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', padding: '10px 14px',
+              maxHeight: '90px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px'
             }}>
               {mensagens.map((item, index) => (
                 <div key={index}>
-                  <span style={{ fontSize: '9px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '8px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e', letterSpacing: '0.5px' }}>
                     {item.autor}
                   </span>
-                  <p style={{ margin: 0, fontSize: '11px', color: '#f8fafc', lineHeight: '1.3' }}>
+                  <p style={{ margin: 0, fontSize: '10px', color: '#f8fafc', lineHeight: '1.2' }}>
                     {item.texto}
                   </p>
                 </div>
@@ -2378,40 +2421,40 @@ export default function EmanuelOSCore() {
 
             <form onSubmit={handleEnviarMensagemTexto} style={{
               backgroundColor: 'rgba(5, 12, 24, 0.9)', backdropFilter: 'blur(20px)',
-              border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px',
-              display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.25)'
+              border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px',
+              display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.25)'
             }}>
-              <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>🖼️</button>
-              <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px' }}>{estaOuvindo ? '🔴' : '🎙️'}</button>
+              <button type="button" onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>🖼️</button>
+              <button type="button" onClick={iniciarEscuta} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>{estaOuvindo ? '🔴' : '🎙️'}</button>
               <input type="file" ref={imageInputRef} onChange={handleUploadImagemLente} style={{ display: 'none' }} accept="image/*" />
 
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Digite mensagens ou peça gifs/imagens (ex: 'gif do naruto', 'imagem de carro cyberpunk', 'video vila')..."
-                style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }}
+                placeholder="Digite comandos ou mensagens..."
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }}
               />
 
               <button
                 type="submit"
                 style={{
-                  backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 18px',
-                  borderRadius: '18px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer',
-                  boxShadow: '0 0 10px #00f0ff'
+                  backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px',
+                  borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer',
+                  boxShadow: '0 0 10px #00f0ff', whiteSpace: 'nowrap'
                 }}
               >
-                Executar G-AGI ➔
+                Executar ➔
               </button>
             </form>
 
           </div>
 
-          {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
+          {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO */}
           <FuturisticWindowManager />
         </div>
 
-        {/* LADO DIREITO: TELA INTERATIVA DEDICADA A DESENVOLVEDORES (DEV WORKSTATION) */}
+        {/* LADO DIREITO: DEV WORKSTATION */}
         {modoDevSplit && (
           <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
@@ -2430,6 +2473,23 @@ export default function EmanuelOSCore() {
           0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
           50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
           100% { transform: scale(1) rotate(360deg); opacity: 0.8; }
+        }
+        @media (max-width: 768px) {
+          .quick-actions-widget {
+            bottom: 140px !important;
+            right: 15px !important;
+            left: 15px !important;
+            width: auto !important;
+          }
+          .quantum-browser-widget {
+            top: 60px !important;
+            right: 15px !important;
+            left: 15px !important;
+            width: auto !important;
+          }
+          .header-status-bar {
+            display: none !important;
+          }
         }
       `}</style>
 
