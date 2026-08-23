@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Head from 'next/head';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { QRCodeSVG } from 'qrcode.react';
 
-// 🚀 IMPORTAÇÃO LIMPA E DIRETA DA BASE DE DADOS
+// 🚀 IMPORTAÇÃO DA BASE DE DADOS POKÉMON E YU-GI-OH!
 import { pokedexData, yugiohWorldData } from '../datapokedex-yugioh';
 
 // Importação do Gerenciador de Janelas Futuristas (Win11 CMD, Dev Notepad & Android HUD)
@@ -15,29 +16,77 @@ export default function MapaIA() {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
+  const avatarGroupRef = useRef(null);
+  const esferasLinks3DRef = useRef([]);
 
   // States de Modais / Painéis Superiores e Flutuantes
   const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
-  const [painelAvatarSelectionAberto, setPainelAvatarSelectionAberto] = useState(true);
-  const [painelModuloAvatarAberto, setPainelModuloAvatarAberto] = useState(true);
-  const [painelCmdAberto, setPainelCmdAberto] = useState(false);
+  const [painelAvatarSelectionAberto, setPainelAvatarSelectionAberto] = useState(false);
+  const [painelModuloAvatarAberto, setPainelModuloAvatarAberto] = useState(false);
 
   const [abaAvatarSelection, setAbaAvatarSelection] = useState('personagem'); 
   const [abaModuloAvatar, setAbaModuloAvatar] = useState('personagem'); 
 
-  // Search e Seleções
+  // --- ESTADOS DE INTEGRAÇÃO MULTICLOUD & ROBOTOC HUD ---
+  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
+  const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
+  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
+  const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
+  const [statusNuvem] = useState({
+    google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
+    apple: { conectado: true, conta: 'emanuel@icloud.com', espaco: '5 GB / 200 GB' },
+    microsoft: { conectado: true, conta: 'emanuel@outlook.com', espaco: '1 TB OneDrive / Azure' },
+    custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
+  });
+
+  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
+  const meusDadosReais = {
+    nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
+    whatsapp: "5588981493989",
+    whatsappFormatado: "(88) 98149-3989",
+    email: "leeheroi123@gmail.com",
+    tiktok: "https://www.tiktok.com/@emanueldasilva26",
+    instagram: "https://www.instagram.com/emanuelsilva432",
+    threads: "https://www.threads.net/@emanuelsilva432",
+    github: "https://github.com/Manomae",
+    facebook: "https://www.facebook.com/leeheroi.heroi",
+    youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
+  };
+
+  // ESTADO DE LINKS 3D DINÂMICOS
+  const [links3D, setLinks3D] = useState([
+    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
+    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
+    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
+    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: meusDadosReais.github, icone: '🐙', nuvem: 'microsoft' },
+    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: `https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`, icone: '💬', nuvem: 'google' },
+    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
+    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
+  ]);
+  const [novoLinkTitulo, setNovoLinkTitulo] = useState('');
+  const [novoLinkUrl, setNovoLinkUrl] = useState('');
+  const [novoLinkIcone, setNovoLinkIcone] = useState('🔗');
+
+  const [urlOuTermoNavegador, setUrlOuTermoNavegador] = useState('https://emanuel-os.com/search');
+  const [motorBuscaSelecionado, setMotorBuscaSelecionado] = useState('google');
+  const [browserAsset] = useState({
+    titulo: 'Emanuel.OS Quantum Browser v5.1',
+    subtitulo: 'Pensamento Neural ROBOTOC Multimodal Active',
+    conteudoTexto: 'Sincronização neural ativa no Mapa IA. ROBOTOC pronto para processar buscas, cards e mídias.'
+  });
+
+  // Search e Seleções Pokédex & Yu-Gi-Oh!
   const [buscaPersonagem, setBuscaPersonagem] = useState('');
-  const [personagemSelecionado, setPersonagemSelecionado] = useState(yugiohWorldData.personagens[0]?.id || 'yugi'); 
-  const [mundoSelecionado, setMundoSelecionado] = useState(yugiohWorldData.mundos[0]?.id || 'neo-domino'); 
-  const [pokemonSelecionado, setPokemonSelecionado] = useState(pokedexData[0] || { nome: 'Pikachu', avatar: '' }); 
+  const [personagemSelecionado, setPersonagemSelecionado] = useState(yugiohWorldData?.personagens?.[0]?.id || 'yugi'); 
+  const [mundoSelecionado, setMundoSelecionado] = useState(yugiohWorldData?.mundos?.[0]?.id || 'neo-domino'); 
+  const [pokemonSelecionado] = useState(pokedexData?.[0] || { nome: 'Pikachu', avatar: '' }); 
 
   // Terminal Logs G-AGI
-  const [cmdInput, setCmdInput] = useState('');
-  const [cmdLogs, setCmdLogs] = useState([
-    "[S-AGI: LOG] Nano Banana 3D asset generation for Card 'Chrono-Phoenix' completed.",
-    "[G-AGI: STATUS] Banana 3D asset generation for Card 'Phenix' completed.",
-    "[S-AGI: STATUS] Avatar 'Yusaku (2030)' synced with Neo-Domino City world.",
-    "[G-AGI: QUERY] Optimize 3D Pokémon rendering (Aether Charizard) for low-latency view?"
+  const [cmdLogs] = useState([
+    "[S-AGI: LOG] Nano Banana 3D asset generation completed.",
+    "[G-AGI: STATUS] ROBOTOC Data Center & Cloud Nodes online.",
+    "[S-AGI: STATUS] Avatar 'Emanuel' synced with 3D IA World.",
+    "[G-AGI: QUERY] Optimize 3D Pokémon & Yu-Gi-Oh! rendering?"
   ]);
 
   // States Oficiais do Mapa
@@ -48,12 +97,12 @@ export default function MapaIA() {
     title: 'Vila Ninja & Metrópole 3D',
     description: 'Vila com trânsito ativo, oceano, piscina e núcleo de redes sociais via fios de chakra.',
     googleLink: 'https://maps.google.com',
-    youtubeLink: 'https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg',
-    instagramLink: 'https://www.instagram.com/emanuelsilva432',
+    youtubeLink: meusDadosReais.youtube,
+    instagramLink: meusDadosReais.instagram,
     kwaiLink: 'https://k.kwai.com/u/@ewnop969ok',
-    facebookLink: 'https://facebook.com',
-    tiktokLink: 'https://tiktok.com',
-    threadsLink: 'https://threads.net',
+    facebookLink: meusDadosReais.facebook,
+    tiktokLink: meusDadosReais.tiktok,
+    threadsLink: meusDadosReais.threads,
     tags: ['#naruto', '#vilaninja', '#chakranode', '#kwai', '#transito', '#mar', '#yugioh2030']
   });
 
@@ -83,6 +132,40 @@ export default function MapaIA() {
 
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
+
+  // AÇÕES AUXILIARES ROBOTOC & LINKS
+  const abrirLinkExternoSeguro = (url) => {
+    if (!url) return;
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const adicionarNovoLink3D = () => {
+    if (!novoLinkTitulo.trim() || !novoLinkUrl.trim()) return alert("Insira o Título e a URL do Link 3D.");
+    const novo = {
+      id: Date.now(),
+      titulo: novoLinkTitulo,
+      url: novoLinkUrl.startsWith('http') ? novoLinkUrl : `https://${novoLinkUrl}`,
+      icone: novoLinkIcone || '🌐',
+      nuvem: nuvemSelecionada
+    };
+    setLinks3D(prev => [...prev, novo]);
+    setNovoLinkTitulo('');
+    setNovoLinkUrl('');
+  };
+
+  const executarNavegacaoBrowser = (termo) => {
+    if (!termo.trim()) return;
+    if (termo.startsWith('http://') || termo.startsWith('https://')) {
+      if (typeof window !== 'undefined') window.open(termo, '_blank');
+    } else {
+      let targetUrl = `https://www.google.com/search?q=${encodeURIComponent(termo)}`;
+      if (motorBuscaSelecionado === 'bing') targetUrl = `https://www.bing.com/search?q=${encodeURIComponent(termo)}`;
+      else if (motorBuscaSelecionado === 'duckduckgo') targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(termo)}`;
+      if (typeof window !== 'undefined') window.open(targetUrl, '_blank');
+    }
+  };
 
   // 🚀 INJETAR ELEMENTO 3D NO CENÁRIO
   const handleInjetarObjeto3D = (tipo, dados) => {
@@ -131,65 +214,6 @@ export default function MapaIA() {
     }
   };
 
-  // Executar Comandos no Terminal CMD
-  const executarComandoCMD = (comandoDigitado) => {
-    const cmd = comandoDigitado.trim();
-    if (!cmd) return;
-
-    const novosLogs = [...cmdLogs, `[CMD> G-AGI] User: ${cmd}`];
-
-    if (cmd.includes('/nano-banana') || cmd.includes('banana')) {
-      novosLogs.push("[G-AGI: NANO BANANA 🍌] Renderizando imagem 3D ultra-realista no modelo Octane:");
-      novosLogs.push(">> Prompt ativo: 'Hyperrealistic Avatar 2030, glowing cyan chakra wires, 8k resolution'");
-    } else if (cmd.includes('/gerar-mapa') || cmd.includes('gerar')) {
-      novosLogs.push("[G-AGI: ENGINE] Reconstruindo cenário 3D com base no prompt atual...");
-      generateMapFromPrompt(prompt);
-      novosLogs.push("[G-AGI: STATUS] Elementos 3D e fios de chakra reajustados!");
-    } else if (cmd.includes('/status-core') || cmd.includes('/status')) {
-      novosLogs.push("[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | QR Code & Ticons OS: ATIVOS | Matriz Gemini: STABLE (0.00%)");
-    } else if (cmd.includes('/voz-hd')) {
-      novosLogs.push("[G-AGI: AUDIO] Módulo de síntese de som estéreo conectado ao Telão.");
-    } else if (cmd.includes('/qr-inject')) {
-      novosLogs.push("[G-AGI: QR CODE] Injetando link de rede social extraído do QR Code no mapa 3D ativo.");
-      setModalQrCodeAberto(true);
-    } else {
-      novosLogs.push(`[G-AGI: INFO] Comando '${cmd}' executado com sucesso no núcleo auxiliar.`);
-    }
-
-    setCmdLogs(novosLogs);
-    setCmdInput('');
-  };
-
-  const handleCmdSubmit = (e) => {
-    e.preventDefault();
-    executarComandoCMD(cmdInput);
-  };
-
-  // Gerador de Download do Arquivo com 300 Comandos Mestre
-  const baixarPDF300Comandos = () => {
-    const comandosList = [
-      "=========================================================================",
-      "  EMANUEL.OS & GOOGLE GEMINI AGI CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
-      "=========================================================================\n",
-      "[ CATEGORIA 01: ENGINE NANO BANANA 🍌 & RENDERIZAÇÃO 3D ]",
-      "001. /nano-banana --render 'Vila Ninja Cyberpunk em 8K'",
-      "002. /nano-banana --chakra-wire 'Linhas Neon Ciano com Pulso elétrico'",
-      "003. /nano-banana --lighting 'Luz crepuscular realista e iluminação global'",
-      "004. /nano-banana --camera 'Passeio aéreo orbital em 60FPS'",
-      "005. /nano-banana --qr-sync 'Lendo dados via QR Code e adicionando construção'",
-      "... (300 Comandos catalogados na nuvem do Emanuel.OS)\n"
-    ];
-
-    const blob = new Blob([comandosList.join('\n')], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Emanuel_OS_300_Comandos_Mestre.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   // Injetar Link Lido do QR Code na Matriz 3D
   const handleInjetarLinkQrCode = (e) => {
     e.preventDefault();
@@ -226,7 +250,7 @@ export default function MapaIA() {
     }
   }, []);
 
-  // Inicialização da Cena 3D
+  // Inicialização da Cena 3D Three.js
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -275,6 +299,48 @@ export default function MapaIA() {
     cityGroupRef.current = cityGroup;
     scene.add(cityGroup);
 
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D INTEGRADO
+    const avatarGroup = new THREE.Group();
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
+    const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.1, metalness: 0.9, emissive: 0x00f0ff, emissiveIntensity: 0.2 });
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
+
+    const headGeo = new THREE.SphereGeometry(0.42, 32, 32); headGeo.scale(1, 1.25, 1);
+    const headMesh = new THREE.Mesh(headGeo, skinMat); headMesh.position.set(0, 2.3, 0); avatarGroup.add(headMesh);
+    const hairGeo = new THREE.SphereGeometry(0.45, 16, 16); hairGeo.scale(1.02, 0.9, 1.05);
+    const hairMesh = new THREE.Mesh(hairGeo, hairMat); hairMesh.position.set(0, 2.45, -0.05); avatarGroup.add(hairMesh);
+    const eyeGeo = new THREE.SphereGeometry(0.05, 16, 16);
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat); leftEye.position.set(-0.14, 2.32, 0.38); avatarGroup.add(leftEye);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat); rightEye.position.set(0.14, 2.32, 0.38); avatarGroup.add(rightEye);
+    const neckGeo = new THREE.CylinderGeometry(0.15, 0.18, 0.3, 16);
+    const neckMesh = new THREE.Mesh(neckGeo, suitMat); neckMesh.position.set(0, 1.95, 0); avatarGroup.add(neckMesh);
+    const chestGeo = new THREE.BoxGeometry(0.9, 0.8, 0.5);
+    const chestMesh = new THREE.Mesh(chestGeo, suitMat); chestMesh.position.set(0, 1.45, 0); avatarGroup.add(chestMesh);
+    const plateGeo = new THREE.BoxGeometry(0.7, 0.5, 0.08);
+    const plateMesh = new THREE.Mesh(plateGeo, armorMat); plateMesh.position.set(0, 1.5, 0.24); avatarGroup.add(plateMesh);
+
+    avatarGroup.position.set(-12, 2, 5);
+    avatarGroup.scale.set(1.5, 1.5, 1.5);
+    scene.add(avatarGroup);
+    avatarGroupRef.current = avatarGroup;
+
+    // ESFERAS DE LINKS 3D ÓRBITA DO NÚCLEO ROBOTOC
+    const linksGroup = new THREE.Group();
+    esferasLinks3DRef.current = [];
+    links3D.forEach((linkItem) => {
+      const orbGeo = new THREE.SphereGeometry(0.3, 16, 16);
+      const colorHex = linkItem.nuvem === 'google' ? 0x4285f4 : linkItem.nuvem === 'apple' ? 0xffffff : linkItem.nuvem === 'microsoft' ? 0x00a4ef : 0xff007f;
+      const orbMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.85 });
+      const orbMesh = new THREE.Mesh(orbGeo, orbMat);
+      orbMesh.userData = { url: linkItem.url, titulo: linkItem.titulo };
+      linksGroup.add(orbMesh);
+      esferasLinks3DRef.current.push(orbMesh);
+    });
+    scene.add(linksGroup);
+
+    // Canvas & Vídeo do Telão
     const vCanvas = document.createElement('canvas');
     vCanvas.width = 512;
     vCanvas.height = 256;
@@ -313,6 +379,7 @@ export default function MapaIA() {
     window.addEventListener('click', handleUserInteraction, { once: true });
     window.addEventListener('touchstart', handleUserInteraction, { once: true });
 
+    // Raycaster para cliques no Mapa
     const handleCanvasClick = (event) => {
       if (!currentMount || !cityGroupRef.current) return;
 
@@ -321,10 +388,24 @@ export default function MapaIA() {
       mouseRef.current.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
       raycasterRef.current.setFromCamera(mouseRef.current, camera);
-      const intersects = raycasterRef.current.intersectObjects(cityGroupRef.current.children, true);
 
-      if (intersects.length > 0) {
-        let clickedObj = intersects[0].object;
+      // Colisão com os links orbitais
+      const intersectsOrbs = raycasterRef.current.intersectObjects(esferasLinks3DRef.current);
+      // Colisão com o ROBOTOC Avatar
+      const intersectsAvatar = avatarGroupRef.current ? raycasterRef.current.intersectObjects(avatarGroupRef.current.children, true) : [];
+      // Colisão com objetos da cidade
+      const intersectsCity = raycasterRef.current.intersectObjects(cityGroupRef.current.children, true);
+
+      if (intersectsOrbs.length > 0) {
+        const hitOrb = intersectsOrbs[0].object;
+        if (hitOrb.userData && hitOrb.userData.url) {
+          abrirLinkExternoSeguro(hitOrb.userData.url);
+        }
+      } else if (intersectsAvatar.length > 0) {
+        setArquiteturaAberta(true);
+        setMostrarOverlayRobotoc(false);
+      } else if (intersectsCity.length > 0) {
+        let clickedObj = intersectsCity[0].object;
         while (clickedObj.parent && clickedObj.parent !== cityGroupRef.current) {
           clickedObj = clickedObj.parent;
         }
@@ -353,10 +434,26 @@ export default function MapaIA() {
 
     let animationFrameId;
     let time = 0;
+    let clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       time += 0.03;
+      const elapsedTime = clock.getElapsedTime();
+
+      // Animação das Esferas de Links Orbitais
+      esferasLinks3DRef.current.forEach((mesh, index) => {
+        const angle = elapsedTime * 0.8 + (index * (Math.PI * 2 / esferasLinks3DRef.current.length));
+        const radius = 3.5;
+        mesh.position.x = Math.cos(angle) * radius;
+        mesh.position.z = Math.sin(angle) * radius;
+        mesh.position.y = 24 + Math.sin(elapsedTime * 2 + index) * 0.5;
+      });
+
+      // Animação Flutuante do ROBOTOC
+      if (avatarGroupRef.current) {
+        avatarGroupRef.current.position.y = 2 + Math.sin(elapsedTime * 1.5) * 0.2;
+      }
 
       trafficVehiclesRef.current.forEach((car) => {
         car.position.z += car.userData.speed;
@@ -395,7 +492,7 @@ export default function MapaIA() {
         currentMount.removeChild(renderer.domElement);
       }
     };
-  }, [customVideoUrl]);
+  }, [customVideoUrl, links3D]);
 
   const toggleWalkMode = () => {
     if (!cameraRef.current || !controlsRef.current) return;
@@ -678,33 +775,41 @@ export default function MapaIA() {
     setStatus(`📂 Mapa "${saved.title}" carregado!`);
   };
 
-  const duelistasFiltrados = (yugiohWorldData.personagens || []).filter(p => 
+  const duelistasFiltrados = (yugiohWorldData?.personagens || []).filter(p => 
     p.nome.toLowerCase().includes(buscaPersonagem.toLowerCase())
   );
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#020617', color: '#f1f5f9', fontFamily: 'sans-serif', position: 'relative' }}>
-      
-      {/* 🟢 HEADER PRINCIPAL COM BOTÕES CYBERPUNK */}
+      <Head>
+        <title>Emanuel.OS - Gerador 3D de Mapas IA & Data Center ROBOTOC</title>
+      </Head>
+
+      {/* 🟢 HEADER PRINCIPAL COM BOTÕES CYBERPUNK & ROBOTOC HUD */}
       <header style={{ zIndex: 20, position: 'relative', backgroundColor: 'rgba(7, 12, 28, 0.95)', borderBottom: '1px solid #00f0ff', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <a href="/" style={{ backgroundColor: '#1e293b', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #334155' }}>🏠 Core Login</a>
           <a href="/espacial" style={{ backgroundColor: '#0f172a', color: '#38bdf8', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #0284c7' }}>🚀 Mapa Espacial</a>
           <div>
             <h1 style={{ fontSize: '15px', margin: 0, fontWeight: 'bold', color: '#fb923c' }}>Gerador 3D de Mapas IA</h1>
-            <p style={{ fontSize: '9px', color: '#94a3b8', margin: 0 }}>Vila Ninja, Fios de Chakra, Kwai & Redes Sociais</p>
+            <p style={{ fontSize: '9px', color: '#94a3b8', margin: 0 }}>ROBOTOC Data Center, Vila Ninja, Fios de Chakra & Multicloud</p>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)}
+            style={{ padding: '6px 12px', backgroundColor: mostrarOverlayRobotoc ? '#00f0ff' : 'rgba(0,240,255,0.2)', color: mostrarOverlayRobotoc ? '#000' : '#00f0ff', border: '1px solid #00f0ff', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
+          >
+            🤖 {mostrarOverlayRobotoc ? 'Ocultar ROBOTOC HUD' : 'ROBOTOC HUD'}
+          </button>
+
           <button onClick={() => setModalQrCodeAberto(true)} style={{ backgroundColor: 'rgba(0,240,255,0.2)', color: '#00f0ff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: '1px solid #00f0ff', fontWeight: 'bold', cursor: 'pointer' }}>📱 Injetar via QR Code</button>
           <button onClick={toggleAudio} style={{ backgroundColor: audioEnabled ? '#10b981' : '#f59e0b', color: '#000', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{audioEnabled ? '🔊 Som Ligado' : '🔇 Ligar Áudio'}</button>
           <button onClick={toggleWalkMode} style={{ backgroundColor: walkMode ? '#ef4444' : '#00ffff', color: '#000', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{walkMode ? '🚪 Sair do Passeio' : '📷 Câmera Virtual 3D'}</button>
-          <a href="/mapaaeroespacial" style={{ backgroundColor: 'rgba(124, 58, 237, 0.2)', color: '#c084fc', padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', textDecoration: 'none', border: '1px solid #9333ea' }}>🛰️ Central Aeroespacial</a>
           <button onClick={() => setIsEditing(!isEditing)} style={{ backgroundColor: '#4f46e5', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>{isEditing ? 'Fechar Edição' : '✏️ Editar Info'}</button>
-          <button onClick={() => setPainelAvatarSelectionAberto(!painelAvatarSelectionAberto)} style={{ backgroundColor: '#6366f1', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>👑 GERAR CARTA 3D (IA)</button>
+          <button onClick={() => setPainelAvatarSelectionAberto(!painelAvatarSelectionAberto)} style={{ backgroundColor: '#6366f1', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>👑 CARTA 3D / DUELISTA</button>
           <button onClick={() => setPainelModuloAvatarAberto(!painelModuloAvatarAberto)} style={{ backgroundColor: '#3b82f6', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>🎭 AVATAR EDITOR</button>
-          <button onClick={() => setPainelAvatarSelectionAberto(true)} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>🌐 MUNDO EXPLORER</button>
           <button onClick={handleSaveMap} style={{ backgroundColor: '#059669', color: '#fff', fontSize: '10px', padding: '6px 10px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>💾 Salvar Mapa</button>
         </div>
       </header>
@@ -765,6 +870,111 @@ export default function MapaIA() {
           )}
         </div>
 
+        {/* --- OVERLAY DE INTERAÇÃO DO ROBOTOC (MULTICLOUD + LINKS 3D + QUANTUM BROWSER) --- */}
+        {mostrarOverlayRobotoc && (
+          <div className="quantum-browser-widget" style={{
+            position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 150,
+            backgroundColor: 'rgba(8, 15, 30, 0.95)', backdropFilter: 'blur(25px)',
+            border: '2px solid #00f0ff', borderRadius: '20px', padding: '16px',
+            width: 'calc(100% - 30px)', maxWidth: '580px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box', color: '#fff'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '8px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>🤖</span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '12px', color: '#00f0ff', fontWeight: '900', letterSpacing: '1px' }}>
+                    PENSAMENTO ROBOTOC MAPA IA & NUVEM
+                  </h3>
+                  <span style={{ fontSize: '8px', color: '#a1a1aa' }}>Emanuel.OS Multicloud Vault & Quantum Browser</span>
+                </div>
+              </div>
+
+              <button onClick={() => setMostrarOverlayRobotoc(false)} style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            {/* BARRA DE SELEÇÃO DE NUVENS */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: 'rgba(2, 6, 23, 0.8)', padding: '6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)' }}>
+              <button onClick={() => setNuvemSelecionada('google')} style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'google' ? '#4285f4' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🌐 Google Drive</button>
+              <button onClick={() => setNuvemSelecionada('apple')} style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'apple' ? '#ffffff' : 'transparent', color: nuvemSelecionada === 'apple' ? '#000' : '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🍏 Apple iCloud</button>
+              <button onClick={() => setNuvemSelecionada('microsoft')} style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'microsoft' ? '#00a4ef' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🪟 OneDrive</button>
+              <button onClick={() => setNuvemSelecionada('custom')} style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'custom' ? '#ff007f' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🌌 Vault 3D</button>
+            </div>
+
+            {/* PAINEL DE STATUS DA NUVEM SELECIONADA */}
+            <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>NUVEM ATIVA: {nuvemSelecionada.toUpperCase()}</span>
+                <span style={{ fontSize: '10px', color: '#fff' }}>Conta: {statusNuvem[nuvemSelecionada].conta}</span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '9px', color: '#4ade80', fontWeight: 'bold', display: 'block' }}>STATUS: ONLINE</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Espaço: {statusNuvem[nuvemSelecionada].espaco}</span>
+              </div>
+            </div>
+
+            {/* ABAS DO OVERLAY */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: '#020617', padding: '4px', borderRadius: '10px', border: '1px solid rgba(0,240,255,0.2)' }}>
+              <button onClick={() => setAbaOverlayAtiva('browser')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: abaOverlayAtiva === 'browser' ? '#00f0ff' : 'transparent', color: abaOverlayAtiva === 'browser' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🌐 Quantum Browser</button>
+              <button onClick={() => setAbaOverlayAtiva('nuvem')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: abaOverlayAtiva === 'nuvem' ? '#a855f7' : 'transparent', color: abaOverlayAtiva === 'nuvem' ? '#fff' : '#a855f7', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>🔗 Links 3D & Mídias</button>
+            </div>
+
+            {abaOverlayAtiva === 'browser' && (
+              <div>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '10px' }}>
+                  <select value={motorBuscaSelecionado} onChange={(e) => setMotorBuscaSelecionado(e.target.value)} style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', padding: '6px', borderRadius: '8px', fontSize: '10px', outline: 'none' }}>
+                    <option value="google">Google</option>
+                    <option value="bing">Bing</option>
+                    <option value="duckduckgo">DuckDuckGo</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    value={urlOuTermoNavegador}
+                    onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador); }}
+                    placeholder="Pesquisar qualquer assunto no Mapa IA..."
+                    style={{ backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '10px', padding: '6px 10px', color: '#00f0ff', fontSize: '11px', outline: 'none', flexGrow: 1, fontFamily: 'monospace' }}
+                  />
+
+                  <button onClick={() => executarNavegacaoBrowser(urlOuTermoNavegador)} style={{ padding: '6px 12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Ir ➔</button>
+                </div>
+
+                <div style={{ backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.2)', borderRadius: '12px', padding: '10px', maxHeight: '120px', overflowY: 'auto' }}>
+                  <h4 style={{ fontSize: '11px', margin: '0 0 4px 0', color: '#fff' }}>{browserAsset.titulo}</h4>
+                  <p style={{ fontSize: '9px', color: '#ff007f', margin: '0 0 6px 0' }}>{browserAsset.subtitulo}</p>
+                  <p style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', margin: 0 }}>{browserAsset.conteudoTexto}</p>
+                </div>
+              </div>
+            )}
+
+            {abaOverlayAtiva === 'nuvem' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <span style={{ fontSize: '9px', color: '#a855f7', fontWeight: 'bold', display: 'block' }}>🌐 ADICIONAR NOVO LINK 3D NA NUVEM ({nuvemSelecionada.toUpperCase()})</span>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <input type="text" placeholder="Ícone (ex: 🎬)" value={novoLinkIcone} onChange={(e) => setNovoLinkIcone(e.target.value)} style={{ width: '60px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', textAlign: 'center' }} />
+                    <input type="text" placeholder="Título do Link (ex: Meu Projeto)" value={novoLinkTitulo} onChange={(e) => setNovoLinkTitulo(e.target.value)} style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} />
+                  </div>
+                  <input type="text" placeholder="URL ou Caminho da Nuvem..." value={novoLinkUrl} onChange={(e) => setNovoLinkUrl(e.target.value)} style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} />
+                  <button onClick={adicionarNovoLink3D} style={{ padding: '8px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>🚀 Adicionar Nó de Link 3D</button>
+                </div>
+
+                <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>🔗 LINKS 3D ATIVOS / REDES SOCIAIS:</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '130px', overflowY: 'auto' }}>
+                  {links3D.map(item => (
+                    <div key={item.id} onClick={() => abrirLinkExternoSeguro(item.url)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#020617', padding: '8px 10px', borderRadius: '6px', border: '1px solid #1e293b', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '10px', color: '#fff' }}>{item.icone} <b>{item.titulo}</b> <span style={{ fontSize: '8px', color: '#94a3b8' }}>({item.nuvem.toUpperCase()})</span></span>
+                      <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>Abrir ➔</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 🎯 PAINEL CENTRAL FLUTUANTE: AVATAR SELECTION */}
         {painelAvatarSelectionAberto && (
           <div style={{
@@ -815,7 +1025,7 @@ export default function MapaIA() {
               onChange={(e) => setMundoSelecionado(e.target.value)}
               style={{ width: '100%', padding: '6px', backgroundColor: '#020617', color: '#fff', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', outline: 'none' }}
             >
-              {(yugiohWorldData.mundos || []).map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
+              {(yugiohWorldData?.mundos || []).map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
             </select>
           </div>
         )}
@@ -924,12 +1134,13 @@ export default function MapaIA() {
               <h3 style={{ margin: 0, fontSize: '15px', color: '#00ffff', fontWeight: 'bold' }}>📡 {selectedBuildingInfo.name}</h3>
               <button onClick={() => setSelectedBuildingInfo(null)} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>✖</button>
             </div>
-            <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: 0 }}>Conectado via Fios de Chakra ao Núcleo IA. Acesse as redes oficiais:</p>
+            <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: 0 }}>Conectado via Fios de Chakra ao Núcleo IA. Acesse as redes oficiais do Emanuel:</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <a href={mapInfo.kwaiLink} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: 'linear-gradient(45deg, #ff5500, #ff007f)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>🔥 Acessar Kwai Oficial</a>
               <a href={mapInfo.youtubeLink} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: '#ef4444', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>📺 Canal no YouTube</a>
               <a href={mapInfo.instagramLink} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: 'linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>📸 Perfil do Instagram</a>
-              <a href={mapInfo.googleLink} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: '#3b82f6', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>🌐 Conexão Google</a>
+              <a href={mapInfo.tiktokLink} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: '#000', color: '#00f0ff', border: '1px solid #00f0ff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>🎵 TikTok Oficial</a>
+              <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noopener noreferrer" style={{ padding: '10px', background: '#10b981', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>💬 WhatsApp Direct</a>
             </div>
           </div>
         )}
@@ -1001,6 +1212,64 @@ export default function MapaIA() {
         </div>
 
       </div>
+
+      {/* 🌟 MODAL DE ARQUITETURA DO DATA CENTER (CLIQUE NO ROBOTOC 3D) 🌟 */}
+      {arquiteturaAberta && (
+        <aside style={{
+          position: 'absolute', right: '30px', bottom: '30px', width: '380px',
+          backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.5)',
+          borderRadius: '20px', padding: '20px', backdropFilter: 'blur(25px)',
+          zIndex: 200, color: '#fff', boxShadow: '0 0 40px rgba(0, 240, 255, 0.2)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', color: '#00f0ff', fontWeight: '900', letterSpacing: '0.5px' }}>
+              🏛️ ARQUITETURA DATA CENTER 3D
+            </h3>
+            <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>✕</button>
+          </div>
+          
+          <span style={{ fontSize: '10px', color: '#a1a1aa', display: 'block', marginBottom: '12px', lineHeight: '1.4' }}>
+            Sincronização Estrutural de Nós Orbitais no Mapa IA. Dados operando via Gemini AGI.
+          </span>
+
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '16px' }}>
+            <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+              🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
+            </span>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(66, 133, 244, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(66, 133, 244, 0.5)' }}>
+                <span style={{ fontSize: '11px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
+                <span style={{ fontSize: '9px', color: '#a1a1aa' }}>15 GB / 2 TB (Stable)</span>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
+                <span style={{ fontSize: '11px', color: '#fff', fontWeight: 'bold' }}>🍏 Apple iCloud</span>
+                <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Nó Orbital / Backups</span>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 164, 239, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 164, 239, 0.5)' }}>
+                <span style={{ fontSize: '11px', color: '#00a4ef', fontWeight: 'bold' }}>🪟 Microsoft OneDrive</span>
+                <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Vault Empresarial</span>
+              </div>
+            </div>
+          </div>
+
+          <span style={{ fontSize: '10px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+            🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
+          </span>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+            <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
+            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
+            <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+          </div>
+        </aside>
+      )}
 
       {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO (WIN11 CMD, NOTEPAD & ANDROID HUD) */}
       <FuturisticWindowManager />

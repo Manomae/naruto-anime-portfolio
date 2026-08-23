@@ -9,7 +9,35 @@ import FuturisticWindowManager from '../components/FuturisticWindowManager';
 
 export default function MapaRessonancia3D() {
   const mountRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
   const meshRef = useRef(null);
+  const bolaHolograficaMeshRef = useRef(null);
+  const avatarGroupRef = useRef(null);
+  const esferasLinks3DRef = useRef([]);
+
+  // --- DADOS REAIS & REDES SOCIAIS EMANUEL DA SILVA ---
+  const meusDadosReais = {
+    nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
+    whatsapp: "5588981493989",
+    whatsappFormatado: "(88) 98149-3989",
+    email: "leeheroi123@gmail.com",
+    tiktok: "https://www.tiktok.com/@emanueldasilva26",
+    instagram: "https://www.instagram.com/emanuelsilva432",
+    threads: "https://www.threads.net/@emanuelsilva432",
+    github: "https://github.com/Manomae",
+    facebook: "https://www.facebook.com/leeheroi.heroi",
+    youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
+  };
+
+  // Redes Oficiais para o Cabeçalho
+  const redesOficiais = [
+    { nome: 'YouTube', url: meusDadosReais.youtube, icone: '▶️' },
+    { nome: 'TikTok', url: meusDadosReais.tiktok, icone: '🎵' },
+    { nome: 'Instagram', url: meusDadosReais.instagram, icone: '📸' },
+    { nome: 'Threads', url: meusDadosReais.threads, icone: '🧵' },
+    { nome: 'GitHub', url: meusDadosReais.github, icone: '🐙' }
+  ];
 
   // Estados de Configuração Técnica da Ressonância
   const [respiracaoLivre, setRespiracaoLivre] = useState(true);
@@ -19,13 +47,17 @@ export default function MapaRessonancia3D() {
   const [realceInflamatorio, setRealceInflamatorio] = useState(false);
   const [statusExame, setStatusExame] = useState('🟢 Aquisição Volumétrica em Tempo Real Estável (RM 3D)');
 
-  // 🌟 CONTROLE DA ABA LATERAL RETRÁTIL DO PACIENTE (ESTILO EMANUEL.OS WORKSTATION)
-  const [painelPacienteAberto, setPainelPacienteAberto] = useState(true);
+  // Estados ROBOTOC DATA CENTER & ARQUITETURA 3D (IGUAL AO INDEX)
+  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
+  const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
+  const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
+  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
 
-  // CONTROLE DO PAINEL INFERIOR DE RM (EXPANDIDO / RECOLHIDO)
+  // CONTROLE DE PAINÉIS
+  const [painelPacienteAberto, setPainelPacienteAberto] = useState(true);
   const [painelRmExpandido, setPainelRmExpandido] = useState(true);
 
-  // 🌟 CONTROLE DA BARRA FLUIDA SUPERIOR RETRÁTIL
+  // BARRA FLUIDA SUPERIOR RETRÁTIL
   const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
   const [termoBusca, setTermoBusca] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('tudo');
@@ -55,6 +87,24 @@ export default function MapaRessonancia3D() {
     "#dorlombar", "#pescoço", "#alteraçõesneurologicas", "#infecçoes"
   ];
 
+  // ESTADO DE LINKS 3D ÓRBITA
+  const [links3D] = useState([
+    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
+    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
+    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
+    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: meusDadosReais.github, icone: '🐙', nuvem: 'microsoft' },
+    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: `https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`, icone: '💬', nuvem: 'google' },
+    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
+    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
+  ]);
+
+  const abrirLinkExternoSeguro = (url) => {
+    if (url && typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // --- CENA THREE.JS COMPLETA: CÓDIGO DA RM 3D UNIFICADO COM O DATA CENTER E ROBOTOC ---
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -62,27 +112,66 @@ export default function MapaRessonancia3D() {
     const height = mountRef.current.clientHeight;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.z = 4;
+    sceneRef.current = scene;
+    scene.background = new THREE.Color(0x020617);
+
+    const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+    cameraRef.current = camera;
+    camera.position.set(0, 0, 7.0);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
+    // ILUMINAÇÃO DATA CENTER + MEDICA
     const greenLight = new THREE.PointLight(0x10b981, 4, 100);
     greenLight.position.set(-3, 3, 3);
     scene.add(greenLight);
 
-    const cyanLight = new THREE.PointLight(0x00f0ff, 3, 100);
+    const cyanLight = new THREE.PointLight(0x00f0ff, 4, 100);
     cyanLight.position.set(3, -3, 3);
     scene.add(cyanLight);
 
-    const redAlertLight = new THREE.PointLight(0xff0055, realceInflamatorio ? 5 : 0, 100);
+    const redAlertLight = new THREE.PointLight(0xff0055, realceInflamatorio ? 6 : 1, 100);
     redAlertLight.position.set(0, 0, 2);
     scene.add(redAlertLight);
 
-    scene.add(new THREE.AmbientLight(0x0f172a, 2));
+    scene.add(new THREE.AmbientLight(0x0f172a, 2.0));
 
+    // 🏬 ESTRUTURA 3D DO DATA CENTER GIGANTESCO DE DADOS
+    const dataCenterGroup = new THREE.Group();
+
+    // PISO TÁTIL COM GRID HOLOGRÁFICO
+    const floorGrid = new THREE.GridHelper(30, 30, 0x10b981, 0x1e293b);
+    floorGrid.position.y = -2.5;
+    dataCenterGroup.add(floorGrid);
+
+    // TORRES DE SERVIDORES (RACKS 3D DE DATA CENTER)
+    const rackGeo = new THREE.BoxGeometry(0.8, 4.5, 1.2);
+    const rackMat = new THREE.MeshStandardMaterial({ color: 0x09090b, metalness: 0.9, roughness: 0.2 });
+    const ledCyanMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+    const ledGreenMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+
+    for (let row = -3; row <= 3; row += 2) {
+      if (row === 0) continue;
+      [-5, -8, 5, 8].forEach((zPos) => {
+        const rackMesh = new THREE.Mesh(rackGeo, rackMat);
+        rackMesh.position.set(row * 1.8, -0.25, zPos);
+        dataCenterGroup.add(rackMesh);
+
+        for (let l = -1.8; l <= 1.8; l += 0.4) {
+          const ledGeo = new THREE.BoxGeometry(0.65, 0.05, 0.05);
+          const ledMesh = new THREE.Mesh(ledGeo, (row + l) % 2 === 0 ? ledCyanMat : ledGreenMat);
+          ledMesh.position.set(row * 1.8, l, zPos + 0.61);
+          dataCenterGroup.add(ledMesh);
+        }
+      });
+    }
+
+    scene.add(dataCenterGroup);
+
+    // 🧠 MESH DA RESSONÂNCIA MAGNÉTICA 3D (TORUS KNOT CENTRAL)
     const geometry = new THREE.TorusKnotGeometry(1.2, 0.35, 128, 32);
     const material = new THREE.MeshStandardMaterial({
       color: realceInflamatorio ? 0xff0055 : 0x10b981,
@@ -93,8 +182,112 @@ export default function MapaRessonancia3D() {
       opacity: 0.85
     });
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, 0, 0);
     meshRef.current = mesh;
     scene.add(mesh);
+
+    // BOLA HOLOGRÁFICA PRINCIPAL
+    const bolaGeometry = new THREE.IcosahedronGeometry(0.8, 3);
+    const bolaMaterial = new THREE.MeshStandardMaterial({
+      color: 0x00f0ff,
+      wireframe: true,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 0.6,
+      transparent: true,
+      opacity: 0.85
+    });
+    const bolaMesh = new THREE.Mesh(bolaGeometry, bolaMaterial);
+    bolaMesh.position.set(2.2, 0, 0);
+    scene.add(bolaMesh);
+    bolaHolograficaMeshRef.current = bolaMesh;
+
+    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER
+    const linksGroup = new THREE.Group();
+    esferasLinks3DRef.current = [];
+    links3D.forEach((linkItem) => {
+      const orbGeo = new THREE.SphereGeometry(0.2, 16, 16);
+      const colorHex = linkItem.nuvem === 'google' ? 0x4285f4 : 
+                       linkItem.nuvem === 'apple' ? 0xffffff : 
+                       linkItem.nuvem === 'microsoft' ? 0x00a4ef : 0xff007f;
+      
+      const orbMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.85 });
+      const orbMesh = new THREE.Mesh(orbGeo, orbMat);
+      orbMesh.userData = { url: linkItem.url, titulo: linkItem.titulo };
+      linksGroup.add(orbMesh);
+      esferasLinks3DRef.current.push(orbMesh);
+    });
+    scene.add(linksGroup);
+
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D
+    const avatarGroup = new THREE.Group();
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
+    const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.1, metalness: 0.9, emissive: 0x10b981, emissiveIntensity: 0.2 });
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
+
+    const headGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    headGeo.scale(1, 1.25, 1);
+    const headMesh = new THREE.Mesh(headGeo, skinMat);
+    headMesh.position.set(0, 2.3, 0);
+    avatarGroup.add(headMesh);
+
+    const hairGeo = new THREE.SphereGeometry(0.38, 16, 16);
+    hairGeo.scale(1.02, 0.9, 1.05);
+    const hairMesh = new THREE.Mesh(hairGeo, hairMat);
+    hairMesh.position.set(0, 2.45, -0.05);
+    avatarGroup.add(hairMesh);
+
+    const eyeGeo = new THREE.SphereGeometry(0.04, 16, 16);
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.12, 2.32, 0.32);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.12, 2.32, 0.32);
+    avatarGroup.add(leftEye);
+    avatarGroup.add(rightEye);
+
+    const chestGeo = new THREE.BoxGeometry(0.8, 0.7, 0.4);
+    const chestMesh = new THREE.Mesh(chestGeo, suitMat);
+    chestMesh.position.set(0, 1.45, 0);
+    avatarGroup.add(chestMesh);
+
+    const plateGeo = new THREE.BoxGeometry(0.6, 0.4, 0.08);
+    const plateMesh = new THREE.Mesh(plateGeo, armorMat);
+    plateMesh.position.set(0, 1.5, 0.21);
+    avatarGroup.add(plateMesh);
+
+    avatarGroup.position.set(-2.2, -1.2, 0);
+    scene.add(avatarGroup);
+    avatarGroupRef.current = avatarGroup;
+
+    // CLIQUE INTERATIVO NO AVATAR ROBOTOC E ESFERAS
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const handleClick = (event) => {
+      if (!mountRef.current) return;
+      const rect = mountRef.current.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersectsOrbs = raycaster.intersectObjects(esferasLinks3DRef.current);
+      const intersectsAvatar = avatarGroupRef.current ? raycaster.intersectObjects(avatarGroupRef.current.children, true) : [];
+
+      if (intersectsOrbs.length > 0) {
+        const hitOrb = intersectsOrbs[0].object;
+        if (hitOrb.userData && hitOrb.userData.url) {
+          abrirLinkExternoSeguro(hitOrb.userData.url);
+        }
+      } else if (intersectsAvatar.length > 0) {
+        setArquiteturaAberta(true);
+        setMostrarOverlayRobotoc(false);
+      }
+    };
+
+    const domContainer = mountRef.current;
+    domContainer.addEventListener('click', handleClick);
 
     let frameId;
     let clock = new THREE.Clock();
@@ -103,11 +296,29 @@ export default function MapaRessonancia3D() {
       frameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
+      // Rotação do modelo central de RM 3D
       mesh.rotation.y = elapsedTime * (0.3 + intensidadeTesla * 0.05);
       mesh.rotation.x = elapsedTime * 0.15;
 
       if (respiracaoLivre) {
         mesh.scale.setScalar(1 + Math.sin(elapsedTime * 1.5) * 0.04);
+      }
+
+      // Animação da Bola Holográfica e esferas de links
+      if (bolaHolograficaMeshRef.current) {
+        bolaHolograficaMeshRef.current.rotation.y += 0.008;
+        bolaHolograficaMeshRef.current.position.y = Math.sin(elapsedTime * 2) * 0.15;
+
+        esferasLinks3DRef.current.forEach((m, idx) => {
+          const angle = elapsedTime * 0.8 + (idx * (Math.PI * 2 / esferasLinks3DRef.current.length));
+          m.position.x = bolaHolograficaMeshRef.current.position.x + Math.cos(angle) * 1.8;
+          m.position.z = bolaHolograficaMeshRef.current.position.z + Math.sin(angle) * 1.8;
+          m.position.y = bolaHolograficaMeshRef.current.position.y + Math.sin(elapsedTime * 2 + idx) * 0.3;
+        });
+      }
+
+      if (avatarGroupRef.current) {
+        avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 1.5) * 0.05;
       }
 
       renderer.render(scene, camera);
@@ -127,11 +338,12 @@ export default function MapaRessonancia3D() {
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
+      domContainer.removeEventListener('click', handleClick);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [respiracaoLivre, realceInflamatorio, intensidadeTesla]);
+  }, [respiracaoLivre, realceInflamatorio, intensidadeTesla, links3D]);
 
   const gerarLaudoMedicoPDF = () => {
     const doc = new jsPDF();
@@ -176,7 +388,7 @@ export default function MapaRessonancia3D() {
     doc.setFontSize(9);
     doc.setFont(undefined, 'normal');
     doc.setTextColor(51, 65, 85);
-    const tecnicaTexto = `Aquisição tridimensional volumétrica utilizando campo magnético de ${intensidadeTesla.toFixed(1)} Tesla e pulsos de ondas de rádio em ${frequenciaRadioMHz} MHz para produzir imagens detalhadas das estruturas da coluna vertebral. O método permite avaliação anatômica de vértebras, discos intervertebrais, medula espinhal, raízes nervosas e tecidos moles ao redor. Modulação de movimento: ${filtroMovimento ? 'Filtro G-AGI Ativo' : 'Desativado'}. Respiração Livre: ${respiracaoLivre ? 'Ativa' : 'Inativa'}.`;
+    const tecnicaTexto = `Aquisição tridimensional volumétrica utilizando campo magnético de ${intensidadeTesla.toFixed(1)} Tesla e pulsos de ondas de rádio em ${frequenciaRadioMHz} MHz para produzir imagens detalhadas das estruturas da coluna vertebral. Modulação de movimento: ${filtroMovimento ? 'Filtro G-AGI Ativo' : 'Desativado'}. Respiração Livre: ${respiracaoLivre ? 'Ativa' : 'Inativa'}.`;
     const tecnicaLinhas = doc.splitTextToSize(tecnicaTexto, 182);
     doc.text(tecnicaLinhas, 14, 112);
 
@@ -229,22 +441,41 @@ export default function MapaRessonancia3D() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Mapa Ressonância 3D (IA) | Emanuel.OS</title>
+        <title>Mapa Ressonância 3D (IA) | Emanuel.OS & ROBOTOC DATA CENTER</title>
       </Head>
 
-      {/* HEADER SUPERIOR */}
-      <header style={{ position: 'absolute', top: '15px', left: '20px', zIndex: 100, display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <Link href="/" style={{
-          padding: '8px 14px', backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          border: '1px solid #10b981', color: '#34d399', borderRadius: '10px',
-          textDecoration: 'none', fontWeight: 'bold', fontSize: '11px',
-          boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)'
-        }}>
-          ⬅ Voltar ao Core
-        </Link>
+      {/* HEADER SUPERIOR COM ROBOTOC & REDES */}
+      <header style={{ position: 'absolute', top: '15px', left: '20px', right: '20px', zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link href="/" style={{
+            padding: '8px 14px', backgroundColor: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid #10b981', color: '#34d399', borderRadius: '10px',
+            textDecoration: 'none', fontWeight: 'bold', fontSize: '11px',
+            boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)'
+          }}>
+            ⬅ Voltar ao Core
+          </Link>
+
+          <button onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)} style={{ padding: '8px 14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
+            🤖 ROBOTOC HUD
+          </button>
+
+          <button onClick={() => setArquiteturaAberta(!arquiteturaAberta)} style={{ padding: '8px 14px', backgroundColor: '#10b981', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
+            🏛️ ARQUITETURA DATA CENTER 3D
+          </button>
+        </div>
+
+        {/* REDES SOCIAIS INTEGRADAS EMANUEL DA SILVA */}
+        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto' }}>
+          {redesOficiais.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>{r.icone}</span> {r.nome}
+            </a>
+          ))}
+        </div>
       </header>
 
-      {/* 🔬 BOTÃO DE CONEXÃO AO MAPA DE PATOLOGIA REPOSICIONADO: MAIS EMBAIXO, DO LADO DO DESIGN DA RM ANTES DO CENTRO */}
+      {/* 🔬 BOTÃO DE CONEXÃO AO MAPA DE PATOLOGIA */}
       <div style={{ position: 'absolute', top: '75px', left: '20px', zIndex: 90 }}>
         <Link href="/mapa-patologia" style={{
           padding: '9px 16px', backgroundColor: 'rgba(8, 15, 30, 0.90)',
@@ -350,7 +581,7 @@ export default function MapaRessonancia3D() {
 
       <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
 
-      {/* 👤 PAINEL LATERAL ESQUERDO DO PACIENTE COM A SETA MAIOR DE LADO (ESTILO EMANUEL.OS WORKSTATION) */}
+      {/* 👤 PAINEL LATERAL ESQUERDO DO PACIENTE */}
       <div style={{
         position: 'absolute', top: '130px', left: painelPacienteAberto ? '20px' : '-310px', width: '310px',
         backgroundColor: 'rgba(8, 15, 30, 0.92)', backdropFilter: 'blur(25px)',
@@ -358,7 +589,6 @@ export default function MapaRessonancia3D() {
         padding: '16px', zIndex: 95, boxShadow: '0 0 30px rgba(16, 185, 129, 0.25)',
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-        {/* BOTÃO PROJETADO COM A SETA MAIOR DE LADO NA BORDA */}
         <button
           onClick={() => setPainelPacienteAberto(!painelPacienteAberto)}
           style={{
@@ -399,7 +629,7 @@ export default function MapaRessonancia3D() {
         </div>
       </div>
 
-      {/* --- PAINEL INFERIOR RETRÁTIL DO MÓDULO FÍSICO DE RM 3D --- */}
+      {/* PAINEL INFERIOR RETRÁTIL DO MÓDULO FÍSICO DE RM 3D */}
       <div style={{
         position: 'absolute', bottom: '25px', left: '50%', transform: 'translateX(-50%)',
         zIndex: 10, width: '90%', maxWidth: '680px', backgroundColor: 'rgba(8, 15, 30, 0.92)',
@@ -415,13 +645,8 @@ export default function MapaRessonancia3D() {
           <button
             onClick={() => setPainelRmExpandido(!painelRmExpandido)}
             style={{
-              background: 'none',
-              border: 'none',
-              color: '#34d399',
-              fontSize: '12px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              lineHeight: 1
+              background: 'none', border: 'none', color: '#34d399', fontSize: '12px',
+              cursor: 'pointer', fontWeight: 'bold', lineHeight: 1
             }}
             title={painelRmExpandido ? "Recolher Módulo RM" : "Expandir Módulo RM"}
           >
@@ -500,6 +725,51 @@ export default function MapaRessonancia3D() {
         )}
       </div>
 
+      {/* 🤖 OVERLAY ROBOTOC HUD & MULTICLOUD (IGUAL AO INDEX) */}
+      {mostrarOverlayRobotoc && (
+        <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(8,15,30,0.96)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '18px', zIndex: 1000, width: '380px', color: '#fff', boxShadow: '0 0 30px rgba(0,240,255,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold' }}>🤖 ROBOTOC DATA CENTER & NUVEM</h3>
+            <button onClick={() => setMostrarOverlayRobotoc(false)} style={{ background: 'none', border: 'none', color: '#ff007f', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+          </div>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+            <button onClick={() => setNuvemSelecionada('google')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: 'none', backgroundColor: nuvemSelecionada === 'google' ? '#4285f4' : '#1e293b', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>Google Drive</button>
+            <button onClick={() => setNuvemSelecionada('apple')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: 'none', backgroundColor: nuvemSelecionada === 'apple' ? '#fff' : '#1e293b', color: nuvemSelecionada === 'apple' ? '#000' : '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>iCloud</button>
+            <button onClick={() => setNuvemSelecionada('microsoft')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: 'none', backgroundColor: nuvemSelecionada === 'microsoft' ? '#00a4ef' : '#1e293b', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>OneDrive</button>
+          </div>
+          <p style={{ fontSize: '10px', color: '#cbd5e1' }}>Sincronização volumétrica de exames RM 3D com armazenamento em nuvem segura de Emanuel da Silva.</p>
+        </div>
+      )}
+
+      {/* 🏛️ ARQUITETURA DATA CENTER 3D & REDES SOCIAIS (ESTILO INDEX.JS) */}
+      {arquiteturaAberta && (
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', backgroundColor: 'rgba(7,12,28,0.96)', border: '2px solid #10b981', borderRadius: '16px', padding: '16px', zIndex: 1000, width: '340px', color: '#fff', boxShadow: '0 0 25px rgba(16,185,129,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>🏛️ ARQUITETURA DATA CENTER 3D</h3>
+            <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
+          </div>
+          
+          <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+            <div>• <b>Nó Ressonância 3D:</b> Ativo (Scanner 3.0T / 7.0T)</div>
+            <div>• <b>Nó Patologia & Lab:</b> Conectado (Histopatologia)</div>
+            <div>• <b>Nó Orkut Social 3D:</b> Conectado (Rede Unificada)</div>
+          </div>
+
+          <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+            🔗 REDES SOCIAIS MESTRES (EMANUEL DA SILVA):
+          </span>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp Direct</a>
+            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+          </div>
+        </div>
+      )}
+
+      {/* JANELAS FUTURISTAS INTEGRADAS */}
       <FuturisticWindowManager />
     </div>
   );

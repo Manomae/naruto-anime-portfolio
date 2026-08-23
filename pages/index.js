@@ -501,6 +501,9 @@ export default function EmanuelOSCore() {
   const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
   const [qrPayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
 
+  // ESTADO PARA A ARQUITETURA DO DATA CENTER (CLIQUE NO ROBOTOC)
+  const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
+
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
     { type: 'avatar', value: 'avatar_ninja.png', label: 'Avatar Ninja' },
@@ -515,7 +518,7 @@ export default function EmanuelOSCore() {
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
   const CHAVE_MESTRE = "ASD-DDD-888";
 
-  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS (ESTRUTURA DO MAPA TERRESTRE)
+  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
     nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
     whatsapp: "5588981493989",
@@ -529,7 +532,29 @@ export default function EmanuelOSCore() {
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
-  const [modo, setModo] = useState('live'); 
+  // --- ESTADOS DE INTEGRAÇÃO MULTICLOUD (GOOGLE, APPLE & MICROSOFT) ---
+  const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
+  const [statusNuvem] = useState({
+    google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
+    apple: { conectado: true, conta: 'emanuel@icloud.com', espaco: '5 GB / 200 GB' },
+    microsoft: { conectado: true, conta: 'emanuel@outlook.com', espaco: '1 TB OneDrive / Azure' },
+    custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
+  });
+
+  // ESTADO DE LINKS 3D DINÂMICOS & TOTALMENTE FUNCIONAIS (COM AS SUAS REDES SOCIAIS REAIS)
+  const [links3D, setLinks3D] = useState([
+    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
+    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
+    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
+    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: meusDadosReais.github, icone: '🐙', nuvem: 'microsoft' },
+    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: `https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`, icone: '💬', nuvem: 'google' },
+    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
+    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
+  ]);
+  const [novoLinkTitulo, setNovoLinkTitulo] = useState('');
+  const [novoLinkUrl, setNovoLinkUrl] = useState('');
+  const [novoLinkIcone, setNovoLinkIcone] = useState('🔗');
+
   const [vozAtiva] = useState('Robotoc'); 
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
@@ -538,7 +563,7 @@ export default function EmanuelOSCore() {
 
   // ESTADO DE INTERAÇÃO COM O ROBOTOC
   const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
-  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser'); // 'browser' | 'quickactions'
+  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
 
   const [modalSuporteAberto, setModalSuporteAberto] = useState(false);
   const [abaSuporteAtiva, setAbaSuporteAtiva] = useState('diagnostico');
@@ -563,8 +588,8 @@ export default function EmanuelOSCore() {
   const [versoesAtivas, setVersoesAtivas] = useState([]);
   const [versaoSelecionada, setVersaoSelecionada] = useState(0);
 
-  const [resolucaoVideo, setResolucaoVideo] = useState('1080p Full HD');
-  const [semMarcaDagua, setSemMarcaDagua] = useState(true);
+  const [resolucaoVideo] = useState('1080p Full HD');
+  const [semMarcaDagua] = useState(true);
 
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS Quantum Browser v5.1',
@@ -579,7 +604,8 @@ export default function EmanuelOSCore() {
     "[ROBOTOC: LOG] System core operational.",
     "[ROBOTOC: LOG] Parallel Cognitive Processing Module: STABLE.",
     "[ROBOTOC: STATUS] Modo de Pensamento Neural: ONLINE & SYNCHRONIZED.",
-    "[ROBOTOC: BROWSER] Quantum Browser v5.1 acoplado ao pensamento do ROBOTOC."
+    "[ROBOTOC: DATA CENTER] Servidores Quânticos em 3D Conectados ao Vault.",
+    "[ROBOTOC: NUVEM] Sincronizado com Google Drive, Apple iCloud e Microsoft OneDrive."
   ]);
 
   const [chatInput, setChatInput] = useState('');
@@ -591,7 +617,7 @@ export default function EmanuelOSCore() {
   ]);
 
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC (IA HUMANOIDE)', texto: 'Emanuel.OS Core v5.1 | ROBOTOC Ativo | Clique no avatar para expor o Navegador Quântico e o Feed Social Quick Actions!', tipo: 'sys' }
+    { autor: 'ROBOTOC (IA HUMANOIDE)', texto: 'Emanuel.OS Core v5.1 | ROBOTOC em Data Center 3D | Armazenamento Multicloud pronto para salvar pesquisas, vídeos, fotos, redes sociais e relatórios!', tipo: 'sys' }
   ]);
 
   const [ddd1, setDdd1] = useState('');
@@ -611,9 +637,33 @@ export default function EmanuelOSCore() {
   const cameraRef = useRef(null);
   const bolaHolograficaMeshRef = useRef(null);
   const avatarGroupRef = useRef(null);
+  const esferasLinks3DRef = useRef([]);
 
   const addLogTerminal = (novoLog) => {
     setCmdLogs(prev => [...prev, novoLog]);
+  };
+
+  const abrirLinkExternoSeguro = (url, titulo) => {
+    if (!url) return;
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      addLogTerminal(`[ROBOTOC 3D LINK] Abrindo nó tridimensional ativo no Data Center: "${titulo || url}"`);
+    }
+  };
+
+  const adicionarNovoLink3D = () => {
+    if (!novoLinkTitulo.trim() || !novoLinkUrl.trim()) return alert("Insira o Título e a URL do Link 3D.");
+    const novo = {
+      id: Date.now(),
+      titulo: novoLinkTitulo,
+      url: novoLinkUrl.startsWith('http') ? novoLinkUrl : `https://${novoLinkUrl}`,
+      icone: novoLinkIcone || '🌐',
+      nuvem: nuvemSelecionada
+    };
+    setLinks3D(prev => [...prev, novo]);
+    setNovoLinkTitulo('');
+    setNovoLinkUrl('');
+    addLogTerminal(`[ROBOTOC 3D LINK] Novo nó tridimensional criado na nuvem (${nuvemSelecionada.toUpperCase()}): "${novo.titulo}"`);
   };
 
   const executarNavegacaoBrowser = (termo, modoBusca) => {
@@ -640,7 +690,7 @@ export default function EmanuelOSCore() {
         subtitulo: `Resultados abertos no motor ${motorBuscaSelecionado.toUpperCase()} via G-AGI`,
         imagem: null,
         videoUrl: null,
-        conteudoTexto: `Módulo Quantum Browser do ROBOTOC indexou dados para '${termo}'. Conexão com repositórios e web 100% estabelecida.`
+        conteudoTexto: `Módulo Quantum Browser do ROBOTOC indexou dados para '${termo}'. Sincronizado no Data Center 3D em ${nuvemSelecionada.toUpperCase()}.`
       });
     }, 1000);
   };
@@ -660,13 +710,6 @@ export default function EmanuelOSCore() {
       executarNavegacaoBrowser(fala, 'voz');
     };
     rec.start();
-  };
-
-  const handleUploadPDFNavegador = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUrlOuTermoNavegador(file.name);
-    executarNavegacaoBrowser(`Arquivo/PDF lido: ${file.name}`, 'pdf');
   };
 
   const executarGeracaoReal = async (promptTexto, tipoAcao) => {
@@ -785,20 +828,12 @@ export default function EmanuelOSCore() {
       const prompt = 'Traduzir documento PDF/Word para o idioma selecionado via G-AGI Multimodal';
       setChatInput(prompt);
       processarConversaReal(prompt);
-    } else if (tipo === 'traduzir_audio') {
-      const prompt = 'Iniciar tradução em tempo real de áudio capturado para múltiplos idiomas';
-      setChatInput(prompt);
-      processarConversaReal(prompt);
     } else if (tipo === 'processamento_em' || tipo === 'gerar_pdf') {
       const prompt = 'Processar obra científica sobre Física Quântica e Chakra em formato PDF';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'gerar_pptx') {
       const prompt = 'Gerar apresentação de Power Point (.pptx) sobre o sistema Emanuel.OS HUD 2030';
-      setChatInput(prompt);
-      processarConversaReal(prompt);
-    } else if (tipo === 'gerar_ressonancia_3d') {
-      const prompt = 'Carregar módulo de Mapa Ressonância 3D médica com inteligência artificial e filtro de movimento';
       setChatInput(prompt);
       processarConversaReal(prompt);
     }
@@ -848,7 +883,7 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA + AVATAR 3D HUMANOIDE REALISTA (ROBOTOC) ---
+  // --- CENA THREE.JS RENDERIZANDO O DATA CENTER GIGANTESCO 3D + ROBOTOC + BOLA HOLOGRÁFICA + LINKS 3D/REDES SOCIAIS ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -857,6 +892,7 @@ export default function EmanuelOSCore() {
 
     const scene = new THREE.Scene();
     sceneRef.current = scene;
+    scene.background = new THREE.Color(0x020617);
 
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
     cameraRef.current = camera;
@@ -866,21 +902,58 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
+    // ILUMINAÇÃO CYBERPUNK / DATA CENTER
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
-    keyLight.position.set(-5, 5, 5);
+    keyLight.position.set(-5, 8, 5);
     scene.add(keyLight);
 
-    const cyanLight = new THREE.PointLight(0x00f0ff, 4, 20);
-    cyanLight.position.set(-3, 2, 3);
+    const cyanLight = new THREE.PointLight(0x00f0ff, 5, 25);
+    cyanLight.position.set(-3, 3, 3);
     scene.add(cyanLight);
 
-    const magentaLight = new THREE.PointLight(0xff007f, 4, 20);
-    magentaLight.position.set(3, -2, 3);
+    const magentaLight = new THREE.PointLight(0xff007f, 5, 25);
+    magentaLight.position.set(3, -1, 3);
     scene.add(magentaLight);
 
-    const ambientLight = new THREE.AmbientLight(0x1e293b, 1.8);
+    const ambientLight = new THREE.AmbientLight(0x0f172a, 2.0);
     scene.add(ambientLight);
 
+    // 🏬 ESTRUTURA 3D DO DATA CENTER GIGANTESCO DE DADOS
+    const dataCenterGroup = new THREE.Group();
+
+    // PISO TÁTIL COM GRID HOLOGRÁFICO
+    const floorGrid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
+    floorGrid.position.y = -2.5;
+    dataCenterGroup.add(floorGrid);
+
+    // TORRES DE SERVIDORES (RACKS 3D DE DATA CENTER)
+    const rackGeo = new THREE.BoxGeometry(0.8, 4.5, 1.2);
+    const rackMat = new THREE.MeshStandardMaterial({ color: 0x09090b, metalness: 0.9, roughness: 0.2 });
+    const ledCyanMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+    const ledMagentaMat = new THREE.MeshBasicMaterial({ color: 0xff007f });
+
+    // Gerar corredores de racks de servidores em 3D
+    for (let row = -3; row <= 3; row += 2) {
+      if (row === 0) continue; // Espaço central livre para o Robotoc
+      
+      [-5, -8, 5, 8].forEach((zPos) => {
+        const rackMesh = new THREE.Mesh(rackGeo, rackMat);
+        rackMesh.position.set(row * 1.8, -0.25, zPos);
+        dataCenterGroup.add(rackMesh);
+
+        // LEDs indicativos de atividade de dados nos servidores
+        for (let l = -1.8; l <= 1.8; l += 0.4) {
+          const ledGeo = new THREE.BoxGeometry(0.65, 0.05, 0.05);
+          const ledMesh = new THREE.Mesh(ledGeo, (row + l) % 2 === 0 ? ledCyanMat : ledMagentaMat);
+          ledMesh.position.set(row * 1.8, l, zPos + 0.61);
+          dataCenterGroup.add(ledMesh);
+        }
+      });
+    }
+
+    scene.add(dataCenterGroup);
+
+    // BOLA HOLOGRÁFICA PRINCIPAL DO CORE
     const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
@@ -894,8 +967,29 @@ export default function EmanuelOSCore() {
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    const avatarGroup = new THREE.Group();
+    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER
+    const linksGroup = new THREE.Group();
+    esferasLinks3DRef.current = [];
+    links3D.forEach((linkItem) => {
+      const orbGeo = new THREE.SphereGeometry(0.22, 16, 16);
+      const colorHex = linkItem.nuvem === 'google' ? 0x4285f4 : 
+                       linkItem.nuvem === 'apple' ? 0xffffff : 
+                       linkItem.nuvem === 'microsoft' ? 0x00a4ef : 0xff007f;
+      
+      const orbMat = new THREE.MeshStandardMaterial({
+        color: colorHex,
+        emissive: colorHex,
+        emissiveIntensity: 0.85
+      });
+      const orbMesh = new THREE.Mesh(orbGeo, orbMat);
+      orbMesh.userData = { url: linkItem.url, titulo: linkItem.titulo };
+      linksGroup.add(orbMesh);
+      esferasLinks3DRef.current.push(orbMesh);
+    });
+    scene.add(linksGroup);
 
+    // AVATAR ROBOTOC HUMANOIDE 3D
+    const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
     const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
@@ -988,6 +1082,8 @@ export default function EmanuelOSCore() {
     let isDragging = false;
     let dragDistance = 0;
     let previousTouchPosition = { x: 0, y: 0 };
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
     const handleStart = (clientX, clientY) => {
       isDragging = true;
@@ -1008,16 +1104,40 @@ export default function EmanuelOSCore() {
       previousTouchPosition = { x: clientX, y: clientY };
     };
 
-    const handleEnd = () => {
-      if (dragDistance < 10) {
-        setMostrarOverlayRobotoc(prev => !prev);
+    const handleEnd = (clientX, clientY) => {
+      if (dragDistance < 10 && mountRef.current) {
+        const rect = mountRef.current.getBoundingClientRect();
+        mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        
+        // Verifica colisão com os links orbitais
+        const intersectsOrbs = raycaster.intersectObjects(esferasLinks3DRef.current);
+        // Verifica colisão com o Robotoc (Avatar 3D)
+        const intersectsAvatar = avatarGroupRef.current ? raycaster.intersectObjects(avatarGroupRef.current.children, true) : [];
+
+        if (intersectsOrbs.length > 0) {
+          const hitOrb = intersectsOrbs[0].object;
+          if (hitOrb.userData && hitOrb.userData.url) {
+            abrirLinkExternoSeguro(hitOrb.userData.url, hitOrb.userData.titulo);
+          }
+        } else if (intersectsAvatar.length > 0) {
+          // SE CLICOU NO ROBOTOC, ABRE A ARQUITETURA DE DADOS
+          setArquiteturaAberta(true);
+          setMostrarOverlayRobotoc(false); // Esconde o painel padrão para não sobrepor
+          addLogTerminal("[ROBOTOC: SYSTEM] Visualização da Arquitetura do Data Center 3D Acessada.");
+        } else {
+          setMostrarOverlayRobotoc(prev => !prev);
+          setArquiteturaAberta(false);
+        }
       }
       isDragging = false;
     };
 
     const handleMouseDown = (e) => handleStart(e.clientX, e.clientY);
     const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
-    const handleMouseUp = () => handleEnd();
+    const handleMouseUp = (e) => handleEnd(e.clientX, e.clientY);
 
     const handleTouchStart = (e) => {
       if (e.touches.length === 1) {
@@ -1031,7 +1151,11 @@ export default function EmanuelOSCore() {
       }
     };
 
-    const handleTouchEnd = () => handleEnd();
+    const handleTouchEnd = (e) => {
+      if (e.changedTouches.length === 1) {
+        handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      }
+    };
 
     const handleWheel = (e) => {
       if (cameraRef.current) {
@@ -1063,6 +1187,14 @@ export default function EmanuelOSCore() {
         bolaHolograficaMeshRef.current.rotation.x += 0.004;
         const baseY = isMobile ? -2.2 : 0;
         bolaHolograficaMeshRef.current.position.y = baseY + Math.sin(elapsedTime * 2) * 0.15;
+
+        esferasLinks3DRef.current.forEach((mesh, index) => {
+          const angle = elapsedTime * 0.8 + (index * (Math.PI * 2 / esferasLinks3DRef.current.length));
+          const radius = 2.2;
+          mesh.position.x = bolaHolograficaMeshRef.current.position.x + Math.cos(angle) * radius;
+          mesh.position.z = bolaHolograficaMeshRef.current.position.z + Math.sin(angle) * radius;
+          mesh.position.y = bolaHolograficaMeshRef.current.position.y + Math.sin(elapsedTime * 2 + index) * 0.4;
+        });
       }
 
       if (avatarGroupRef.current && !isDragging) {
@@ -1101,7 +1233,7 @@ export default function EmanuelOSCore() {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [bloqueado]);
+  }, [bloqueado, links3D]);
 
   const controlarCamera3D = (acao) => {
     const camera = cameraRef.current;
@@ -1209,7 +1341,7 @@ export default function EmanuelOSCore() {
         subtitulo: 'Internet Em.com v5.1',
         imagem: null,
         videoUrl: null,
-        conteudoTexto: `Módulo de busca conectado ao pensamento do ROBOTOC. Resultados processados para: "${textoUsuario}".`
+        conteudoTexto: `Módulo de busca conectado ao pensamento do ROBOTOC. Resultados salvos na nuvem ${nuvemSelecionada.toUpperCase()} para: "${textoUsuario}".`
       });
       respostaTexto = `Pesquisa na Internet executada com sucesso pelo ROBOTOC via motor Gemini AGI. Dados atualizados carregados no Quantum Browser!`;
       comandoExecutado = true;
@@ -1542,7 +1674,7 @@ export default function EmanuelOSCore() {
       setTimeout(() => {
         setAnimacaoMontandoMapa(false);
         setBloqueado(false);
-        alert("🔓 Acesso Total Autorizado! ROBOTOC, Quick Actions e 7 Camadas Concluídas! Bem-vindo, Mestre Emanuel.");
+        alert("🔓 Acesso Total Autorizado! ROBOTOC, Quick Actions e Data Center 3D Concluídos! Bem-vindo, Mestre Emanuel.");
         falarTextoReal("Acesso Total Autorizado! Bem-vindo ao Emanuel.OS. Sou o ROBOTOC, seu assistente neural.");
       }, 2000);
     }, 1500);
@@ -1735,7 +1867,7 @@ export default function EmanuelOSCore() {
                 <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '120px', height: '120px', border: '3px solid #00f0ff', borderRadius: '50%', borderTopColor: 'transparent', animation: 'girarRadar 1s linear infinite' }} />
                   <span style={{ fontSize: '12px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                    🧬 Ativando ROBOTOC, Unificando Mapas e Sincronizando Quick Actions...
+                    🧬 Ativando ROBOTOC, Data Center 3D e Sincronizando Quick Actions...
                   </span>
                 </div>
               ) : (
@@ -1753,7 +1885,7 @@ export default function EmanuelOSCore() {
                     disabled={qrCodeValidando}
                     style={{
                       width: '100%', padding: '14px', backgroundColor: qrCodeValidando ? '#0284c7' : '#00f0ff',
-                      color: '#00f0ff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px',
+                      color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px',
                       cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)', transition: 'all 0.3s'
                     }}
                   >
@@ -1787,14 +1919,14 @@ export default function EmanuelOSCore() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Emanuel.OS Core v5.1 | ROBOTOC & Quantum Engine Unificado</title>
+        <title>Emanuel.OS Core v5.1 | ROBOTOC Multicloud Data Center 3D</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
       {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL COM ROBOTOC */}
+        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL COM ROBOTOC EM DATA CENTER 3D */}
         <div style={{
           width: modoDevSplit ? '50%' : '100%',
           height: '100%',
@@ -1803,7 +1935,7 @@ export default function EmanuelOSCore() {
           overflow: 'hidden'
         }}>
 
-          {/* CENA THREE.JS (AVATAR 3D ROBOTOC + BOLA HOLOGRÁFICA) */}
+          {/* CENA THREE.JS (AVATAR 3D ROBOTOC + DATA CENTER GIGANTESCO 3D + LINKS 3D ÓRBITA) */}
           <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab', touchAction: 'none' }} />
 
           {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA */}
@@ -1834,7 +1966,6 @@ export default function EmanuelOSCore() {
               🖥️ {modoDevSplit ? 'Fechar Split' : 'Dev Split'}
             </button>
 
-            {/* BOTÃO INDIVIDUAL PARA DISPARAR O PENSAMENTO DO ROBOTOC */}
             <button
               onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)}
               style={{
@@ -1892,76 +2023,41 @@ export default function EmanuelOSCore() {
                     </Link>
 
                     <Link href="/mapa-ressonancia" style={{ 
-                      padding: '10px', 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid #10b981', 
-                      color: '#34d399', 
-                      borderRadius: '8px', 
-                      textDecoration: 'none', 
-                      fontWeight: 'bold', 
-                      fontSize: '11px', 
-                      textAlign: 'center',
-                      gridColumn: 'span 2'
+                      padding: '10px', backgroundColor: '#0f172a', border: '1px solid #10b981', 
+                      color: '#34d399', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', 
+                      fontSize: '11px', textAlign: 'center', gridColumn: 'span 2'
                     }}>
                       🧠 Ressonância
                     </Link>
 
                     <Link href="/mapa-quantico" style={{ 
-                      padding: '10px', 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid #8b5cf6', 
-                      color: '#c084fc', 
-                      borderRadius: '8px', 
-                      textDecoration: 'none', 
-                      fontWeight: 'bold', 
-                      fontSize: '11px', 
-                      textAlign: 'center',
-                      gridColumn: 'span 2'
+                      padding: '10px', backgroundColor: '#0f172a', border: '1px solid #8b5cf6', 
+                      color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', 
+                      fontSize: '11px', textAlign: 'center', gridColumn: 'span 2'
                     }}>
                       ⚛️ Mapa Matemático Quântico
                     </Link>
 
                     <Link href="/mapa-orkut" style={{ 
-                      padding: '10px', 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid #ff007f', 
-                      color: '#ff007f', 
-                      borderRadius: '8px', 
-                      textDecoration: 'none', 
-                      fontWeight: 'bold', 
-                      fontSize: '11px', 
-                      textAlign: 'center',
-                      gridColumn: 'span 2'
+                      padding: '10px', backgroundColor: '#0f172a', border: '1px solid #ff007f', 
+                      color: '#ff007f', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', 
+                      fontSize: '11px', textAlign: 'center', gridColumn: 'span 2'
                     }}>
                       💖 Mapa Orkut Social 3D
                     </Link>
 
                     <Link href="/mapa-patologia" style={{ 
-                      padding: '10px', 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid #00f0ff', 
-                      color: '#00f0ff', 
-                      borderRadius: '8px', 
-                      textDecoration: 'none', 
-                      fontWeight: 'bold', 
-                      fontSize: '11px', 
-                      textAlign: 'center',
-                      gridColumn: 'span 2'
+                      padding: '10px', backgroundColor: '#0f172a', border: '1px solid #00f0ff', 
+                      color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', 
+                      fontSize: '11px', textAlign: 'center', gridColumn: 'span 2'
                     }}>
                       🔬 Mapa de Patologia & Laboratório 3D
                     </Link>
 
                     <Link href="/mapa-antiguidades" style={{ 
-                      padding: '10px', 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid #eab308', 
-                      color: '#fef08a', 
-                      borderRadius: '8px', 
-                      textDecoration: 'none', 
-                      fontWeight: 'bold', 
-                      fontSize: '11px', 
-                      textAlign: 'center',
-                      gridColumn: 'span 2'
+                      padding: '10px', backgroundColor: '#0f172a', border: '1px solid #eab308', 
+                      color: '#fef08a', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', 
+                      fontSize: '11px', textAlign: 'center', gridColumn: 'span 2'
                     }}>
                       🏛️ Mapa Temporal de Antiguidades
                     </Link>
@@ -2134,7 +2230,7 @@ export default function EmanuelOSCore() {
                 NÚCLEO DE RESPOSTA AUXILIAR MULTIMODAL
               </h4>
               <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                (ROBOTOC Core: ACTIVE | Matrix stable)
+                (ROBOTOC Core: ACTIVE | Data Center 3D)
               </span>
             </div>
 
@@ -2230,7 +2326,7 @@ export default function EmanuelOSCore() {
               border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px 12px',
               boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
             }}>
-              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>ROBOTOC Neural Network</span>
+              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>ROBOTOC Data Center 3D</span>
               <strong style={{ fontSize: '11px', color: '#00f0ff' }}>📶 Emanuel Sync 2030</strong>
             </div>
 
@@ -2249,13 +2345,13 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* --- OVERLAY DE INTERAÇÃO DO ROBOTOC (PENSAMENTO NEURAL + LINKS REAIS DO MAPA TERRESTRE) --- */}
+          {/* --- OVERLAY DE INTERAÇÃO DO ROBOTOC (PENSAMENTO NEURAL + MULTICLOUD + LINKS 3D DINÂMICOS & MÍDIAS) --- */}
           {mostrarOverlayRobotoc && (
             <div className="quantum-browser-widget" style={{
               position: 'absolute', top: '75px', left: '50%', transform: 'translateX(-50%)', zIndex: 150,
               backgroundColor: 'rgba(8, 15, 30, 0.95)', backdropFilter: 'blur(25px)',
               border: '2px solid #00f0ff', borderRadius: '20px', padding: '16px',
-              width: 'calc(100% - 30px)', maxWidth: '540px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
+              width: 'calc(100% - 30px)', maxWidth: '580px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
               transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box'
             }}>
               {/* CABEÇALHO DO POPUP DO ROBOTOC */}
@@ -2264,9 +2360,9 @@ export default function EmanuelOSCore() {
                   <span style={{ fontSize: '18px' }}>🤖</span>
                   <div>
                     <h3 style={{ margin: 0, fontSize: '12px', color: '#00f0ff', fontWeight: '900', letterSpacing: '1px' }}>
-                      PENSAMENTO ROBOTOC HUD
+                      PENSAMENTO ROBOTOC 3D DATA CENTER & NUVEM
                     </h3>
-                    <span style={{ fontSize: '8px', color: '#a1a1aa' }}>Emanuel.OS Quantum Browser & Central Social</span>
+                    <span style={{ fontSize: '8px', color: '#a1a1aa' }}>Emanuel.OS Multicloud Vault & Quantum Browser</span>
                   </div>
                 </div>
 
@@ -2278,23 +2374,49 @@ export default function EmanuelOSCore() {
                 </button>
               </div>
 
-              {/* 🌟 SEÇÃO DE LINKS SOCIAIS DO MAPA TERRESTRE INTEGRADOS DIRETAMENTE NO PENSAMENTO ROBOTOC */}
-              <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)', marginBottom: '12px' }}>
-                <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-                  🔗 CENTRAL DE CONTATOS & REDES DO EMANUEL (ESTRUTURA MAPA TERRESTRE):
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
-                  <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
-                  <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
-                  <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
-                  <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
-                  <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
-                  <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
-                  <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+              {/* BARRA DE SELEÇÃO DE NUVENS (GOOGLE, APPLE & MICROSOFT) */}
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: 'rgba(2, 6, 23, 0.8)', padding: '6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)' }}>
+                <button 
+                  onClick={() => setNuvemSelecionada('google')}
+                  style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'google' ? '#4285f4' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🌐 Google Drive
+                </button>
+                <button 
+                  onClick={() => setNuvemSelecionada('apple')}
+                  style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'apple' ? '#ffffff' : 'transparent', color: nuvemSelecionada === 'apple' ? '#000' : '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🍏 Apple iCloud
+                </button>
+                <button 
+                  onClick={() => setNuvemSelecionada('microsoft')}
+                  style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'microsoft' ? '#00a4ef' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🪟 OneDrive
+                </button>
+                <button 
+                  onClick={() => setNuvemSelecionada('custom')}
+                  style={{ flex: 1, padding: '6px', borderRadius: '8px', border: 'none', backgroundColor: nuvemSelecionada === 'custom' ? '#ff007f' : 'transparent', color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  🌌 Vault 3D
+                </button>
+              </div>
+
+              {/* PAINEL DE STATUS DA NUVEM SELECIONADA */}
+              <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>
+                    NUVEM ATIVA: {nuvemSelecionada.toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: '10px', color: '#fff' }}>Conta: {statusNuvem[nuvemSelecionada].conta}</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '9px', color: '#4ade80', fontWeight: 'bold', display: 'block' }}>STATUS: ONLINE</span>
+                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>Espaço: {statusNuvem[nuvemSelecionada].espaco}</span>
                 </div>
               </div>
 
-              {/* BARRA DE SELEÇÃO DE MODOS DE INTERAÇÃO */}
+              {/* SELEÇÃO DE ABAS DE INTERAÇÃO DO HUD */}
               <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: '#020617', padding: '4px', borderRadius: '10px', border: '1px solid rgba(0,240,255,0.2)' }}>
                 <button
                   onClick={() => setAbaOverlayAtiva('browser')}
@@ -2319,11 +2441,22 @@ export default function EmanuelOSCore() {
                 >
                   ⚡ Quick Actions v2.0
                 </button>
+
+                <button
+                  onClick={() => setAbaOverlayAtiva('nuvem')}
+                  style={{
+                    flex: 1, padding: '8px', borderRadius: '8px', border: 'none',
+                    backgroundColor: abaOverlayAtiva === 'nuvem' ? '#a855f7' : 'transparent',
+                    color: abaOverlayAtiva === 'nuvem' ? '#fff' : '#a855f7',
+                    fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >
+                  🔗 Links 3D & Mídias
+                </button>
               </div>
 
-              {abaOverlayAtiva === 'browser' ? (
+              {abaOverlayAtiva === 'browser' && (
                 <div>
-                  {/* MINI NAVEGADOR ATIVO PARA BUSCAR QUALQUER ASSUNTO OU IMAGEM NA INTERNET */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                       <select 
@@ -2357,7 +2490,6 @@ export default function EmanuelOSCore() {
                     </div>
                   </div>
 
-                  {/* SELEÇÃO DE MODOS DE PENSAMENTO NEURAL DO ROBOTOC */}
                   <div style={{ marginBottom: '12px' }}>
                     <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
                       🧠 MODOS DE PENSAMENTO NEURAL DO ROBOTOC
@@ -2370,15 +2502,15 @@ export default function EmanuelOSCore() {
                     </div>
                   </div>
 
-                  {/* CONTAINER VIRTUAL DE RESULTADOS */}
                   <div style={{ backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.2)', borderRadius: '12px', padding: '10px', maxHeight: '140px', overflowY: 'auto' }}>
                     <h4 style={{ fontSize: '11px', margin: '0 0 4px 0', color: '#fff' }}>{browserAsset.titulo}</h4>
                     <p style={{ fontSize: '9px', color: '#ff007f', margin: '0 0 6px 0' }}>{browserAsset.subtitulo}</p>
                     <p style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', margin: 0 }}>{browserAsset.conteudoTexto}</p>
                   </div>
                 </div>
-              ) : (
-                /* QUICK ACTIONS v2.0 - FEED SOCIAL FUTURISTA DO MAPA TERRESTRE */
+              )}
+
+              {abaOverlayAtiva === 'quickactions' && (
                 <div>
                   <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
                     ⚡ QUICK ACTIONS v2.0 (GERADORES, VÍDEOS, GIFS E TRADUÇÃO DE ARQUIVOS)
@@ -2422,6 +2554,82 @@ export default function EmanuelOSCore() {
                   </div>
                 </div>
               )}
+
+              {/* 🌟 MÓDULO TOTALMENTE FUNCIONAL: LINKS 3D & REDES SOCIAIS NO DATA CENTER 3D */}
+              {abaOverlayAtiva === 'nuvem' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  
+                  {/* VISUALIZADOR DE MÍDIAS GERADAS EM TEMPO REAL */}
+                  {browserAsset.videoUrl || browserAsset.imagem ? (
+                    <div style={{ backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
+                      <span style={{ fontSize: '9px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                        🎬 MÍDIA/RENDER ATIVO NO HUD
+                      </span>
+                      {browserAsset.videoUrl ? (
+                        <video controls src={browserAsset.videoUrl} style={{ width: '100%', borderRadius: '8px', maxHeight: '140px', objectFit: 'cover' }} />
+                      ) : (
+                        <img src={browserAsset.imagem} alt="Render IA" style={{ width: '100%', borderRadius: '8px', maxHeight: '140px', objectFit: 'cover' }} />
+                      )}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+                        <span style={{ fontSize: '9px', color: '#94a3b8' }}>{browserAsset.titulo}</span>
+                        <a href={browserAsset.videoUrl || browserAsset.imagem} target="_blank" rel="noreferrer" style={{ fontSize: '9px', color: '#00f0ff', textDecoration: 'underline' }}>Download / Abrir ➔</a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px dashed #334155', borderRadius: '10px', padding: '8px', textAlign: 'center' }}>
+                      <span style={{ fontSize: '9px', color: '#94a3b8' }}>Nenhuma mídia em vídeo ou imagem renderizada agora. Use o Quick Actions para sintetizar!</span>
+                    </div>
+                  )}
+
+                  <span style={{ fontSize: '9px', color: '#a855f7', fontWeight: 'bold', display: 'block' }}>
+                    🌐 ADICIONAR NOVO LINK 3D NA NUVEM ({nuvemSelecionada.toUpperCase()})
+                  </span>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input 
+                        type="text" placeholder="Ícone (ex: 🎬)" value={novoLinkIcone} onChange={(e) => setNovoLinkIcone(e.target.value)}
+                        style={{ width: '60px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', textAlign: 'center' }}
+                      />
+                      <input 
+                        type="text" placeholder="Título do Link (ex: Meu Projeto)" value={novoLinkTitulo} onChange={(e) => setNovoLinkTitulo(e.target.value)}
+                        style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+                      />
+                    </div>
+                    <input 
+                      type="text" placeholder="URL ou Caminho da Nuvem..." value={novoLinkUrl} onChange={(e) => setNovoLinkUrl(e.target.value)}
+                      style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+                    />
+                    <button 
+                      onClick={adicionarNovoLink3D}
+                      style={{ padding: '8px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
+                    >
+                      🚀 Adicionar Nó de Link 3D ao Data Center
+                    </button>
+                  </div>
+
+                  <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>
+                    🔗 LINKS 3D ATIVOS / REDES SOCIAIS (CLIQUE PARA ABRIR):
+                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '130px', overflowY: 'auto' }}>
+                    {links3D.map(item => (
+                      <div 
+                        key={item.id} 
+                        onClick={() => abrirLinkExternoSeguro(item.url, item.titulo)}
+                        style={{ 
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                          backgroundColor: '#020617', padding: '8px 10px', borderRadius: '6px', 
+                          border: '1px solid #1e293b', cursor: 'pointer', transition: 'all 0.2s' 
+                        }}
+                      >
+                        <span style={{ fontSize: '10px', color: '#fff' }}>{item.icone} <b>{item.titulo}</b> <span style={{ fontSize: '8px', color: '#94a3b8' }}>({item.nuvem.toUpperCase()})</span></span>
+                        <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>Abrir ➔</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
@@ -2437,7 +2645,7 @@ export default function EmanuelOSCore() {
               textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
             }}>
               <span style={{ fontSize: '8px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
-                IA ROBOTOC (GEMINI AGI Core v5.1 Multimodal)
+                IA ROBOTOC (GEMINI AGI Core v5.1 Multimodal Multicloud)
               </span>
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
                 Emanuel.OS Core v5.1 | ROBOTOC Active | 2030
@@ -2491,6 +2699,66 @@ export default function EmanuelOSCore() {
             </form>
 
           </div>
+
+          {/* 🌟 MODAL DE ARQUITETURA DO DATA CENTER (CLIQUE NO ROBOTOC) 🌟 */}
+          {arquiteturaAberta && (
+            <aside style={{
+              position: 'absolute', right: '30px', bottom: '30px', width: '380px',
+              backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.5)',
+              borderRadius: '20px', padding: '20px', backdropFilter: 'blur(25px)',
+              zIndex: 200, color: '#fff', boxShadow: '0 0 40px rgba(0, 240, 255, 0.2)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '15px', color: '#00f0ff', fontWeight: '900', letterSpacing: '0.5px' }}>
+                  🏛️ ARQUITETURA DATA CENTER 3D
+                </h3>
+                <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>✕</button>
+              </div>
+              
+              <span style={{ fontSize: '10px', color: '#a1a1aa', display: 'block', marginBottom: '12px', lineHeight: '1.4' }}>
+                Sincronização Estrutural de Nós Orbitais. Os dados estão mapeados diretamente nas nuvens globais operando via Gemini AGI.
+              </span>
+
+              {/* ESTRUTURA VISUAL DOS NÓS DAS EMPRESAS */}
+              <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '16px' }}>
+                <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+                  🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
+                </span>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(66, 133, 244, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(66, 133, 244, 0.5)' }}>
+                    <span style={{ fontSize: '11px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
+                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>15 GB / 2 TB (Stable)</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
+                    <span style={{ fontSize: '11px', color: '#fff', fontWeight: 'bold' }}>🍏 Apple iCloud</span>
+                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Nó Orbital / Backups</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 164, 239, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 164, 239, 0.5)' }}>
+                    <span style={{ fontSize: '11px', color: '#00a4ef', fontWeight: 'bold' }}>🪟 Microsoft OneDrive</span>
+                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Vault Empresarial</span>
+                  </div>
+                </div>
+              </div>
+
+              <span style={{ fontSize: '10px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+                🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
+              </span>
+              
+              {/* LISTA EXATA DE REDES SOCIAIS RETIRADA DO MAPA TERRESTRE */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+                <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+                <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+                <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+                <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
+                <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
+                <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+                <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+              </div>
+            </aside>
+          )}
 
           {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO */}
           <FuturisticWindowManager />
