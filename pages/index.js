@@ -722,7 +722,7 @@ export default function EmanuelOSCore() {
     }
 
     setStatusEngineHeader(textoHeader);
-    
+
     setCmdLogs(prev => [
       ...prev, 
       `[ENGINE] ${textoHeader}`,
@@ -798,7 +798,7 @@ export default function EmanuelOSCore() {
 
   const dispararQuickAction = (tipo) => {
     setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
-    
+
     if (tipo === 'crie_imagem' || tipo === 'crie_gif' || tipo === 'crie_video') {
       executarGeracaoReal('Naruto lutando com Sasuke', tipo);
     } else if (tipo === 'gerar_jpg') {
@@ -1085,7 +1085,7 @@ export default function EmanuelOSCore() {
     domContainer.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    
+
     domContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd);
@@ -1136,7 +1136,7 @@ export default function EmanuelOSCore() {
       domContainer.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      
+
       domContainer.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
@@ -1262,7 +1262,7 @@ export default function EmanuelOSCore() {
 
     if (!comandoExecutado && (textoLimpo.includes('pdf') || textoLimpo.includes('obra científica') || textoLimpo.includes('processamento em'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: PDF_ENGINE] Sintetizando Obra Científica em PDF...`]);
-      
+
       const doc = new jsPDF();
       doc.setFontSize(22);
       doc.text("Emanuel.OS - Obra Científica 2030", 20, 20);
@@ -1270,7 +1270,7 @@ export default function EmanuelOSCore() {
       doc.text("Tema: Mecânica Quântica e Integração Neural EM v1.0", 20, 30);
       doc.setFontSize(12);
       doc.text("Resumo Estruturado pelo Núcleo G-AGI:", 20, 45);
-      
+
       const linhasCorpo = [
         "Este documento registra a obra científica produzida no ecossistema Emanuel.OS.",
         "Analisa a convergência de ondas neurais com processadores quânticos.",
@@ -1297,7 +1297,7 @@ export default function EmanuelOSCore() {
 
         Seja um poema, uma arte ou ciência sem fim,
         O futuro responde: "O comando está em mim!"
-        
+
         Registrado no Núcleo v5.1 | Ano 2030
       `;
 
@@ -1336,12 +1336,12 @@ export default function EmanuelOSCore() {
 
     if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('arte'))) {
       setCmdLogs(prev => [...prev, `[G-AGI: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
-      
+
       const canvas = document.createElement('canvas');
       canvas.width = 800;
       canvas.height = 600;
       const ctx = canvas.getContext('2d');
-      
+
       const gradient = ctx.createLinearGradient(0, 0, 800, 600);
       gradient.addColorStop(0, '#020617');
       gradient.addColorStop(0.5, '#0f172a');
@@ -1380,7 +1380,7 @@ export default function EmanuelOSCore() {
       const slide1 = pres.addSlide();
       slide1.addText("EMANUEL.OS QUICK ACTIONS", { x: 1, y: 1, fontSize: 32, color: "00f0ff", bold: true, align: "center" });
       slide1.addText("Apresentação de Processamento EM v1.0", { x: 1, y: 2.2, fontSize: 18, color: "a1a1aa", align: "center" });
-      
+
       const slide2 = pres.addSlide();
       slide2.addText("MODULOS INTEGRADOS", { x: 0.5, y: 0.5, fontSize: 24, color: "ff0055", bold: true });
       slide2.addText("1. Crie uma imagem (JPG) - Modelo EM 1.0", { x: 1, y: 1.5, fontSize: 16, color: "ffffff" });
@@ -1412,7 +1412,7 @@ export default function EmanuelOSCore() {
     }));
 
     setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
-    
+
     falarTextoReal(respostaTexto);
   };
 
@@ -1434,7 +1434,7 @@ export default function EmanuelOSCore() {
       setCmdInput('');
       return;
     }
-    
+
     if (cmd.startsWith('/img ')) {
       const termo = cmd.replace('/img ', '');
       executarGeracaoReal(termo, 'crie_imagem');
@@ -1649,7 +1649,7 @@ export default function EmanuelOSCore() {
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center', boxSizing: 'border-box' }}>
-          
+
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛡️</div>
           <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
             EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
@@ -1745,7 +1745,7 @@ export default function EmanuelOSCore() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ 5 Camadas Validadas!</span>
               <span style={{ fontSize: '12px', color: '#eab308', fontWeight: 'bold' }}>🔑 6ª Camada: Ticons OS gevaGifs</span>
-              
+
               <p style={{ fontSize: '11px', color: '#38bdf8', margin: 0 }}>{statusTicons}</p>
               {!isAdmin && <p style={{ fontSize: '10px', color: '#f59e0b', margin: 0 }}>Tentativas hoje: <b>{attemptsLeft}/2</b></p>}
 
@@ -1847,7 +1847,7 @@ export default function EmanuelOSCore() {
           transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           overflow: 'hidden'
         }}>
-          
+
           {/* CENA THREE.JS (AVATAR 3D HUMANOIDE + BOLA HOLOGRÁFICA COM LAYOUT RESPONSIVO DINÂMICO) */}
           <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab', touchAction: 'none' }} />
 
@@ -1982,6 +1982,21 @@ export default function EmanuelOSCore() {
                       gridColumn: 'span 2'
                     }}>
                       🔬 Mapa de Patologia & Laboratório 3D
+                    </Link>
+
+                    <Link href="/mapa-antiguidades" style={{ 
+                      padding: '10px', 
+                      backgroundColor: '#0f172a', 
+                      border: '1px solid #eab308', 
+                      color: '#fef08a', 
+                      borderRadius: '8px', 
+                      textDecoration: 'none', 
+                      fontWeight: 'bold', 
+                      fontSize: '11px', 
+                      textAlign: 'center',
+                      gridColumn: 'span 2'
+                    }}>
+                      🏛️ Mapa Temporal de Antiguidades
                     </Link>
                   </div>
                 </div>
@@ -2330,11 +2345,11 @@ export default function EmanuelOSCore() {
                     <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '6px 0 4px 0' }}>
                       SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
                     </span>
-                    
+
                     <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '6px 0' }}>
                       <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
                     </div>
-                    
+
                     <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Progresso: {progressoRender}%</span>
                   </div>
                 ) : (
