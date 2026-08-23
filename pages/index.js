@@ -163,9 +163,9 @@ function EMCreatorStudio({ onClose }) {
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('javascript');
   const [codigoFonte, setCodigoFonte] = useState(
-    `// Emanuel.OS Dev Studio - Ambiente de Desenvolvimento\n// Assistência ativa via IA Gemini AGI Core v5.1\n\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
+    `// Emanuel.OS Dev Studio - Ambiente de Desenvolvimento\n// Assistência ativa via IA Gemini AGI Core v5.1 e Robotoc\n\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
   );
-  const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração dos mapas 3D e rotas do Next.js.");
+  const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração do Robotoc com os mapas 3D e Quick Actions.");
   const [analisandoIA, setAnalisandoIA] = useState(false);
   const [retornoIA, setRespostaIA] = useState(null);
 
@@ -277,7 +277,7 @@ function PainelDevSplitScreen({ onClose }) {
 
       {analisandoIA ? (
         <div style={{ backgroundColor: '#020617', border: '1px dashed #00f0ff', padding: '8px', borderRadius: '6px', fontSize: '10px', color: '#00f0ff' }}>
-          ⏳ Gemini AGI processando análise de código...
+          ⏳ Gemini AGI & Robotoc processando análise de código...
         </div>
       ) : retornoIA && (
         <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '8px', borderRadius: '4px', fontSize: '10px', color: '#e2e8f0', fontFamily: 'sans-serif' }}>
@@ -374,7 +374,7 @@ function FormularioCapturaEmanuelOS() {
 // --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
 function GoogleMeetAvatarManager({ addLog }) {
   const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
-  const [avatarEscolhido, setAvatarEscolhido] = useState('Avatar Emanuel (Cyberpunk 3D)');
+  const [avatarEscolhido, setAvatarEscolhido] = useState('Robotoc (Humanoide 3D IA)');
   const [telefoneConvidado, setTelefoneConvidado] = useState('');
   const [dddConvidado, setDddConvidado] = useState('');
   const [linkGerado, setLinkGerado] = useState('');
@@ -417,6 +417,7 @@ function GoogleMeetAvatarManager({ addLog }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
         <input type="text" value={temaReuniao} onChange={(e) => setTemaReuniao(e.target.value)} placeholder="Tema / Index principal..." style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }} />
         <select value={avatarEscolhido} onChange={(e) => setAvatarEscolhido(e.target.value)} style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }}>
+          <option value="Robotoc (Humanoide 3D IA)">Robotoc (Humanoide 3D IA)</option>
           <option value="Avatar Emanuel (Cyberpunk 3D)">Avatar Emanuel (Cyberpunk 3D)</option>
           <option value="Assistente G-AGI Multimodal">Assistente G-AGI Multimodal</option>
           <option value="Avatar Ninja Holográfico">Avatar Ninja Holográfico</option>
@@ -438,69 +439,6 @@ function GoogleMeetAvatarManager({ addLog }) {
             📲 Enviar Convite via WhatsApp ID
           </button>
         </div>
-      )}
-    </div>
-  );
-}
-
-// --- COMPONENTE DE AÇÕES RÁPIDAS (QUICK ACTIONS HUD RETRÁTIL EXPANDIDO RESPONSIVO) ---
-function QuickActionsWidget({ onActionClick }) {
-  const [minimizado, setMinimizado] = useState(false);
-
-  return (
-    <div className="quick-actions-widget" style={{
-      position: 'absolute', right: '20px', bottom: '120px', width: 'calc(100% - 40px)', maxWidth: '410px',
-      maxHeight: 'calc(100vh - 220px)', overflowY: 'auto', backgroundColor: 'rgba(8, 15, 30, 0.90)',
-      backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '18px',
-      padding: minimizado ? '12px 18px' : '18px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
-      zIndex: 80, color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxSizing: 'border-box'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: minimizado ? '0px' : '14px', cursor: 'pointer' }} onClick={() => setMinimizado(!minimizado)}>
-        <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, color: '#fff', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          ⚡ Emanuel.OS Quick Actions <span style={{ fontSize: '10px', color: '#00f0ff' }}>(v1.0)</span>
-        </h3>
-        <button style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '14px', cursor: 'pointer', fontWeight: 'bold' }}>
-          {minimizado ? '▲' : '▼'}
-        </button>
-      </div>
-
-      {!minimizado && (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-            <div onClick={() => onActionClick('crie_imagem')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>🖼️</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie uma imagem</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM 1.0 Realista</span></div>
-            </div>
-            <div onClick={() => onActionClick('crie_video')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>🎬</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie um vídeo</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo EM HD/4K Pro</span></div>
-            </div>
-            <div onClick={() => onActionClick('crie_gif')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>🎞️</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Crie GIFs animados</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Modelo GIEM 1.0 Sync</span></div>
-            </div>
-            <div onClick={() => onActionClick('escreva_edite')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>✏️</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Escreva ou edite</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Textos, códigos e .docx</span></div>
-            </div>
-            <div onClick={() => onActionClick('pesquise_internet')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>🌐</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Pesquise na Internet</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>Busca web via G-AGI</span></div>
-            </div>
-            <div onClick={() => onActionClick('traduzir_documentos')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', cursor: 'pointer', height: '90px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '20px' }}>📄⇄🌍</div>
-              <div><strong style={{ fontSize: '11px', color: '#fff', display: 'block' }}>Traduzir Documentos</strong><span style={{ fontSize: '9px', color: '#94a3b8' }}>PDF, JPG, Word e PPTX</span></div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '10px' }}>
-            <button onClick={() => onActionClick('gerar_pdf')} style={{ padding: '6px 4px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📄 PDF</button>
-            <button onClick={() => onActionClick('gerar_jpg')} style={{ padding: '6px 4px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🖼️ JPG</button>
-            <button onClick={() => onActionClick('gerar_word')} style={{ padding: '6px 4px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📝 WORD</button>
-            <button onClick={() => onActionClick('gerar_pptx')} style={{ padding: '6px 4px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📊 PPTX</button>
-          </div>
-        </>
       )}
     </div>
   );
@@ -577,12 +515,30 @@ export default function EmanuelOSCore() {
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
   const CHAVE_MESTRE = "ASD-DDD-888";
 
+  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS (ESTRUTURA DO MAPA TERRESTRE)
+  const meusDadosReais = {
+    nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
+    whatsapp: "5588981493989",
+    whatsappFormatado: "(88) 98149-3989",
+    email: "leeheroi123@gmail.com",
+    tiktok: "https://www.tiktok.com/@emanueldasilva26",
+    instagram: "https://www.instagram.com/emanuelsilva432",
+    threads: "https://www.threads.net/@emanuelsilva432",
+    github: "https://github.com/Manomae",
+    facebook: "https://www.facebook.com/leeheroi.heroi",
+    youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
+  };
+
   const [modo, setModo] = useState('live'); 
-  const [vozAtiva] = useState('Emanuel'); 
+  const [vozAtiva] = useState('Robotoc'); 
   const [pesquisaChat, setPesquisaChat] = useState('');
   const [estaOuvindo, setEstaOuvindo] = useState(false); 
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
+
+  // ESTADO DE INTERAÇÃO COM O ROBOTOC
+  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
+  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser'); // 'browser' | 'quickactions'
 
   const [modalSuporteAberto, setModalSuporteAberto] = useState(false);
   const [abaSuporteAtiva, setAbaSuporteAtiva] = useState('diagnostico');
@@ -593,11 +549,11 @@ export default function EmanuelOSCore() {
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
   const [modoDevSplit, setModoDevSplit] = useState(false);
 
-  const [browserExpandido, setBrowserExpandido] = useState(true);
   const [abaBuscaNavegador, setAbaBuscaNavegador] = useState('web');
   const [urlOuTermoNavegador, setUrlOuTermoNavegador] = useState('https://emanuel-os.com/search');
   const [escutandoVozNavegador, setEscutandoVozNavegador] = useState(false);
   const [carregandoNavegador, setCarregandoNavegador] = useState(false);
+  const [motorBuscaSelecionado, setMotorBuscaSelecionado] = useState('google');
 
   const [gerandoMidia, setGerandoMidia] = useState(false);
   const [progressoRender, setProgressoRender] = useState(0);
@@ -612,30 +568,30 @@ export default function EmanuelOSCore() {
 
   const [browserAsset, setBrowserAsset] = useState({
     titulo: 'Emanuel.OS Quantum Browser v5.1',
-    subtitulo: 'Navegador Neural Multimodal Active',
+    subtitulo: 'Pensamento Neural ROBOTOC Multimodal Active',
     imagem: null,
     videoUrl: null,
-    conteudoTexto: 'Sincronização neural ativa. Módulo de carregamento holográfico pronto para buscas Web, Voz, Mídias e PDFs.'
+    conteudoTexto: 'Sincronização neural ativa. ROBOTOC pronto para processar buscas Web, Voz, Mídias, PDFs e Quick Actions v2.0.'
   });
 
   const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
-    "[G-AGI: LOG] System core operational.",
-    "[G-AGI: LOG] Parallel Cognitive Processing Module: STABLE.",
-    "[G-AGI: STATUS] Núcleo de Resposta Auxiliar: ONLINE & SYNCHRONIZED.",
-    "[G-AGI: BROWSER] Mini Navegador IA Multimodal ativo."
+    "[ROBOTOC: LOG] System core operational.",
+    "[ROBOTOC: LOG] Parallel Cognitive Processing Module: STABLE.",
+    "[ROBOTOC: STATUS] Modo de Pensamento Neural: ONLINE & SYNCHRONIZED.",
+    "[ROBOTOC: BROWSER] Quantum Browser v5.1 acoplado ao pensamento do ROBOTOC."
   ]);
 
   const [chatInput, setChatInput] = useState('');
   const [historicoChats] = useState([
-    { id: 1, titulo: 'Conversa Geral sobre IA', data: '18/07/2026', origem: 'recente' },
+    { id: 1, titulo: 'Conversa Geral sobre IA com Robotoc', data: '18/07/2026', origem: 'recente' },
     { id: 2, titulo: 'Discussão sobre Clãs Ninjas', data: '18/07/2026', origem: 'recente' },
     { id: 3, titulo: 'Teoria do Chakra e Linhagens', data: '17/07/2026', origem: 'google' },
     { id: 4, titulo: 'Planejamento Emanuel Studio', data: '16/07/2026', origem: 'google' }
   ]);
 
   const [mensagens, setMensagens] = useState([
-    { autor: 'IA EMANUEL (GEMINI)', texto: 'Emanuel.OS Core v5.1 | Ano: 2030 | Conexão Neural Ativa', tipo: 'sys' }
+    { autor: 'ROBOTOC (IA HUMANOIDE)', texto: 'Emanuel.OS Core v5.1 | ROBOTOC Ativo | Clique no avatar para expor o Navegador Quântico e o Feed Social Quick Actions!', tipo: 'sys' }
   ]);
 
   const [ddd1, setDdd1] = useState('');
@@ -663,16 +619,28 @@ export default function EmanuelOSCore() {
   const executarNavegacaoBrowser = (termo, modoBusca) => {
     if (!termo.trim()) return;
     setCarregandoNavegador(true);
-    setCmdLogs(prev => [...prev, `[G-AGI BROWSER] Buscando (${modoBusca.toUpperCase()}): "${termo}"`]);
+    setCmdLogs(prev => [...prev, `[ROBOTOC PENSAMENTO] Buscando (${modoBusca.toUpperCase()} via ${motorBuscaSelecionado.toUpperCase()}): "${termo}"`]);
+
+    if (termo.startsWith('http://') || termo.startsWith('https://')) {
+      if (typeof window !== 'undefined') window.open(termo, '_blank');
+    } else {
+      let targetUrl = `https://www.google.com/search?q=${encodeURIComponent(termo)}`;
+      if (motorBuscaSelecionado === 'bing') {
+        targetUrl = `https://www.bing.com/search?q=${encodeURIComponent(termo)}`;
+      } else if (motorBuscaSelecionado === 'duckduckgo') {
+        targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(termo)}`;
+      }
+      if (typeof window !== 'undefined') window.open(targetUrl, '_blank');
+    }
 
     setTimeout(() => {
       setCarregandoNavegador(false);
       setBrowserAsset({
-        titulo: `Busca ${modoBusca.toUpperCase()}: "${termo}"`,
-        subtitulo: `Resultados em tempo real via G-AGI Multimodal`,
+        titulo: `Pensamento ROBOTOC [${modoBusca.toUpperCase()}]: "${termo}"`,
+        subtitulo: `Resultados abertos no motor ${motorBuscaSelecionado.toUpperCase()} via G-AGI`,
         imagem: null,
         videoUrl: null,
-        conteudoTexto: `Módulo Quantum Browser indexou dados para '${termo}'. Conexão com repositórios e web 100% estabelecida.`
+        conteudoTexto: `Módulo Quantum Browser do ROBOTOC indexou dados para '${termo}'. Conexão com repositórios e web 100% estabelecida.`
       });
     }, 1000);
   };
@@ -725,8 +693,8 @@ export default function EmanuelOSCore() {
 
     setCmdLogs(prev => [
       ...prev, 
-      `[ENGINE] ${textoHeader}`,
-      `[ENGINE: ${modeloNome}] Adicionando suporte para: animes, ninja, Naruto, Sasuke, luta, futebol, paises, cidades, memes, exatas, faculdade (v1.0)...`
+      `[ROBOTOC ENGINE] ${textoHeader}`,
+      `[ROBOTOC: ${modeloNome}] Adicionando suporte para: animes, ninja, Naruto, Sasuke, luta, futebol, paises, cidades, memes, exatas, faculdade (v1.0)...`
     ]);
 
     const interval = setInterval(() => {
@@ -782,9 +750,9 @@ export default function EmanuelOSCore() {
             });
           }
 
-          setCmdLogs(prev => [...prev, `[G-AGI: SUCCESS] ${data.mensagem}`]);
+          setCmdLogs(prev => [...prev, `[ROBOTOC: SUCCESS] ${data.mensagem}`]);
         } else {
-          setCmdLogs(prev => [...prev, `[G-AGI: WARN] ${data.error || 'Falha ao sintetizar mídia.'}`]);
+          setCmdLogs(prev => [...prev, `[ROBOTOC: WARN] ${data.error || 'Falha ao sintetizar mídia.'}`]);
         }
       }, 400);
 
@@ -792,17 +760,17 @@ export default function EmanuelOSCore() {
       clearInterval(interval);
       setGerandoMidia(false);
       console.error('Erro ao conectar com API real:', err);
-      setCmdLogs(prev => [...prev, `[G-AGI: ERROR] Falha de conexão no servidor de renderização.`]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: ERROR] Falha de conexão no servidor de renderização.`]);
     }
   };
 
   const dispararQuickAction = (tipo) => {
-    setCmdLogs(prev => [...prev, `[G-AGI: QUICK_ACTION] Action Triggered: ${tipo.toUpperCase()}`]);
+    setCmdLogs(prev => [...prev, `[ROBOTOC: QUICK_ACTION] Ação Acionada: ${tipo.toUpperCase()}`]);
 
     if (tipo === 'crie_imagem' || tipo === 'crie_gif' || tipo === 'crie_video') {
       executarGeracaoReal('Naruto lutando com Sasuke', tipo);
     } else if (tipo === 'gerar_jpg') {
-      const prompt = 'Gerar obra artística holográfica do Avatar Emanuel OS em formato JPG';
+      const prompt = 'Gerar obra artística holográfica do Avatar ROBOTOC OS em formato JPG';
       setChatInput(prompt);
       processarConversaReal(prompt);
     } else if (tipo === 'escreva_edite' || tipo === 'gerar_word') {
@@ -855,12 +823,12 @@ export default function EmanuelOSCore() {
           diagnostico: data.diagnostico,
           codigo: data.codigo,
           documento: `Relatório gerado: ${data.documentoTitulo}`,
-          avatarVideo: "Avatar holográfico pronto para sintetizar aula em vídeo.",
+          avatarVideo: "ROBOTOC pronto para sintetizar aula em vídeo.",
           protocolo: data.protocolo
         });
       } else {
         setRespostaSuporte({
-          diagnostico: data.diagnostico || "Erro identified no processamento.",
+          diagnostico: data.diagnostico || "Erro identificado no processamento.",
           codigo: data.codigo || "// Sem código disponível",
           documento: "Documento indisponível no momento.",
           avatarVideo: "Sistema em modo de espera.",
@@ -880,7 +848,7 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA + AVATAR 3D HUMANOIDE REALISTA (AUTOGERENCIADO E RESPONSIVO) ---
+  // --- CENA THREE.JS RENDERIZANDO BOLA HOLOGRÁFICA + AVATAR 3D HUMANOIDE REALISTA (ROBOTOC) ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -898,7 +866,6 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // ILUMINAÇÃO ESTÚDIO CYBERPUNK REALISTA
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(-5, 5, 5);
     scene.add(keyLight);
@@ -914,7 +881,6 @@ export default function EmanuelOSCore() {
     const ambientLight = new THREE.AmbientLight(0x1e293b, 1.8);
     scene.add(ambientLight);
 
-    // --- 1. BOLA HOLOGRÁFICA 3D ---
     const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
@@ -928,31 +894,26 @@ export default function EmanuelOSCore() {
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    // --- 2. AVATAR 3D HUMANOIDE FUTURISTA REALISTA ---
     const avatarGroup = new THREE.Group();
 
-    // Materiais Realistas/Android Cyberpunk
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
     const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
     const armorMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.1, metalness: 0.9, emissive: 0x00f0ff, emissiveIntensity: 0.2 });
     const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
 
-    // Cabeça Anatômica Humana
     const headGeo = new THREE.SphereGeometry(0.42, 32, 32);
     headGeo.scale(1, 1.25, 1);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
     headMesh.position.set(0, 2.3, 0);
     avatarGroup.add(headMesh);
 
-    // Cabelo Estilizado Futurista
     const hairGeo = new THREE.SphereGeometry(0.45, 16, 16);
     hairGeo.scale(1.02, 0.9, 1.05);
     const hairMesh = new THREE.Mesh(hairGeo, hairMat);
     hairMesh.position.set(0, 2.45, -0.05);
     avatarGroup.add(hairMesh);
 
-    // Olhos Realistas Neon
     const eyeGeo = new THREE.SphereGeometry(0.05, 16, 16);
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
     leftEye.position.set(-0.14, 2.32, 0.38);
@@ -961,25 +922,21 @@ export default function EmanuelOSCore() {
     avatarGroup.add(leftEye);
     avatarGroup.add(rightEye);
 
-    // Pescoço Biônico
     const neckGeo = new THREE.CylinderGeometry(0.15, 0.18, 0.3, 16);
     const neckMesh = new THREE.Mesh(neckGeo, suitMat);
     neckMesh.position.set(0, 1.95, 0);
     avatarGroup.add(neckMesh);
 
-    // Tronco / Peitoral Android
     const chestGeo = new THREE.BoxGeometry(0.9, 0.8, 0.5);
     const chestMesh = new THREE.Mesh(chestGeo, suitMat);
     chestMesh.position.set(0, 1.45, 0);
     avatarGroup.add(chestMesh);
 
-    // Placa de Armadura Neon no Peito
     const plateGeo = new THREE.BoxGeometry(0.7, 0.5, 0.08);
     const plateMesh = new THREE.Mesh(plateGeo, armorMat);
     plateMesh.position.set(0, 1.5, 0.24);
     avatarGroup.add(plateMesh);
 
-    // Ombros Anatômicos
     const shoulderGeo = new THREE.SphereGeometry(0.22, 16, 16);
     const leftShoulder = new THREE.Mesh(shoulderGeo, armorMat);
     leftShoulder.position.set(-0.55, 1.7, 0);
@@ -988,7 +945,6 @@ export default function EmanuelOSCore() {
     avatarGroup.add(leftShoulder);
     avatarGroup.add(rightShoulder);
 
-    // Braços
     const armGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.8, 16);
     const leftArm = new THREE.Mesh(armGeo, suitMat);
     leftArm.position.set(-0.55, 1.2, 0);
@@ -1000,14 +956,11 @@ export default function EmanuelOSCore() {
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
 
-    // --- FUNÇÃO RESPONSIVA PARA AJUSTAR A POSIÇÃO DOS AVATARES NO ANDROID E DESKTOP ---
     const atualizarPosicionamentoCena = () => {
       const currentWidth = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
-      const currentHeight = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;
       const isMobile = currentWidth < 768;
 
       if (isMobile) {
-        // EM DISPOSITIVOS MÓVEIS (ANDROID): EMPILHAR VERTICALMENTE E AJUSTAR ESCALA
         camera.position.set(0, 0, 9.5);
         if (avatarGroupRef.current) {
           avatarGroupRef.current.position.set(0, 0.8, 0);
@@ -1018,7 +971,6 @@ export default function EmanuelOSCore() {
           bolaHolograficaMeshRef.current.scale.set(0.8, 0.8, 0.8);
         }
       } else {
-        // EM DESKTOP / NOTEBOOK: LAYOUT PARALELO (LADO A LADO)
         camera.position.set(0, 0, 7.0);
         if (avatarGroupRef.current) {
           avatarGroupRef.current.position.set(-2.2, -1.2, 0);
@@ -1033,12 +985,13 @@ export default function EmanuelOSCore() {
 
     atualizarPosicionamentoCena();
 
-    // --- CONTROLE DO AVATAR VIA MOUSE / TOUCHPAD / TOUCH NO ANDROID ---
     let isDragging = false;
+    let dragDistance = 0;
     let previousTouchPosition = { x: 0, y: 0 };
 
     const handleStart = (clientX, clientY) => {
       isDragging = true;
+      dragDistance = 0;
       previousTouchPosition = { x: clientX, y: clientY };
     };
 
@@ -1047,6 +1000,8 @@ export default function EmanuelOSCore() {
       const deltaX = clientX - previousTouchPosition.x;
       const deltaY = clientY - previousTouchPosition.y;
 
+      dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+
       avatarGroupRef.current.rotation.y += deltaX * 0.012;
       avatarGroupRef.current.rotation.x += deltaY * 0.008;
 
@@ -1054,6 +1009,9 @@ export default function EmanuelOSCore() {
     };
 
     const handleEnd = () => {
+      if (dragDistance < 10) {
+        setMostrarOverlayRobotoc(prev => !prev);
+      }
       isDragging = false;
     };
 
@@ -1092,7 +1050,6 @@ export default function EmanuelOSCore() {
 
     domContainer.addEventListener('wheel', handleWheel, { passive: true });
 
-    // --- LOOP DE ANIMAÇÃO THREE.JS ---
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1101,7 +1058,6 @@ export default function EmanuelOSCore() {
       const elapsedTime = clock.getElapsedTime();
       const isMobile = window.innerWidth < 768;
 
-      // BOLA HOLOGRÁFICA: ANIMAÇÃO CONTINUA
       if (bolaHolograficaMeshRef.current) {
         bolaHolograficaMeshRef.current.rotation.y += 0.008;
         bolaHolograficaMeshRef.current.rotation.x += 0.004;
@@ -1109,7 +1065,6 @@ export default function EmanuelOSCore() {
         bolaHolograficaMeshRef.current.position.y = baseY + Math.sin(elapsedTime * 2) * 0.15;
       }
 
-      // AVATAR 3D: FLUTUAÇÃO QUANDO NÃO ARRASTADO
       if (avatarGroupRef.current && !isDragging) {
         const baseY = isMobile ? 0.8 : -1.2;
         avatarGroupRef.current.position.y = baseY + Math.sin(elapsedTime * 1.5) * 0.05;
@@ -1214,19 +1169,19 @@ export default function EmanuelOSCore() {
     const eVideo = /video|vídeo|filme|animacao|luta/i.test(textoLimpo);
 
     if (eGif) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Renderizando GIF animado [Modelo GIEM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'ROBOTOC IA', texto: `Renderizando GIF animado [Modelo GIEM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_gif');
       return;
     }
 
     if (eImagem) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Sintetizando imagem ultra realista [Modelo EM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'ROBOTOC IA', texto: `Sintetizando imagem ultra realista [Modelo EM 1.0] para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_imagem');
       return;
     }
 
     if (eVideo) {
-      setMensagens(prev => [...prev, { autor: 'IA EMANUEL', texto: `Processando render de vídeo [Modelo EM] em ${resolucaoVideo} para: "${textoUsuario}"...`, tipo: 'ia' }]);
+      setMensagens(prev => [...prev, { autor: 'ROBOTOC IA', texto: `Processando render de vídeo [Modelo EM] em ${resolucaoVideo} para: "${textoUsuario}"...`, tipo: 'ia' }]);
       executarGeracaoReal(textoUsuario, 'crie_video');
       return;
     }
@@ -1234,7 +1189,7 @@ export default function EmanuelOSCore() {
     let respostaTexto = "";
     let comandoExecutado = false;
 
-    setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${textoUsuario}`]);
+    setCmdLogs(prev => [...prev, `[CMD> ROBOTOC] User: ${textoUsuario}`]);
 
     if (textoLimpo.includes('zoom') || textoLimpo.includes('girar') || textoLimpo.includes('câmera') || textoLimpo.includes('topo')) {
       let acao = 'reset';
@@ -1244,24 +1199,24 @@ export default function EmanuelOSCore() {
       else if (textoLimpo.includes('topo') || textoLimpo.includes('superior')) acao = 'top_view';
 
       controlarCamera3D(acao);
-      respostaTexto = `Câmera 3D ajustada: Modo [${acao.toUpperCase()}]. Conexão neural estável.`;
+      respostaTexto = `Câmera 3D ajustada por ROBOTOC: Modo [${acao.toUpperCase()}]. Conexão neural estável.`;
       comandoExecutado = true;
     }
 
     if (!comandoExecutado && (textoLimpo.includes('pesquisar na internet') || textoLimpo.includes('pesquise na internet') || textoLimpo.includes('busca'))) {
       setBrowserAsset({
-        titulo: 'Pesquisa Web G-AGI',
+        titulo: 'Pensamento ROBOTOC: Pesquisa Web G-AGI',
         subtitulo: 'Internet Em.com v5.1',
         imagem: null,
         videoUrl: null,
-        conteudoTexto: `Módulo de busca conectado. Resultados em tempo real processados para: "${textoUsuario}".`
+        conteudoTexto: `Módulo de busca conectado ao pensamento do ROBOTOC. Resultados processados para: "${textoUsuario}".`
       });
-      respostaTexto = `Pesquisa na Internet executada com sucesso via motor Gemini AGI. Dados atualizados carregados no Native Browser!`;
+      respostaTexto = `Pesquisa na Internet executada com sucesso pelo ROBOTOC via motor Gemini AGI. Dados atualizados carregados no Quantum Browser!`;
       comandoExecutado = true;
     }
 
     if (!comandoExecutado && (textoLimpo.includes('pdf') || textoLimpo.includes('obra científica') || textoLimpo.includes('processamento em'))) {
-      setCmdLogs(prev => [...prev, `[G-AGI: PDF_ENGINE] Sintetizando Obra Científica em PDF...`]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: PDF_ENGINE] Sintetizando Obra Científica em PDF...`]);
 
       const doc = new jsPDF();
       doc.setFontSize(22);
@@ -1269,12 +1224,12 @@ export default function EmanuelOSCore() {
       doc.setFontSize(16);
       doc.text("Tema: Mecânica Quântica e Integração Neural EM v1.0", 20, 30);
       doc.setFontSize(12);
-      doc.text("Resumo Estruturado pelo Núcleo G-AGI:", 20, 45);
+      doc.text("Resumo Estruturado pelo Núcleo ROBOTOC & G-AGI:", 20, 45);
 
       const linhasCorpo = [
         "Este documento registra a obra científica produzida no ecossistema Emanuel.OS.",
         "Analisa a convergência de ondas neurais com processadores quânticos.",
-        "Sincronização realizada com 100% de estabilidade.",
+        "Sincronização realizada com 100% de estabilidade pelo assistente ROBOTOC.",
         "Autor/Arquiteto: Emanuel da Silva - Ano 2030."
       ];
       doc.text(linhasCorpo, 20, 55);
@@ -1285,13 +1240,13 @@ export default function EmanuelOSCore() {
     }
 
     if (!comandoExecutado && (textoLimpo.includes('word') || textoLimpo.includes('docx') || textoLimpo.includes('poema') || textoLimpo.includes('escreva ou edite'))) {
-      setCmdLogs(prev => [...prev, `[G-AGI: WORD_ENGINE] Gerando Poema e Obra Literária em Word...`]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: WORD_ENGINE] Gerando Poema e Obra Literária em Word...`]);
 
       const poemaCorpo = `
-        CANTO LITERÁRIO EMANUEL.OS (SINTETIZADOR AG)
+        CANTO LITERÁRIO EMANUEL.OS (SINTETIZADOR ROBOTOC)
 
         Nas linhas do código, o pulso do saber,
-        Emanuel.OS desperta o amanhecer.
+        Emanuel.OS e Robotoc despertam o amanhecer.
         Entre o ciberespaço e o chakra do pensamento,
         A inteligência cria em cada momento.
 
@@ -1335,7 +1290,7 @@ export default function EmanuelOSCore() {
     }
 
     if (!comandoExecutado && (textoLimpo.includes('jpg') || textoLimpo.includes('arte'))) {
-      setCmdLogs(prev => [...prev, `[G-AGI: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: IMAGE_ENGINE] Renderizando Arte Holográfica JPG...`]);
 
       const canvas = document.createElement('canvas');
       canvas.width = 800;
@@ -1355,11 +1310,11 @@ export default function EmanuelOSCore() {
 
       ctx.fillStyle = '#00f0ff';
       ctx.font = 'bold 32px sans-serif';
-      ctx.fillText('EMANUEL.OS - ARTE HOLOGRÁFICA JPG', 80, 120);
+      ctx.fillText('EMANUEL.OS - ARTE ROBOTOC JPG', 80, 120);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = '20px sans-serif';
-      ctx.fillText('Gerado via Motor G-AGI Multimodal v1.0', 80, 180);
+      ctx.fillText('Gerado via Motor ROBOTOC Multimodal v1.0', 80, 180);
 
       const dataUrl = canvas.toDataURL('image/jpeg');
       const a = document.createElement('a');
@@ -1374,11 +1329,11 @@ export default function EmanuelOSCore() {
     }
 
     if (!comandoExecutado && (textoLimpo.includes('power point') || textoLimpo.includes('pptx') || textoLimpo.includes('apresentação'))) {
-      setCmdLogs(prev => [...prev, `[G-AGI: PPTX_ENGINE] Estruturando Apresentação PPTX...`]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: PPTX_ENGINE] Estruturando Apresentação PPTX...`]);
 
       const pres = new pptxgen();
       const slide1 = pres.addSlide();
-      slide1.addText("EMANUEL.OS QUICK ACTIONS", { x: 1, y: 1, fontSize: 32, color: "00f0ff", bold: true, align: "center" });
+      slide1.addText("EMANUEL.OS QUICK ACTIONS & ROBOTOC", { x: 1, y: 1, fontSize: 32, color: "00f0ff", bold: true, align: "center" });
       slide1.addText("Apresentação de Processamento EM v1.0", { x: 1, y: 2.2, fontSize: 18, color: "a1a1aa", align: "center" });
 
       const slide2 = pres.addSlide();
@@ -1398,20 +1353,20 @@ export default function EmanuelOSCore() {
       const resultadoDicionario = buscarNoDicionario(textoUsuario);
 
       if (resultadoDicionario) {
-        respostaTexto = `Rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
+        respostaTexto = `ROBOTOC rastreando dados cognitivos sobre "${resultadoDicionario.termo}" (${resultadoDicionario.categoria}): ${resultadoDicionario.significado}`;
       } else {
-        respostaTexto = `Comando neural "${textoUsuario}" processado no Núcleo Emanuel.OS v5.1. Sincronização em 100%.`;
+        respostaTexto = `Comando neural "${textoUsuario}" processado no pensamento do ROBOTOC. Sincronização em 100%.`;
       }
     }
 
-    setCmdLogs(prev => [...prev, `[G-AGI: QUERY] ${respostaTexto}`]);
+    setCmdLogs(prev => [...prev, `[ROBOTOC: QUERY] ${respostaTexto}`]);
 
     setBrowserAsset(prev => ({
       ...prev,
       conteudoTexto: respostaTexto
     }));
 
-    setMensagens(prev => [...prev, { autor: `IA ${vozAtiva.toUpperCase()} (GEMINI)`, texto: respostaTexto, tipo: 'ia' }]);
+    setMensagens(prev => [...prev, { autor: `ROBOTOC IA (${vozAtiva.toUpperCase()})`, texto: respostaTexto, tipo: 'ia' }]);
 
     falarTextoReal(respostaTexto);
   };
@@ -1426,7 +1381,7 @@ export default function EmanuelOSCore() {
 
   const executarComandoCMD = (cmd) => {
     setCmdInput(cmd);
-    setCmdLogs(prev => [...prev, `[CMD> G-AGI] User: ${cmd}`]);
+    setCmdLogs(prev => [...prev, `[CMD> ROBOTOC] User: ${cmd}`]);
 
     if (cmd.startsWith('/gif ')) {
       const termo = cmd.replace('/gif ', '');
@@ -1450,11 +1405,11 @@ export default function EmanuelOSCore() {
     }
 
     if (cmd.includes('nano-banana')) {
-      setCmdLogs(prev => [...prev, "[G-AGI: NANO BANANA 🍌] Renderizador 3D Octane ativo."]);
+      setCmdLogs(prev => [...prev, "[ROBOTOC: NANO BANANA 🍌] Renderizador 3D Octane ativo."]);
     } else if (cmd.includes('gerar-mapa')) {
-      setCmdLogs(prev => [...prev, "[G-AGI: ENGINE] Matriz de dados unificada ao gerador de mapas 3D."]);
+      setCmdLogs(prev => [...prev, "[ROBOTOC: ENGINE] Matriz de dados unificada ao gerador de mapas 3D."]);
     } else if (cmd.includes('status-core')) {
-      setCmdLogs(prev => [...prev, "[G-AGI: STATUS] 7 Camadas: PROTEGIDAS | G-AGI: STABLE | Quick Actions: ONLINE"]);
+      setCmdLogs(prev => [...prev, "[ROBOTOC: STATUS] 7 Camadas: PROTEGIDAS | ROBOTOC: STABLE | Quick Actions: ONLINE"]);
     } else if (cmd.includes('suporte')) {
       setModalSuporteAberto(true);
     } else if (cmd.includes('gerar-pdf')) {
@@ -1587,8 +1542,8 @@ export default function EmanuelOSCore() {
       setTimeout(() => {
         setAnimacaoMontandoMapa(false);
         setBloqueado(false);
-        alert("🔓 Acesso Total Autorizado! Emanuel.OS Quick Actions e 7 Camadas Concluídas! Bem-vindo, Mestre Emanuel.");
-        falarTextoReal("Acesso Total Autorizado! Bem-vindo ao Emanuel.OS.");
+        alert("🔓 Acesso Total Autorizado! ROBOTOC, Quick Actions e 7 Camadas Concluídas! Bem-vindo, Mestre Emanuel.");
+        falarTextoReal("Acesso Total Autorizado! Bem-vindo ao Emanuel.OS. Sou o ROBOTOC, seu assistente neural.");
       }, 2000);
     }, 1500);
   };
@@ -1596,7 +1551,7 @@ export default function EmanuelOSCore() {
   const baixarPDF300Comandos = () => {
     const comandosList = [
       "=========================================================================",
-      "  EMANUEL.OS & GOOGLE GEMINI AGI CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
+      "  EMANUEL.OS & ROBOTOC IA CORE - DICIONÁRIO MESTRE (300 COMANDOS) ",
       "=========================================================================\n",
       "[ CATEGORIA 01: QUICK ACTIONS & DOCUMENT ENGINE ]",
       "001. /gerar-pdf --tema 'Obra Científica Quântica'",
@@ -1636,7 +1591,7 @@ export default function EmanuelOSCore() {
   const handleUploadImagemLente = (e) => {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
-    alert(`Arquivo "${arquivo.name}" carregado! Analisando via motor Gemini Multimodal...`);
+    alert(`Arquivo "${arquivo.name}" carregado! Analisando via ROBOTOC & Gemini Multimodal...`);
   };
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
@@ -1645,14 +1600,14 @@ export default function EmanuelOSCore() {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS v5.1 - Autenticação de Segurança (7 Camadas) | 2030</title>
+          <title>Emanuel.OS v5.1 - Autenticação ROBOTOC (7 Camadas) | 2030</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center', boxSizing: 'border-box' }}>
 
-          <div style={{ fontSize: '40px', marginBottom: '10px' }}>🛡️</div>
+          <div style={{ fontSize: '40px', marginBottom: '10px' }}>🤖</div>
           <h2 style={{ color: '#00f0ff', fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: '0 0 5px 0' }}>
-            EMANUEL<span style={{ color: '#ff0055' }}>.OS</span>
+            EMANUEL<span style={{ color: '#ff0055' }}>.OS</span> & ROBOTOC
           </h2>
           <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold', display: 'block', marginBottom: '20px', letterSpacing: '1px' }}>
             PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7) | CORE v5.1
@@ -1780,7 +1735,7 @@ export default function EmanuelOSCore() {
                 <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '120px', height: '120px', border: '3px solid #00f0ff', borderRadius: '50%', borderTopColor: 'transparent', animation: 'girarRadar 1s linear infinite' }} />
                   <span style={{ fontSize: '12px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                    🧬 Construindo Matriz 3D, Unificando Mapas e Sincronizando Quick Actions...
+                    🧬 Ativando ROBOTOC, Unificando Mapas e Sincronizando Quick Actions...
                   </span>
                 </div>
               ) : (
@@ -1832,14 +1787,14 @@ export default function EmanuelOSCore() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Emanuel.OS Core v5.1 | Quick Actions & Engine Unificado</title>
+        <title>Emanuel.OS Core v5.1 | ROBOTOC & Quantum Engine Unificado</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
       {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL */}
+        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL COM ROBOTOC */}
         <div style={{
           width: modoDevSplit ? '50%' : '100%',
           height: '100%',
@@ -1848,7 +1803,7 @@ export default function EmanuelOSCore() {
           overflow: 'hidden'
         }}>
 
-          {/* CENA THREE.JS (AVATAR 3D HUMANOIDE + BOLA HOLOGRÁFICA COM LAYOUT RESPONSIVO DINÂMICO) */}
+          {/* CENA THREE.JS (AVATAR 3D ROBOTOC + BOLA HOLOGRÁFICA) */}
           <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab', touchAction: 'none' }} />
 
           {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA */}
@@ -1878,9 +1833,21 @@ export default function EmanuelOSCore() {
             >
               🖥️ {modoDevSplit ? 'Fechar Split' : 'Dev Split'}
             </button>
-          </div>
 
-          <QuickActionsWidget onActionClick={dispararQuickAction} />
+            {/* BOTÃO INDIVIDUAL PARA DISPARAR O PENSAMENTO DO ROBOTOC */}
+            <button
+              onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)}
+              style={{
+                backgroundColor: mostrarOverlayRobotoc ? '#00f0ff' : 'rgba(0, 240, 255, 0.15)',
+                border: '1px solid #00f0ff', color: mostrarOverlayRobotoc ? '#000' : '#00f0ff',
+                padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer',
+                fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+                display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s ease'
+              }}
+            >
+              🤖 {mostrarOverlayRobotoc ? 'Ocultar ROBOTOC HUD' : 'Pensamento ROBOTOC HUD'}
+            </button>
+          </div>
 
           <aside style={{
             position: 'absolute', top: 0, left: 0,
@@ -1897,7 +1864,7 @@ export default function EmanuelOSCore() {
                   <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
                     Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
                   </h1>
-                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>QUICK ACTIONS & MEET ENGINE | Core v5.1</span>
+                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>ASSISTENTE ROBOTOC & MEET ENGINE | Core v5.1</span>
                 </div>
 
                 <GoogleMeetAvatarManager addLog={addLogTerminal} />
@@ -2053,7 +2020,7 @@ export default function EmanuelOSCore() {
 
                 <div style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)', textAlign: 'center' }}>
                   <span style={{ fontSize: '9px', color: '#a1a1aa', display: 'block' }}>DESENVOLVIDO POR EMANUEL DA SILVA | ANO: 2030</span>
-                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 IA INTEGRADA: GOOGLE GEMINI AGI Core v5.1</span>
+                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 ASSISTENTE HUMANOIDE: ROBOTOC v5.1</span>
                 </div>
               </>
             )}
@@ -2079,10 +2046,10 @@ export default function EmanuelOSCore() {
                 </button>
 
                 <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 4px 0', letterSpacing: '1px' }}>
-                  EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA 2030 | Core v5.1
+                  EM-AI // CENTRAL DE SUPORTE & ASSISTÊNCIA ROBOTOC | Core v5.1
                 </h2>
                 <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 15px 0' }}>
-                  Resolução Autônoma de Bugs (90% IA), Compatibilidade de Apps, Documentos e Códigos G-AGI
+                  Resolução Autônoma de Bugs (90% IA), Compatibilidade de Apps, Documentos e Códigos ROBOTOC
                 </p>
 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', flexWrap: 'wrap' }}>
@@ -2095,7 +2062,7 @@ export default function EmanuelOSCore() {
                 <textarea 
                   value={inputProblemaSuporte}
                   onChange={(e) => setInputProblemaSuporte(e.target.value)}
-                  placeholder="Descreva seu bug, problema de compatibilidade ou solicitação G-AGI..."
+                  placeholder="Descreva seu bug, problema de compatibilidade ou solicitação ao Robotoc..."
                   style={{ width: '100%', height: '80px', backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.3)', borderRadius: '8px', color: '#fff', padding: '10px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }}
                 />
 
@@ -2104,12 +2071,12 @@ export default function EmanuelOSCore() {
                   disabled={carregandoSuporte}
                   style={{ width: '100%', marginTop: '10px', padding: '10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', boxShadow: '0 0 15px rgba(255, 0, 127, 0.4)' }}
                 >
-                  {carregandoSuporte ? '⏳ Analisando no Núcleo Gemini AGI v5.1...' : '🚀 Executar Solução IA v5.1 (90%)'}
+                  {carregandoSuporte ? '⏳ Analisando no Núcleo ROBOTOC v5.1...' : '🚀 Executar Solução IA v5.1 (90%)'}
                 </button>
 
                 {respostaSuporte && (
                   <div style={{ marginTop: '15px', backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '12px', borderRadius: '6px', fontSize: '11px' }}>
-                    <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico G-AGI:</strong>
+                    <strong style={{ color: '#00f0ff', display: 'block', marginBottom: '4px' }}>Diagnóstico ROBOTOC:</strong>
                     <p style={{ margin: '0 0 8px 0', color: '#cbd5e1' }}>{respostaSuporte.diagnostico}</p>
 
                     {respostaSuporte.codigo && (
@@ -2130,7 +2097,7 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* PAINEL FLUIDO DIREITO: IA INTEGRADA + GEMINI AGI Core v5.1 RESPONSIVO */}
+          {/* PAINEL FLUIDO DIREITO: ROBOTOC & GEMINI AGI Core v5.1 */}
           <div style={{
             position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
             height: 'calc(100vh - 20px)', width: '100%', maxWidth: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
@@ -2154,20 +2121,20 @@ export default function EmanuelOSCore() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
               <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
-                Gemini-Integrated Command Terminal | Core v5.1
+                ROBOTOC Command Terminal | Core v5.1
               </span>
               <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
             </div>
 
             <div>
               <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🤖 IA INTEGRADA + GEMINI AGI Core v5.1
+                🤖 ROBOTOC + GEMINI AGI Core v5.1
               </h3>
               <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
-                NÚCLEO DE RESPOSTA AUXILIAR Multimodal
+                NÚCLEO DE RESPOSTA AUXILIAR MULTIMODAL
               </h4>
               <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                (G-AGI Core: ACTIVE | Matrix stable)
+                (ROBOTOC Core: ACTIVE | Matrix stable)
               </span>
             </div>
 
@@ -2192,7 +2159,7 @@ export default function EmanuelOSCore() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                   }}
                 >
-                  🛠️ Suporte EM IA
+                  🛠️ Suporte ROBOTOC
                 </button>
               </div>
 
@@ -2204,7 +2171,7 @@ export default function EmanuelOSCore() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                 }}
               >
-                📄 Baixar Manual G-AGI Mestre (300 Comandos)
+                📄 Baixar Manual ROBOTOC Mestre (300 Comandos)
               </button>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -2218,7 +2185,7 @@ export default function EmanuelOSCore() {
                   ⚡ /status-core
                 </button>
                 <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                  🛠️ /suporte G-AGI
+                  🛠️ /suporte ROBOTOC
                 </button>
               </div>
             </div>
@@ -2231,11 +2198,11 @@ export default function EmanuelOSCore() {
               {cmdLogs.map((log, i) => (
                 <p key={i} style={{
                   margin: 0, lineHeight: '1.4', wordBreak: 'break-all',
-                  color: log.startsWith('[G-AGI: LOG]') ? '#94a3b8' :
-                         log.startsWith('[G-AGI: STATUS]') ? '#4ade80' :
+                  color: log.startsWith('[ROBOTOC: LOG]') ? '#94a3b8' :
+                         log.startsWith('[ROBOTOC: STATUS]') ? '#4ade80' :
                          log.startsWith('[CMD>') ? '#38bdf8' :
-                         log.startsWith('[G-AGI: QUICK_ACTION]') ? '#ff007f' :
-                         log.startsWith('[G-AGI: QUERY]') ? '#38bdf8' : '#e2e8f0'
+                         log.startsWith('[ROBOTOC: QUICK_ACTION]') ? '#ff007f' :
+                         log.startsWith('[ROBOTOC: QUERY]') ? '#38bdf8' : '#e2e8f0'
                 }}>
                   {log}
                 </p>
@@ -2243,10 +2210,10 @@ export default function EmanuelOSCore() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
-              <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; G-AGI]</span>
+              <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; ROBOTOC]</span>
               <input
                 type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-                placeholder="Comando G-AGI... (ex: /gif naruto)"
+                placeholder="Comando ROBOTOC... (ex: /gif naruto)"
                 style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
               />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
@@ -2254,7 +2221,7 @@ export default function EmanuelOSCore() {
           </div>
 
           <div className="header-status-bar" style={{
-            position: 'absolute', top: '15px', left: sidebarAberta ? '420px' : '110px', right: '15px',
+            position: 'absolute', top: '15px', left: sidebarAberta ? '420px' : '230px', right: '15px',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10,
             transition: 'left 0.3s', flexWrap: 'wrap', gap: '8px'
           }}>
@@ -2263,7 +2230,7 @@ export default function EmanuelOSCore() {
               border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px 12px',
               boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
             }}>
-              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>Network Sync</span>
+              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>ROBOTOC Neural Network</span>
               <strong style={{ fontSize: '11px', color: '#00f0ff' }}>📶 Emanuel Sync 2030</strong>
             </div>
 
@@ -2282,123 +2249,183 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* --- EMANUEL.OS NATIVE QUANTUM BROWSER --- */}
-          <div className="quantum-browser-widget" style={{
-            position: 'absolute', top: '75px', right: '15px', zIndex: 10,
-            backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '16px', padding: '12px',
-            width: 'calc(100% - 30px)', maxWidth: '320px', boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxSizing: 'border-box'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '20px', padding: '4px 10px', marginBottom: browserExpandido ? '10px' : '0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexGrow: 1 }}>
-                <span style={{ fontSize: '11px', color: '#00f0ff' }}>🌐</span>
-                <input
-                  type="text"
-                  value={urlOuTermoNavegador}
-                  onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador); }}
-                  placeholder="URL, busca web ou PDF..."
-                  style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '10px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
-                />
-              </div>
+          {/* --- OVERLAY DE INTERAÇÃO DO ROBOTOC (PENSAMENTO NEURAL + LINKS REAIS DO MAPA TERRESTRE) --- */}
+          {mostrarOverlayRobotoc && (
+            <div className="quantum-browser-widget" style={{
+              position: 'absolute', top: '75px', left: '50%', transform: 'translateX(-50%)', zIndex: 150,
+              backgroundColor: 'rgba(8, 15, 30, 0.95)', backdropFilter: 'blur(25px)',
+              border: '2px solid #00f0ff', borderRadius: '20px', padding: '16px',
+              width: 'calc(100% - 30px)', maxWidth: '540px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box'
+            }}>
+              {/* CABEÇALHO DO POPUP DO ROBOTOC */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '18px' }}>🤖</span>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '12px', color: '#00f0ff', fontWeight: '900', letterSpacing: '1px' }}>
+                      PENSAMENTO ROBOTOC HUD
+                    </h3>
+                    <span style={{ fontSize: '8px', color: '#a1a1aa' }}>Emanuel.OS Quantum Browser & Central Social</span>
+                  </div>
+                </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <button onClick={() => executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador)} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: '10px' }}>🔍</button>
                 <button
-                  onClick={() => setBrowserExpandido(!browserExpandido)}
-                  style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+                  onClick={() => setMostrarOverlayRobotoc(false)}
+                  style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
-                  {browserExpandido ? '▲' : '▼'}
+                  ✕
                 </button>
               </div>
-            </div>
 
-            {browserExpandido && (
-              <div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
-                  <button onClick={() => setAbaBuscaNavegador('web')} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #00f0ff', backgroundColor: abaBuscaNavegador === 'web' ? '#00f0ff' : 'transparent', color: abaBuscaNavegador === 'web' ? '#000' : '#00f0ff', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    🌐 Web
-                  </button>
-                  <button onClick={iniciarVozNavegador} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #a855f7', backgroundColor: escutandoVozNavegador ? '#ff007f' : 'transparent', color: '#a855f7', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    {escutandoVozNavegador ? '🔴 Ouvindo' : '🎙️ Voz'}
-                  </button>
-                  <button onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #eab308', backgroundColor: 'transparent', color: '#eab308', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    🖼️ Mídias
-                  </button>
-                  <button onClick={() => pdfInputRef.current && pdfInputRef.current.click()} style={{ padding: '4px', borderRadius: '6px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    📄 PDF
-                  </button>
-                  <input type="file" ref={pdfInputRef} onChange={handleUploadPDFNavegador} style={{ display: 'none' }} accept="application/pdf,.epub,.docx,.txt" />
-                </div>
-
-                <h2 style={{ fontSize: '12px', margin: 0, color: '#fff', fontWeight: 'bold' }}>{browserAsset.titulo}</h2>
-                <p style={{ fontSize: '9px', color: '#ff007f', margin: '2px 0 6px 0', fontWeight: '600' }}>{browserAsset.subtitulo} | Core v5.1</p>
-
-                {carregandoNavegador ? (
-                  <div style={{ textAlign: 'center', padding: '15px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '10px', border: '1px dashed #00f0ff', margin: '6px 0' }}>
-                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>⚡ Indexando Resultados...</span>
-                  </div>
-                ) : gerandoMidia ? (
-                  <div style={{ textAlign: 'center', padding: '15px 10px', background: 'rgba(0,240,255,0.05)', borderRadius: '12px', border: '1px dashed #00f0ff', margin: '6px 0' }}>
-                    <div style={{ fontSize: '24px', animation: 'spinPulse 1.2s infinite' }}>⚡</div>
-                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', margin: '6px 0 4px 0' }}>
-                      SINTETIZANDO {tipoMidiaAtual.toUpperCase()} REAL...
-                    </span>
-
-                    <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden', margin: '6px 0' }}>
-                      <div style={{ width: `${progressoRender}%`, height: '100%', backgroundColor: '#00f0ff', boxShadow: '0 0 10px #00f0ff', transition: 'width 0.3s' }} />
-                    </div>
-
-                    <span style={{ fontSize: '9px', color: '#4ade80', fontFamily: 'monospace' }}>Progresso: {progressoRender}%</span>
-                  </div>
-                ) : (
-                  <>
-                    {browserAsset.videoUrl && (
-                      <div style={{ margin: '6px 0' }}>
-                        <video src={browserAsset.videoUrl} controls autoPlay loop style={{ width: '100%', borderRadius: '8px', border: '1px solid #00f0ff' }} />
-                        <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <div style={{ display: 'flex', gap: '4px' }}>
-                            {['720p', '1080p', '4K'].map((res) => (
-                              <button key={res} onClick={() => { setResolucaoVideo(res); executarGeracaoReal('Vídeo Render', 'crie_video'); }} style={{ flex: 1, padding: '4px', backgroundColor: resolucaoVideo === res ? '#00f0ff' : '#0f172a', color: resolucaoVideo === res ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                                {res}
-                              </button>
-                            ))}
-                          </div>
-                          <button onClick={() => setSemMarcaDagua(!semMarcaDagua)} style={{ padding: '4px', backgroundColor: semMarcaDagua ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.2)', border: `1px solid ${semMarcaDagua ? '#4ade80' : '#ef4444'}`, color: semMarcaDagua ? '#4ade80' : '#fca5a5', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            {semMarcaDagua ? '✨ Modo Clean (Sem Marca)' : '🔒 Com Marca d\'Água'}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {browserAsset.imagem && (
-                      <div>
-                        <div style={{ textAlign: 'center', margin: '6px 0', background: 'rgba(0, 240, 255, 0.05)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
-                          <img src={browserAsset.imagem} alt="Preview" style={{ width: '100%', maxHeight: '140px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px #00f0ff)', borderRadius: '6px' }} />
-                        </div>
-
-                        {versoesAtivas.length > 1 && (
-                          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', overflowX: 'auto' }}>
-                            {versoesAtivas.map((v, i) => (
-                              <button key={v.id} onClick={() => { setVersaoSelecionada(i); setBrowserAsset(prev => ({ ...prev, imagem: v.url })); }} style={{ padding: '4px 6px', backgroundColor: versaoSelecionada === i ? '#ff007f' : '#0f172a', color: '#fff', border: '1px solid #ff007f', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                                {v.rotulo}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-
-                <div style={{ fontSize: '9px', color: '#cbd5e1', lineHeight: '1.3', background: 'rgba(0,0,0,0.3)', padding: '6px', borderRadius: '6px', maxHeight: '80px', overflowY: 'auto' }}>
-                  {browserAsset.conteudoTexto}
+              {/* 🌟 SEÇÃO DE LINKS SOCIAIS DO MAPA TERRESTRE INTEGRADOS DIRETAMENTE NO PENSAMENTO ROBOTOC */}
+              <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)', marginBottom: '12px' }}>
+                <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+                  🔗 CENTRAL DE CONTATOS & REDES DO EMANUEL (ESTRUTURA MAPA TERRESTRE):
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+                  <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+                  <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+                  <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+                  <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
+                  <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
+                  <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+                  <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '6px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
                 </div>
               </div>
-            )}
-          </div>
 
+              {/* BARRA DE SELEÇÃO DE MODOS DE INTERAÇÃO */}
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: '#020617', padding: '4px', borderRadius: '10px', border: '1px solid rgba(0,240,255,0.2)' }}>
+                <button
+                  onClick={() => setAbaOverlayAtiva('browser')}
+                  style={{
+                    flex: 1, padding: '8px', borderRadius: '8px', border: 'none',
+                    backgroundColor: abaOverlayAtiva === 'browser' ? '#00f0ff' : 'transparent',
+                    color: abaOverlayAtiva === 'browser' ? '#000' : '#00f0ff',
+                    fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >
+                  🌐 Quantum Browser v5.1
+                </button>
+
+                <button
+                  onClick={() => setAbaOverlayAtiva('quickactions')}
+                  style={{
+                    flex: 1, padding: '8px', borderRadius: '8px', border: 'none',
+                    backgroundColor: abaOverlayAtiva === 'quickactions' ? '#ff007f' : 'transparent',
+                    color: abaOverlayAtiva === 'quickactions' ? '#fff' : '#ff007f',
+                    fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >
+                  ⚡ Quick Actions v2.0
+                </button>
+              </div>
+
+              {abaOverlayAtiva === 'browser' ? (
+                <div>
+                  {/* MINI NAVEGADOR ATIVO PARA BUSCAR QUALQUER ASSUNTO OU IMAGEM NA INTERNET */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                      <select 
+                        value={motorBuscaSelecionado} 
+                        onChange={(e) => setMotorBuscaSelecionado(e.target.value)}
+                        style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', padding: '6px', borderRadius: '8px', fontSize: '10px', outline: 'none' }}
+                      >
+                        <option value="google">Google</option>
+                        <option value="bing">Bing</option>
+                        <option value="duckduckgo">DuckDuckGo</option>
+                      </select>
+
+                      <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '10px', padding: '4px 10px', flexGrow: 1 }}>
+                        <span style={{ fontSize: '11px', color: '#00f0ff', marginRight: '6px' }}>🔍</span>
+                        <input
+                          type="text"
+                          value={urlOuTermoNavegador}
+                          onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador); }}
+                          placeholder="Pesquisar qualquer assunto, imagem ou site..."
+                          style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '11px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
+                        />
+                      </div>
+
+                      <button 
+                        onClick={() => executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador)} 
+                        style={{ padding: '6px 12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
+                      >
+                        Ir ➔
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* SELEÇÃO DE MODOS DE PENSAMENTO NEURAL DO ROBOTOC */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                      🧠 MODOS DE PENSAMENTO NEURAL DO ROBOTOC
+                    </span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                      <button onClick={() => { setAbaBuscaNavegador('web'); executarNavegacaoBrowser(urlOuTermoNavegador, 'web'); }} style={{ padding: '6px 2px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: abaBuscaNavegador === 'web' ? '#00f0ff' : 'transparent', color: abaBuscaNavegador === 'web' ? '#000' : '#00f0ff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🌐 Web</button>
+                      <button onClick={iniciarVozNavegador} style={{ padding: '6px 2px', borderRadius: '8px', border: '1px solid #a855f7', backgroundColor: escutandoVozNavegador ? '#ff007f' : 'transparent', color: '#a855f7', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>{escutandoVozNavegador ? '🔴 Ouvindo' : '🎙️ Voz'}</button>
+                      <button onClick={() => imageInputRef.current && imageInputRef.current.click()} style={{ padding: '6px 2px', borderRadius: '8px', border: '1px solid #eab308', backgroundColor: 'transparent', color: '#eab308', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🖼️ Mídias</button>
+                      <button onClick={() => pdfInputRef.current && pdfInputRef.current.click()} style={{ padding: '6px 2px', borderRadius: '8px', border: '1px solid #4ade80', backgroundColor: 'transparent', color: '#4ade80', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📄 PDF</button>
+                    </div>
+                  </div>
+
+                  {/* CONTAINER VIRTUAL DE RESULTADOS */}
+                  <div style={{ backgroundColor: '#020617', border: '1px solid rgba(0,240,255,0.2)', borderRadius: '12px', padding: '10px', maxHeight: '140px', overflowY: 'auto' }}>
+                    <h4 style={{ fontSize: '11px', margin: '0 0 4px 0', color: '#fff' }}>{browserAsset.titulo}</h4>
+                    <p style={{ fontSize: '9px', color: '#ff007f', margin: '0 0 6px 0' }}>{browserAsset.subtitulo}</p>
+                    <p style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4', margin: 0 }}>{browserAsset.conteudoTexto}</p>
+                  </div>
+                </div>
+              ) : (
+                /* QUICK ACTIONS v2.0 - FEED SOCIAL FUTURISTA DO MAPA TERRESTRE */
+                <div>
+                  <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+                    ⚡ QUICK ACTIONS v2.0 (GERADORES, VÍDEOS, GIFS E TRADUÇÃO DE ARQUIVOS)
+                  </span>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                    <div onClick={() => dispararQuickAction('crie_imagem')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>🖼️</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar fotos / Imagens</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM 1.0</span></div>
+                    </div>
+                    <div onClick={() => dispararQuickAction('crie_video')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>🎬</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar vídeos 4K</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM HD/4K</span></div>
+                    </div>
+                    <div onClick={() => dispararQuickAction('crie_gif')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>🎞️</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>GIFs animados</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>GIEM 1.0 Sync</span></div>
+                    </div>
+                    <div onClick={() => dispararQuickAction('traduzir_documentos')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>🌐</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Tradução de arquivos</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>PDF, Docs e Imagens</span></div>
+                    </div>
+                    <div onClick={() => dispararQuickAction('escreva_edite')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>✏️</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Escreva ou edite</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Textos e Docs</span></div>
+                    </div>
+                    <div onClick={() => dispararQuickAction('pesquise_internet')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>🌐</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Pesquise Web IA</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Busca via ROBOTOC</span></div>
+                    </div>
+                  </div>
+
+                  <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                    📁 FORMATOS DE GERADORES E TRADUTORES INTEGRADOS
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                    <button onClick={() => dispararQuickAction('gerar_pdf')} style={{ padding: '6px 2px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📄 PDF</button>
+                    <button onClick={() => dispararQuickAction('gerar_jpg')} style={{ padding: '6px 2px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🖼️ JPG</button>
+                    <button onClick={() => dispararQuickAction('gerar_word')} style={{ padding: '6px 2px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📝 WORD</button>
+                    <button onClick={() => dispararQuickAction('gerar_pptx')} style={{ padding: '6px 2px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📊 PPTX</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CHAT BAR INFERIOR DE COMANDO DIRETO AO ROBOTOC */}
           <div style={{
             position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)',
             zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '8px'
@@ -2410,10 +2437,10 @@ export default function EmanuelOSCore() {
               textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
             }}>
               <span style={{ fontSize: '8px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
-                IA EMANUEL (GEMINI AGI Core v5.1 Multimodal)
+                IA ROBOTOC (GEMINI AGI Core v5.1 Multimodal)
               </span>
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
-                Emanuel.OS Core v5.1 | Quick Actions Active | 2030
+                Emanuel.OS Core v5.1 | ROBOTOC Active | 2030
               </span>
             </div>
 
@@ -2447,7 +2474,7 @@ export default function EmanuelOSCore() {
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Digite comandos ou mensagens..."
+                placeholder="Fale com o ROBOTOC ou envie comandos..."
                 style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }}
               />
 
@@ -2490,12 +2517,6 @@ export default function EmanuelOSCore() {
           100% { transform: scale(1) rotate(360deg); opacity: 0.8; }
         }
         @media (max-width: 768px) {
-          .quick-actions-widget {
-            bottom: 140px !important;
-            right: 15px !important;
-            left: 15px !important;
-            width: auto !important;
-          }
           .quantum-browser-widget {
             top: 60px !important;
             right: 15px !important;
