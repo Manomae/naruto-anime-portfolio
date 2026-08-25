@@ -14,6 +14,7 @@ export default function MapaRessonancia3D() {
   const meshRef = useRef(null);
   const bolaHolograficaMeshRef = useRef(null);
   const avatarGroupRef = useRef(null);
+  const armScannerGroupRef = useRef(null);
   const esferasLinks3DRef = useRef([]);
 
   // --- DADOS REAIS & REDES SOCIAIS EMANUEL DA SILVA ---
@@ -47,11 +48,10 @@ export default function MapaRessonancia3D() {
   const [realceInflamatorio, setRealceInflamatorio] = useState(false);
   const [statusExame, setStatusExame] = useState('🟢 Aquisição Volumétrica em Tempo Real Estável (RM 3D)');
 
-  // Estados ROBOTOC DATA CENTER & ARQUITETURA 3D (IGUAL AO INDEX)
+  // Estados ROBOTOC DATA CENTER & ARQUITETURA 3D
   const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
   const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
   const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
-  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
 
   // CONTROLE DE PAINÉIS
   const [painelPacienteAberto, setPainelPacienteAberto] = useState(true);
@@ -209,7 +209,7 @@ export default function MapaRessonancia3D() {
       const colorHex = linkItem.nuvem === 'google' ? 0x4285f4 : 
                        linkItem.nuvem === 'apple' ? 0xffffff : 
                        linkItem.nuvem === 'microsoft' ? 0x00a4ef : 0xff007f;
-      
+
       const orbMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.85 });
       const orbMesh = new THREE.Mesh(orbGeo, orbMat);
       orbMesh.userData = { url: linkItem.url, titulo: linkItem.titulo };
@@ -218,43 +218,88 @@ export default function MapaRessonancia3D() {
     });
     scene.add(linksGroup);
 
-    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D (EXCLUSIVO: ROBOTOC AJUDANTE DE RESSONÂNCIA)
     const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
     const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
-    const armorMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.1, metalness: 0.9, emissive: 0x10b981, emissiveIntensity: 0.2 });
-    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.1, metalness: 0.9, emissive: 0x10b981, emissiveIntensity: 0.3 });
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 1.0 });
 
-    const headGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    // Cabeça e Cabelo
+    const headGeo = new THREE.SphereGeometry(0.38, 32, 32);
     headGeo.scale(1, 1.25, 1);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
     headMesh.position.set(0, 2.3, 0);
     avatarGroup.add(headMesh);
 
-    const hairGeo = new THREE.SphereGeometry(0.38, 16, 16);
+    const hairGeo = new THREE.SphereGeometry(0.40, 16, 16);
     hairGeo.scale(1.02, 0.9, 1.05);
     const hairMesh = new THREE.Mesh(hairGeo, hairMat);
     hairMesh.position.set(0, 2.45, -0.05);
     avatarGroup.add(hairMesh);
 
-    const eyeGeo = new THREE.SphereGeometry(0.04, 16, 16);
+    // Olhos Holográficos com Brilho
+    const eyeGeo = new THREE.SphereGeometry(0.05, 16, 16);
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-    leftEye.position.set(-0.12, 2.32, 0.32);
+    leftEye.position.set(-0.13, 2.32, 0.34);
     const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-    rightEye.position.set(0.12, 2.32, 0.32);
+    rightEye.position.set(0.13, 2.32, 0.34);
     avatarGroup.add(leftEye);
     avatarGroup.add(rightEye);
 
-    const chestGeo = new THREE.BoxGeometry(0.8, 0.7, 0.4);
+    // Tronco e Armadura do Ajudante
+    const chestGeo = new THREE.BoxGeometry(0.85, 0.75, 0.45);
     const chestMesh = new THREE.Mesh(chestGeo, suitMat);
     chestMesh.position.set(0, 1.45, 0);
     avatarGroup.add(chestMesh);
 
-    const plateGeo = new THREE.BoxGeometry(0.6, 0.4, 0.08);
+    const plateGeo = new THREE.BoxGeometry(0.65, 0.45, 0.1);
     const plateMesh = new THREE.Mesh(plateGeo, armorMat);
-    plateMesh.position.set(0, 1.5, 0.21);
+    plateMesh.position.set(0, 1.5, 0.22);
     avatarGroup.add(plateMesh);
+
+    // Ombros e Braço Esquerdo
+    const shoulderGeo = new THREE.SphereGeometry(0.2, 16, 16);
+    const leftShoulder = new THREE.Mesh(shoulderGeo, armorMat);
+    leftShoulder.position.set(-0.5, 1.7, 0);
+    avatarGroup.add(leftShoulder);
+
+    const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7, 16);
+    const leftArm = new THREE.Mesh(armGeo, suitMat);
+    leftArm.position.set(-0.55, 1.25, 0);
+    avatarGroup.add(leftArm);
+
+    // Grupo do Braço Direito Articulado Segurando o Scanner de RM (Bip Holográfico)
+    const armScannerGroup = new THREE.Group();
+    armScannerGroup.position.set(0.5, 1.7, 0);
+
+    const rightShoulder = new THREE.Mesh(shoulderGeo, armorMat);
+    armScannerGroup.add(rightShoulder);
+
+    const rightArm = new THREE.Mesh(armGeo, suitMat);
+    rightArm.position.set(0.1, -0.35, 0.2);
+    rightArm.rotation.x = -Math.PI / 3;
+    armScannerGroup.add(rightArm);
+
+    // Ferramenta / Scanner de Ressonância Magnética Holográfica
+    const toolGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.4, 16);
+    const toolMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.8 });
+    const toolMesh = new THREE.Mesh(toolGeo, toolMat);
+    toolMesh.position.set(0.15, -0.55, 0.5);
+    toolMesh.rotation.x = Math.PI / 2;
+    armScannerGroup.add(toolMesh);
+
+    // Feixe de Luz de Escaneamento
+    const beamGeo = new THREE.ConeGeometry(0.25, 1.2, 16);
+    const beamMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.45, wireframe: true });
+    const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+    beamMesh.position.set(0.15, -0.55, 1.2);
+    beamMesh.rotation.x = -Math.PI / 2;
+    armScannerGroup.add(beamMesh);
+
+    avatarGroup.add(armScannerGroup);
+    armScannerGroupRef.current = armScannerGroup;
 
     avatarGroup.position.set(-2.2, -1.2, 0);
     scene.add(avatarGroup);
@@ -317,8 +362,16 @@ export default function MapaRessonancia3D() {
         });
       }
 
+      // 🤖 ANIMAÇÃO DINÂMICA DO ROBOTOC AJUDANTE DE RESSONÂNCIA
       if (avatarGroupRef.current) {
-        avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 1.5) * 0.05;
+        avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 2) * 0.12;
+        avatarGroupRef.current.rotation.y = Math.sin(elapsedTime * 0.8) * 0.15;
+      }
+
+      // Movimentação do Braço com Scanner
+      if (armScannerGroupRef.current) {
+        armScannerGroupRef.current.rotation.z = Math.sin(elapsedTime * 2.5) * 0.1;
+        armScannerGroupRef.current.rotation.x = Math.cos(elapsedTime * 1.8) * 0.08;
       }
 
       renderer.render(scene, camera);
@@ -641,7 +694,7 @@ export default function MapaRessonancia3D() {
           <h2 style={{ color: '#34d399', fontSize: '14px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             🧠 Módulo Físico de RM 3D: Campo Magnético & Ondas de Rádio
           </h2>
-          
+
           <button
             onClick={() => setPainelRmExpandido(!painelRmExpandido)}
             style={{
@@ -725,7 +778,7 @@ export default function MapaRessonancia3D() {
         )}
       </div>
 
-      {/* 🤖 OVERLAY ROBOTOC HUD & MULTICLOUD (IGUAL AO INDEX) */}
+      {/* 🤖 OVERLAY ROBOTOC HUD & MULTICLOUD */}
       {mostrarOverlayRobotoc && (
         <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(8,15,30,0.96)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '18px', zIndex: 1000, width: '380px', color: '#fff', boxShadow: '0 0 30px rgba(0,240,255,0.4)', backdropFilter: 'blur(20px)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '10px' }}>
@@ -741,30 +794,57 @@ export default function MapaRessonancia3D() {
         </div>
       )}
 
-      {/* 🏛️ ARQUITETURA DATA CENTER 3D & REDES SOCIAIS (ESTILO INDEX.JS) */}
+      {/* 🏛️ ARQUITETURA DATA CENTER 3D FIXA NO CANTO INFERIOR DIREITO (MODELO FIEL) */}
       {arquiteturaAberta && (
-        <div style={{ position: 'fixed', bottom: '20px', right: '20px', backgroundColor: 'rgba(7,12,28,0.96)', border: '2px solid #10b981', borderRadius: '16px', padding: '16px', zIndex: 1000, width: '340px', color: '#fff', boxShadow: '0 0 25px rgba(16,185,129,0.4)', backdropFilter: 'blur(20px)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <h3 style={{ margin: 0, fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>🏛️ ARQUITETURA DATA CENTER 3D</h3>
-            <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
-          </div>
-          
-          <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
-            <div>• <b>Nó Ressonância 3D:</b> Ativo (Scanner 3.0T / 7.0T)</div>
-            <div>• <b>Nó Patologia & Lab:</b> Conectado (Histopatologia)</div>
-            <div>• <b>Nó Orkut Social 3D:</b> Conectado (Rede Unificada)</div>
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', backgroundColor: 'rgba(7, 12, 28, 0.96)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '16px', zIndex: 1000, width: '360px', color: '#fff', boxShadow: '0 0 30px rgba(0, 240, 255, 0.4)', backdropFilter: 'blur(20px)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🏛️ ARQUITETURA DATA CENTER 3D
+            </h3>
+            <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
           </div>
 
-          <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-            🔗 REDES SOCIAIS MESTRES (EMANUEL DA SILVA):
+          <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 10px 0', lineHeight: '1.3' }}>
+            Sincronização Estrutural de Nós Orbitais no Mapa Terrestre. Dados operando via Gemini AGI.
+          </p>
+
+          {/* NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS */}
+          <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+              🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
+            </span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #4285f4' }}>
+                <span style={{ fontSize: '10px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>15 GB / 2 TB (Stable)</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold' }}>🍋 Apple iCloud</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Nó Orbital / Backups</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #00a4ef' }}>
+                <span style={{ fontSize: '10px', color: '#00a4ef', fontWeight: 'bold' }}>💻 Microsoft OneDrive</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Vault Empresarial</span>
+              </div>
+            </div>
+          </div>
+
+          {/* LINKS MESTRES & REDES SOCIAIS EMANUEL DA SILVA */}
+          <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+            🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
           </span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
-            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
-            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
-            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
-            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp Direct</a>
-            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '6px 8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+            <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '7px 10px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid #eab308', color: '#fde047', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
+            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 255, 102, 0.15)', border: '1px solid #00ff66', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
+            <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
           </div>
         </div>
       )}

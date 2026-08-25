@@ -12,6 +12,10 @@ export default function MapaTerrestreEmanuel() {
   const avatarGroupRef = useRef(null);
   const esferasLinks3DRef = useRef([]);
 
+  // 🚨 ESTADO DE EMERGÊNCIA (NOVA FUNCIONALIDADE)
+  const [modoEmergencia, setModoEmergencia] = useState(false);
+  const [detalhesOcorrencia, setDetalhesOcorrencia] = useState(null);
+
   const [localSelecionado, setLocalSelecionado] = useState(null);
   const [alertaAbalroamento, setAlertaAbalroamento] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(null);
@@ -168,6 +172,22 @@ export default function MapaTerrestreEmanuel() {
     }
   };
 
+  // 🚨 FUNÇÃO PARA ATIVAR/DESATIVAR MODO DE EMERGÊNCIA
+  const alternarModoEmergencia = () => {
+    if (!modoEmergencia) {
+      setModoEmergencia(true);
+      setDetalhesOcorrencia({
+        protocolo: `EMG-${Math.floor(100000 + Math.random() * 900000)}`,
+        tipo: '🚨 OCORRÊNCIA DE PERIGO / SITUAÇÃO CRÍTICA',
+        descricao: 'Incidente imprevisto detectado no setor urbano. Ambulância 3D e Robotoc acionados via Sirene AGI.',
+        horario: new Date().toLocaleTimeString('pt-BR')
+      });
+    } else {
+      setModoEmergencia(false);
+      setDetalhesOcorrencia(null);
+    }
+  };
+
   // CENA 3D (THREE.JS) + ROBOTOC 3D + DATA CENTER INTEGRADO
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -193,6 +213,11 @@ export default function MapaTerrestreEmanuel() {
     const mainLight = new THREE.PointLight(0x00f0ff, 3, 100);
     mainLight.position.set(0, 25, 0);
     scene.add(mainLight);
+
+    // 🚨 SIRENE DE LUZ PARA EMERGÊNCIA
+    const luzEmergencia = new THREE.PointLight(0xff0000, 0, 100);
+    luzEmergencia.position.set(0, 15, 0);
+    scene.add(luzEmergencia);
 
     // PLANO DO OCEANO / RIO 3D
     const oceanoGeo = new THREE.PlaneGeometry(100, 100);
@@ -305,10 +330,42 @@ export default function MapaTerrestreEmanuel() {
     const plateGeo = new THREE.BoxGeometry(0.7, 0.5, 0.08);
     const plateMesh = new THREE.Mesh(plateGeo, armorMat); plateMesh.position.set(0, 1.5, 0.24); avatarGroup.add(plateMesh);
 
+    // 🚨 GIROFLEX / SIRENE DE CABEÇA PARA ROBOTOC MODO EMERGÊNCIA
+    const giroflesGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.2, 16);
+    const giroflesMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const giroflesMesh = new THREE.Mesh(giroflesGeo, giroflesMat);
+    giroflesMesh.position.set(0, 2.85, 0);
+    avatarGroup.add(giroflesMesh);
+
     avatarGroup.position.set(-10, 2, 0);
     avatarGroup.scale.set(1.5, 1.5, 1.5);
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
+
+    // 🚑 AMBULÂNCIA 3D FUTURISTA DE EMERGÊNCIA
+    const ambulanciaGroup = new THREE.Group();
+    const ambChassiGeo = new THREE.BoxGeometry(1.2, 0.8, 2.2);
+    const ambChassiMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.5 });
+    const ambChassiMesh = new THREE.Mesh(ambChassiGeo, ambChassiMat);
+    ambChassiMesh.position.y = 0.5;
+    ambulanciaGroup.add(ambChassiMesh);
+
+    // Faixa Vermelha da Ambulância
+    const faixaGeo = new THREE.BoxGeometry(1.22, 0.2, 2.22);
+    const faixaMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const faixaMesh = new THREE.Mesh(faixaGeo, faixaMat);
+    faixaMesh.position.y = 0.5;
+    ambulanciaGroup.add(faixaMesh);
+
+    // Giroflex da Ambulância
+    const ambGiroGeo = new THREE.BoxGeometry(0.4, 0.15, 0.2);
+    const ambGiroMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const ambGiroMesh = new THREE.Mesh(ambGiroGeo, ambGiroMat);
+    ambGiroMesh.position.set(0, 1.0, 0);
+    ambulanciaGroup.add(ambGiroMesh);
+
+    ambulanciaGroup.position.set(0, 0.3, 11.5);
+    scene.add(ambulanciaGroup);
 
     // ESFERAS DE LINKS 3D ÓRBITA DO NÚCLEO
     const linksGroup = new THREE.Group();
@@ -368,6 +425,7 @@ export default function MapaTerrestreEmanuel() {
 
     let anguloV1 = 0;
     let anguloV2 = Math.PI;
+    let anguloAmb = Math.PI / 2;
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -424,7 +482,31 @@ export default function MapaTerrestreEmanuel() {
 
       if (avatarGroupRef.current) {
         avatarGroupRef.current.position.y = 2 + Math.sin(elapsedTime * 1.5) * 0.2;
+
+        // 🚨 COMPORTAMENTO DO ROBOTOC EM MODO EMERGÊNCIA
+        if (modoEmergencia) {
+          giroflesMat.color.setHex((Math.floor(elapsedTime * 8) % 2 === 0) ? 0xff0000 : 0x0000ff);
+          luzEmergencia.intensity = (Math.floor(elapsedTime * 8) % 2 === 0) ? 8 : 0;
+          armorMat.emissive.setHex(0xff0000);
+          armorMat.color.setHex(0xff0000);
+          eyeMat.emissive.setHex(0xff0000);
+        } else {
+          giroflesMat.color.setHex(0x00f0ff);
+          luzEmergencia.intensity = 0;
+          armorMat.emissive.setHex(0x00f0ff);
+          armorMat.color.setHex(0x00f0ff);
+          eyeMat.emissive.setHex(0x00f0ff);
+        }
       }
+
+      // 🚑 ANIMAÇÃO DA AMBULÂNCIA 3D
+      const velocidadeAmb = modoEmergencia ? 0.04 : 0.015;
+      anguloAmb += velocidadeAmb;
+      const raioAmb = 11.5;
+      ambulanciaGroup.position.x = Math.cos(anguloAmb) * raioAmb;
+      ambulanciaGroup.position.z = Math.sin(anguloAmb) * raioAmb;
+      ambulanciaGroup.rotation.y = -anguloAmb;
+      ambGiroMat.color.setHex((Math.floor(elapsedTime * 10) % 2 === 0) ? 0xff0000 : 0x00f0ff);
 
       dadosFluxoParticulas.forEach((p) => {
         p.progresso += 0.007;
@@ -469,7 +551,7 @@ export default function MapaTerrestreEmanuel() {
         currentMount.removeChild(renderer.domElement);
       }
     };
-  }, [links3D]);
+  }, [links3D, modoEmergencia]);
 
   const adicionarTarefa = (e) => {
     e.preventDefault();
@@ -511,8 +593,25 @@ export default function MapaTerrestreEmanuel() {
         </span>
       </header>
 
-      {/* 🧭 NAVEGAÇÃO DE IDA E VOLTA & BOTÃO ROBOTOC HUD */}
+      {/* 🧭 NAVEGAÇÃO DE IDA E VOLTA, BOTÃO ROBOTOC HUD & BOTÃO DE EMERGÊNCIA 🚨 */}
       <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px' }}>
+        <button
+          onClick={alternarModoEmergencia}
+          style={{
+            padding: '8px 14px',
+            backgroundColor: modoEmergencia ? '#ff0000' : 'rgba(255, 0, 0, 0.25)',
+            color: '#fff',
+            border: '2px solid #ff0000',
+            borderRadius: '15px',
+            fontWeight: 'bold',
+            fontSize: '11px',
+            cursor: 'pointer',
+            boxShadow: modoEmergencia ? '0 0 25px #ff0000' : 'none'
+          }}
+        >
+          🚨 {modoEmergencia ? 'DESATIVAR EMERGÊNCIA' : 'ACIONAR EMERGÊNCIA'}
+        </button>
+
         <button
           onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)}
           style={{ padding: '8px 14px', backgroundColor: mostrarOverlayRobotoc ? '#00f0ff' : 'rgba(0,240,255,0.2)', color: mostrarOverlayRobotoc ? '#000' : '#00f0ff', border: '1px solid #00f0ff', borderRadius: '15px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}
@@ -528,10 +627,27 @@ export default function MapaTerrestreEmanuel() {
         </a>
       </div>
 
+      {/* 🚨 BANNER DE OC OCURRÊNCIA DE EMERGÊNCIA DA CIDADE 🚨 */}
+      {modoEmergencia && detalhesOcorrencia && (
+        <div style={{
+          position: 'absolute', top: '75px', left: '50%', transform: 'translateX(-50%)',
+          backgroundColor: 'rgba(255, 0, 0, 0.9)', border: '2px solid #ffffff',
+          borderRadius: '20px', padding: '10px 25px', color: '#fff', zIndex: 200,
+          boxShadow: '0 0 40px #ff0000', textAlign: 'center', backdropFilter: 'blur(15px)'
+        }}>
+          <span style={{ fontSize: '12px', fontWeight: '900', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            {detalhesOcorrencia.tipo} (PROTOCOLO: {detalhesOcorrencia.protocolo})
+          </span>
+          <span style={{ fontSize: '10px', display: 'block', marginTop: '2px' }}>
+            {detalhesOcorrencia.descricao} — Horário: {detalhesOcorrencia.horario}
+          </span>
+        </div>
+      )}
+
       {/* 🚨 ALERTA IA ANTI-ABALROAMENTO */}
       {alertaAbalroamento && (
         <div style={{
-          position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', top: '135px', left: '50%', transform: 'translateX(-50%)',
           backgroundColor: 'rgba(255, 0, 85, 0.25)', border: '2px solid #ff0055',
           borderRadius: '30px', padding: '8px 20px', backdropFilter: 'blur(10px)',
           boxShadow: '0 0 30px #ff0055', zIndex: 30
@@ -564,7 +680,7 @@ export default function MapaTerrestreEmanuel() {
             boxShadow: '0 10px 25px rgba(0,240,255,0.3)',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
+            justifyContent: 'center',
             gap: '8px'
           }}
         >

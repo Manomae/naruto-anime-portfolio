@@ -19,11 +19,10 @@ export default function MapaOrkutSocial3D() {
   const [blocoPerfilExpandido, setBlocoPerfilExpandido] = useState(true);
   const [blocoMuralExpandido, setBlocoMuralExpandido] = useState(true);
 
-  // Estados do ROBOTOC DATA CENTER & ARQUITETURA 3D (No mesmo estilo do index.js)
+  // Estados do ROBOTOC DATA CENTER & ARQUITETURA 3D
   const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
   const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
   const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
-  const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
 
   // Estados de navegação e abas
   const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps'); // 'scraps', 'depoimentos', 'gerenciar'
@@ -114,7 +113,7 @@ export default function MapaOrkutSocial3D() {
   }, []);
 
   // Abrir link externo
-  const abrirLinkExternoSeguro = (url, titulo) => {
+  const abrirLinkExternoSeguro = (url) => {
     if (!url) return;
     if (typeof window !== 'undefined') {
       window.open(url, '_blank', 'noopener,noreferrer');
@@ -127,7 +126,7 @@ export default function MapaOrkutSocial3D() {
       id: Date.now(),
       titulo: novoLinkTitulo,
       url: novoLinkUrl.startsWith('http') ? novoLinkUrl : `https://${novoLinkUrl}`,
-      icone: novoLinkIcone || '🌐',
+      icone: novoLinkIcone || '🔗',
       nuvem: nuvemSelecionada
     };
     setLinks3D(prev => [...prev, novo]);
@@ -135,7 +134,7 @@ export default function MapaOrkutSocial3D() {
     setNovoLinkUrl('');
   };
 
-  // --- CENA THREE.JS (ROBOTOC 3D + DATA CENTER GIGANTESCO + ORBITA DE LINKS) ---
+  // --- CENA THREE.JS (ROBOTOC 3D + LOGO EMANUEL ART + BOLA NO MEIO + DATA CENTER) ---
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -147,7 +146,7 @@ export default function MapaOrkutSocial3D() {
     scene.background = new THREE.Color(0x020617);
 
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 7.0);
+    camera.position.set(0, 0, 7.5);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -202,7 +201,7 @@ export default function MapaOrkutSocial3D() {
     }
     scene.add(dataCenterGroup);
 
-    // BOLA HOLOGRÁFICA PRINCIPAL DO CORE
+    // 🌟 BOLA HOLOGRÁFICA PRINCIPAL DO CORE (MOVIDA PARA O MEIO)
     const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0xed2580,
@@ -213,10 +212,11 @@ export default function MapaOrkutSocial3D() {
       opacity: 0.85
     });
     const bolaMesh = new THREE.Mesh(bolaGeometry, bolaMaterial);
+    bolaMesh.position.set(0, 0.2, 0); // Posição centralizada
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER
+    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER NO MEIO
     const linksGroup = new THREE.Group();
     esferasLinks3DRef.current = [];
     links3D.forEach((linkItem) => {
@@ -237,7 +237,7 @@ export default function MapaOrkutSocial3D() {
     });
     scene.add(linksGroup);
 
-    // AVATAR ROBOTOC HUMANOIDE 3D
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D SEGURANDO A LOGO EMANUEL ART NO CANTO
     const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
@@ -245,18 +245,21 @@ export default function MapaOrkutSocial3D() {
     const armorMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.1, metalness: 0.9, emissive: 0x00f0ff, emissiveIntensity: 0.2 });
     const eyeMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
 
+    // Cabeça
     const headGeo = new THREE.SphereGeometry(0.42, 32, 32);
     headGeo.scale(1, 1.25, 1);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
     headMesh.position.set(0, 2.3, 0);
     avatarGroup.add(headMesh);
 
+    // Cabelo
     const hairGeo = new THREE.SphereGeometry(0.45, 16, 16);
     hairGeo.scale(1.02, 0.9, 1.05);
     const hairMesh = new THREE.Mesh(hairGeo, hairMat);
     hairMesh.position.set(0, 2.45, -0.05);
     avatarGroup.add(hairMesh);
 
+    // Olhos HUD
     const eyeGeo = new THREE.SphereGeometry(0.05, 16, 16);
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
     leftEye.position.set(-0.14, 2.32, 0.38);
@@ -265,6 +268,7 @@ export default function MapaOrkutSocial3D() {
     avatarGroup.add(leftEye);
     avatarGroup.add(rightEye);
 
+    // Pescoço e Tronco
     const neckGeo = new THREE.CylinderGeometry(0.15, 0.18, 0.3, 16);
     const neckMesh = new THREE.Mesh(neckGeo, suitMat);
     neckMesh.position.set(0, 1.95, 0);
@@ -280,11 +284,68 @@ export default function MapaOrkutSocial3D() {
     plateMesh.position.set(0, 1.5, 0.24);
     avatarGroup.add(plateMesh);
 
+    // 🤲 BRAÇOS DO ROBOTOC EXTENDIDOS SEGURANDO A LOGO
+    const armGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.7, 16);
+    const leftArm = new THREE.Mesh(armGeo, suitMat);
+    leftArm.position.set(-0.55, 1.3, 0.3);
+    leftArm.rotation.x = -Math.PI / 3;
+    leftArm.rotation.z = -Math.PI / 8;
+    avatarGroup.add(leftArm);
+
+    const rightArm = new THREE.Mesh(armGeo, suitMat);
+    rightArm.position.set(0.55, 1.3, 0.3);
+    rightArm.rotation.x = -Math.PI / 3;
+    rightArm.rotation.z = Math.PI / 8;
+    avatarGroup.add(rightArm);
+
+    // 🖼️ CANVAS PARA TEXTURA 3D DA LOGO EMANUEL ART
+    const logoCanvas = document.createElement('canvas');
+    logoCanvas.width = 512;
+    logoCanvas.height = 256;
+    const ctx = logoCanvas.getContext('2d');
+
+    // Fundo do Card Holográfico da Logo
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, 512, 256);
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(5, 5, 502, 246);
+
+    // Conteúdo da Logo
+    ctx.fillStyle = '#00f0ff';
+    ctx.font = 'bold 26px Verdana';
+    ctx.textAlign = 'center';
+    ctx.fillText('Emanuel da Silva (Emanuel ART)', 256, 55);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '18px Verdana';
+    ctx.fillText('Solteiro, Aracati, Ceará, Brasil', 256, 110);
+
+    ctx.fillStyle = '#ed2580';
+    ctx.font = 'bold 20px Verdana';
+    ctx.fillText('🔥 Arquiteto & Criador do Emanuel.OS', 256, 175);
+
+    ctx.fillStyle = '#22c55e';
+    ctx.font = 'bold 16px Verdana';
+    ctx.fillText('🤖 ROBOTOC 3D Orkut Core Active', 256, 220);
+
+    const logoTexture = new THREE.CanvasTexture(logoCanvas);
+    const logoBoardGeo = new THREE.BoxGeometry(1.8, 0.9, 0.05);
+    const logoBoardMat = new THREE.MeshStandardMaterial({
+      map: logoTexture,
+      roughness: 0.2,
+      metalness: 0.5,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 0.2
+    });
+    const logoBoardMesh = new THREE.Mesh(logoBoardGeo, logoBoardMat);
+    logoBoardMesh.position.set(0, 1.05, 0.6); // Posicionada exatamente na frente das mãos
+    avatarGroup.add(logoBoardMesh);
+
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
 
-    avatarGroup.position.set(-2.2, -1.2, 0);
-    bolaMesh.position.set(2.2, 0, 0);
+    avatarGroup.position.set(-2.6, -1.2, 0);
 
     let isDragging = false;
     let dragDistance = 0;
@@ -325,7 +386,7 @@ export default function MapaOrkutSocial3D() {
         if (intersectsOrbs.length > 0) {
           const hitOrb = intersectsOrbs[0].object;
           if (hitOrb.userData && hitOrb.userData.url) {
-            abrirLinkExternoSeguro(hitOrb.userData.url, hitOrb.userData.titulo);
+            abrirLinkExternoSeguro(hitOrb.userData.url);
           }
         } else if (intersectsAvatar.length > 0) {
           setArquiteturaAberta(true);
@@ -357,11 +418,12 @@ export default function MapaOrkutSocial3D() {
       if (bolaHolograficaMeshRef.current) {
         bolaHolograficaMeshRef.current.rotation.y += 0.008;
         bolaHolograficaMeshRef.current.rotation.x += 0.004;
-        bolaHolograficaMeshRef.current.position.y = Math.sin(elapsedTime * 2) * 0.15;
+        bolaHolograficaMeshRef.current.position.y = 0.2 + Math.sin(elapsedTime * 2) * 0.15;
 
+        // Órbita fluida das esferas ao redor da bola centralizada
         esferasLinks3DRef.current.forEach((mesh, index) => {
           const angle = elapsedTime * 0.8 + (index * (Math.PI * 2 / esferasLinks3DRef.current.length));
-          const radius = 2.2;
+          const radius = 2.5;
           mesh.position.x = bolaHolograficaMeshRef.current.position.x + Math.cos(angle) * radius;
           mesh.position.z = bolaHolograficaMeshRef.current.position.z + Math.sin(angle) * radius;
           mesh.position.y = bolaHolograficaMeshRef.current.position.y + Math.sin(elapsedTime * 2 + index) * 0.4;
@@ -924,7 +986,7 @@ export default function MapaOrkutSocial3D() {
 
         </main>
 
-        {/* 🤖 OVERLAY ROBOTOC DATA CENTER & NUVEM (EXATAMENTE COMO NO INDEX) */}
+        {/* 🤖 OVERLAY ROBOTOC DATA CENTER & NUVEM */}
         {mostrarOverlayRobotoc && (
           <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(8,15,30,0.96)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '20px', zIndex: 1000, width: '420px', color: '#fff', boxShadow: '0 0 40px rgba(0,240,255,0.4)', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '12px' }}>
@@ -957,17 +1019,70 @@ export default function MapaOrkutSocial3D() {
           </div>
         )}
 
-        {/* 🏛️ ARQUITETURA DATA CENTER 3D */}
+        {/* 🏛️ ARQUITETURA DATA CENTER 3D (FIEL ÀS IMAGENS DA TELA DA FOTO) */}
         {arquiteturaAberta && (
-          <div style={{ position: 'fixed', bottom: '20px', right: '20px', backgroundColor: 'rgba(7,12,28,0.96)', border: '2px solid #ed2580', borderRadius: '16px', padding: '16px', zIndex: 1000, width: '340px', color: '#fff', boxShadow: '0 0 30px rgba(237,37,128,0.4)', backdropFilter: 'blur(20px)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ margin: 0, fontSize: '13px', color: '#ed2580', fontWeight: 'bold' }}>🏛️ ARQUITETURA DATA CENTER 3D</h3>
-              <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+          <div style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            backgroundColor: 'rgba(7, 12, 28, 0.96)',
+            border: '2px solid #00f0ff',
+            borderRadius: '16px',
+            padding: '16px',
+            zIndex: 1000,
+            width: '360px',
+            color: '#fff',
+            boxShadow: '0 0 30px rgba(0, 240, 255, 0.4)',
+            backdropFilter: 'blur(20px)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🏛️ ARQUITETURA DATA CENTER 3D
+              </h3>
+              <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
             </div>
-            <div style={{ fontSize: '10px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div>• <b>Nó Orkut Social 3D:</b> Ativo (Comunidades & Recados)</div>
-              <div>• <b>ROBOTOC IA Core:</b> Sincronizado</div>
-              <div>• <b>Armazenamento Multicloud:</b> Google, Apple e Microsoft</div>
+
+            <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 10px 0', lineHeight: '1.3' }}>
+              Sincronização Estrutural de Nós Orbitais no Mapa Terrestre. Dados operando via Gemini AGI.
+            </p>
+
+            {/* NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS */}
+            <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px', marginBottom: '10px' }}>
+              <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+                🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
+              </span>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #4285f4' }}>
+                  <span style={{ fontSize: '10px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
+                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>15 GB / 2 TB (Stable)</span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold' }}>🍋 Apple iCloud</span>
+                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>Nó Orbital / Backups</span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #00a4ef' }}>
+                  <span style={{ fontSize: '10px', color: '#00a4ef', fontWeight: 'bold' }}>💻 Microsoft OneDrive</span>
+                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>Vault Empresarial</span>
+                </div>
+              </div>
+            </div>
+
+            {/* LINKS MESTRES & REDES SOCIAIS EMANUEL DA SILVA */}
+            <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+              🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
+            </span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+              <a href="https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+              <a href="https://www.tiktok.com/@emanueldasilva26" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+              <a href="https://www.instagram.com/emanuelsilva432" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+              <a href="mailto:leeheroi123@gmail.com" style={{ padding: '7px 10px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid #eab308', color: '#fde047', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto (leeheroi123@gmail.com)</a>
+              <a href="https://api.whatsapp.com/send?phone=5588981493989" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 255, 102, 0.15)', border: '1px solid #00ff66', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: (88) 98149-3989</a>
+              <a href="https://www.threads.net/@emanuelsilva432" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+              <a href="https://github.com/Manomae" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
             </div>
           </div>
         )}
