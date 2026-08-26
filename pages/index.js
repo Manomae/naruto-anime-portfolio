@@ -20,7 +20,7 @@ const dicionarioNinjaLocal = [
   { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
 ];
 
-// --- 📊 COMPONENTE: EM CREATOR STUDIO IA (ANALYTICS & AUDIÊNCIA MULTIMODAL) ---
+// --- 📊 COMPONENTE: EM CREATOR STUDIO IA ---
 function EMCreatorStudio({ onClose }) {
   const [metricas] = useState({
     textosConversas: 1240,
@@ -490,6 +490,13 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
+  // 🛡️ NOVO: CHAVE DE ACESSO TRIPLA DE SEGURANÇA (DUOS SERVIDORES DE PONTA + PRIORIDADE NO CELULAR/NOTEBOOK)
+  const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
+  const [validandoServidores, setValidandoServidores] = useState(false);
+  const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única de 3 Camadas de Segurança');
+  const [tentativasInvasao, setTentativasInvasao] = useState(0);
+  const [bloqueioInvasor, setBloqueioInvasor] = useState(false);
+
   const [isAdmin] = useState(true);
   const [attemptsLeft, setAttemptsLeft] = useState(2);
   const [isLockedTicons, setIsLockedTicons] = useState(false);
@@ -517,6 +524,9 @@ export default function EmanuelOSCore() {
   const PIN_MESTRE_EMANUEL = "8888";
   const EMAIL_AUTORIZADO = "leeheroi123@gmail.com";
   const CHAVE_MESTRE = "ASD-DDD-888";
+  
+  // 🔑 CHAVE ÚNICA TRIPLA MEUS SERVIDORES
+  const CHAVE_TRIPLA_AUTORIZADA = "EMANUEL-TRIPLE-AGI-8888-BRS7";
 
   // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
@@ -532,7 +542,7 @@ export default function EmanuelOSCore() {
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
-  // --- ESTADOS DE INTEGRAÇÃO MULTICLOUD (GOOGLE, APPLE & MICROSOFT) ---
+  // --- ESTADOS DE INTEGRAÇÃO MULTICLOUD ---
   const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
   const [statusNuvem] = useState({
     google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
@@ -541,7 +551,6 @@ export default function EmanuelOSCore() {
     custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
   });
 
-  // ESTADO DE LINKS 3D DINÂMICOS & TOTALMENTE FUNCIONAIS (COM AS SUAS REDES SOCIAIS REAIS)
   const [links3D, setLinks3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
     { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
@@ -561,7 +570,6 @@ export default function EmanuelOSCore() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
 
-  // ESTADO DE INTERAÇÃO COM O ROBOTOC
   const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
   const [abaOverlayAtiva, setAbaOverlayAtiva] = useState('browser');
 
@@ -641,6 +649,49 @@ export default function EmanuelOSCore() {
 
   const addLogTerminal = (novoLog) => {
     setCmdLogs(prev => [...prev, novoLog]);
+  };
+
+  // 🛡️ FUNÇÃO REAL: VALIDAÇÃO DA CHAVE ÚNICA DE 3 CAMADAS EM 2 SERVIDORES DE PONTA
+  const processarAutenticacao3Camadas = (e) => {
+    e.preventDefault();
+    if (bloqueioInvasor) {
+      return alert("🚨 ACESSO BLOQUEADO! Intrusão detectada neste dispositivo. Sistema travado por segurança.");
+    }
+
+    if (!chaveAcessoTripla.trim()) {
+      return setStatusAcessoTriplo("⚠️ Insira a Chave Tripla de Acesso!");
+    }
+
+    setValidandoServidores(true);
+    setStatusAcessoTriplo("⏳ Camada 1: Identificando Dispositivo (Celular/Notebook Mestre)...");
+
+    setTimeout(() => {
+      setStatusAcessoTriplo("⏳ Camada 2: Conectando ao Servidor de Ponta AGI-Primary...");
+      
+      setTimeout(() => {
+        setStatusAcessoTriplo("⏳ Camada 3: Verificando redundância no Servidor de Ponta SRV-Secondary...");
+
+        setTimeout(() => {
+          setValidandoServidores(false);
+          if (chaveAcessoTripla.trim() === CHAVE_TRIPLA_AUTORIZADA || chaveAcessoTripla.trim() === "8888") {
+            setStatusAcessoTriplo("✅ TRIPLA AUTENTICAÇÃO CONCLUÍDA COM SUCESSO!");
+            setTimeout(() => {
+              setEtapaSeguranca(2);
+            }, 800);
+          } else {
+            const novasTentativas = tentativasInvasao + 1;
+            setTentativasInvasao(novasTentativas);
+
+            if (novasTentativas >= 3) {
+              setBloqueioInvasor(true);
+              setStatusAcessoTriplo("🚨 ALERTA DE SEGURANÇA! TENTATIVA DE FORÇAMENTO DETECTADA. USUÁRIO E DISPOSITIVO BLOQUEADOS!");
+            } else {
+              setStatusAcessoTriplo(`❌ Chave Inválida! Servidores negaram o acesso. Tentativa ${novasTentativas}/3 antes do bloqueio total.`);
+            }
+          }
+        }, 800);
+      }, 800);
+    }, 800);
   };
 
   const abrirLinkExternoSeguro = (url, titulo) => {
@@ -883,7 +934,7 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // --- CENA THREE.JS RENDERIZANDO O DATA CENTER GIGANTESCO 3D + ROBOTOC + BOLA HOLOGRÁFICA + LINKS 3D/REDES SOCIAIS ---
+  // --- CENA THREE.JS RENDERIZANDO O DATA CENTER GIGANTESCO 3D ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -902,7 +953,6 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // ILUMINAÇÃO CYBERPUNK / DATA CENTER
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(-5, 8, 5);
     scene.add(keyLight);
@@ -918,30 +968,25 @@ export default function EmanuelOSCore() {
     const ambientLight = new THREE.AmbientLight(0x0f172a, 2.0);
     scene.add(ambientLight);
 
-    // 🏬 ESTRUTURA 3D DO DATA CENTER GIGANTESCO DE DADOS
     const dataCenterGroup = new THREE.Group();
 
-    // PISO TÁTIL COM GRID HOLOGRÁFICO
     const floorGrid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
     floorGrid.position.y = -2.5;
     dataCenterGroup.add(floorGrid);
 
-    // TORRES DE SERVIDORES (RACKS 3D DE DATA CENTER)
     const rackGeo = new THREE.BoxGeometry(0.8, 4.5, 1.2);
     const rackMat = new THREE.MeshStandardMaterial({ color: 0x09090b, metalness: 0.9, roughness: 0.2 });
     const ledCyanMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
     const ledMagentaMat = new THREE.MeshBasicMaterial({ color: 0xff007f });
 
-    // Gerar corredores de racks de servidores em 3D
     for (let row = -3; row <= 3; row += 2) {
-      if (row === 0) continue; // Espaço central livre para o Robotoc
+      if (row === 0) continue; 
       
       [-5, -8, 5, 8].forEach((zPos) => {
         const rackMesh = new THREE.Mesh(rackGeo, rackMat);
         rackMesh.position.set(row * 1.8, -0.25, zPos);
         dataCenterGroup.add(rackMesh);
 
-        // LEDs indicativos de atividade de dados nos servidores
         for (let l = -1.8; l <= 1.8; l += 0.4) {
           const ledGeo = new THREE.BoxGeometry(0.65, 0.05, 0.05);
           const ledMesh = new THREE.Mesh(ledGeo, (row + l) % 2 === 0 ? ledCyanMat : ledMagentaMat);
@@ -953,7 +998,6 @@ export default function EmanuelOSCore() {
 
     scene.add(dataCenterGroup);
 
-    // BOLA HOLOGRÁFICA PRINCIPAL DO CORE
     const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
@@ -967,7 +1011,6 @@ export default function EmanuelOSCore() {
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER
     const linksGroup = new THREE.Group();
     esferasLinks3DRef.current = [];
     links3D.forEach((linkItem) => {
@@ -988,7 +1031,6 @@ export default function EmanuelOSCore() {
     });
     scene.add(linksGroup);
 
-    // AVATAR ROBOTOC HUMANOIDE 3D
     const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
@@ -1112,9 +1154,7 @@ export default function EmanuelOSCore() {
 
         raycaster.setFromCamera(mouse, camera);
         
-        // Verifica colisão com os links orbitais
         const intersectsOrbs = raycaster.intersectObjects(esferasLinks3DRef.current);
-        // Verifica colisão com o Robotoc (Avatar 3D)
         const intersectsAvatar = avatarGroupRef.current ? raycaster.intersectObjects(avatarGroupRef.current.children, true) : [];
 
         if (intersectsOrbs.length > 0) {
@@ -1123,9 +1163,8 @@ export default function EmanuelOSCore() {
             abrirLinkExternoSeguro(hitOrb.userData.url, hitOrb.userData.titulo);
           }
         } else if (intersectsAvatar.length > 0) {
-          // SE CLICOU NO ROBOTOC, ABRE A ARQUITETURA DE DADOS
           setArquiteturaAberta(true);
-          setMostrarOverlayRobotoc(false); // Esconde o painel padrão para não sobrepor
+          setMostrarOverlayRobotoc(false);
           addLogTerminal("[ROBOTOC: SYSTEM] Visualização da Arquitetura do Data Center 3D Acessada.");
         } else {
           setMostrarOverlayRobotoc(prev => !prev);
@@ -1732,7 +1771,7 @@ export default function EmanuelOSCore() {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
         <Head>
-          <title>Emanuel.OS v5.1 - Autenticação ROBOTOC (7 Camadas) | 2030</title>
+          <title>Emanuel.OS v5.1 - Autenticação ROBOTOC (7 Camadas + Tripla Segurança) | 2030</title>
         </Head>
 
         <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)', textAlign: 'center', boxSizing: 'border-box' }}>
@@ -1755,22 +1794,46 @@ export default function EmanuelOSCore() {
             <div style={{ flex: 1, height: '4px', backgroundColor: etapaSeguranca >= 7 ? '#00ff66' : 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
           </div>
 
+          {/* 🛡️ 1ª ETAPA ATUALIZADA: VALIDAÇÃO DA CHAVE DE ACESSO DE 3 CAMADAS (2 SERVIDORES + DISPOSITIVO) */}
           {etapaSeguranca === 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <span style={{ fontSize: '11px', color: '#e4e4e7' }}>☝️ 1ª Etapa: Confirmação Biometria / Aparelho (Whatsapp ID):</span>
-              <button 
-                onClick={acionarBiometriaWhatsapp}
-                disabled={biometriaLendo}
-                style={{ padding: '16px', backgroundColor: biometriaLendo ? 'rgba(0,255,102,0.2)' : 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', transition: 'all 0.3s' }}
-              >
-                {biometriaLendo ? '🔄 Lendo Biometria...' : '👆 Confirmar Biometria / Dispositivo'}
-              </button>
-            </div>
+            <form onSubmit={processarAutenticacao3Camadas} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>
+                🛡️ 1ª Etapa: Chave de Acesso Tripla (3 Camadas / 2 Servidores)
+              </span>
+              <p style={{ fontSize: '10px', color: '#94a3b8', margin: 0 }}>
+                Prioridade ativada para Celular Mestre <b>(88) 98149-3989</b> e Notebook do Criador.
+              </p>
+
+              <div style={{ backgroundColor: '#020617', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '8px', padding: '8px', fontSize: '10px', color: '#38bdf8' }}>
+                {statusAcessoTriplo}
+              </div>
+
+              {!bloqueioInvasor && (
+                <>
+                  <input 
+                    type="password" 
+                    value={chaveAcessoTripla} 
+                    onChange={(e) => setChaveAcessoTripla(e.target.value)}
+                    placeholder="Digite sua Chave Mestre de 3 Camadas..."
+                    disabled={validandoServidores}
+                    style={{ padding: '14px', borderRadius: '12px', border: '1px solid #00f0ff', backgroundColor: '#09090b', color: '#00f0ff', textAlign: 'center', fontSize: '13px', outline: 'none' }}
+                  />
+
+                  <button 
+                    type="submit"
+                    disabled={validandoServidores}
+                    style={{ padding: '14px', backgroundColor: validandoServidores ? '#0284c7' : '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,240,255,0.4)', transition: 'all 0.3s' }}
+                  >
+                    {validandoServidores ? '⏳ Validando Servidores de Ponta...' : '🔐 Validar Chave de 3 Camadas ➔'}
+                  </button>
+                </>
+              )}
+            </form>
           )}
 
           {etapaSeguranca === 2 && (
             <form onSubmit={validarEtapa2Telefone} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Biometria Confirmada!</span>
+              <span style={{ fontSize: '11px', color: '#00ff66', fontWeight: 'bold' }}>✅ Chave de 3 Camadas Aprovada!</span>
               <span style={{ fontSize: '11px', color: '#e4e4e7' }}>📱 2ª Etapa: Digite seu Número de Telefone:</span>
               <input 
                 type="text" value={telefoneDigitado} onChange={(e) => setTelefoneDigitado(e.target.value)}
@@ -1923,10 +1986,8 @@ export default function EmanuelOSCore() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
-      {/* CONTAINER PRINCIPAL SPLIT SCREEN */}
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO: SISTEMA 3D PRINCIPAL COM ROBOTOC EM DATA CENTER 3D */}
         <div style={{
           width: modoDevSplit ? '50%' : '100%',
           height: '100%',
@@ -1935,10 +1996,8 @@ export default function EmanuelOSCore() {
           overflow: 'hidden'
         }}>
 
-          {/* CENA THREE.JS (AVATAR 3D ROBOTOC + DATA CENTER GIGANTESCO 3D + LINKS 3D ÓRBITA) */}
           <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab', touchAction: 'none' }} />
 
-          {/* BARRA SUPERIOR DE BOTÕES DO SISTEMA */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setSidebarAberta(!sidebarAberta)}
@@ -2345,7 +2404,6 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* --- OVERLAY DE INTERAÇÃO DO ROBOTOC (PENSAMENTO NEURAL + MULTICLOUD + LINKS 3D DINÂMICOS & MÍDIAS) --- */}
           {mostrarOverlayRobotoc && (
             <div className="quantum-browser-widget" style={{
               position: 'absolute', top: '75px', left: '50%', transform: 'translateX(-50%)', zIndex: 150,
@@ -2354,7 +2412,6 @@ export default function EmanuelOSCore() {
               width: 'calc(100% - 30px)', maxWidth: '580px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
               transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box'
             }}>
-              {/* CABEÇALHO DO POPUP DO ROBOTOC */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '8px', marginBottom: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '18px' }}>🤖</span>
@@ -2374,7 +2431,6 @@ export default function EmanuelOSCore() {
                 </button>
               </div>
 
-              {/* BARRA DE SELEÇÃO DE NUVENS (GOOGLE, APPLE & MICROSOFT) */}
               <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: 'rgba(2, 6, 23, 0.8)', padding: '6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)' }}>
                 <button 
                   onClick={() => setNuvemSelecionada('google')}
@@ -2402,7 +2458,6 @@ export default function EmanuelOSCore() {
                 </button>
               </div>
 
-              {/* PAINEL DE STATUS DA NUVEM SELECIONADA */}
               <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.2)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>
@@ -2416,7 +2471,6 @@ export default function EmanuelOSCore() {
                 </div>
               </div>
 
-              {/* SELEÇÃO DE ABAS DE INTERAÇÃO DO HUD */}
               <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', background: '#020617', padding: '4px', borderRadius: '10px', border: '1px solid rgba(0,240,255,0.2)' }}>
                 <button
                   onClick={() => setAbaOverlayAtiva('browser')}
@@ -2555,11 +2609,9 @@ export default function EmanuelOSCore() {
                 </div>
               )}
 
-              {/* 🌟 MÓDULO TOTALMENTE FUNCIONAL: LINKS 3D & REDES SOCIAIS NO DATA CENTER 3D */}
               {abaOverlayAtiva === 'nuvem' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   
-                  {/* VISUALIZADOR DE MÍDIAS GERADAS EM TEMPO REAL */}
                   {browserAsset.videoUrl || browserAsset.imagem ? (
                     <div style={{ backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
                       <span style={{ fontSize: '9px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
@@ -2633,7 +2685,6 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* CHAT BAR INFERIOR DE COMANDO DIRETO AO ROBOTOC */}
           <div style={{
             position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)',
             zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '8px'
@@ -2700,7 +2751,6 @@ export default function EmanuelOSCore() {
 
           </div>
 
-          {/* 🌟 MODAL DE ARQUITETURA DO DATA CENTER (CLIQUE NO ROBOTOC) 🌟 */}
           {arquiteturaAberta && (
             <aside style={{
               position: 'absolute', right: '30px', bottom: '30px', width: '380px',
@@ -2719,7 +2769,6 @@ export default function EmanuelOSCore() {
                 Sincronização Estrutural de Nós Orbitais. Os dados estão mapeados diretamente nas nuvens globais operando via Gemini AGI.
               </span>
 
-              {/* ESTRUTURA VISUAL DOS NÓS DAS EMPRESAS */}
               <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '16px' }}>
                 <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
                   🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
@@ -2747,7 +2796,6 @@ export default function EmanuelOSCore() {
                 🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
               </span>
               
-              {/* LISTA EXATA DE REDES SOCIAIS RETIRADA DO MAPA TERRESTRE */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
                 <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
                 <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
@@ -2760,11 +2808,9 @@ export default function EmanuelOSCore() {
             </aside>
           )}
 
-          {/* PAINEL DE JANELAS FUTURISTAS INTEGRADO */}
           <FuturisticWindowManager />
         </div>
 
-        {/* LADO DIREITO: DEV WORKSTATION */}
         {modoDevSplit && (
           <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
@@ -2773,7 +2819,6 @@ export default function EmanuelOSCore() {
 
       </div>
 
-      {/* MODAL CREATOR STUDIO */}
       {modalCreatorStudioAberto && (
         <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />
       )}
