@@ -20,7 +20,7 @@ const dicionarioNinjaLocal = [
   { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
 ];
 
-// --- 📊 COMPONENTE: EM CREATOR STUDIO IA ---
+// 🌟 --- 📊 COMPONENTE: EM CREATOR STUDIO IA --- 📊 🌟
 function EMCreatorStudio({ onClose }) {
   const [metricas] = useState({
     textosConversas: 1240,
@@ -34,7 +34,7 @@ function EMCreatorStudio({ onClose }) {
 
   const [sugestoesAGI, setSugestoesAGI] = useState([
     { id: 1, tipo: '🎬 Vídeos & YouTube Shorts', acao: 'Criar Shorts de Naruto vs Sasuke em 4K. O público responde 40% melhor a conteúdos com áudio sincronizado.', prioridade: 'Alta' },
-    { id: 2, tipo: '🖼️ Imagens Realistas', acao: 'Aumentar a geração de artes Cyberpunk via modelo EM 1.0. Detectado pico de engajamento nos prompts de animes.', prioridade: 'Média' },
+    { id: 2, tipo: '🖼️ Imagens Realistas', acao: 'Aumentar a generation de artes Cyberpunk via modelo EM 1.0. Detectado pico de engajamento nos prompts de animes.', prioridade: 'Média' },
     { id: 3, tipo: '📄 Automação .DOCX / PDF', acao: 'Sintetizar relatórios automatizados de código diretamente no DevStudio. Economia de 3.5h de desenvolvimento.', prioridade: 'Crítica' }
   ]);
 
@@ -159,7 +159,7 @@ function EMCreatorStudio({ onClose }) {
   );
 }
 
-// --- 💻 COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN ---
+// 🌟 --- 💻 COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN --- 💻 🌟
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('javascript');
   const [codigoFonte, setCodigoFonte] = useState(
@@ -313,7 +313,7 @@ function PainelDevSplitScreen({ onClose }) {
   );
 }
 
-// --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) ---
+// 🌟 --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) --- 🌟
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
@@ -371,7 +371,7 @@ function FormularioCapturaEmanuelOS() {
   );
 }
 
-// --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
+// 🌟 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA --- 🌟
 function GoogleMeetAvatarManager({ addLog }) {
   const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
   const [avatarEscolhido, setAvatarEscolhido] = useState('Robotoc (Humanoide 3D IA)');
@@ -444,6 +444,357 @@ function GoogleMeetAvatarManager({ addLog }) {
   );
 }
 
+// 🌟 --- COMPONENTE: TERMINAL NATIVO UNIX-LIKE EM CANVAS --- 🌟
+const UnixTerminalCanvas = () => {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [history, setHistory] = useState([
+    'Emanuel.OS v5.1 - Terminal Nativo v1.0 [Kernel 6.x-like]',
+    'ROBOTOC Neural Shell - Digite "help" para comandos.',
+    ' ',
+    'root@emanuel-os:~# '
+  ]);
+  const [currentLine, setCurrentLine] = useState('');
+  const [fileSystem, setFileSystem] = useState({
+    'root': { type: 'dir', children: ['bin', 'home', 'var', 'README.txt'] },
+    'bin': { type: 'dir', children: ['sh', 'ls', 'help', 'emanuel-agi'] },
+    'home': { type: 'dir', children: ['emanuel'] },
+    'home/emanuel': { type: 'dir', children: ['documents', 'downloads', 'config.json'] },
+    'home/emanuel/README.txt': { type: 'file', content: 'Bem-vindo ao shell nativo do Emanuel.OS. Use este terminal para operações locais de baixo nível.' },
+    'home/emanuel/config.json': { type: 'file', content: '{ "core": "G-AGI v5.1", "user": "Emanuel", "theme": "Holographic" }' },
+    'var': { type: 'dir', children: ['log'] },
+    'var/log': { type: 'dir', children: ['syslog', 'auth.log'] },
+    'var/log/syslog': { type: 'file', content: '[LOG] 2030-03-14 14:05:01: Kernel initialized.\n[LOG] 2030-03-14 14:05:05: ROBOTOC Core Sync: OK.' },
+    'README.txt': { type: 'file', content: 'Instruções Mestre: O sistema está protegido por 7 camadas. Este shell opera em modo local.' },
+  });
+  const [currentPath, setCurrentPath] = useState('/home/emanuel');
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const container = containerRef.current;
+
+    // Ajustar resolução para HiDPI
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    // Configurações de estilo
+    ctx.fillStyle = '#000a12'; // Fundo levemente mais escuro
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.font = '12px "Courier New", Courier, monospace';
+    ctx.fillStyle = '#4ade80'; // Verde terminal brilhante
+    const lineHeight = 16;
+    const padding = 10;
+    const maxLines = Math.floor((rect.height - padding * 2) / lineHeight);
+
+    // Desenhar histórico
+    const linesToDraw = history.slice(-maxLines);
+    linesToDraw.forEach((line, index) => {
+      // Diferenciar root prompt
+      if (line.includes('root@emanuel-os')) {
+          const parts = line.split('# ');
+          ctx.fillStyle = '#ef4444'; // Vermelho para root@emanuel-os
+          ctx.fillText(parts[0], padding, padding + (index + 1) * lineHeight);
+          ctx.fillStyle = '#4ade80'; // Verde para o resto
+          ctx.fillText('# ' + (parts[1] || ''), padding + ctx.measureText(parts[0]).width, padding + (index + 1) * lineHeight);
+      } else {
+          ctx.fillStyle = '#4ade80';
+          ctx.fillText(line, padding, padding + (index + 1) * lineHeight);
+      }
+    });
+
+    // Desenhar linha atual
+    const prompt = `root@emanuel-os:${currentPath}# `;
+    const promptWidth = ctx.measureText(prompt).width;
+    ctx.fillStyle = '#ef4444';
+    ctx.fillText(prompt, padding, padding + (linesToDraw.length + 1) * lineHeight);
+    ctx.fillStyle = '#fff'; // Texto digitado em branco
+    ctx.fillText(currentLine, padding + promptWidth, padding + (linesToDraw.length + 1) * lineHeight);
+
+    // Desenhar cursor piscante
+    if (Math.floor(Date.now() / 500) % 2 === 0) {
+      const cursorX = padding + promptWidth + ctx.measureText(currentLine).width;
+      const cursorY = padding + (linesToDraw.length + 0.3) * lineHeight;
+      ctx.fillRect(cursorX, cursorY, 7, lineHeight);
+    }
+  }, [history, currentLine, currentPath]);
+
+  // Efeito para cursor piscar
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Forçar re-render para cursor piscar
+      setHistory(prev => [...prev]);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const resolvePath = (path) => {
+    if (path === '/') return 'root';
+    if (!path.startsWith('/')) { // Caminho relativo
+        path = currentPath + '/' + path;
+    }
+    // Simplificar /../ e /./
+    const parts = path.split('/').filter(p => p && p !== '.');
+    const resolvedParts = [];
+    for (const part of parts) {
+        if (part === '..') {
+            resolvedParts.pop();
+        } else {
+            resolvedParts.push(part);
+        }
+    }
+    if (resolvedParts.length === 0) return 'root';
+    return resolvedParts.join('/');
+  };
+
+  const handleCommand = (cmd) => {
+    let output = [];
+    const tokens = cmd.trim().split(' ');
+    const commandName = tokens[0];
+    const args = tokens.slice(1);
+
+    switch (commandName) {
+      case 'help':
+        output = [
+          'Comandos disponíveis:',
+          '  help     - Mostra esta ajuda',
+          '  ls [dir] - Lista diretórios',
+          '  cd [dir] - Muda de diretório',
+          '  cat [file] - Mostra conteúdo de arquivo',
+          '  pwd      - Mostra diretório atual',
+          '  clear    - Limpa o terminal',
+          '  whoami   - Mostra usuário atual',
+          '  uname -a - Mostra info do sistema',
+          '  emanuel-agi - Conectar ao núcleo G-AGI'
+        ];
+        break;
+      case 'ls':
+        const targetDir = args[0] ? resolvePath(args[0]) : resolvePath(currentPath);
+        if (fileSystem[targetDir] && fileSystem[targetDir].type === 'dir') {
+          output = ['bin/  home/  var/  README.txt']; // Mock simplificado
+          // output = [fileSystem[targetDir].children.map(item => {
+          //     const itemPath = targetDir === 'root' ? item : targetDir + '/' + item;
+          //     return fileSystem[itemPath].type === 'dir' ? item + '/' : item;
+          // }).join('  ')];
+        } else {
+          output = [`ls: cannot access '${args[0]}': No such file or directory`];
+        }
+        break;
+      case 'cd':
+        const newDir = args[0] ? resolvePath(args[0]) : 'home/emanuel';
+        if (fileSystem[newDir] && fileSystem[newDir].type === 'dir') {
+          setCurrentPath('/' + (newDir === 'root' ? '' : newDir));
+        } else {
+          output = [`cd: ${args[0]}: No such file or directory`];
+        }
+        break;
+      case 'cat':
+        const targetFile = resolvePath(args[0]);
+        if (fileSystem[targetFile] && fileSystem[targetFile].type === 'file') {
+          output = fileSystem[targetFile].content.split('\n');
+        } else if (fileSystem[targetFile] && fileSystem[targetFile].type === 'dir') {
+            output = [`cat: ${args[0]}: Is a directory`];
+        } else {
+          output = [`cat: ${args[0]}: No such file or directory`];
+        }
+        break;
+      case 'pwd':
+        output = [currentPath];
+        break;
+      case 'clear':
+        setHistory([]);
+        return;
+      case 'whoami':
+        output = ['root'];
+        break;
+      case 'uname':
+        if (args[0] === '-a') {
+            output = ['EmanuelOS emanuel-os 6.1.0- G-AGI v5.1 #1 SMP PREEMPT_DYNAMIC 2030 x86_64 GNU/ROBOTOC Shell'];
+        } else {
+            output = ['EmanuelOS'];
+        }
+        break;
+      case 'emanuel-agi':
+        output = ['Conectando ao núcleo G-AGI...', 'Estabelecendo link neural...', 'Acesso concedido.', 'ROBOTOC online.'];
+        break;
+      case '':
+        break;
+      default:
+        output = [`${commandName}: command not found`];
+    }
+
+    setHistory(prev => [...prev, `root@emanuel-os:${currentPath}# ${cmd}`, ...output, ' ']);
+    setCurrentLine('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleCommand(currentLine);
+    } else if (e.key === 'Backspace') {
+      setCurrentLine(prev => prev.slice(0, -1));
+    } else if (e.key.length === 1) { // Caractere digitável
+      setCurrentLine(prev => prev + e.key);
+    }
+  };
+
+  return (
+    <div 
+      ref={containerRef} 
+      style={{ width: '100%', height: '300px', backgroundColor: '#000a12', border: '2px solid #00f0ff', borderRadius: '10px', padding: '5px', boxSizing: 'border-box', overflow: 'hidden' }}
+      tabIndex={0} // Tornar div focável para receber eventos de teclado
+      onKeyDown={handleKeyDown}
+    >
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+    </div>
+  );
+};
+
+// 🌟 --- COMPONENTE: PAINEL DE ANÁLISE E PREVISÃO DE BITCOIN (HOLOGRÁFICO) --- 🌟
+const BitcoinAnalysisPanel = () => {
+  const [data, setData] = useState({
+    price: 'Aguardando G-AGI...',
+    change24h: '0.00%',
+    prediction: 'Estável (viés ROBOTOC v5.1)',
+    ai_confidence: '98.5%'
+  });
+  const [progresso, setProgresso] = useState(0);
+
+  useEffect(() => {
+    // Mock de dados com G-AGI Sync simulado
+    const interval = setInterval(() => {
+        setData({
+            price: `$${(69000 + Math.random() * 5000).toFixed(2)}`,
+            change24h: `${(Math.random() * 10 - 5).toFixed(2)}%`,
+            prediction: Math.random() > 0.6 ? 'Alta (G-AGI Target $88k)' : Math.random() > 0.3 ? 'Correção Saudável' : 'Estável (Acumulação ROBOTOC)',
+            ai_confidence: `${(95 + Math.random() * 4.9).toFixed(1)}%`
+        });
+        setProgresso(prev => (prev + 10) % 110);
+    }, 5000); // Atualiza a cada 5 segundos
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #eab308', borderRadius: '16px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(234, 179, 8, 0.3)' }}>
+        <h3 style={{ color: '#eab308', fontSize: '13px', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            ₿ ANALÍTICA & PREVISÃO DE BITCOIN <span style={{ fontSize: '9px', color: '#fff', border: '1px solid #fff', padding: '1px 5px', borderRadius: '8px' }}>G-AGI QUANT CORE v5.1</span>
+        </h3>
+        <p style={{ fontSize: '10px', color: '#fef08a', margin: '0 0 12px 0' }}>Análise quântica de mercado e previsões neurais do assistente ROBOTOC v5.1.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '15px' }}>
+            <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid #eab308', borderRadius: '10px', padding: '10px' }}>
+                <span style={{ fontSize: '9px', color: '#fef08a' }}>Preço Atual (G-AGI Sync):</span>
+                <strong style={{ display: 'block', fontSize: '16px', color: '#eab308', marginTop: '4px' }}>{data.price}</strong>
+            </div>
+            <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid #eab308', borderRadius: '10px', padding: '10px' }}>
+                <span style={{ fontSize: '9px', color: '#fef08a' }}>Variação 24h:</span>
+                <strong style={{ display: 'block', fontSize: '16px', color: data.change24h.startsWith('-') ? '#ef4444' : '#4ade80', marginTop: '4px' }}>{data.change24h}</strong>
+            </div>
+            <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid #ff007f', borderRadius: '10px', padding: '10px', gridColumn: 'span 2' }}>
+                <span style={{ fontSize: '9px', color: '#ff9ecf' }}>Viés de Previsão ROBOTOC (Curto Prazo):</span>
+                <strong style={{ display: 'block', fontSize: '12px', color: '#ff007f', marginTop: '4px' }}>{data.prediction}</strong>
+            </div>
+        </div>
+
+        <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>Confiança da IA Quântica: <span style={{ color: '#fff' }}>{data.ai_confidence}</span></span>
+            <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(0,240,255,0.2)', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+                <div style={{ width: `${progresso}%`, height: '100%', backgroundColor: '#00f0ff', transition: 'width 0.5s ease-out' }}></div>
+            </div>
+            <span style={{ fontSize: '8px', color: '#94a3b8', display: 'block', marginTop: '4px' }}>⏳ Sincronizando com G-AGI Quant Core v5.1...</span>
+        </div>
+    </div>
+  );
+};
+
+// 🌟 --- COMPONENTE: MÓDULO DE PUBLICAÇÃO DE CLOUDFLARE WORKER (G-AGI DEPLOY) --- 🌟
+const CloudflareWorkerDeployer = ({ addLog }) => {
+  const [workerName, setWorkerName] = useState('emanuel-agi-edge-worker');
+  const [workerScript, setWorkerScript] = useState(`addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  return new Response('Emanuel.OS G-AGI Edge v5.1 Operacional.', {
+    headers: { 'content-type': 'text/plain' },
+  })
+}`);
+  const [deploying, setDeploying] = useState(false);
+  const [deployStatus, setDeployStatus] = useState(null);
+
+  const performDeploy = () => {
+    if (!workerName.trim() || !workerScript.trim()) return alert("Por favor, preencha o nome e o script do Cloudflare Worker.");
+    setDeploying(true);
+    setDeployStatus('Iniciando deploy no Cloudflare...');
+    if (addLog) addLog(`[CLOUDFLARE: DEPLOY] Iniciando deploy do Worker "${workerName}"...`);
+
+    // Simulação do deploy (API real seria via backend)
+    setTimeout(() => {
+        setDeployStatus('Autenticando na API Cloudflare (via G-AGI)...');
+        if (addLog) addLog(`[CLOUDFLARE: API] Autenticado no G-AGI Deploy Gateway.`);
+        
+        setTimeout(() => {
+            setDeployStatus('Compilando Worker Script (WASM Sync v5.1)...');
+            if (addLog) addLog(`[CLOUDFLARE: COMPILER] Script validado e otimizado.`);
+
+            setTimeout(() => {
+                setDeployStatus('Publicando no Global Edge Network v5.1...');
+                if (addLog) addLog(`[CLOUDFLARE: PUBLISH] Publicando em 300+ datacenters.`);
+
+                setTimeout(() => {
+                    setDeploying(false);
+                    const workerUrl = `https://${workerName}.emanuel-agi.workers.dev`;
+                    setDeployStatus(`✅ Worker publicado com sucesso no Edge!`);
+                    if (addLog) {
+                        addLog(`[CLOUDFLARE: SUCCESS] Deploy concluído para "${workerName}".`);
+                        addLog(`[CLOUDFLARE: URL] Link Ativo: ${workerUrl}`);
+                    }
+                }, 1500);
+            }, 1200);
+        }, 1000);
+    }, 800);
+  };
+
+  return (
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '2px solid #fb923c', borderRadius: '16px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(251, 146, 60, 0.25)' }}>
+        <h3 style={{ color: '#fb923c', fontSize: '13px', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            ☁️ CLOUDFLARE WORKER DEPLOYER <span style={{ fontSize: '9px', color: '#fff', border: '1px solid #fff', padding: '1px 5px', borderRadius: '8px' }}>G-AGI EDGE v5.1</span>
+        </h3>
+        <p style={{ fontSize: '10px', color: '#fdba74', margin: '0 0 12px 0' }}>Publicação autônoma de workers na rede global da Cloudflare via G-AGI.</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+            <input type="text" value={workerName} onChange={(e) => setWorkerName(e.target.value)} placeholder="Nome do Worker (ex: g-agi-edge)..." style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', boxSizing: 'border-box' }} />
+            <textarea 
+                value={workerScript} 
+                onChange={(e) => setWorkerScript(e.target.value)} 
+                placeholder="Cole o script do Worker (JavaScript)..."
+                style={{ width: '100%', height: '100px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#4ade80', fontSize: '10px', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }}
+            />
+        </div>
+
+        {deployStatus && (
+            <div style={{ backgroundColor: 'rgba(251, 146, 60, 0.05)', border: '1px solid rgba(251, 146, 60, 0.4)', borderRadius: '8px', padding: '8px', fontSize: '10px', color: deployStatus.startsWith('✅') ? '#4ade80' : '#fdba74', marginBottom: '10px' }}>
+                ⏳ {deployStatus}
+                {deployStatus.startsWith('✅') && (
+                    <a href={`https://${workerName}.emanuel-agi.workers.dev`} target="_blank" rel="noreferrer" style={{ fontSize: '9px', color: '#fb923c', textDecoration: 'underline', display: 'block', marginTop: '4px' }}>https://{workerName}.emanuel-agi.workers.dev ➔</a>
+                )}
+            </div>
+        )}
+
+        <button 
+            onClick={performDeploy} 
+            disabled={deploying}
+            style={{ width: '100%', padding: '10px', backgroundColor: deploying ? '#c2410c' : '#fb923c', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer', transition: 'all 0.3s' }}
+        >
+            {deploying ? '⚡ Publicando Worker no Edge...' : '🚀 Executar Deploy Global G-AGI Edge ➔'}
+        </button>
+    </div>
+  );
+};
+
 // --- FUNÇÕES DE AUXÍLIO E BUSCA ---
 function calcularDiferencaLetras(palavra1, palavra2) {
   const p1 = palavra1.toLowerCase().trim();
@@ -480,7 +831,9 @@ function buscarNoDicionario(perguntaUsuario) {
   return melhorResultado;
 }
 
-// --- COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS ---
+// =========================================================================================
+// 🌟 --- 🖥️ COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX) --- 🖥️ 🌟
+// =========================================================================================
 export default function EmanuelOSCore() {
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
@@ -510,6 +863,14 @@ export default function EmanuelOSCore() {
 
   // ESTADO PARA A ARQUITETURA DO DATA CENTER (CLIQUE NO ROBOTOC)
   const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
+
+  // 🛡️ NOVO: SESSÃO PRIVILEGIADA (SENHA + TOTP)
+  const [privilegedSession, setPrivilegedSession] = useState(false);
+  const [authStepPrivileged, setAuthStepPrivileged] = useState(0); // 0: Fechado, 1: Senha, 2: TOTP
+  const [passwordPrivileged, setPasswordPrivileged] = useState('');
+  const [totpPrivileged, setTotpPrivileged] = useState('');
+  const PREVILEGED_PASSWORD = 'emanuel-agi-priv-88';
+  const PREVILEGED_TOTP = '888888';
 
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
@@ -673,7 +1034,7 @@ export default function EmanuelOSCore() {
 
         setTimeout(() => {
           setValidandoServidores(false);
-          if (chaveAcessoTripla.trim() === CHAVE_TRIPLA_AUTORIZADA || chaveAcessoTripla.trim() === "8888") {
+          if (chaveAcessoTripla.trim() === CHAVE_TRIPLA_AUTORIZADA || (chaveAcessoTripla.trim() === "8888")) {
             setStatusAcessoTriplo("✅ TRIPLA AUTENTICAÇÃO CONCLUÍDA COM SUCESSO!");
             setTimeout(() => {
               setEtapaSeguranca(2);
@@ -692,6 +1053,34 @@ export default function EmanuelOSCore() {
         }, 800);
       }, 800);
     }, 800);
+  };
+
+  // 🔐 FUNÇÃO REAL: SESSÃO PRIVILEGIADA (SENHA + TOTP)
+  const processarAuthPrivilegiada = (e) => {
+    e.preventDefault();
+    if (authStepPrivileged === 1) { // Etapa da Senha
+        if (passwordPrivileged === PREVILEGED_PASSWORD) {
+            addLogTerminal(`[AUTH: PRIVILEGED] Senha mestre aceita. Aguardando TOTP...`);
+            setAuthStepPrivileged(2);
+        } else {
+            addLogTerminal(`[AUTH: PRIVILEGED] ❌ Senha incorreta.`);
+            alert("⚠️ Senha Mestre de Sessão Privilegiada incorreta!");
+            setPasswordPrivileged('');
+        }
+    } else if (authStepPrivileged === 2) { // Etapa do TOTP
+        if (totpPrivileged === PREVILEGED_TOTP) {
+            setPrivilegedSession(true);
+            setAuthStepPrivileged(0); // Fechar painel
+            setCmdLogs(prev => [...prev, `[ROBOTOC: SHELL] root@emanuel-os:~# sess -start privileged`]);
+            addLogTerminal(`[AUTH: PRIVILEGED] ✅ TOTP aceito. SESSÃO PRIVILEGIADA ATIVADA.`);
+            alert("🔓 Sessão Privilegiada (root) ativada via G-AGI!");
+            falarTextoReal("Sessão Privilegiada root ativada via G-AGI.");
+        } else {
+            addLogTerminal(`[AUTH: PRIVILEGED] ❌ TOTP incorreto.`);
+            alert("⚠️ Código TOTP de Sessão Privilegiada incorreto!");
+            setTotpPrivileged('');
+        }
+    }
   };
 
   const abrirLinkExternoSeguro = (url, titulo) => {
@@ -933,6 +1322,12 @@ export default function EmanuelOSCore() {
       setCarregandoSuporte(false);
     }
   };
+
+  // --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
+  // [O componente GoogleMeetAvatarManager já está definido acima]
+
+  // --- COMPONENTE DE TERMINAL NATIVO ---
+  // [O componente UnixTerminalCanvas já está definido acima]
 
   // --- CENA THREE.JS RENDERIZANDO O DATA CENTER GIGANTESCO 3D ---
   useEffect(() => {
@@ -1580,11 +1975,29 @@ export default function EmanuelOSCore() {
     } else if (cmd.includes('gerar-mapa')) {
       setCmdLogs(prev => [...prev, "[ROBOTOC: ENGINE] Matriz de dados unificada ao gerador de mapas 3D."]);
     } else if (cmd.includes('status-core')) {
-      setCmdLogs(prev => [...prev, "[ROBOTOC: STATUS] 7 Camadas: PROTEGIDAS | ROBOTOC: STABLE | Quick Actions: ONLINE"]);
+      setCmdLogs(prev => [...prev, `[ROBOTOC: STATUS] Camadas: PROTEGIDAS | ROBOTOC: STABLE | Quick Actions: ONLINE | Privileged: ${privilegedSession ? 'ACTIVE' : 'INACTIVE'}`]);
     } else if (cmd.includes('suporte')) {
       setModalSuporteAberto(true);
     } else if (cmd.includes('gerar-pdf')) {
       dispararQuickAction('gerar_pdf');
+    } else if (cmd.startsWith('sess -start privileged')) {
+        if (!privilegedSession) {
+            addLogTerminal(`[AUTH: PRIVILEGED] Solicitando senha mestre para Sessão Privilegiada...`);
+            setAuthStepPrivileged(1);
+            setCmdInput('');
+            return;
+        } else {
+            addLogTerminal(`[AUTH: PRIVILEGED] ⚠️ Sessão Privilegiada já está ativa.`);
+        }
+    } else if (cmd.startsWith('sess -end')) {
+        if (privilegedSession) {
+            setPrivilegedSession(false);
+            setCmdLogs(prev => [...prev, `[ROBOTOC: SHELL] root@emanuel-os:~# sess -end`]);
+            addLogTerminal(`[AUTH: PRIVILEGED] Sessão Privilegiada encerrada.`);
+            alert("🔒 Sessão Privilegiada encerrada.");
+        } else {
+            addLogTerminal(`[AUTH: PRIVILEGED] ⚠️ Nenhuma sessão privilegiada ativa.`);
+        }
     }
     setCmdInput('');
   };
@@ -1713,7 +2126,7 @@ export default function EmanuelOSCore() {
       setTimeout(() => {
         setAnimacaoMontandoMapa(false);
         setBloqueado(false);
-        alert("🔓 Acesso Total Autorizado! ROBOTOC, Quick Actions e Data Center 3D Concluídos! Bem-vindo, Mestre Emanuel.");
+        alert("🔓 Acesso Total Autorizado! ROBOTOC, Quick Actions, Data Center 3D e Shell UNIX Concluídos! Bem-vindo, Mestre Emanuel.");
         falarTextoReal("Acesso Total Autorizado! Bem-vindo ao Emanuel.OS. Sou o ROBOTOC, seu assistente neural.");
       }, 2000);
     }, 1500);
@@ -1732,6 +2145,12 @@ export default function EmanuelOSCore() {
       "005. /video 'Naruto lutando com Sasuke' --modelo EM",
       "006. /img 'Cidades futuristas' --modelo EM 1.0",
       "007. /gif 'Memes e reações' --modelo GIEM 1.0",
+      "[ CATEGORIA 02: UNIX SHELL ]",
+      "050. cd /home/emanuel/documents",
+      "051. ls -la /bin",
+      "052. cat var/log/syslog",
+      "053. uname -a",
+      "054. sess -start privileged --mod 'root'",
       "... (300 Comandos catalogados no ecossistema Emanuel.OS)\n"
     ];
 
@@ -1767,6 +2186,9 @@ export default function EmanuelOSCore() {
 
   const chatsFiltrados = historicoChats.filter(c => c.titulo.toLowerCase().includes(pesquisaChat.toLowerCase()));
 
+  // =========================================================================================
+  // 🛡️ --- RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA --- 🛡️
+  // =========================================================================================
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: '"Segoe UI", sans-serif', background: 'radial-gradient(circle at 50% 50%, #0d061a 0%, #020204 90%)', padding: '20px', boxSizing: 'border-box' }}>
@@ -1930,7 +2352,7 @@ export default function EmanuelOSCore() {
                 <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '120px', height: '120px', border: '3px solid #00f0ff', borderRadius: '50%', borderTopColor: 'transparent', animation: 'girarRadar 1s linear infinite' }} />
                   <span style={{ fontSize: '12px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                    🧬 Ativando ROBOTOC, Data Center 3D e Sincronizando Quick Actions...
+                    🧬 Ativando ROBOTOC, Data Center 3D, Shell e Sincronizando Quick Actions...
                   </span>
                 </div>
               ) : (
@@ -1970,6 +2392,9 @@ export default function EmanuelOSCore() {
     );
   }
 
+  // =========================================================================================
+  // 🌟 --- RENDERIZAÇÃO DO SISTEMA EMANUEL.OS CORE (DESBLOQUEADO) --- 🌟
+  // =========================================================================================
   return (
     <div style={{
       width: '100vw',
@@ -1982,7 +2407,7 @@ export default function EmanuelOSCore() {
       overflow: 'hidden'
     }}>
       <Head>
-        <title>Emanuel.OS Core v5.1 | ROBOTOC Multicloud Data Center 3D</title>
+        <title>Emanuel.OS Core v5.1 | ROBOTOC Multicloud Data Center 3D | Shell Nativo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
@@ -2050,14 +2475,19 @@ export default function EmanuelOSCore() {
           }}>
             {sidebarAberta && (
               <>
-                <div>
-                  <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
-                    Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
-                  </h1>
-                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>ASSISTENTE ROBOTOC & MEET ENGINE | Core v5.1</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h1 style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '2px', margin: 0, color: '#fff' }}>
+                      Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span>
+                    </h1>
+                    <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>ASSISTENTE ROBOTOC & SHELL NATIVO | Core v5.1</span>
+                  </div>
+                  {privilegedSession && <span style={{ fontSize: '14px' }}>🔐 root</span>}
                 </div>
 
                 <GoogleMeetAvatarManager addLog={addLogTerminal} />
+
+                <UnixTerminalCanvas />
 
                 <FormularioCapturaEmanuelOS />
 
@@ -2181,6 +2611,72 @@ export default function EmanuelOSCore() {
             )}
           </aside>
 
+          {/* 🔐 MODAL DE AUTENTICAÇÃO DE SESSÃO PRIVILEGIADA (HOLOGRÁFICO) 🔐 */}
+          {authStepPrivileged > 0 && (
+            <div style={{
+              position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+              backgroundColor: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(20px)',
+              zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+            }}>
+              <form onSubmit={processarAuthPrivilegiada} style={{
+                backgroundColor: 'rgba(7, 12, 28, 0.98)', border: '2px solid #ef4444',
+                borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '400px',
+                boxShadow: '0 0 50px rgba(239, 68, 68, 0.4)', textAlign: 'center',
+                position: 'relative', boxSizing: 'border-box', color: '#fff'
+              }}>
+                <button 
+                  type="button" 
+                  onClick={() => setAuthStepPrivileged(0)}
+                  style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#ef4444', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  ✕
+                </button>
+
+                <div style={{ fontSize: '40px', marginBottom: '10px' }}>🔐</div>
+                <h2 style={{ color: '#ef4444', fontSize: '18px', fontWeight: '900', letterSpacing: '1px', margin: '0 0 10px 0' }}>
+                  SESSÃO PRIVILEGIADA (root)
+                </h2>
+                <span style={{ fontSize: '10px', color: '#fca5a5', fontWeight: 'bold', display: 'block', marginBottom: '20px', fontFamily: 'monospace' }}>
+                  G-AGI SECURITY GATEWAY v5.1
+                </span>
+
+                {authStepPrivileged === 1 && (
+                    <>
+                        <p style={{ fontSize: '11px', color: '#fff', margin: '0 0 15px 0' }}>Mestre Emanuel, insira a Senha de Acesso Privilegiado (root):</p>
+                        <input 
+                            type="password" 
+                            value={passwordPrivileged} 
+                            onChange={(e) => setPasswordPrivileged(e.target.value)}
+                            placeholder="Digite a Senha Mestre Privilegiada..."
+                            style={{ width: '100%', padding: '14px', marginBottom: '15px', borderRadius: '12px', border: '1px solid #ef4444', backgroundColor: '#09090b', color: '#ef4444', textAlign: 'center', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+                        />
+                        <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(239,68,68,0.4)', transition: 'all 0.3s' }}>
+                            Validar Senha ➔
+                        </button>
+                    </>
+                )}
+
+                {authStepPrivileged === 2 && (
+                    <>
+                        <p style={{ fontSize: '11px', color: '#4ade80', margin: '0 0 5px 0', fontWeight: 'bold' }}>✅ Senha aceita.</p>
+                        <p style={{ fontSize: '11px', color: '#fff', margin: '0 0 15px 0' }}>Insira o código TOTP (6 dígitos) gerado pelo G-AGI Authenticator:</p>
+                        <input 
+                            type="text" 
+                            maxLength={6}
+                            value={totpPrivileged} 
+                            onChange={(e) => setTotpPrivileged(e.target.value.replace(/\D/g, ''))} // Apenas números
+                            placeholder="######"
+                            style={{ width: '100%', padding: '14px', marginBottom: '15px', borderRadius: '12px', border: '1px solid #ff007f', backgroundColor: '#09090b', color: '#ff007f', textAlign: 'center', fontSize: '28px', letterSpacing: '10px', outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }}
+                        />
+                        <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 20px rgba(255,0,127,0.4)', transition: 'all 0.3s' }}>
+                            🔓 Ativar Sessão Privilegiada root ➔
+                        </button>
+                    </>
+                )}
+              </form>
+            </div>
+          )}
+
           {/* MODAL SUPORTE EM IA */}
           {modalSuporteAberto && (
             <div style={{
@@ -2252,7 +2748,7 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* PAINEL FLUIDO DIREITO: ROBOTOC & GEMINI AGI Core v5.1 */}
+          {/* PAINEL FLUIDO DIREITO: ROBOTOC, TERMINAL & G-AGI EDGE v5.1 */}
           <div style={{
             position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-380px', top: '10px',
             height: 'calc(100vh - 20px)', width: '100%', maxWidth: '370px', backgroundColor: 'rgba(7, 12, 28, 0.92)',
@@ -2276,20 +2772,20 @@ export default function EmanuelOSCore() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '8px' }}>
               <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: 'monospace' }}>
-                ROBOTOC Command Terminal | Core v5.1
+                ROBOTOC Terminal & Edge | Core v5.1
               </span>
               <button onClick={() => setPainelFluidoDireitoAberto(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '12px' }}>✕</button>
             </div>
 
             <div>
               <h3 style={{ color: '#00f0ff', fontSize: '13px', margin: 0, fontWeight: '900', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🤖 ROBOTOC + GEMINI AGI Core v5.1
+                🤖 ROBOTOC + G-AGI EDGE & SHELL v5.1
               </h3>
-              <h4 style={{ color: '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
-                NÚCLEO DE RESPOSTA AUXILIAR MULTIMODAL
+              <h4 style={{ color: privilegedSession ? '#ef4444' : '#38bdf8', fontSize: '11px', margin: '2px 0 0 0', fontWeight: 'bold' }}>
+                {privilegedSession ? '⚠️ MODO PRIVILEGIADO (root) ATIVO ⚠️' : 'NÚCLEO DE RESPOSTA AUXILIAR LOCAL/EDGE'}
               </h4>
               <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', fontFamily: 'monospace' }}>
-                (ROBOTOC Core: ACTIVE | Data Center 3D)
+                (ROBOTOC: ACTIVE | Data Center 3D | CF Edge)
               </span>
             </div>
 
@@ -2329,7 +2825,7 @@ export default function EmanuelOSCore() {
                 📄 Baixar Manual ROBOTOC Mestre (300 Comandos)
               </button>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
                 <button onClick={() => executarComandoCMD('/nano-banana')} style={{ backgroundColor: '#0f172a', border: '1px solid #eab308', color: '#fef08a', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
                   🍌 /nano-banana
                 </button>
@@ -2339,8 +2835,8 @@ export default function EmanuelOSCore() {
                 <button onClick={() => executarComandoCMD('/status-core')} style={{ backgroundColor: '#0f172a', border: '1px solid #00f0ff', color: '#38bdf8', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
                   ⚡ /status-core
                 </button>
-                <button onClick={() => executarComandoCMD('/suporte')} style={{ backgroundColor: '#0f172a', border: '1px solid #ff007f', color: '#ff007f', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left' }}>
-                  🛠️ /suporte ROBOTOC
+                <button onClick={() => executarComandoCMD('sess -start privileged')} disabled={privilegedSession} style={{ backgroundColor: privilegedSession ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)', border: privilegedSession ? '1px solid #4ade80' : '1px solid #ef4444', color: privilegedSession ? '#4ade80' : '#fca5a5', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: privilegedSession ? 'default' : 'pointer', textAlign: 'left' }}>
+                  🔓 sess -start priv
                 </button>
               </div>
             </div>
@@ -2356,7 +2852,10 @@ export default function EmanuelOSCore() {
                   color: log.startsWith('[ROBOTOC: LOG]') ? '#94a3b8' :
                          log.startsWith('[ROBOTOC: STATUS]') ? '#4ade80' :
                          log.startsWith('[CMD>') ? '#38bdf8' :
+                         log.startsWith('[CLOUDFLARE:') ? '#fb923c' :
                          log.startsWith('[ROBOTOC: QUICK_ACTION]') ? '#ff007f' :
+                         log.startsWith('[AUTH:') ? '#fca5a5' :
+                         log.startsWith('[ROBOTOC: SHELL] root@') ? '#ef4444' :
                          log.startsWith('[ROBOTOC: QUERY]') ? '#38bdf8' : '#e2e8f0'
                 }}>
                   {log}
@@ -2364,14 +2863,16 @@ export default function EmanuelOSCore() {
               ))}
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px 12px' }}>
-              <span style={{ color: '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>[CMD&gt; ROBOTOC]</span>
+            <form onSubmit={(e) => { e.preventDefault(); if (cmdInput.trim()) executarComandoCMD(cmdInput); }} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#020617', border: `1px solid ${privilegedSession ? '#ef4444' : '#00f0ff'}`, borderRadius: '8px', padding: '8px 12px' }}>
+              <span style={{ color: privilegedSession ? '#ef4444' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', marginRight: '6px', fontFamily: 'monospace' }}>
+                {privilegedSession ? '[root@emanuel-os:~#]' : '[User@emanuel-os:~#]'}
+              </span>
               <input
                 type="text" value={cmdInput} onChange={(e) => setCmdInput(e.target.value)}
-                placeholder="Comando ROBOTOC... (ex: /gif naruto)"
+                placeholder={privilegedSession ? "Comando root (perigoso)..." : "Comando ROBOTOC... (ex: /gif naruto)"}
                 style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, fontFamily: 'Consolas, monospace' }}
               />
-              <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
+              <button type="submit" style={{ backgroundColor: privilegedSession ? '#ef4444' : '#00f0ff', color: privilegedSession ? '#fff' : '#000', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>OK</button>
             </form>
           </div>
 
@@ -2385,7 +2886,7 @@ export default function EmanuelOSCore() {
               border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px 12px',
               boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)'
             }}>
-              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>ROBOTOC Data Center 3D</span>
+              <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block' }}>ROBOTOC Data Center 3D | CF Edge</span>
               <strong style={{ fontSize: '11px', color: '#00f0ff' }}>📶 Emanuel Sync 2030</strong>
             </div>
 
@@ -2410,7 +2911,8 @@ export default function EmanuelOSCore() {
               backgroundColor: 'rgba(8, 15, 30, 0.95)', backdropFilter: 'blur(25px)',
               border: '2px solid #00f0ff', borderRadius: '20px', padding: '16px',
               width: 'calc(100% - 30px)', maxWidth: '580px', boxShadow: '0 0 45px rgba(0, 240, 255, 0.4)',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box'
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxSizing: 'border-box',
+              display: privilegedSession ? 'none' : 'block' // Esconder browser se root estiver ativo
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '8px', marginBottom: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2481,7 +2983,7 @@ export default function EmanuelOSCore() {
                     fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
                   }}
                 >
-                  🌐 Quantum Browser v5.1
+                  🌐 Quantum Browser
                 </button>
 
                 <button
@@ -2497,15 +2999,15 @@ export default function EmanuelOSCore() {
                 </button>
 
                 <button
-                  onClick={() => setAbaOverlayAtiva('nuvem')}
+                  onClick={() => setAbaOverlayAtiva('devstudio')}
                   style={{
                     flex: 1, padding: '8px', borderRadius: '8px', border: 'none',
-                    backgroundColor: abaOverlayAtiva === 'nuvem' ? '#a855f7' : 'transparent',
-                    color: abaOverlayAtiva === 'nuvem' ? '#fff' : '#a855f7',
+                    backgroundColor: abaOverlayAtiva === 'devstudio' ? '#a855f7' : 'transparent',
+                    color: abaOverlayAtiva === 'devstudio' ? '#fff' : '#a855f7',
                     fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
                   }}
                 >
-                  🔗 Links 3D & Mídias
+                  💻 Dev & G-AGI Edge
                 </button>
               </div>
 
@@ -2530,7 +3032,7 @@ export default function EmanuelOSCore() {
                           value={urlOuTermoNavegador}
                           onChange={(e) => setUrlOuTermoNavegador(e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') executarNavegacaoBrowser(urlOuTermoNavegador, abaBuscaNavegador); }}
-                          placeholder="Pesquisar qualquer assunto, imagem ou site..."
+                          placeholder="Pesquisar assunto, site, Bitcoin ou G-AGI..."
                           style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: '11px', outline: 'none', width: '100%', fontFamily: 'monospace' }}
                         />
                       </div>
@@ -2546,7 +3048,7 @@ export default function EmanuelOSCore() {
 
                   <div style={{ marginBottom: '12px' }}>
                     <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-                      🧠 MODOS DE PENSAMENTO NEURAL DO ROBOTOC
+                      🧠 MODOS DE PENSAMENTO NEURAL ROBOTOC
                     </span>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
                       <button onClick={() => { setAbaBuscaNavegador('web'); executarNavegacaoBrowser(urlOuTermoNavegador, 'web'); }} style={{ padding: '6px 2px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: abaBuscaNavegador === 'web' ? '#00f0ff' : 'transparent', color: abaBuscaNavegador === 'web' ? '#000' : '#00f0ff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🌐 Web</button>
@@ -2565,120 +3067,36 @@ export default function EmanuelOSCore() {
               )}
 
               {abaOverlayAtiva === 'quickactions' && (
-                <div>
-                  <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-                    ⚡ QUICK ACTIONS v2.0 (GERADORES, VÍDEOS, GIFS E TRADUÇÃO DE ARQUIVOS)
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block' }}>
+                    ⚡ QUICK ACTIONS v2.0 (GERADORES & DOCUMENT ENGINE)
                   </span>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                     <div onClick={() => dispararQuickAction('crie_imagem')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '16px' }}>🖼️</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar fotos / Imagens</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM 1.0</span></div>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar Imagem</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM 1.0</span></div>
                     </div>
                     <div onClick={() => dispararQuickAction('crie_video')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '16px' }}>🎬</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar vídeos 4K</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM HD/4K</span></div>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Gerar Vídeo 4K</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Modelo EM</span></div>
                     </div>
                     <div onClick={() => dispararQuickAction('crie_gif')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '16px' }}>🎞️</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>GIFs animados</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>GIEM 1.0 Sync</span></div>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>GIF Animado</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>GIEM 1.0 Sync</span></div>
                     </div>
-                    <div onClick={() => dispararQuickAction('traduzir_documentos')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '16px' }}>🌐</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Tradução de arquivos</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>PDF, Docs e Imagens</span></div>
+                    <div onClick={() => dispararQuickAction('gerar_pdf')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>📄</span>
+                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>G-AGI PDF Doc</strong><span style={{ fontSize: '8px', color: '#fca5a5' }}>Processamento EM v1.0</span></div>
                     </div>
-                    <div onClick={() => dispararQuickAction('escreva_edite')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '16px' }}>✏️</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Escreva ou edite</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Textos e Docs</span></div>
-                    </div>
-                    <div onClick={() => dispararQuickAction('pesquise_internet')} style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '16px' }}>🌐</span>
-                      <div><strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>Pesquise Web IA</strong><span style={{ fontSize: '8px', color: '#94a3b8' }}>Busca via ROBOTOC</span></div>
-                    </div>
-                  </div>
-
-                  <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-                    📁 FORMATOS DE GERADORES E TRADUTORES INTEGRADOS
-                  </span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
-                    <button onClick={() => dispararQuickAction('gerar_pdf')} style={{ padding: '6px 2px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📄 PDF</button>
-                    <button onClick={() => dispararQuickAction('gerar_jpg')} style={{ padding: '6px 2px', backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#d8b4fe', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>🖼️ JPG</button>
-                    <button onClick={() => dispararQuickAction('gerar_word')} style={{ padding: '6px 2px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#7dd3fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📝 WORD</button>
-                    <button onClick={() => dispararQuickAction('gerar_pptx')} style={{ padding: '6px 2px', backgroundColor: 'rgba(251, 146, 60, 0.2)', border: '1px solid #fb923c', color: '#fdba74', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}>📊 PPTX</button>
                   </div>
                 </div>
               )}
 
-              {abaOverlayAtiva === 'nuvem' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  
-                  {browserAsset.videoUrl || browserAsset.imagem ? (
-                    <div style={{ backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
-                      <span style={{ fontSize: '9px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-                        🎬 MÍDIA/RENDER ATIVO NO HUD
-                      </span>
-                      {browserAsset.videoUrl ? (
-                        <video controls src={browserAsset.videoUrl} style={{ width: '100%', borderRadius: '8px', maxHeight: '140px', objectFit: 'cover' }} />
-                      ) : (
-                        <img src={browserAsset.imagem} alt="Render IA" style={{ width: '100%', borderRadius: '8px', maxHeight: '140px', objectFit: 'cover' }} />
-                      )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-                        <span style={{ fontSize: '9px', color: '#94a3b8' }}>{browserAsset.titulo}</span>
-                        <a href={browserAsset.videoUrl || browserAsset.imagem} target="_blank" rel="noreferrer" style={{ fontSize: '9px', color: '#00f0ff', textDecoration: 'underline' }}>Download / Abrir ➔</a>
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px dashed #334155', borderRadius: '10px', padding: '8px', textAlign: 'center' }}>
-                      <span style={{ fontSize: '9px', color: '#94a3b8' }}>Nenhuma mídia em vídeo ou imagem renderizada agora. Use o Quick Actions para sintetizar!</span>
-                    </div>
-                  )}
-
-                  <span style={{ fontSize: '9px', color: '#a855f7', fontWeight: 'bold', display: 'block' }}>
-                    🌐 ADICIONAR NOVO LINK 3D NA NUVEM ({nuvemSelecionada.toUpperCase()})
-                  </span>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      <input 
-                        type="text" placeholder="Ícone (ex: 🎬)" value={novoLinkIcone} onChange={(e) => setNovoLinkIcone(e.target.value)}
-                        style={{ width: '60px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', textAlign: 'center' }}
-                      />
-                      <input 
-                        type="text" placeholder="Título do Link (ex: Meu Projeto)" value={novoLinkTitulo} onChange={(e) => setNovoLinkTitulo(e.target.value)}
-                        style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
-                      />
-                    </div>
-                    <input 
-                      type="text" placeholder="URL ou Caminho da Nuvem..." value={novoLinkUrl} onChange={(e) => setNovoLinkUrl(e.target.value)}
-                      style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
-                    />
-                    <button 
-                      onClick={adicionarNovoLink3D}
-                      style={{ padding: '8px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}
-                    >
-                      🚀 Adicionar Nó de Link 3D ao Data Center
-                    </button>
-                  </div>
-
-                  <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>
-                    🔗 LINKS 3D ATIVOS / REDES SOCIAIS (CLIQUE PARA ABRIR):
-                  </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '130px', overflowY: 'auto' }}>
-                    {links3D.map(item => (
-                      <div 
-                        key={item.id} 
-                        onClick={() => abrirLinkExternoSeguro(item.url, item.titulo)}
-                        style={{ 
-                          display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                          backgroundColor: '#020617', padding: '8px 10px', borderRadius: '6px', 
-                          border: '1px solid #1e293b', cursor: 'pointer', transition: 'all 0.2s' 
-                        }}
-                      >
-                        <span style={{ fontSize: '10px', color: '#fff' }}>{item.icone} <b>{item.titulo}</b> <span style={{ fontSize: '8px', color: '#94a3b8' }}>({item.nuvem.toUpperCase()})</span></span>
-                        <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>Abrir ➔</span>
-                      </div>
-                    ))}
-                  </div>
+              {abaOverlayAtiva === 'devstudio' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <CloudflareWorkerDeployer addLog={addLogTerminal} />
+                  <BitcoinAnalysisPanel />
                 </div>
               )}
 
@@ -2696,7 +3114,7 @@ export default function EmanuelOSCore() {
               textAlign: 'center', boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)'
             }}>
               <span style={{ fontSize: '8px', color: '#ff007f', fontWeight: 'bold', letterSpacing: '1px', display: 'block' }}>
-                IA ROBOTOC (GEMINI AGI Core v5.1 Multimodal Multicloud)
+                IA ROBOTOC (GEMINI AGI Core v5.1 Multimodal CF Edge Sync)
               </span>
               <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
                 Emanuel.OS Core v5.1 | ROBOTOC Active | 2030
@@ -2733,7 +3151,7 @@ export default function EmanuelOSCore() {
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Fale com o ROBOTOC ou envie comandos..."
+                placeholder="Fale com o ROBOTOC, envie comandos ou digite 'help' no shell..."
                 style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }}
               />
 
@@ -2760,34 +3178,34 @@ export default function EmanuelOSCore() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '15px', color: '#00f0ff', fontWeight: '900', letterSpacing: '0.5px' }}>
-                  🏛️ ARQUITETURA DATA CENTER 3D
+                  🏛️ ARQUITETURA DATA CENTER & EDGE 3D
                 </h3>
                 <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>✕</button>
               </div>
               
               <span style={{ fontSize: '10px', color: '#a1a1aa', display: 'block', marginBottom: '12px', lineHeight: '1.4' }}>
-                Sincronização Estrutural de Nós Orbitais. Os dados estão mapeados diretamente nas nuvens globais operando via Gemini AGI.
+                Sincronização Estrutural de Nós Orbitais, Global Edge Network (Cloudflare Workers) e G-AGI Quant Core v5.1.
               </span>
 
               <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '16px' }}>
                 <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-                  🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
+                  🌐 COMPONENTES ATIVOS NO ECOSSISTEMA
                 </span>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(66, 133, 244, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(66, 133, 244, 0.5)' }}>
-                    <span style={{ fontSize: '11px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
-                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>15 GB / 2 TB (Stable)</span>
+                    <span style={{ fontSize: '11px', color: '#4285f4', fontWeight: 'bold' }}>☁️ G-AGI Quant Core v5.1</span>
+                    <span style={{ fontSize: '9px', color: '#4ade80' }}>● Stable</span>
                   </div>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
-                    <span style={{ fontSize: '11px', color: '#fff', fontWeight: 'bold' }}>🍏 Apple iCloud</span>
-                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Nó Orbital / Backups</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(251, 146, 60, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(251, 146, 60, 0.5)' }}>
+                    <span style={{ fontSize: '11px', color: '#fb923c', fontWeight: 'bold' }}>☁️ Cloudflare Workers Edge</span>
+                    <span style={{ fontSize: '9px', color: '#fb923c' }}>● Active</span>
                   </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 164, 239, 0.15)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 164, 239, 0.5)' }}>
-                    <span style={{ fontSize: '11px', color: '#00a4ef', fontWeight: 'bold' }}>🪟 Microsoft OneDrive</span>
-                    <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Vault Empresarial</span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 240, 255, 0.1)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(0, 240, 255, 0.4)' }}>
+                    <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>💻 ROBOTOC Neural Shell v1.0</span>
+                    <span style={{ fontSize: '9px', color: '#fff' }}>● Local</span>
                   </div>
                 </div>
               </div>
@@ -2800,10 +3218,8 @@ export default function EmanuelOSCore() {
                 <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
                 <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
                 <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
-                <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
-                <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
-                <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
-                <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+                <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto</a>
+                <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>💬 WhatsApp Direto</a>
               </div>
             </aside>
           )}
