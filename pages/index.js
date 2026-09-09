@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
+import MotionTracker from '../components/MotionTracker';
+import GlassKeyboard3D from '../components/GlassKeyboard3D';
 
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
