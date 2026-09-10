@@ -11,6 +11,167 @@ import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
 // =========================================================================================
+// 🔲 --- COMPONENTE: JANELA FLUTUANTE EXPANSÍVEL E ARRASTÁVEL (ESTILO ANDROID FUTURISTA) ---
+// =========================================================================================
+function JanelaRobotocFuturista({ open, onClose }) {
+  const [size, setSize] = useState({ width: 500, height: 420 });
+  const [pos, setPos] = useState({ x: 100, y: 80 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const resizeStart = useRef({ w: 0, h: 0, x: 0, y: 0 });
+
+  const [tab, setTab] = useState('ia_core');
+  const [promptAGI, setPromptAGI] = useState('');
+  const [respostaAGI, setRespostaAGI] = useState('Sistemas neurais ROBOTOC EMgemini operacionais. Insira um comando ou prompt quântico.');
+
+  if (!open) return null;
+
+  // Lógica de Arraste (Drag)
+  const handleMouseDownHeader = (e) => {
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+  };
+
+  // Lógica de Redimensionamento (Resize)
+  const handleMouseDownResize = (e) => {
+    e.stopPropagation();
+    setIsResizing(true);
+    resizeStart.current = { w: size.width, h: size.height, x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPos({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
+    } else if (isResizing) {
+      const dw = e.clientX - resizeStart.current.x;
+      const dh = e.clientY - resizeStart.current.y;
+      setSize({
+        width: Math.max(320, resizeStart.current.w + dw),
+        height: Math.max(250, resizeStart.current.h + dh)
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setIsResizing(false);
+  };
+
+  const executarSimulacaoEMgemini = () => {
+    if (!promptAGI.trim()) return;
+    setRespostaAGI(`[EMgemini AGI]: Processando "${promptAGI}"...\nOtimização quântica concluída. Código e rotinas compilados com sucesso no núcleo ROBOTOC.`);
+    setPromptAGI('');
+  };
+
+  return (
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      style={{
+        position: 'fixed',
+        left: `${pos.x}px`,
+        top: `${pos.y}px`,
+        width: `${size.width}px`,
+        height: `${size.height}px`,
+        backgroundColor: 'rgba(2, 6, 23, 0.96)',
+        border: '2px solid #00f0ff',
+        borderRadius: '16px',
+        backdropFilter: 'blur(20px)',
+        zIndex: 300,
+        boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        color: '#fff',
+        fontFamily: 'sans-serif'
+      }}
+    >
+      {/* BARRA DE TÍTULO ARRASTÁVEL */}
+      <div
+        onMouseDown={handleMouseDownHeader}
+        style={{
+          padding: '10px 14px',
+          background: 'linear-gradient(90deg, rgba(0,240,255,0.2) 0%, rgba(15,23,42,0.8) 100%)',
+          borderBottom: '1px solid rgba(0,240,255,0.4)',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          display: 'flex',
+          justify: 'space-between',
+          alignItems: 'center',
+          userSelect: 'none'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px' }}>🤖</span>
+          <strong style={{ fontSize: '11px', color: '#00f0ff', letterSpacing: '0.5px' }}>
+            ROBOTOC EMgemini | Dev Studio Futurista
+          </strong>
+        </div>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button onClick={() => setSize({ width: 340, height: 260 })} style={{ background: 'none', border: '1px solid #334155', color: '#94a3b8', borderRadius: '4px', fontSize: '9px', cursor: 'pointer' }}>➖ Min</button>
+          <button onClick={() => setSize({ width: 800, height: 550 })} style={{ background: 'none', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '4px', fontSize: '9px', cursor: 'pointer' }}>🔲 Max</button>
+          <button onClick={onClose} style={{ background: '#ef4444', border: 'none', color: '#fff', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', padding: '1px 6px' }}>✕</button>
+        </div>
+      </div>
+
+      {/* ABAS DO PAINEL */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #1e293b', backgroundColor: '#020617' }}>
+        <button onClick={() => setTab('ia_core')} style={{ flex: 1, padding: '8px', border: 'none', borderBottom: tab === 'ia_core' ? '2px solid #00f0ff' : 'none', background: tab === 'ia_core' ? 'rgba(0,240,255,0.1)' : 'transparent', color: tab === 'ia_core' ? '#00f0ff' : '#64748b', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🧠 Núcleo AGI
+        </button>
+        <button onClick={() => setTab('quantum_logs')} style={{ flex: 1, padding: '8px', border: 'none', borderBottom: tab === 'quantum_logs' ? '2px solid #a855f7' : 'none', background: tab === 'quantum_logs' ? 'rgba(168,85,247,0.1)' : 'transparent', color: tab === 'quantum_logs' ? '#c084fc' : '#64748b', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+          ⚡ Compilador 3D
+        </button>
+      </div>
+
+      {/* CONTEÚDO DA JANELA */}
+      <div style={{ flexGrow: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {tab === 'ia_core' ? (
+          <>
+            <div style={{ backgroundColor: '#010409', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px', flexGrow: 1, fontFamily: 'monospace', fontSize: '11px', color: '#38bdf8', whiteSpace: 'pre-wrap' }}>
+              {respostaAGI}
+            </div>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input
+                type="text"
+                value={promptAGI}
+                onChange={(e) => setPromptAGI(e.target.value)}
+                placeholder="Digite seu comando para a IA EMgemini..."
+                style={{ flexGrow: 1, padding: '8px', backgroundColor: '#09090b', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none' }}
+              />
+              <button onClick={executarSimulacaoEMgemini} style={{ padding: '8px 12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
+                Enviar
+              </button>
+            </div>
+          </>
+        ) : (
+          <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
+            <p><strong>Status do Motor ROBOTOC 3D:</strong> Ativo (60 FPS)</p>
+            <p><strong>Servidor EMgemini:</strong> Conectado ao Vault Quântico.</p>
+            <p><strong>Ambiente Android Futurista:</strong> Permite redimensionamento em tempo real e testes de código por arrasto.</p>
+          </div>
+        )}
+      </div>
+
+      {/* ALÇA DE REDIMENSIONAMENTO (CANTO INFERIOR DIREITO) */}
+      <div
+        onMouseDown={handleMouseDownResize}
+        style={{
+          width: '14px',
+          height: '14px',
+          position: 'absolute',
+          right: 0,
+          bottom: 0,
+          cursor: 'se-resize',
+          background: 'linear-gradient(135deg, transparent 50%, #00f0ff 50%)',
+          borderBottomRightRadius: '14px'
+        }}
+      />
+    </div>
+  );
+}
+
+// =========================================================================================
 // 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
 // =========================================================================================
 function MotionTracker({ onFrameCapture }) {
@@ -114,7 +275,7 @@ function GlassKeyboard3D({ onKeyPress }) {
     <div style={{ background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(16px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: '0 0 20px rgba(0,240,255,0.15)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
         <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>⌨️ TECLADO HOLOGRÁFICO GLASS 3D</span>
-        {lastKey && <span style={{ fontSize: '10px', color: '#ffffff', backgroundColor: '#00f0ff', padding: '1px 6px', borderRadius: '4px', color: '#000', fontWeight: 'bold' }}>TECLA: {lastKey}</span>}
+        {lastKey && <span style={{ fontSize: '10px', backgroundColor: '#00f0ff', padding: '1px 6px', borderRadius: '4px', color: '#000', fontWeight: 'bold' }}>TECLA: {lastKey}</span>}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {keys.map((row, rIdx) => (
@@ -234,7 +395,7 @@ function RobotocNeuralThoughtPanel({ addLog }) {
     <div style={{ backgroundColor: 'rgba(2, 6, 23, 0.95)', border: '2px solid #00f0ff', borderRadius: '14px', padding: '14px', color: '#fff', boxShadow: '0 0 25px rgba(0,240,255,0.2)' }}>
       <div style={{ borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '6px', marginBottom: '10px' }}>
         <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: 0, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          🧠 PENSAMENTO FUTURISTA ROBOTOC 3D <span style={{ fontSize: '8px', color: '#ffffff', backgroundColor: '#00f0ff', color: '#000', padding: '1px 5px', borderRadius: '6px' }}>REAL CORE</span>
+          🧠 PENSAMENTO FUTURISTA ROBOTOC 3D <span style={{ fontSize: '8px', backgroundColor: '#00f0ff', color: '#000', padding: '1px 5px', borderRadius: '6px' }}>REAL CORE</span>
         </h3>
         <p style={{ margin: '4px 0 0 0', fontSize: '9px', color: '#94a3b8' }}>Integração direta com triple e-mail e processamento neural contínuo.</p>
       </div>
@@ -419,7 +580,6 @@ function PainelDevSplitScreen({ onClose }) {
   const [analisandoIA, setAnalisandoIA] = useState(false);
   const [relatorioErros, setRelatorioErros] = useState([]);
 
-  // Função para sintetizar voz no modo Explicar por Áudio
   const falarExplicacaoVoz = (texto) => {
     if ('speechSynthesis' in window) {
       const synth = window.speechSynthesis;
@@ -538,7 +698,6 @@ function PainelDevSplitScreen({ onClose }) {
         </button>
       </div>
 
-      {/* PAINEL DE CODIFICAÇÃO COM LINHAS */}
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <span style={{ fontSize: '9px', color: '#94a3b8', fontFamily: 'sans-serif' }}>CÓDIGO FONTE DO PROJETO ({linguagem.toUpperCase()}):</span>
         <textarea
@@ -553,7 +712,6 @@ function PainelDevSplitScreen({ onClose }) {
         />
       </div>
 
-      {/* RELATÓRIO DA IA EMGEMINI DE BUGS E SUGESTÕES */}
       {relatorioErros.length > 0 && (
         <div style={{ backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid rgba(0,240,255,0.3)', padding: '8px', borderRadius: '6px', maxHeight: '90px', overflowY: 'auto' }}>
           <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>📋 PAINEL DE DIAGNÓSTICO IA EMGEMINI:</span>
@@ -565,7 +723,6 @@ function PainelDevSplitScreen({ onClose }) {
         </div>
       )}
 
-      {/* TECLADO HOLOGRÁFICO GLASS 3D */}
       <GlassKeyboard3D 
         onKeyPress={(tecla) => {
           if (tecla === 'Backspace') {
@@ -955,22 +1112,13 @@ export default function EmanuelOSCore() {
   const CHAVE_MESTRE = "ASD-DDD-888";
   const CHAVE_TRIPLA_AUTORIZADA = "EMANUEL-TRIPLE-AGI-8888-BRS7";
 
-  const meusDadosReais = {
-    nome: "Emanuel da Silva (Comando Central Emanuel.OS v6.0)",
-    whatsapp: "5588981493989",
-    email: "leeheroi123@gmail.com",
-    tiktok: "https://www.tiktok.com/@emanueldasilva26",
-    instagram: "https://www.instagram.com/emanuelsilva432",
-    threads: "https://www.threads.net/@emanuelsilva432",
-    github: "https://github.com/Manomae",
-    facebook: "https://www.facebook.com/leeheroi.heroi",
-    youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
-  };
-
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
   const [modoDevSplit, setModoDevSplit] = useState(false);
+
+  // ESTADO DA JANELA FLUTUANTE ROBOTOC EMgemini
+  const [janelaRobotocAberta, setJanelaRobotocAberta] = useState(false);
 
   const [cmdLogs, setCmdLogs] = useState([
     "[ROBOTOC: LOG] System core v6.0 operational.",
@@ -983,7 +1131,6 @@ export default function EmanuelOSCore() {
     { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS v6.0 | ROBOTOC 3D em Azul Neon e Branco Quântico ativado!', tipo: 'sys' }
   ]);
 
-  const [horaAtual, setHoraAtual] = useState('');
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -1069,7 +1216,7 @@ export default function EmanuelOSCore() {
   };
 
   // =========================================================================
-  // 🤖 CENA THREE.JS: ROBOTOC 3D + BOLA HOLOGRÁFICA (AZUL NEON & BRANCO)
+  // 🤖 CENA THREE.JS: ROBOTOC 3D COM DETECÇÃO DE CLIQUE (RAYCASTER)
   // =========================================================================
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
@@ -1105,7 +1252,7 @@ export default function EmanuelOSCore() {
 
     scene.add(new THREE.AmbientLight(0x0f172a, 1.8));
 
-    // Grade holográfica de fundo
+    // Grade holográfica
     const grid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
     grid.position.y = -2.6;
     scene.add(grid);
@@ -1119,17 +1266,14 @@ export default function EmanuelOSCore() {
     // GRUPO ROBOTOC 3D
     const robotGroup = new THREE.Group();
 
-    // Capacete Robótico Futurista
     const head = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.75, 0.8), whiteArmorMat);
     head.position.y = 1.9;
     robotGroup.add(head);
 
-    // Visor Holográfico Azul
     const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.28, 0.82), cyanGlowMat);
     visor.position.set(0, 1.92, 0.02);
     robotGroup.add(visor);
 
-    // Orelhas/Antenas Articuladas Laterais
     const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.4), blueMetalMat);
     earL.rotation.z = Math.PI / 2;
     earL.position.set(-0.55, 1.9, 0);
@@ -1138,22 +1282,18 @@ export default function EmanuelOSCore() {
     robotGroup.add(earL);
     robotGroup.add(earR);
 
-    // Pescoço Cibernético
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 0.3, 16), blueMetalMat);
     neck.position.y = 1.4;
     robotGroup.add(neck);
 
-    // Torso em Armadura Branca e Azul
     const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.4, 1.3, 16), whiteArmorMat);
     chest.position.y = 0.6;
     robotGroup.add(chest);
 
-    // Núcleo de Energia (Arc Reactor Azul)
     const core = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), cyanGlowMat);
     core.position.set(0, 0.75, 0.35);
     robotGroup.add(core);
 
-    // Ombros Robóticos
     const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), blueMetalMat);
     shoulderL.position.set(-0.8, 1.05, 0);
     const shoulderR = shoulderL.clone();
@@ -1161,7 +1301,7 @@ export default function EmanuelOSCore() {
     robotGroup.add(shoulderL);
     robotGroup.add(shoulderR);
 
-    // BOLA HOLOGRÁFICA 3D FLUTUANTE
+    // BOLA HOLOGRÁFICA 3D
     const orbGroup = new THREE.Group();
     const innerOrb = new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 32), whiteGlowMat);
     const outerWire = new THREE.Mesh(
@@ -1177,7 +1317,28 @@ export default function EmanuelOSCore() {
     scene.add(robotGroup);
     avatarGroupRef.current = robotGroup;
 
-    // Loop de Animação Quântica
+    // LÓGICA DE INTERCEPTAÇÃO DE CLIQUE NO ROBOTOC (RAYCASTER)
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const handleCanvasClick = (event) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(robotGroup.children, true);
+
+      if (intersects.length > 0) {
+        // Ao clicar em qualquer parte do Robotoc 3D, abre a janela flutuante estilo Android Futurista
+        setJanelaRobotocAberta(true);
+      }
+    };
+
+    const domElem = renderer.domElement;
+    domElem.addEventListener('click', handleCanvasClick);
+
+    // Loop de Animação
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1201,6 +1362,7 @@ export default function EmanuelOSCore() {
     animate();
 
     return () => {
+      domElem.removeEventListener('click', handleCanvasClick);
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
@@ -1208,15 +1370,7 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // Atualizador de hora
-  useEffect(() => {
-    const updateTime = () => setHoraAtual(new Date().toLocaleTimeString('pt-BR'));
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA
+  // RENDERIZAÇÃO DA TELA DE BLOQUEIO
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
@@ -1303,7 +1457,7 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // DESBLOQUEADO (INTERFACE CORE v6.0)
+  // INTERFACE CORE v6.0 DESBLOQUEADA
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <Head><title>Emanuel.OS Core v6.0 | ROBOTOC 3D Azul & Branco</title></Head>
@@ -1313,7 +1467,7 @@ export default function EmanuelOSCore() {
         {/* LADO ESQUERDO / CENTRAL 3D */}
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }} />
+          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'pointer' }} />
 
           {/* BARRA SUPERIOR DE CONTROLES */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -1334,7 +1488,7 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* SIDEBAR ESQUERDA (MAPAS, MENSAGENS E PENSAMENTO NEURAL) */}
+          {/* SIDEBAR ESQUERDA */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
@@ -1381,7 +1535,7 @@ export default function EmanuelOSCore() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou envie comandos neurais..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou clique nele para abrir o painel..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
             </form>
           </div>
@@ -1394,6 +1548,9 @@ export default function EmanuelOSCore() {
           </div>
         )}
       </div>
+
+      {/* JANELA FLUTUANTE EXPANSÍVEL DO ROBOTOC 3D */}
+      <JanelaRobotocFuturista open={janelaRobotocAberta} onClose={() => setJanelaRobotocAberta(false)} />
 
       {/* GAVETA ANDROID HUD LATERAL */}
       <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)}>
