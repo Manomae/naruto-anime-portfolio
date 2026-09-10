@@ -10,7 +10,17 @@ import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
-// --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
+// Importação da Janela Futurista
+import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
+// Dicionário Ninja local para fallback
+const dicionarioNinjaLocal = [
+  { termo: "chakra", categoria: "Energia Neural", significado: "Massa de energia biológica e espiritual combinada para execução de técnicas e comandos neurais." },
+  { termo: "sharingan", categoria: "Linhagem Sanguínea", significado: "Dōjutsu do Clã Uchiha capaz de perceber, copiar e prever fluxos de informação e movimento." },
+  { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
+];
+
+// 🌟 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) --- 🌟
 function MotionTracker({ onFrameCapture }) {
   const videoRef = useRef(null);
   const [active, setActive] = useState(false);
@@ -55,13 +65,9 @@ function MotionTracker({ onFrameCapture }) {
   );
 }
 
-// --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR ---
+// 🌟 --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR --- 🌟
 function RobotocGear({ onConnectGear }) {
-  const [gears, setGears] = useState({
-    headset: false,
-    mouse: false,
-    keyboard: true
-  });
+  const [gears, setGears] = useState({ headset: false, mouse: false, keyboard: true });
 
   const toggleGear = (type) => {
     const nextState = !gears[type];
@@ -73,21 +79,15 @@ function RobotocGear({ onConnectGear }) {
     <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff' }}>
       <span style={{ fontSize: '10px', color: '#c084fc', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR</span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-        <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
-          🎧 Headset
-        </button>
-        <button onClick={() => toggleGear('mouse')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.mouse ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
-          🖱️ Mouse 3D
-        </button>
-        <button onClick={() => toggleGear('keyboard')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.keyboard ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
-          ⌨️ Glass Key
-        </button>
+        <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>🎧 Headset</button>
+        <button onClick={() => toggleGear('mouse')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.mouse ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>🖱️ Mouse 3D</button>
+        <button onClick={() => toggleGear('keyboard')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.keyboard ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>⌨️ Glass Key</button>
       </div>
     </div>
   );
 }
 
-// --- COMPONENTE: TECLADO HOLOGRÁFICO GLASS 3D ---
+// 🌟 --- COMPONENTE: TECLADO HOLOGRÁFICO GLASS 3D --- 🌟
 function GlassKeyboard3D({ onKeyPress }) {
   const keys = [
     ['Q','W','E','R','T','Y','U','I','O','P'],
@@ -129,18 +129,11 @@ function GlassKeyboard3D({ onKeyPress }) {
   );
 }
 
-// Dicionário Ninja local para fallback
-const dicionarioNinjaLocal = [
-  { termo: "chakra", categoria: "Energia Neural", significado: "Massa de energia biológica e espiritual combinada para execução de técnicas e comandos neurais." },
-  { termo: "sharingan", categoria: "Linhagem Sanguínea", significado: "Dōjutsu do Clã Uchiha capaz de perceber, copiar e prever fluxos de informação e movimento." },
-  { termo: "emanuel", categoria: "Mestre Criador", significado: "Desenvolvedor Chefe e Arquiteto Supremo do Emanuel.OS v5.1 e Matriz G-AGI." }
-];
-
-// --- PAINEL ANDROID HUD LATERAL (GAVETA EXPANSÍVEL) ---
+// 🌟 --- PAINEL ANDROID HUD LATERAL (GAVETA EXPANSÍVEL COM SETA) --- 🌟
 function AndroidHUDPanel({ open, onClose, children }) {
   return (
     <div style={{
-      position: 'fixed', top: 0, right: open ? 0 : '-320px', width: '310px', height: '100vh',
+      position: 'fixed', top: 0, right: open ? 0 : '-340px', width: '320px', height: '100vh',
       backgroundColor: 'rgba(2, 6, 23, 0.95)', borderLeft: '2px solid #00f0ff',
       backdropFilter: 'blur(20px)', zIndex: 180, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       padding: '16px', boxSizing: 'border-box', color: '#fff', display: 'flex', flexDirection: 'column', gap: '12px'
@@ -150,7 +143,7 @@ function AndroidHUDPanel({ open, onClose, children }) {
           <span style={{ fontSize: '16px' }}>🤖</span>
           <strong style={{ fontSize: '12px', color: '#00f0ff' }}>ANDROID HUD SYSTEM</strong>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>➔</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>➔</button>
       </div>
       <div style={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {children}
@@ -159,39 +152,98 @@ function AndroidHUDPanel({ open, onClose, children }) {
   );
 }
 
-// --- CREATOR STUDIO IA ---
+// 🌟 --- 📊 COMPONENTE: EM CREATOR STUDIO IA --- 📊 🌟
 function EMCreatorStudio({ onClose }) {
   const [metricas] = useState({
     textosConversas: 1240, audiosGerações: 380, fotosRenders: 890,
     videosRenderizados: 215, memesGifsEngajados: 560, audienciaAtiva: 'Alta (89% retenção)', resolucaoProblemasIA: '94,2% Autônomos'
   });
 
+  const [sugestoesAGI, setSugestoesAGI] = useState([
+    { id: 1, tipo: '🎬 Vídeos & YouTube Shorts', acao: 'Criar Shorts de Naruto vs Sasuke em 4K.', prioridade: 'Alta' },
+    { id: 2, tipo: '🖼️ Imagens Realistas', acao: 'Aumentar a geração de artes Cyberpunk via modelo EM 1.0.', prioridade: 'Média' },
+    { id: 3, tipo: '📄 Automação .DOCX / PDF', acao: 'Sintetizar relatórios automatizados de código diretamente no DevStudio.', prioridade: 'Crítica' }
+  ]);
+
+  const [executandoAcao, setExecutandoAcao] = useState(null);
+
+  const aplicarAcaoAutonoma = (id) => {
+    setExecutandoAcao(id);
+    setTimeout(() => {
+      setSugestoesAGI(prev => prev.filter(item => item.id !== id));
+      setExecutandoAcao(null);
+      alert(`🚀 Ação Autônoma da IA executada e aplicada na estrutura do Emanuel.OS!`);
+    }, 1500);
+  };
+
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(2, 6, 23, 0.88)', backdropFilter: 'blur(20px)', zIndex: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '25px', width: '100%', maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto', color: '#fff', position: 'relative' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(2, 6, 23, 0.88)', backdropFilter: 'blur(20px)', zIndex: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', fontFamily: 'system-ui, sans-serif' }}>
+      <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '25px', width: '100%', maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 0 40px rgba(0, 240, 255, 0.3)', color: '#fff', position: 'relative' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', color: '#00f0ff', fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
-        <h2 style={{ color: '#00f0ff', fontSize: '18px', margin: '0 0 10px 0' }}>📊 EM CREATOR STUDIO IA <span style={{ fontSize: '10px', color: '#ff007f', border: '1px solid #ff007f', padding: '2px 8px', borderRadius: '10px' }}>AGI Core v5.1</span></h2>
+
+        <div style={{ borderBottom: '1px solid rgba(0,240,255,0.2)', paddingBottom: '12px', marginBottom: '16px' }}>
+          <h2 style={{ color: '#00f0ff', fontSize: '18px', margin: 0, fontWeight: '900', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            📊 EM CREATOR STUDIO IA <span style={{ fontSize: '10px', color: '#ff007f', border: '1px solid #ff007f', padding: '2px 8px', borderRadius: '10px' }}>AGI Core v5.1</span>
+          </h2>
+        </div>
+
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px', marginBottom: '20px' }}>
           <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
             <span style={{ fontSize: '16px' }}>💬</span>
-            <strong style={{ display: 'block', fontSize: '12px', color: '#00f0ff' }}>{metricas.textosConversas}</strong>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#00f0ff', marginTop: '4px' }}>{metricas.textosConversas}</strong>
             <span style={{ fontSize: '8px', color: '#94a3b8' }}>Textos / Chat</span>
           </div>
           <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
             <span style={{ fontSize: '16px' }}>🎙️</span>
-            <strong style={{ display: 'block', fontSize: '12px', color: '#a855f7' }}>{metricas.audiosGerações}</strong>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginTop: '4px' }}>{metricas.audiosGerações}</strong>
             <span style={{ fontSize: '8px', color: '#94a3b8' }}>Áudios / Voz</span>
           </div>
+          <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid #334155', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+            <span style={{ fontSize: '16px' }}>🖼️</span>
+            <strong style={{ display: 'block', fontSize: '12px', color: '#ff007f', marginTop: '4px' }}>{metricas.fotosRenders}</strong>
+            <span style={{ fontSize: '8px', color: '#94a3b8' }}>Fotos / Renders</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {sugestoesAGI.map(item => (
+            <div key={item.id} style={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>{item.tipo}</span>
+                <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#e2e8f0' }}>{item.acao}</p>
+              </div>
+              <button onClick={() => aplicarAcaoAutonoma(item.id)} disabled={executandoAcao === item.id} style={{ padding: '8px 14px', backgroundColor: executandoAcao === item.id ? '#4c1d95' : '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
+                {executandoAcao === item.id ? '⚡ Aplicando...' : '🚀 Executar Ação'}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-// --- DEV SPLIT SCREEN ---
+// 🌟 --- 💻 COMPONENTE: PAINEL DE DESENVOLVEDOR SPLIT SCREEN --- 💻 🌟
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('javascript');
-  const [codigoFonte, setCodigoFonte] = useState(`// Emanuel.OS Dev Studio\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`);
+  const [codigoFonte, setCodigoFonte] = useState(
+    `// Emanuel.OS Dev Studio - Ambiente de Desenvolvimento\n// Assistência ativa via IA Gemini AGI Core v5.1 e Robotoc\n\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
+  );
+  const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração do Robotoc com os mapas 3D e Quick Actions.");
+  const [analisandoIA, setAnalisandoIA] = useState(false);
+  const [retornoIA, setRespostaIA] = useState(null);
+
+  const executarAnaliseIA = (tipoAcao) => {
+    setAnalisandoIA(true);
+    setRespostaIA(null);
+
+    setTimeout(() => {
+      setAnalisandoIA(false);
+      if (tipoAcao === 'bug') setRespostaIA("✅ Código analisado! Sintaxe 100% correta.");
+      else if (tipoAcao === 'otimizar') setRespostaIA("⚡ Otimização AGI: Recomenda-se utilizar React.useMemo em renderizações 3D.");
+      else if (tipoAcao === 'explicar') setRespostaIA("📖 Explicação: O script inicializa o módulo neural do Emanuel.OS.");
+    }, 1200);
+  };
 
   const exportarCodigoPDF = () => {
     const doc = new jsPDF();
@@ -209,71 +261,213 @@ function PainelDevSplitScreen({ onClose }) {
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(2, 6, 23, 0.96)', borderLeft: '2px solid #00f0ff', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', color: '#fff', fontFamily: 'monospace' }}>
+    <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(2, 6, 23, 0.96)', borderLeft: '2px solid #00f0ff', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', color: '#fff', fontFamily: 'Consolas, monospace' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
-        <strong style={{ fontSize: '12px', color: '#00f0ff' }}>👨‍💻 Dev Workstation | Split Screen</strong>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold' }}>✕ Fechar Split</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>👨‍💻</span>
+          <strong style={{ fontSize: '12px', color: '#00f0ff', fontFamily: 'sans-serif' }}>Emanuel.OS Dev Workstation | Tela Dividida</strong>
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>✕ Fechar Split</button>
       </div>
-      <textarea
-        value={codigoFonte}
-        onChange={(e) => setCodigoFonte(e.target.value)}
-        style={{ width: '100%', flexGrow: 1, backgroundColor: '#010409', border: '1px solid #334155', borderRadius: '8px', color: '#38bdf8', padding: '12px', fontSize: '11px', outline: 'none', resize: 'none' }}
-      />
+
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <select value={linguagem} onChange={(e) => setLinguagem(e.target.value)} style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', outline: 'none' }}>
+          <option value="javascript">JavaScript (Next.js/React)</option>
+          <option value="python">Python (AI/ML)</option>
+          <option value="typescript">TypeScript</option>
+        </select>
+        <button onClick={() => executarAnaliseIA('bug')} style={{ padding: '6px 10px', backgroundColor: 'rgba(0,240,255,0.2)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🔍 Checar Bugs</button>
+        <button onClick={() => executarAnaliseIA('otimizar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>⚡ Otimizar IA</button>
+      </div>
+
+      <textarea value={codigoFonte} onChange={(e) => setCodigoFonte(e.target.value)} style={{ width: '100%', flexGrow: 1, backgroundColor: '#010409', border: '1px solid #334155', borderRadius: '8px', color: '#38bdf8', padding: '12px', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
+
       <GlassKeyboard3D onKeyPress={(tecla) => {
         if (tecla === 'Backspace') setCodigoFonte(prev => prev.slice(0, -1));
         else if (tecla === 'Space') setCodigoFonte(prev => prev + ' ');
         else if (tecla === 'Enter') setCodigoFonte(prev => prev + '\n');
         else if (tecla.length === 1) setCodigoFonte(prev => prev + tecla);
       }} />
-      <div style={{ display: 'flex', gap: '6px' }}>
-        <button onClick={() => navigator.clipboard.writeText(codigoFonte)} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>📋 Copiar</button>
+
+      {retornoIA && <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '8px', borderRadius: '4px', fontSize: '10px', color: '#e2e8f0', fontFamily: 'sans-serif' }}>{retornoIA}</div>}
+
+      <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between' }}>
+        <button onClick={() => { navigator.clipboard.writeText(codigoFonte); alert("Código copiado!"); }} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>📋 Copiar Código</button>
         <button onClick={exportarCodigoPDF} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>📄 Exportar PDF</button>
       </div>
     </div>
   );
 }
 
+// 🌟 --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) --- 🌟
+function FormularioCapturaEmanuelOS() {
+  const [email, setEmail] = useState('');
+  const [enviado, setEnviado] = useState(false);
+  const [carregando, setCarregando] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setCarregando(true);
+    emailjs.send('service_94k276x', 'template_o11qtsf', { email: email, to_email: email, user_email: email }, 'MsHsmnoDh6w2fnYJ6')
+    .then(() => { setCarregando(false); setEnviado(true); setEmail(''); })
+    .catch(() => { setCarregando(false); alert('Erro ao enviar e-mail de confirmação!'); });
+  };
+
+  return (
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid #00f0ff', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif' }}>
+      <h3 style={{ color: '#00f0ff', margin: '0 0 6px 0', fontSize: '12px', fontWeight: 'bold' }}>🎁 Baixar 300 Comandos Mestre + Mapas 3D</h3>
+      {enviado ? (
+        <div style={{ color: '#4ade80', fontSize: '11px', textAlign: 'center' }}>✅ E-mail enviado com sucesso!</div>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <input type="email" required placeholder="Digite seu e-mail aqui..." value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none' }} />
+          <button type="submit" disabled={carregando} style={{ padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
+            {carregando ? '⏳ Enviando...' : '🚀 Quero Acesso Gratuito'}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+// 🌟 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA --- 🌟
+function GoogleMeetAvatarManager({ addLog }) {
+  const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
+  const [avatarEscolhido, setAvatarEscolhido] = useState('Robotoc (Humanoide 3D IA)');
+  const [telefoneConvidado, setTelefoneConvidado] = useState('');
+  const [dddConvidado, setDddConvidado] = useState('');
+  const [linkGerado, setLinkGerado] = useState('');
+  const [reuniaoAgendada, setReuniaoAgendada] = useState(false);
+
+  const criarReuniaoInstantanea = () => {
+    if (!temaReuniao.trim()) return alert("Defina o tema da reunião.");
+    const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 5);
+    const urlMeet = `https://meet.google.com/${codigoMeet}`;
+    setLinkGerado(urlMeet);
+    setReuniaoAgendada(true);
+    if (addLog) addLog(`[G-AGI: MEET] Reunião criada: "${temaReuniao}"`);
+  };
+
+  return (
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif' }}>
+      <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 6px 0' }}>🎥 Google Meet + Avatares IA</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <input type="text" value={temaReuniao} onChange={(e) => setTemaReuniao(e.target.value)} placeholder="Tema do Meet..." style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none' }} />
+        <button onClick={criarReuniaoInstantanea} style={{ padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>⚡ Gerar Meet</button>
+      </div>
+    </div>
+  );
+}
+
+// 🌟 --- COMPONENTE: TERMINAL NATIVO UNIX-LIKE EM CANVAS --- 🌟
+const UnixTerminalCanvas = () => {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [history, setHistory] = useState([
+    'Emanuel.OS v5.1 - Terminal Nativo v1.0 [Kernel 6.x-like]',
+    'ROBOTOC Neural Shell - Digite "help" para comandos.',
+    ' ',
+    'root@emanuel-os:~# '
+  ]);
+  const [currentLine, setCurrentLine] = useState('');
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const container = containerRef.current;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.fillStyle = '#000a12';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.font = '12px "Courier New", monospace';
+    ctx.fillStyle = '#4ade80';
+
+    const lineHeight = 16;
+    const padding = 10;
+    const maxLines = Math.floor((rect.height - padding * 2) / lineHeight);
+
+    const linesToDraw = history.slice(-maxLines);
+    linesToDraw.forEach((line, index) => {
+      ctx.fillText(line, padding, padding + (index + 1) * lineHeight);
+    });
+  }, [history, currentLine]);
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '220px', backgroundColor: '#000a12', border: '2px solid #00f0ff', borderRadius: '10px', padding: '5px', boxSizing: 'border-box', overflow: 'hidden' }}>
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+    </div>
+  );
+};
+
 // =========================================================================================
-// 🌟 --- COMPONENTE PRINCIPAL (INDEX) --- 🌟
+// 🌟 --- 🖥️ COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX) --- 🖥️ 🌟
 // =========================================================================================
 export default function EmanuelOSCore() {
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
   const [validandoServidores, setValidandoServidores] = useState(false);
-  const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única de 3 Camadas');
+  const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única de 3 Camadas de Segurança');
 
-  const [modoDevSplit, setModoDevSplit] = useState(false);
+  // Estados de Painéis Modernos
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
-  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
+  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
+  const [modoDevSplit, setModoDevSplit] = useState(false);
+  const [sidebarAberta, setSidebarAberta] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
+  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
 
-  const [cmdLogs, setCmdLogs] = useState(["[ROBOTOC: LOG] System operational.", "[ROBOTOC: AGI] Conectado ao Gemini OS Core v5.1."]);
+  // Estados do Chat e Logs
   const [chatInput, setChatInput] = useState('');
-  const [mensagens, setMensagens] = useState([{ autor: 'ROBOTOC (IA HUMANOIDE)', texto: 'Emanuel.OS Core v5.1 pronto.', tipo: 'sys' }]);
+  const [cmdInput, setCmdInput] = useState('');
+  const [cmdLogs, setCmdLogs] = useState([
+    "[ROBOTOC: LOG] System core operational.",
+    "[ROBOTOC: STATUS] Modo de Pensamento Neural: ONLINE & SYNCHRONIZED."
+  ]);
+  const [mensagens, setMensagens] = useState([
+    { autor: 'ROBOTOC (IA HUMANOIDE)', texto: 'Emanuel.OS Core v5.1 | ROBOTOC em Data Center 3D pronto!', tipo: 'sys' }
+  ]);
 
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
   const avatarGroupRef = useRef(null);
 
   const CHAVE_TRIPLA_AUTORIZADA = "EMANUEL-TRIPLE-AGI-8888-BRS7";
 
+  const meusDadosReais = {
+    nome: "Emanuel da Silva",
+    whatsapp: "5588981493989",
+    email: "leeheroi123@gmail.com",
+    tiktok: "https://www.tiktok.com/@emanueldasilva26",
+    instagram: "https://www.instagram.com/emanuelsilva432",
+    github: "https://github.com/Manomae",
+    youtube: "https://youtube.com/@emanuelsilva2987"
+  };
+
   const processarAutenticacao3Camadas = (e) => {
     e.preventDefault();
     setValidandoServidores(true);
-    setStatusAcessoTriplo("⏳ Validando servidores...");
+    setStatusAcessoTriplo("⏳ Conectando aos Servidores AGI...");
 
     setTimeout(() => {
       setValidandoServidores(false);
       if (chaveAcessoTripla.trim() === CHAVE_TRIPLA_AUTORIZADA || chaveAcessoTripla.trim() === "8888") {
         setBloqueado(false);
       } else {
-        setStatusAcessoTriplo("❌ Chave Incorreta!");
+        setStatusAcessoTriplo("❌ Chave de Acesso Negada!");
       }
     }, 1200);
   };
 
-  // --- CENA THREE.JS (NOVO ROBOTOC 3D REFORMULADO) ---
+  // --- RENDERIZAÇÃO THREE.JS DO ROBÔ ROBOTOC ---
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -286,6 +480,7 @@ export default function EmanuelOSCore() {
 
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
     camera.position.set(0, 0, 7);
+    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
@@ -300,34 +495,25 @@ export default function EmanuelOSCore() {
     cyanLight.position.set(-3, 3, 3);
     scene.add(cyanLight);
 
-    // --- MONTAGEM DO NOVO ROBÔ ROBOTOC 3D ---
+    // ROBÔ ROBOTOC 3D
     const robotGroup = new THREE.Group();
     const metalMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
     const glowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.8 });
 
-    // Cabeça Futuro-HUD
     const headGeo = new THREE.BoxGeometry(0.8, 0.6, 0.6);
     const head = new THREE.Mesh(headGeo, metalMat);
     head.position.y = 1.8;
     robotGroup.add(head);
 
-    // Visor Holográfico
     const visorGeo = new THREE.PlaneGeometry(0.7, 0.25);
     const visor = new THREE.Mesh(visorGeo, glowMat);
     visor.position.set(0, 1.8, 0.31);
     robotGroup.add(visor);
 
-    // Torso Quântico
     const torsoGeo = new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16);
     const torso = new THREE.Mesh(torsoGeo, metalMat);
     torso.position.y = 0.8;
     robotGroup.add(torso);
-
-    // Núcleo de Energia (Core)
-    const coreGeo = new THREE.SphereGeometry(0.2, 16, 16);
-    const core = new THREE.Mesh(coreGeo, glowMat);
-    core.position.set(0, 0.9, 0.25);
-    robotGroup.add(core);
 
     scene.add(robotGroup);
     avatarGroupRef.current = robotGroup;
@@ -359,54 +545,100 @@ export default function EmanuelOSCore() {
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'sans-serif' }}>
-        <form onSubmit={processarAutenticacao3Camadas} style={{ backgroundColor: '#080f1e', border: '2px solid #00f0ff', borderRadius: '20px', padding: '30px', textAlign: 'center', width: '320px' }}>
-          <h2 style={{ color: '#00f0ff', fontSize: '18px', margin: '0 0 10px 0' }}>🤖 EMANUEL.OS v5.1</h2>
+        <form onSubmit={processarAutenticacao3Camadas} style={{ backgroundColor: '#080f1e', border: '2px solid #00f0ff', borderRadius: '24px', padding: '35px', textAlign: 'center', width: '340px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.3)' }}>
+          <h2 style={{ color: '#00f0ff', fontSize: '20px', margin: '0 0 10px 0', fontWeight: '900' }}>🤖 EMANUEL.OS v5.1</h2>
           <p style={{ fontSize: '10px', color: '#94a3b8' }}>{statusAcessoTriplo}</p>
-          <input type="password" value={chaveAcessoTripla} onChange={(e) => setChaveAcessoTripla(e.target.value)} placeholder="Senha Mestre..." style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: '#000', color: '#fff', textAlign: 'center', margin: '15px 0', boxSizing: 'border-box' }} />
-          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Acessar Núcleo ➔</button>
+          <input type="password" value={chaveAcessoTripla} onChange={(e) => setChaveAcessoTripla(e.target.value)} placeholder="Senha Mestre..." style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #00f0ff', backgroundColor: '#000', color: '#fff', textAlign: 'center', margin: '15px 0', boxSizing: 'border-box' }} />
+          <button type="submit" disabled={validandoServidores} style={{ width: '100%', padding: '12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+            {validandoServidores ? '⏳ Validando...' : 'Acessar Núcleo ➔'}
+          </button>
         </form>
       </div>
     );
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'sans-serif', overflow: 'hidden', display: 'flex' }}>
+    <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'system-ui, sans-serif', overflow: 'hidden', position: 'relative' }}>
       <Head><title>Emanuel.OS Core v5.1 | Gemini & ROBOTOC HUD</title></Head>
 
-      <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative' }}>
-        <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+        <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s' }}>
+          <div ref={mountRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
 
-        {/* BOTOES DE CONTROLE TOPO */}
-        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px' }}>
-          <button onClick={() => setModoDevSplit(!modoDevSplit)} style={{ padding: '8px 12px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-            🖥️ {modoDevSplit ? 'Fechar Split' : 'Dev Split'}
-          </button>
-          <button onClick={() => setAndroidHudOpen(true)} style={{ padding: '8px 12px', backgroundColor: 'rgba(0,240,255,0.2)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-            ◀ Android HUD
-          </button>
-        </div>
+          {/* BARRA DE BOTÕES PRINCIPAL */}
+          <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px' }}>
+            <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold' }}>
+              {sidebarAberta ? '✕' : '☰'}
+            </button>
 
-        {/* CHAT / INTERAÇÃO IA */}
-        <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '600px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(10px)', border: '1px solid #00f0ff', borderRadius: '20px', padding: '6px 12px', display: 'flex', gap: '6px' }}>
-            <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com a IA e acione o ROBOTOC..." style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '11px', flexGrow: 1, outline: 'none' }} />
-            <button style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '12px', padding: '6px 12px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Enviar</button>
+            <button onClick={() => setModoDevSplit(!modoDevSplit)} style={{ backgroundColor: modoDevSplit ? '#ff007f' : 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#c084fc', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
+              🖥️ {modoDevSplit ? 'Fechar Split' : 'Dev Split'}
+            </button>
+
+            <button onClick={() => setAndroidHudOpen(true)} style={{ backgroundColor: 'rgba(0, 240, 255, 0.2)', border: '1px solid #00f0ff', color: '#00f0ff', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
+              ◀ Android HUD
+            </button>
           </div>
-        </div>
-      </div>
 
-      {/* PAINEL DEV SPLIT SCREEN */}
-      {modoDevSplit && (
-        <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
-          <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
+          {/* SIDEBAR COMPLETA COM MAPAS E LINK EXTERNO */}
+          <aside style={{ position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '350px' : '0px', opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', borderRight: '1px solid #00f0ff', padding: sidebarAberta ? '20px' : '0px', height: '100vh', overflowY: 'auto', zIndex: 90, transition: 'all 0.3s' }}>
+            {sidebarAberta && (
+              <>
+                <h2 style={{ color: '#00f0ff', fontSize: '16px', margin: '0 0 10px 0' }}>Contexto: EMANUEL.OS</h2>
+                <GoogleMeetAvatarManager addLog={(log) => setCmdLogs(prev => [...prev, log])} />
+                <UnixTerminalCanvas />
+                <FormularioCapturaEmanuelOS />
+
+                <div style={{ margin: '15px 0', padding: '10px', backgroundColor: '#0f172a', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 'bold' }}>🌐 Mapas 3D Integrados</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: '8px' }}>
+                    <Link href="/espacial" style={{ color: '#38bdf8', fontSize: '10px', textDecoration: 'none' }}>🪐 Espacial</Link>
+                    <Link href="/mapa" style={{ color: '#4ade80', fontSize: '10px', textDecoration: 'none' }}>🌍 Terrestre</Link>
+                  </div>
+                </div>
+              </>
+            )}
+          </aside>
+
+          {/* PAINEL DIREITO EXPANSÍVEL (GERENCIADOR DE COMANDOS) */}
+          <div style={{ position: 'absolute', right: painelFluidoDireitoAberto ? '0px' : '-360px', top: '10px', height: 'calc(100vh - 20px)', width: '350px', backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid #00f0ff', borderRadius: '16px 0 0 16px', zIndex: 95, transition: 'all 0.4s', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button onClick={() => setPainelFluidoDireitoAberto(!painelFluidoDireitoAberto)} style={{ position: 'absolute', left: '-40px', top: '20px', width: '40px', height: '40px', backgroundColor: '#070c1c', border: '1px solid #00f0ff', borderRight: 'none', color: '#00f0ff', cursor: 'pointer', borderRadius: '8px 0 0 8px' }}>
+              {painelFluidoDireitoAberto ? '➔' : '⚙️'}
+            </button>
+
+            <RobotocGear />
+            <MotionTracker />
+
+            <div style={{ flexGrow: 1, backgroundColor: '#020617', padding: '10px', borderRadius: '8px', overflowY: 'auto', fontSize: '10px', fontFamily: 'monospace' }}>
+              {cmdLogs.map((log, i) => <p key={i} style={{ margin: '2px 0', color: '#38bdf8' }}>{log}</p>)}
+            </div>
+          </div>
+
+          {/* CHAT HUD INFERIOR */}
+          <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '650px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ background: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '6px 12px', display: 'flex', gap: '6px' }}>
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC ou envie comandos..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '11px', flexGrow: 1 }} />
+              <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
+            </form>
+          </div>
+
+          <FuturisticWindowManager />
         </div>
-      )}
+
+        {/* MODAL DEV SPLIT SCREEN */}
+        {modoDevSplit && (
+          <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
+            <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
+          </div>
+        )}
+      </div>
 
       {/* GAVETA ANDROID HUD LATERAL */}
       <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)}>
         <MotionTracker />
         <RobotocGear />
-        <button onClick={() => setModalCreatorStudioAberto(true)} style={{ padding: '10px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+        <GlassKeyboard3D />
+        <button onClick={() => setModalCreatorStudioAberto(true)} style={{ padding: '10px', backgroundColor: 'rgba(0, 240, 255, 0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
           📊 Creator Studio IA
         </button>
       </AndroidHUDPanel>
