@@ -2773,29 +2773,10 @@ export default function EmanuelOSCore() {
   padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
   gap: '12px', boxShadow: '-10px 0 40px rgba(0, 240, 255, 0.25)'
 }}>
- {/* Periféricos Bluetooth (Headset, Mouse, Teclado) */}
   <RobotocGear 
     onConnectGear={(tipo, estado) => {
       addLogTerminal(`[ROBOTOC GEAR] ${tipo.toUpperCase()} status: ${estado ? 'CONECTADO' : 'DESCONECTADO'}`);
     }}
-  />
-
-  {/* Rastreamento por Câmera */}
-  <MotionTracker />
-
-  {/* Teclado Holográfico 3D */}
-  <GlassKeyboard3D 
-    onKeyPress={(tecla) => {
-      if (tecla === 'Backspace') {
-        setCodigoFonte(prev => prev.slice(0, -1));
-      } else if (tecla === 'Space') {
-        setCodigoFonte(prev => prev + ' ');
-      } else if (tecla === 'Enter') {
-        setCodigoFonte(prev => prev + '\n');
-      } else if (tecla.length === 1) {
-        setCodigoFonte(prev => prev + tecla);
-      }
-    }} 
   />
 
   <button
