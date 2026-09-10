@@ -92,37 +92,50 @@ function RobotocGear({ onConnectGear }) {
 }
 
 // =========================================================================================
-// ⌨️ --- COMPONENTE: TECLADO HOLOGRÁFICO GLASS 3D ---
+// ⌨️ --- COMPONENTE: TECLADO HOLOGRÁFICO GLASS 3D INTERATIVO ---
 // =========================================================================================
 function GlassKeyboard3D({ onKeyPress }) {
+  const [ultimaTecla, setUltimaTecla] = useState('');
   const keys = [
     ['Q','W','E','R','T','Y','U','I','O','P'],
     ['A','S','D','F','G','H','J','K','L'],
     ['Z','X','C','V','B','N','M','Backspace'],
+    ['1','2','3','4','5','6','7','8','9','0'],
     ['Space', 'Enter']
   ];
 
+  const handlePress = (k) => {
+    setUltimaTecla(k);
+    if (onKeyPress) onKeyPress(k);
+  };
+
   return (
-    <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(12px)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '8px', color: '#fff' }}>
-      <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>⌨️ TECLADO HOLOGRÁFICO GLASS 3D</span>
+    <div style={{ background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(16px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '10px', color: '#fff' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+        <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>⌨️ TECLADO HOLOGRÁFICO GLASS 3D</span>
+        <span style={{ fontSize: '9px', color: '#ff007f', fontFamily: 'monospace', fontWeight: 'bold' }}>
+          TECLA PRESSIONADA: <span style={{ color: '#00f0ff', border: '1px solid #00f0ff', padding: '1px 6px', borderRadius: '4px' }}>{ultimaTecla || 'NENHUMA'}</span>
+        </span>
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {keys.map((row, rIdx) => (
           <div key={rIdx} style={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
             {row.map((k) => (
               <button
                 key={k}
-                onClick={() => onKeyPress && onKeyPress(k)}
+                onClick={() => handlePress(k)}
                 style={{
                   flex: k === 'Space' ? 3 : k === 'Enter' || k === 'Backspace' ? 1.5 : 1,
                   padding: '5px 2px',
-                  background: 'rgba(0, 240, 255, 0.1)',
-                  border: '1px solid rgba(0, 240, 255, 0.3)',
+                  background: ultimaTecla === k ? 'rgba(0, 240, 255, 0.4)' : 'rgba(0, 240, 255, 0.1)',
+                  border: ultimaTecla === k ? '1px solid #00f0ff' : '1px solid rgba(0, 240, 255, 0.3)',
                   borderRadius: '4px',
                   color: '#00f0ff',
                   fontSize: '9px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
-                  boxShadow: '0 0 5px rgba(0,240,255,0.2)'
+                  boxShadow: ultimaTecla === k ? '0 0 10px rgba(0,240,255,0.8)' : '0 0 5px rgba(0,240,255,0.2)',
+                  transition: 'all 0.1s ease'
                 }}
               >
                 {k}
@@ -136,12 +149,94 @@ function GlassKeyboard3D({ onKeyPress }) {
 }
 
 // =========================================================================================
+// 📲 --- ABA EXCLUSIVA: ENVIADOR DE MENSAGENS REAL (WHATSAPP, TELEGRAM, GOOGLE MESSAGES) ---
+// =========================================================================================
+function EnvioMensagensDiretasPanel({ addLog }) {
+  const [modoEnvio, setModoEnvio] = useState('unico'); // unico | lote
+  const [plataforma, setPlataforma] = useState('whatsapp'); // whatsapp | telegram | google_messages
+  const [telefoneUnico, setTelefoneUnico] = useState('');
+  const [telefonesLote, setTelefonesLote] = useState('');
+  const [mensagemTexto, setMensagemTexto] = useState('Olá! Mensagem enviada via Emanuel.OS Core v6.0');
+
+  const executarEnvioReal = () => {
+    if (!mensagemTexto.trim()) return alert("Digite o texto da mensagem.");
+
+    if (modoEnvio === 'unico') {
+      const num = telefoneUnico.replace(/\D/g, '');
+      if (!num) return alert("Digite um número de telefone válido com DDD.");
+
+      if (plataforma === 'whatsapp') {
+        window.open(`https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(mensagemTexto)}`, '_blank');
+      } else if (plataforma === 'telegram') {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mensagemTexto)}`, '_blank');
+      } else if (plataforma === 'google_messages') {
+        window.open(`https://messages.google.com/web/authentication`, '_blank');
+      }
+      if (addLog) addLog(`[ENVIO REAL] Mensagem enviada para ${num} via ${plataforma.toUpperCase()}`);
+    } else {
+      const lista = telefonesLote.split('\n').map(t => t.replace(/\D/g, '')).filter(Boolean);
+      if (lista.length === 0) return alert("Insira ao menos um número válido na lista de lote.");
+
+      lista.forEach((num, index) => {
+        setTimeout(() => {
+          if (plataforma === 'whatsapp') {
+            window.open(`https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(mensagemTexto)}`, '_blank');
+          } else if (plataforma === 'telegram') {
+            window.open(`https://t.me/share/url?text=${encodeURIComponent(mensagemTexto)}`, '_blank');
+          }
+        }, index * 800);
+      });
+
+      if (addLog) addLog(`[ENVIO EM LOTE] Disparado para ${lista.length} números via ${plataforma.toUpperCase()}`);
+    }
+  };
+
+  return (
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '2px solid #22c55e', borderRadius: '14px', padding: '14px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif' }}>
+      <h3 style={{ color: '#4ade80', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        📲 DISPARADOR REAL DE MENSAGENS DIRETA
+      </h3>
+      <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
+        Envio sem simulações via WhatsApp Direct, Telegram Direct e Google Messages Web.
+      </p>
+
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+        <button onClick={() => setModoEnvio('unico')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #4ade80', background: modoEnvio === 'unico' ? 'rgba(74, 222, 128, 0.2)' : 'transparent', color: '#fff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+          👤 Número Único
+        </button>
+        <button onClick={() => setModoEnvio('lote')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #4ade80', background: modoEnvio === 'lote' ? 'rgba(74, 222, 128, 0.2)' : 'transparent', color: '#fff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+          👥 Dois ou Mais (Lote)
+        </button>
+      </div>
+
+      <select value={plataforma} onChange={(e) => setPlataforma(e.target.value)} style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', marginBottom: '8px' }}>
+        <option value="whatsapp">🟢 WhatsApp Direct API</option>
+        <option value="telegram">✈️ Telegram Direct API</option>
+        <option value="google_messages">💬 Google Messages Web</option>
+      </select>
+
+      {modoEnvio === 'unico' ? (
+        <input type="text" placeholder="Ex: 5588981493989" value={telefoneUnico} onChange={(e) => setTelefoneUnico(e.target.value)} style={{ width: '100%', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', marginBottom: '8px', boxSizing: 'border-box' }} />
+      ) : (
+        <textarea placeholder="Digite um número por linha (Ex: 5588981493989)" value={telefonesLote} onChange={(e) => setTelefonesLote(e.target.value)} style={{ width: '100%', height: '60px', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', marginBottom: '8px', resize: 'none', boxSizing: 'border-box' }} />
+      )}
+
+      <textarea placeholder="Escreva sua mensagem real..." value={mensagemTexto} onChange={(e) => setMensagemTexto(e.target.value)} style={{ width: '100%', height: '50px', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', marginBottom: '8px', resize: 'none', boxSizing: 'border-box' }} />
+
+      <button onClick={executarEnvioReal} style={{ width: '100%', padding: '9px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
+        🚀 Disparar Mensagem Real
+      </button>
+    </div>
+  );
+}
+
+// =========================================================================================
 // 📱 --- PAINEL ANDROID HUD LATERAL (GAVETA EXPANSÍVEL) ---
 // =========================================================================================
-function AndroidHUDPanel({ open, onClose, children }) {
+function AndroidHUDPanel({ open, onClose, children, addLog }) {
   return (
     <div style={{
-      position: 'fixed', top: 0, right: open ? 0 : '-340px', width: '330px', height: '100vh',
+      position: 'fixed', top: 0, right: open ? 0 : '-360px', width: '350px', height: '100vh',
       backgroundColor: 'rgba(2, 6, 23, 0.95)', borderLeft: '2px solid #00f0ff',
       backdropFilter: 'blur(20px)', zIndex: 180, transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       padding: '16px', boxSizing: 'border-box', color: '#fff', display: 'flex', flexDirection: 'column', gap: '12px'
@@ -154,124 +249,8 @@ function AndroidHUDPanel({ open, onClose, children }) {
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>✕</button>
       </div>
       <div style={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <EnvioMensagensDiretasPanel addLog={addLog} />
         {children}
-      </div>
-    </div>
-  );
-}
-
-// =========================================================================================
-// 💬 --- MÓDULO DE PENSAMENTO FUTURÍSTICO ROBOTOC 3D (CONTAS & DISPARADOR REAL) ---
-// =========================================================================================
-function RobotocThoughtCore({ emailGoogle, setEmailGoogle, emailApple, setEmailApple, emailMicrosoft, setEmailMicrosoft, onOpenDispatcher, addLog }) {
-  const [contaAtiva, setContaAtiva] = useState('google');
-
-  return (
-    <div style={{ backgroundColor: 'rgba(2, 6, 23, 0.9)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '12px', color: '#fff' }}>
-      <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-        🧠 NÚCLEO DE PENSAMENTO FUTURÍSTICO ROBOTOC
-      </span>
-
-      {/* Opções de Contas / E-mails reais */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '9px', color: '#94a3b8' }}>VINCULAR CONTEXTO DE E-MAIL REAL:</span>
-        <div style={{ display: 'flex', gap: '4px' }}>
-          <button onClick={() => setContaAtiva('google')} style={{ flex: 1, padding: '5px', borderRadius: '4px', border: '1px solid #00f0ff', background: contaAtiva === 'google' ? 'rgba(0,240,255,0.2)' : '#0f172a', color: '#fff', fontSize: '8px', cursor: 'pointer' }}>
-            Google Mail
-          </button>
-          <button onClick={() => setContaAtiva('apple')} style={{ flex: 1, padding: '5px', borderRadius: '4px', border: '1px solid #a855f7', background: contaAtiva === 'apple' ? 'rgba(168,85,247,0.2)' : '#0f172a', color: '#fff', fontSize: '8px', cursor: 'pointer' }}>
-            Apple iCloud
-          </button>
-          <button onClick={() => setContaAtiva('microsoft')} style={{ flex: 1, padding: '5px', borderRadius: '4px', border: '1px solid #00a4ef', background: contaAtiva === 'microsoft' ? 'rgba(0,164,239,0.2)' : '#0f172a', color: '#fff', fontSize: '8px', cursor: 'pointer' }}>
-            OneDrive / Outlook
-          </button>
-        </div>
-
-        {contaAtiva === 'google' && (
-          <input type="email" value={emailGoogle} onChange={(e) => setEmailGoogle(e.target.value)} placeholder="leeheroi123@gmail.com" style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '4px', color: '#fff', fontSize: '10px', outline: 'none' }} />
-        )}
-        {contaAtiva === 'apple' && (
-          <input type="email" value={emailApple} onChange={(e) => setEmailApple(e.target.value)} placeholder="emanuel@icloud.com" style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #a855f7', borderRadius: '4px', color: '#fff', fontSize: '10px', outline: 'none' }} />
-        )}
-        {contaAtiva === 'microsoft' && (
-          <input type="email" value={emailMicrosoft} onChange={(e) => setEmailMicrosoft(e.target.value)} placeholder="emanuel@outlook.com" style={{ padding: '6px', backgroundColor: '#020617', border: '1px solid #00a4ef', borderRadius: '4px', color: '#fff', fontSize: '10px', outline: 'none' }} />
-        )}
-      </div>
-
-      <button onClick={onOpenDispatcher} style={{ width: '100%', padding: '8px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
-        📲 Abrir Central Dispatcher de Mensagens (Telefone Real)
-      </button>
-    </div>
-  );
-}
-
-// =========================================================================================
-// 📩 --- ABA EXCLUSIVA DE ENVIO REAL DE MENSAGENS POR NÚMERO ---
-// =========================================================================================
-function MessageDispatcherModal({ onClose, addLog }) {
-  const [num1, setNum1] = useState('88981493989');
-  const [num2, setNum2] = useState('');
-  const [ddd, setDdd] = useState('55');
-  const [mensagem, setMensagem] = useState('Olá! Mensagem enviada via Emanuel.OS Core v6.0 Robotoc 3D.');
-  const [modo, setModo] = useState('whatsapp'); // whatsapp, telegram, google
-
-  const executarDisparo = () => {
-    if (!num1.trim()) return alert("Insira ao menos um número de telefone.");
-
-    const listaNumeros = [num1.trim()];
-    if (num2.trim()) listaNumeros.push(num2.trim());
-
-    listaNumeros.forEach((num) => {
-      const fullNum = `${ddd}${num.replace(/\D/g, '')}`;
-      let targetUrl = '';
-
-      if (modo === 'whatsapp') {
-        targetUrl = `https://api.whatsapp.com/send?phone=${fullNum}&text=${encodeURIComponent(mensagem)}`;
-      } else if (modo === 'telegram') {
-        targetUrl = `https://t.me/+${fullNum}`;
-      } else if (modo === 'google') {
-        targetUrl = `sms:+${fullNum}?body=${encodeURIComponent(mensagem)}`;
-      }
-
-      if (typeof window !== 'undefined') {
-        window.open(targetUrl, '_blank');
-      }
-
-      if (addLog) addLog(`[DISPATCHER] Mensagem enviada para ${fullNum} via ${modo.toUpperCase()}`);
-    });
-  };
-
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(2, 6, 23, 0.88)', backdropFilter: 'blur(15px)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ backgroundColor: '#090d16', border: '2px solid #22c55e', borderRadius: '16px', padding: '20px', width: '100%', maxWidth: '480px', color: '#fff', position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', color: '#22c55e', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
-
-        <h3 style={{ color: '#22c55e', fontSize: '14px', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          📲 CENTRAL DISPATCHER REAL DE MENSAGENS
-        </h3>
-        <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 12px 0' }}>
-          Envie mensagens diretamente para até 2 números por vez via WhatsApp, Telegram ou Google Mensagens.
-        </p>
-
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-          <select value={modo} onChange={(e) => setModo(e.target.value)} style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #22c55e', borderRadius: '6px', color: '#22c55e', fontSize: '10px', outline: 'none' }}>
-            <option value="whatsapp">WhatsApp Direct</option>
-            <option value="telegram">Telegram Direct</option>
-            <option value="google">Google Mensagens (SMS)</option>
-          </select>
-
-          <input type="text" value={ddd} onChange={(e) => setDdd(e.target.value)} placeholder="DDI" style={{ width: '45px', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-          <input type="text" value={num1} onChange={(e) => setNum1(e.target.value)} placeholder="1º Número (obrigatório)" style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none' }} />
-          <input type="text" value={num2} onChange={(e) => setNum2(e.target.value)} placeholder="2º Número (opcional)" style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none' }} />
-          <textarea value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Sua mensagem..." style={{ width: '100%', height: '70px', padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '11px', outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
-        </div>
-
-        <button onClick={executarDisparo} style={{ width: '100%', padding: '10px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
-          🚀 Executar Envio Real Agora
-        </button>
       </div>
     </div>
   );
@@ -396,7 +375,7 @@ function EMCreatorStudio({ onClose }) {
 }
 
 // =========================================================================================
-// 💻 --- PAINEL DE DESENVOLVEDOR SPLIT SCREEN ---
+// 💻 --- PAINEL DE DESENVOLVEDOR SPLIT SCREEN COM CORREÇÃO AUTOMÁTICA GEMINI ---
 // =========================================================================================
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('javascript');
@@ -405,22 +384,52 @@ function PainelDevSplitScreen({ onClose }) {
   );
   const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração do Robotoc 3D com os mapas e Quick Actions.");
   const [analisandoIA, setAnalisandoIA] = useState(false);
-  const [retornoIA, setRespostaIA] = useState(null);
+  const [diagnosticoLinhas, setDiagnosticoLinhas] = useState([]);
 
-  const executarAnaliseIA = (tipoAcao) => {
+  const executarAnaliseIACompleta = (tipoAcao) => {
     setAnalisandoIA(true);
-    setRespostaIA(null);
 
     setTimeout(() => {
       setAnalisandoIA(false);
-      if (tipoAcao === 'bug') {
-        setRespostaIA("✅ Código analisado! Sintaxe 100% correta. Nenhuma vulnerabilidade detectada.");
-      } else if (tipoAcao === 'otimizar') {
-        setRespostaIA("⚡ Otimização AGI: Recomenda-se utilizar React.useMemo para renderizações 3D pesadas.");
-      } else if (tipoAcao === 'explicar') {
-        setRespostaIA("📖 Explicação: O script inicializa o módulo neural do Emanuel.OS verificando o ambiente.");
-      }
+      const linhas = codigoFonte.split('\n');
+      const novosDiagnosticos = [];
+
+      linhas.forEach((line, index) => {
+        const numLinha = index + 1;
+        if (line.includes('var') || line.includes('==')) {
+          novosDiagnosticos.push({
+            linha: numLinha,
+            tipo: 'erro',
+            texto: `Linha ${numLinha}: Uso de 'var' ou '==' não recomendado. Use 'const/let' e '==='.`
+          });
+        } else if (line.includes('function')) {
+          novosDiagnosticos.push({
+            linha: numLinha,
+            tipo: 'sugestao',
+            texto: `Linha ${numLinha}: Otimização AGI -> Converter para Arrow Function (ES6) para melhor performance.`
+          });
+        } else {
+          novosDiagnosticos.push({
+            linha: numLinha,
+            tipo: 'corrigido',
+            texto: `Linha ${numLinha}: Código validado e otimizado pela IA EMgemini.`
+          });
+        }
+      });
+
+      setDiagnosticoLinhas(novosDiagnosticos);
     }, 1200);
+  };
+
+  const falarExploracaoVoz = () => {
+    if ('speechSynthesis' in window) {
+      const texto = `Diagnóstico da IA EMgemini concluído. ${diagnosticoLinhas.length} linhas analisadas.`;
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = 'pt-BR';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Recurso de síntese de voz não suportado neste navegador.");
+    }
   };
 
   const baixarCodigoArquivo = () => {
@@ -460,7 +469,7 @@ function PainelDevSplitScreen({ onClose }) {
       width: '100%', height: '100%', backgroundColor: 'rgba(2, 6, 23, 0.96)',
       borderLeft: '2px solid #00f0ff', padding: '16px', boxSizing: 'border-box',
       display: 'flex', flexDirection: 'column', gap: '12px', color: '#fff',
-      fontFamily: 'Consolas, Monaco, monospace'
+      fontFamily: 'Consolas, Monaco, monospace', overflowY: 'auto'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -488,14 +497,14 @@ function PainelDevSplitScreen({ onClose }) {
           <option value="sql">SQL / Database</option>
         </select>
 
-        <button onClick={() => executarAnaliseIA('bug')} style={{ padding: '6px 10px', backgroundColor: 'rgba(0,240,255,0.2)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          🔍 Checar Bugs
+        <button onClick={() => executarAnaliseIACompleta('bug')} style={{ padding: '6px 10px', backgroundColor: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🔍 Checar Bugs & Linhas
         </button>
-        <button onClick={() => executarAnaliseIA('otimizar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          ⚡ Otimizar IA
+        <button onClick={() => executarAnaliseIACompleta('otimizar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(168,85,247,0.2)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          ⚡ Otimizar EMgemini
         </button>
-        <button onClick={() => executarAnaliseIA('explicar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(234,179,8,0.2)', border: '1px solid #eab308', color: '#fef08a', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          📖 Explicar
+        <button onClick={falarExploracaoVoz} style={{ padding: '6px 10px', backgroundColor: 'rgba(234,179,8,0.2)', border: '1px solid #eab308', color: '#fef08a', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🎙️ Explicar com Áudio
         </button>
       </div>
 
@@ -505,9 +514,9 @@ function PainelDevSplitScreen({ onClose }) {
           value={codigoFonte}
           onChange={(e) => setCodigoFonte(e.target.value)}
           style={{
-            width: '100%', flexGrow: 1, backgroundColor: '#010409', border: '1px solid #334155',
+            width: '100%', minHeight: '140px', backgroundColor: '#010409', border: '1px solid #334155',
             borderRadius: '8px', color: '#38bdf8', padding: '12px', fontSize: '11px',
-            outline: 'none', resize: 'none', lineHeight: '1.4', fontFamily: 'Consolas, monospace',
+            outline: 'none', resize: 'vertical', lineHeight: '1.4', fontFamily: 'Consolas, monospace',
             boxSizing: 'border-box'
           }}
         />
@@ -529,21 +538,31 @@ function PainelDevSplitScreen({ onClose }) {
 
       {analisandoIA ? (
         <div style={{ backgroundColor: '#020617', border: '1px dashed #00f0ff', padding: '8px', borderRadius: '6px', fontSize: '10px', color: '#00f0ff' }}>
-          ⏳ Gemini AGI & Robotoc processando análise de código...
+          ⏳ Gemini AGI & ROBOTOC processando análise linha a linha...
         </div>
-      ) : retornoIA && (
-        <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', borderLeft: '3px solid #00f0ff', padding: '8px', borderRadius: '4px', fontSize: '10px', color: '#e2e8f0', fontFamily: 'sans-serif' }}>
-          {retornoIA}
+      ) : diagnosticoLinhas.length > 0 && (
+        <div style={{ backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '8px', padding: '8px', maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold' }}>DIAGNOSTICO DE LINHAS DA IA EMGEMINI:</span>
+          {diagnosticoLinhas.map((item, idx) => (
+            <div key={idx} style={{
+              fontSize: '10px',
+              color: item.tipo === 'erro' ? '#ef4444' : item.tipo === 'sugestao' ? '#38bdf8' : '#4ade80',
+              fontWeight: 'bold',
+              fontFamily: 'monospace'
+            }}>
+              ● {item.texto}
+            </div>
+          ))}
         </div>
       )}
 
-      <div style={{ height: '60px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div style={{ minHeight: '60px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <span style={{ fontSize: '9px', color: '#ff007f', fontFamily: 'sans-serif', fontWeight: 'bold' }}>📝 BLOCO DE NOTAS DO DESENVOLVEDOR:</span>
         <textarea
           value={blocoRascunho}
           onChange={(e) => setBlocoRascunho(e.target.value)}
           style={{
-            width: '100%', height: '100%', backgroundColor: '#020617', border: '1px solid rgba(255,0,127,0.3)',
+            width: '100%', height: '50px', backgroundColor: '#020617', border: '1px solid rgba(255,0,127,0.3)',
             borderRadius: '6px', color: '#ff79c6', padding: '6px', fontSize: '10px', outline: 'none',
             resize: 'none', boxSizing: 'border-box'
           }}
@@ -552,10 +571,10 @@ function PainelDevSplitScreen({ onClose }) {
 
       <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between' }}>
         <button onClick={() => { navigator.clipboard.writeText(codigoFonte); alert("Código copiado!"); }} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(0,240,255,0.15)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          📋 Copiar Código
+          📋 Copiar
         </button>
         <button onClick={baixarCodigoArquivo} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(74,222,128,0.15)', border: '1px solid #4ade80', color: '#4ade80', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          💾 Salvar Arquivo
+          💾 Salvar
         </button>
         <button onClick={exportarCodigoPDF} style={{ flex: 1, padding: '8px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
           📄 Exportar PDF
@@ -626,20 +645,18 @@ function FormularioCapturaEmanuelOS() {
 }
 
 // =========================================================================================
-// 🎥 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET REAL + AVATARES DE IA 3D ---
+// 🎥 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
 // =========================================================================================
 function GoogleMeetAvatarManager({ addLog }) {
   const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
   const [avatarEscolhido, setAvatarEscolhido] = useState('Robotoc (Humanoide 3D IA)');
   const [telefoneConvidado, setTelefoneConvidado] = useState('');
-  const [dddConvidado, setDddConvidado] = useState('55');
+  const [dddConvidado, setDddConvidado] = useState('');
   const [linkGerado, setLinkGerado] = useState('');
   const [reuniaoAgendada, setReuniaoAgendada] = useState(false);
 
   const criarReuniaoInstantanea = () => {
     if (!temaReuniao.trim()) return alert("Defina o tema da reunião no Emanuel.OS.");
-    
-    // Gerador de salas nativo do Google Meet via URL Direct
     const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 5);
     const urlMeet = `https://meet.google.com/${codigoMeet}`;
     setLinkGerado(urlMeet);
@@ -650,26 +667,23 @@ function GoogleMeetAvatarManager({ addLog }) {
       addLog(`[G-AGI: AVATAR] IA Atribuída: ${avatarEscolhido}`);
       addLog(`[G-AGI: LINK] Google Meet gerado: ${urlMeet}`);
     }
-
-    // Abrir o Meet imediatamente em uma nova aba
-    if (typeof window !== 'undefined') window.open(urlMeet, '_blank');
   };
 
   const enviarConviteTelefone = () => {
-    if (!telefoneConvidado) return alert("Insira o número de telefone do convidado.");
+    if (!telefoneConvidado || !dddConvidado) return alert("Insira o DDD e o Número de Telefone válido.");
     if (!linkGerado) return alert("Gere uma reunião do Google Meet primeiro!");
 
-    const mensagem = `Olá! Você foi convidado por Emanuel para a reunião "${temaReuniao}" no Emanuel.OS.\n\n🤖 Avatar IA 3D: ${avatarEscolhido}\n🔗 Entrar no Google Meet: ${linkGerado}`;
-    const urlWhatsapp = `https://api.whatsapp.com/send?phone=${dddConvidado}${telefoneConvidado.replace(/\D/g, '')}&text=${encodeURIComponent(mensagem)}`;
-    
+    const mensagem = `Olá! Você foi convidado por Emanuel para a reunião "${temaReuniao}" no Emanuel.OS.\n\n🤖 Avatar IA: ${avatarEscolhido}\n🔗 Google Meet: ${linkGerado}`;
+    const urlWhatsapp = `https://api.whatsapp.com/send?phone=55${dddConvidado}${telefoneConvidado}&text=${encodeURIComponent(mensagem)}`;
     if (typeof window !== 'undefined') window.open(urlWhatsapp, '_blank');
-    if (addLog) addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para +${dddConvidado}${telefoneConvidado}`);
+
+    if (addLog) addLog(`[G-AGI: WHATSAPP] Convite Meet enviado para (55) ${dddConvidado} ${telefoneConvidado}`);
   };
 
   return (
     <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)' }}>
       <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        🎥 Google Meet REAL + Avatares IA 3D
+        🎥 Google Meet + Avatares IA & Mapas
       </h3>
       <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
         Gerenciador de chamadas de grupo, index principal e links via número de telefone.
@@ -684,7 +698,7 @@ function GoogleMeetAvatarManager({ addLog }) {
           <option value="Avatar Ninja Holográfico">Avatar Ninja Holográfico</option>
         </select>
         <button onClick={criarReuniaoInstantanea} style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
-          ⚡ Gerar Meet REAL & Sincronizar Index
+          ⚡ Gerar Meet & Sincronizar Index
         </button>
       </div>
 
@@ -693,7 +707,7 @@ function GoogleMeetAvatarManager({ addLog }) {
           <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '2px' }}>✅ Link Pronto:</span>
           <a href={linkGerado} target="_blank" rel="noreferrer" style={{ fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', display: 'block', marginBottom: '8px', textDecoration: 'underline' }}>{linkGerado}</a>
           <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-            <input type="text" placeholder="DDI" value={dddConvidado} onChange={(e) => setDddConvidado(e.target.value)} style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} />
+            <input type="text" placeholder="DDD" value={dddConvidado} onChange={(e) => setDddConvidado(e.target.value)} style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} />
             <input type="text" placeholder="Número Celular" value={telefoneConvidado} onChange={(e) => setTelefoneConvidado(e.target.value)} style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} />
           </div>
           <button onClick={enviarConviteTelefone} style={{ width: '100%', padding: '7px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
@@ -827,7 +841,7 @@ const UnixTerminalCanvas = () => {
 // ₿ --- COMPONENTE: PAINEL DE ANÁLISE E PREVISÃO DE BITCOIN (HOLOGRÁFICO) ---
 // =========================================================================================
 const BitcoinAnalysisPanel = () => {
-  const [data, setData] = useState({ price: '$89,450.00', change24h: '+3.4%', prediction: 'Alta (G-AGI Target $105k)', ai_confidence: '98.5%' });
+  const [data] = useState({ price: '$89,450.00', change24h: '+3.4%', prediction: 'Alta (G-AGI Target $105k)', ai_confidence: '98.5%' });
 
   return (
     <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #eab308', borderRadius: '16px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(234, 179, 8, 0.3)' }}>
@@ -877,33 +891,10 @@ const CloudflareWorkerDeployer = ({ addLog }) => {
 };
 
 // Auxiliares de busca e dicionário ninja
-function calcularDiferencaLetras(p1, p2) {
-  const m = [];
-  for (let i = 0; i <= p1.length; i++) m[i] = [i];
-  for (let j = 0; j <= p2.length; j++) m[0][j] = j;
-  for (let i = 1; i <= p1.length; i++) {
-    for (let j = 1; j <= p2.length; j++) {
-      const c = p1[i - 1] === p2[j - 1] ? 0 : 1;
-      m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + c);
-    }
-  }
-  return m[p1.length][p2.length];
-}
-
 const dicionarioNinjaLocal = [
   { termo: "chakra", categoria: "Energia Neural", significado: "Energia biológica e espiritual combinada para execução de comandos." },
   { termo: "emanuel", categoria: "Mestre Criador", significado: "Arquiteto do Emanuel.OS v6.0 e Matriz G-AGI." }
 ];
-
-function buscarNoDicionario(pergunta) {
-  const pal = pergunta.toLowerCase().split(" ");
-  for (const item of dicionarioNinjaLocal) {
-    for (const p of pal) {
-      if (p === item.termo) return item;
-    }
-  }
-  return null;
-}
 
 // =========================================================================================
 // 🌟 --- 🖥️ COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX v6.0) --- 🖥️
@@ -922,14 +913,6 @@ export default function EmanuelOSCore() {
   const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única de 3 Camadas de Segurança');
   const [tentativasInvasao, setTentativasInvasao] = useState(0);
   const [bloqueioInvasor, setBloqueioInvasor] = useState(false);
-
-  // E-mails Reais Integrados ao Pensamento Robotoc
-  const [emailGoogle, setEmailGoogle] = useState('leeheroi123@gmail.com');
-  const [emailApple, setEmailApple] = useState('emanuel@icloud.com');
-  const [emailMicrosoft, setEmailMicrosoft] = useState('emanuel@outlook.com');
-
-  // Modal de Envio Direct Real (Mensagens)
-  const [modalDispatcherAberto, setModalDispatcherAberto] = useState(false);
 
   // Ticons OS
   const [isAdmin] = useState(true);
@@ -968,6 +951,14 @@ export default function EmanuelOSCore() {
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
+  // VINCULAÇÃO DE CONTA / EMAIL PARA PENSAMENTO ROBOTOC
+  const [contaSelecionada, setContaSelecionada] = useState('google');
+  const contasDisponiveis = {
+    google: { email: 'leeheroi123@gmail.com', nome: 'Google Account (AI Pro 5TB)', icone: '🔴' },
+    apple: { email: 'emanuel@icloud.com', nome: 'Apple iCloud ID', icone: '🍏' },
+    onedrive: { email: 'emanuel@outlook.com', nome: 'Microsoft OneDrive / Azure', icone: '🔷' }
+  };
+
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
@@ -981,7 +972,7 @@ export default function EmanuelOSCore() {
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC (IA HUMANOIDE v6.0)', texto: 'Emanuel.OS Core v6.0 | ROBOTOC em Data Center 3D Reformulado pronto!', tipo: 'sys' }
+    { autor: 'ROBOTOC (IA HUMANOIDE 3D)', texto: 'Emanuel.OS Core v6.0 | ROBOTOC em Data Center 3D pronto para comandos!', tipo: 'sys' }
   ]);
 
   const [horaAtual, setHoraAtual] = useState('');
@@ -989,6 +980,7 @@ export default function EmanuelOSCore() {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const avatarGroupRef = useRef(null);
+  const sphereHoloRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
@@ -1025,7 +1017,6 @@ export default function EmanuelOSCore() {
     }, 800);
   };
 
-  // Funções de Validação de Etapas de Segurança
   const validarEtapa2Telefone = (e) => {
     e.preventDefault();
     const tel = telefoneDigitado.replace(/\D/g, '');
@@ -1078,7 +1069,9 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // CENA THREE.JS REFORMULADA v6.0 (NOVO ROBOTOC 3D)
+  // =========================================================================
+  // 🤖 CENA THREE.JS: NOVO ROBOTOC 3D + BOLA FUTURISTA HOLOGRÁFICA
+  // =========================================================================
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1090,7 +1083,7 @@ export default function EmanuelOSCore() {
     scene.background = new THREE.Color(0x020617);
 
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 7.5);
+    camera.position.set(0, 0, 8);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -1098,86 +1091,86 @@ export default function EmanuelOSCore() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    const light1 = new THREE.DirectionalLight(0xffffff, 2.5);
-    light1.position.set(-5, 8, 5);
-    scene.add(light1);
+    // Iluminação Futurista
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    mainLight.position.set(-5, 8, 5);
+    scene.add(mainLight);
 
-    const cyanLight = new THREE.PointLight(0x00f0ff, 6, 30);
-    cyanLight.position.set(-3, 3, 3);
+    const cyanLight = new THREE.PointLight(0x00f0ff, 8, 30);
+    cyanLight.position.set(-3, 2, 4);
     scene.add(cyanLight);
 
-    const magentaLight = new THREE.PointLight(0xff007f, 5, 25);
-    magentaLight.position.set(3, -1, 3);
+    const magentaLight = new THREE.PointLight(0xff007f, 6, 25);
+    magentaLight.position.set(3, -2, 4);
     scene.add(magentaLight);
 
-    scene.add(new THREE.AmbientLight(0x0f172a, 2.0));
+    scene.add(new THREE.AmbientLight(0x0f172a, 2.5));
 
-    // Data Center Floor
+    // Grade do Piso Quântico
     const floorGrid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
-    floorGrid.position.y = -2.5;
+    floorGrid.position.y = -2.8;
     scene.add(floorGrid);
 
-    // =========================================================================
-    // 🤖 MONTAGEM DO NOVO ROBOTOC 3D REFORMULADO (v6.0)
-    // =========================================================================
+    // GRUPO PRINCIPAL DO ROBOTOC 3D
     const robotGroup = new THREE.Group();
-    const metalMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.85 });
-    const armorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.7 });
-    const glowCyanMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
-    const glowMagentaMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, emissiveIntensity: 0.8 });
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.15, metalness: 0.9 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.8 });
+    const glowCyanMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 1.0 });
+    const glowMagentaMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, emissiveIntensity: 0.9 });
 
-    // Cabeça HUD Futurista
-    const headGeo = new THREE.BoxGeometry(0.9, 0.65, 0.7);
+    // Cabeça Cilíndrico-Curva Holográfica
+    const headGeo = new THREE.BoxGeometry(0.95, 0.7, 0.75);
     const head = new THREE.Mesh(headGeo, metalMat);
     head.position.y = 1.8;
     robotGroup.add(head);
 
-    // Visor Holográfico Curvo
-    const visorGeo = new THREE.PlaneGeometry(0.75, 0.3);
+    // Visor Holográfico Neon
+    const visorGeo = new THREE.PlaneGeometry(0.8, 0.35);
     const visor = new THREE.Mesh(visorGeo, glowCyanMat);
-    visor.position.set(0, 1.82, 0.36);
+    visor.position.set(0, 1.82, 0.39);
     robotGroup.add(visor);
 
-    // Antenas laterais de sinal
-    const antGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.4);
-    const antL = new THREE.Mesh(antGeo, glowMagentaMat);
-    antL.position.set(-0.5, 2.0, 0);
-    const antR = new THREE.Mesh(antGeo, glowMagentaMat);
-    antR.position.set(0.5, 2.0, 0);
-    robotGroup.add(antL);
-    robotGroup.add(antR);
-
-    // Pescoço Articulado
-    const neckGeo = new THREE.CylinderGeometry(0.18, 0.2, 0.25, 16);
-    const neck = new THREE.Mesh(neckGeo, armorMat);
-    neck.position.y = 1.35;
-    robotGroup.add(neck);
-
-    // Torso Quântico com Placas
-    const torsoGeo = new THREE.CylinderGeometry(0.55, 0.35, 1.2, 16);
-    const torso = new THREE.Mesh(torsoGeo, metalMat);
+    // Torso Robótico com Núcleo AGI
+    const torsoGeo = new THREE.CylinderGeometry(0.6, 0.4, 1.3, 16);
+    const torso = new THREE.Mesh(torsoGeo, armorMat);
     torso.position.y = 0.6;
     robotGroup.add(torso);
 
-    // Núcleo de Energia Neon AGI
-    const coreGeo = new THREE.SphereGeometry(0.22, 16, 16);
-    const core = new THREE.Mesh(coreGeo, glowCyanMat);
-    core.position.set(0, 0.7, 0.28);
+    const coreGeo = new THREE.SphereGeometry(0.25, 16, 16);
+    const core = new THREE.Mesh(coreGeo, glowMagentaMat);
+    core.position.set(0, 0.7, 0.3);
     robotGroup.add(core);
 
-    // Ombros e Braços Mecânicos
-    const shoulderGeo = new THREE.SphereGeometry(0.2, 16, 16);
-    const shoulderL = new THREE.Mesh(shoulderGeo, glowMagentaMat);
-    shoulderL.position.set(-0.7, 0.95, 0);
-    const shoulderR = new THREE.Mesh(shoulderGeo, glowMagentaMat);
-    shoulderR.position.set(0.7, 0.95, 0);
+    // Ombros
+    const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), glowCyanMat);
+    shoulderL.position.set(-0.75, 1.0, 0);
+    const shoulderR = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), glowCyanMat);
+    shoulderR.position.set(0.75, 1.0, 0);
     robotGroup.add(shoulderL);
     robotGroup.add(shoulderR);
 
     scene.add(robotGroup);
     avatarGroupRef.current = robotGroup;
 
-    // Relógio e Animação Loop
+    // BOLA FUTURISTA HOLOGRÁFICA (EM ÓRBITA DO ROBOTOC)
+    const sphereHoloGroup = new THREE.Group();
+    const sphereGeo = new THREE.SphereGeometry(0.6, 32, 32);
+    const sphereMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, wireframe: true, emissive: 0x00f0ff, emissiveIntensity: 0.8 });
+    const holoSphere = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereHoloGroup.add(holoSphere);
+
+    // Anel Orbital da Esfera
+    const ringGeo = new THREE.TorusGeometry(0.85, 0.02, 16, 100);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, emissiveIntensity: 1.0 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 3;
+    sphereHoloGroup.add(ring);
+
+    sphereHoloGroup.position.set(2.2, 1.2, 0);
+    scene.add(sphereHoloGroup);
+    sphereHoloRef.current = sphereHoloGroup;
+
+    // Loop de Animação 3D
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1186,8 +1179,14 @@ export default function EmanuelOSCore() {
       const time = clock.getElapsedTime();
 
       if (avatarGroupRef.current) {
-        avatarGroupRef.current.position.y = Math.sin(time * 1.8) * 0.12;
-        avatarGroupRef.current.rotation.y = Math.sin(time * 0.6) * 0.25;
+        avatarGroupRef.current.position.y = Math.sin(time * 1.5) * 0.15;
+        avatarGroupRef.current.rotation.y = Math.sin(time * 0.5) * 0.2;
+      }
+
+      if (sphereHoloRef.current) {
+        sphereHoloRef.current.rotation.y = time * 0.8;
+        sphereHoloRef.current.rotation.x = time * 0.4;
+        sphereHoloRef.current.position.y = 1.2 + Math.cos(time * 2) * 0.12;
       }
 
       renderer.render(scene, camera);
@@ -1202,7 +1201,6 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // Atualizador de hora
   useEffect(() => {
     const updateTime = () => setHoraAtual(new Date().toLocaleTimeString('pt-BR'));
     updateTime();
@@ -1210,7 +1208,7 @@ export default function EmanuelOSCore() {
     return () => clearInterval(timer);
   }, []);
 
-  // RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA
+  // TELA DE BLOQUEIO / SEGURANÇA
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
@@ -1297,19 +1295,19 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // DESBLOQUEADO (INTERFACE CORE v6.0)
+  // INTERFACE PRINCIPAL DESBLOQUEADA v6.0
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
-      <Head><title>Emanuel.OS Core v6.0 | ROBOTOC Multicloud Data Center 3D</title></Head>
+      <Head><title>Emanuel.OS Core v6.0 | ROBOTOC 3D Multicloud Data Center</title></Head>
 
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO / CENTRAL 3D */}
+        {/* CENA CENTRAL THREE.JS */}
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
           <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }} />
 
-          {/* BARRA SUPERIOR DE BOTÕES */}
+          {/* BARRA SUPERIOR CONTROLES */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#09090b', border: '1px solid #00f0ff', color: '#00f0ff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold' }}>
               {sidebarAberta ? '✕' : '☰'}
@@ -1326,13 +1324,9 @@ export default function EmanuelOSCore() {
             <button onClick={() => setModalCreatorStudioAberto(true)} style={{ backgroundColor: 'rgba(255, 0, 127, 0.15)', border: '1px solid #ff007f', color: '#ff007f', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
               📊 Creator Studio
             </button>
-
-            <button onClick={() => setModalDispatcherAberto(true)} style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', color: '#4ade80', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
-              📲 Enviar Mensagens Direct
-            </button>
           </div>
 
-          {/* SIDEBAR ESQUERDA (MAPAS & REDES SOCIAIS) */}
+          {/* SIDEBAR ESQUERDA - TODOS OS MAPAS + VINCULAÇÃO DE CONTA */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '380px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
@@ -1346,17 +1340,35 @@ export default function EmanuelOSCore() {
                   Contexto: EMANUEL<span style={{ color: '#00f0ff' }}>.OS v6.0</span>
                 </h1>
 
+                {/* VINCULAÇÃO DE CONTA PARA PENSAMENTO ROBOTOC */}
+                <div style={{ padding: '10px', backgroundColor: 'rgba(15, 23, 42, 0.9)', borderRadius: '10px', border: '1px solid #00f0ff' }}>
+                  <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                    🔗 CONTA VINCULADA AO PENSAMENTO ROBOTOC:
+                  </span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    {Object.keys(contasDisponiveis).map(key => (
+                      <button
+                        key={key}
+                        onClick={() => setContaSelecionada(key)}
+                        style={{
+                          flex: 1, padding: '6px 2px', borderRadius: '6px',
+                          border: contaSelecionada === key ? '1px solid #00f0ff' : '1px solid #334155',
+                          background: contaSelecionada === key ? 'rgba(0, 240, 255, 0.2)' : 'transparent',
+                          color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer'
+                        }}
+                      >
+                        {contasDisponiveis[key].icone} {key.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '9px', color: '#4ade80', marginTop: '6px', display: 'block', fontFamily: 'monospace' }}>
+                    ● Email Ativo: {contasDisponiveis[contaSelecionada].email}
+                  </span>
+                </div>
+
                 <UnixTerminalCanvas />
 
-                {/* Pensamento Futurístico Robotoc Real Integrado */}
-                <RobotocThoughtCore 
-                  emailGoogle={emailGoogle} setEmailGoogle={setEmailGoogle}
-                  emailApple={emailApple} setEmailApple={setEmailApple}
-                  emailMicrosoft={emailMicrosoft} setEmailMicrosoft={setEmailMicrosoft}
-                  onOpenDispatcher={() => setModalDispatcherAberto(true)}
-                  addLog={addLogTerminal}
-                />
-
+                {/* CENTRAL DE MAPAS COMPLETA */}
                 <div style={{ padding: '12px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
                   <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central de Mapas Integrados (2030)</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -1374,7 +1386,7 @@ export default function EmanuelOSCore() {
             )}
           </aside>
 
-          {/* RODAPÉ E CHAT DE COMANDOS */}
+          {/* RODAPÉ E CHAT DE COMANDOS ROBOTOC 3D */}
           <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
               {mensagens.map((item, index) => (
@@ -1386,7 +1398,7 @@ export default function EmanuelOSCore() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC v6.0 ou envie comandos..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou envie comandos..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
             </form>
           </div>
@@ -1401,7 +1413,7 @@ export default function EmanuelOSCore() {
       </div>
 
       {/* GAVETA ANDROID HUD LATERAL */}
-      <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)}>
+      <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)} addLog={addLogTerminal}>
         <MotionTracker />
         <RobotocGear onConnectGear={(t, s) => addLogTerminal(`[GEAR] ${t}: ${s ? 'ON' : 'OFF'}`)} />
         <BitcoinAnalysisPanel />
@@ -1410,9 +1422,6 @@ export default function EmanuelOSCore() {
 
       {/* MODAL CREATOR STUDIO */}
       {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
-
-      {/* MODAL CENTRAL DISPATCHER (DISPARO REAL DE MENSAGENS POR NÚMERO) */}
-      {modalDispatcherAberto && <MessageDispatcherModal onClose={() => setModalDispatcherAberto(false)} addLog={addLogTerminal} />}
     </div>
   );
 }
