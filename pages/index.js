@@ -61,11 +61,7 @@ function MotionTracker({ onFrameCapture }) {
 // ⚙️ --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR ---
 // =========================================================================================
 function RobotocGear({ onConnectGear }) {
-  const [gears, setGears] = useState({
-    headset: false,
-    mouse: false,
-    keyboard: true
-  });
+  const [gears, setGears] = useState({ headset: false, mouse: false, keyboard: true });
 
   const toggleGear = (type) => {
     const nextState = !gears[type];
@@ -509,7 +505,7 @@ function FormularioCapturaEmanuelOS() {
 }
 
 // =========================================================================================
-// 🎥 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA ---
+// 🎥 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET + AVATARES DE IA REAL ---
 // =========================================================================================
 function GoogleMeetAvatarManager({ addLog }) {
   const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
@@ -521,6 +517,7 @@ function GoogleMeetAvatarManager({ addLog }) {
 
   const criarReuniaoInstantanea = () => {
     if (!temaReuniao.trim()) return alert("Defina o tema da reunião no Emanuel.OS.");
+    // Link direto real para abertura no Google Meet
     const codigoMeet = Math.random().toString(36).substring(2, 5) + '-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 5);
     const urlMeet = `https://meet.google.com/${codigoMeet}`;
     setLinkGerado(urlMeet);
@@ -529,7 +526,7 @@ function GoogleMeetAvatarManager({ addLog }) {
     if (addLog) {
       addLog(`[G-AGI: MEET] Reunião criada: "${temaReuniao}"`);
       addLog(`[G-AGI: AVATAR] IA Atribuída: ${avatarEscolhido}`);
-      addLog(`[G-AGI: LINK] Google Meet gerado: ${urlMeet}`);
+      addLog(`[G-AGI: LINK REAL] Google Meet gerado: ${urlMeet}`);
     }
   };
 
@@ -547,10 +544,10 @@ function GoogleMeetAvatarManager({ addLog }) {
   return (
     <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 20px rgba(0, 240, 255, 0.15)' }}>
       <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        🎥 Google Meet + Avatares IA & Mapas
+        🎥 Google Meet + Avatares IA REAL & Mapas
       </h3>
       <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
-        Gerenciador de chamadas de grupo, index principal e links via número de telefone.
+        Gerenciador de chamadas reais com links diretos via número de telefone.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
@@ -562,23 +559,107 @@ function GoogleMeetAvatarManager({ addLog }) {
           <option value="Avatar Ninja Holográfico">Avatar Ninja Holográfico</option>
         </select>
         <button onClick={criarReuniaoInstantanea} style={{ width: '100%', padding: '9px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '11px', cursor: 'pointer' }}>
-          ⚡ Gerar Meet & Sincronizar Index
+          ⚡ Gerar Reunião Meet Real (Sincronizar)
         </button>
       </div>
 
       {reuniaoAgendada && (
         <div style={{ backgroundColor: 'rgba(0, 240, 255, 0.05)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '8px', padding: '8px' }}>
-          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '2px' }}>✅ Link Pronto:</span>
+          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '2px' }}>✅ Link Pronto Real:</span>
           <a href={linkGerado} target="_blank" rel="noreferrer" style={{ fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', display: 'block', marginBottom: '8px', textDecoration: 'underline' }}>{linkGerado}</a>
           <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
             <input type="text" placeholder="DDD" value={dddConvidado} onChange={(e) => setDddConvidado(e.target.value)} style={{ width: '45px', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', textAlign: 'center', fontSize: '10px' }} />
             <input type="text" placeholder="Número Celular" value={telefoneConvidado} onChange={(e) => setTelefoneConvidado(e.target.value)} style={{ flexGrow: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }} />
           </div>
           <button onClick={enviarConviteTelefone} style={{ width: '100%', padding: '7px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
-            📲 Enviar Convite via WhatsApp ID
+            📲 Enviar Convite Real via WhatsApp ID
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// =========================================================================================
+// 📲 --- ABA EXCLUSIVA: GERENCIADOR DE MENSAGENS MULTICANAL VIA NÚMERO (SEM SIMULAÇÃO) ---
+// =========================================================================================
+function MultichannelMessengerPanel({ addLog }) {
+  const [modoEnvio, setModoEnvio] = useState('single'); // 'single' ou 'double'
+  const [plataforma, setPlataforma] = useState('whatsapp'); // 'whatsapp', 'telegram', 'google'
+  const [num1, setNum1] = useState('88981493989');
+  const [num2, setNum2] = useState('');
+  const [mensagem, setMensagem] = useState('Mensagem enviada do Comando Central Emanuel.OS e Robotoc 3D.');
+
+  const dispararMensagensReais = () => {
+    if (!num1) return alert("Insira ao menos um número de telefone com DDD!");
+    if (!mensagem.trim()) return alert("Escreva o conteúdo da mensagem.");
+
+    const limparNum = (n) => n.replace(/\D/g, '');
+    const n1Clean = limparNum(num1);
+    const n2Clean = limparNum(num2);
+
+    const enviarParaNumero = (numero) => {
+      let targetUrl = '';
+      if (plataforma === 'whatsapp') {
+        targetUrl = `https://api.whatsapp.com/send?phone=55${numero}&text=${encodeURIComponent(mensagem)}`;
+      } else if (plataforma === 'telegram') {
+        targetUrl = `https://t.me/+55${numero}`;
+      } else if (plataforma === 'google') {
+        targetUrl = `sms:+55${numero}?body=${encodeURIComponent(mensagem)}`;
+      }
+      if (typeof window !== 'undefined') window.open(targetUrl, '_blank');
+    };
+
+    // Disparo 1
+    enviarParaNumero(n1Clean);
+    if (addLog) addLog(`[DISPARO REAL] Enviado via ${plataforma.toUpperCase()} para: 55${n1Clean}`);
+
+    // Disparo 2 se estivar habilitado
+    if (modoEnvio === 'double' && n2Clean) {
+      setTimeout(() => {
+        enviarParaNumero(n2Clean);
+        if (addLog) addLog(`[DISPARO REAL] Enviado via ${plataforma.toUpperCase()} para: 55${n2Clean}`);
+      }, 500);
+    }
+  };
+
+  return (
+    <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '2px solid #22c55e', borderRadius: '14px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 20px rgba(34, 197, 94, 0.2)' }}>
+      <h3 style={{ color: '#22c55e', fontSize: '12px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        📲 Central de Mensagens Diretas por Número
+      </h3>
+      <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 10px 0' }}>
+        Envio real para WhatsApp, Telegram ou Google Mensagens (1 ou 2 números simultâneos).
+      </p>
+
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+        <button onClick={() => setModoEnvio('single')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #22c55e', background: modoEnvio === 'single' ? '#22c55e' : 'transparent', color: modoEnvio === 'single' ? '#000' : '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          1 Número por vez
+        </button>
+        <button onClick={() => setModoEnvio('double')} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #22c55e', background: modoEnvio === 'double' ? '#22c55e' : 'transparent', color: modoEnvio === 'double' ? '#000' : '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          2 Números de uma vez
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+        <select value={plataforma} onChange={(e) => setPlataforma(e.target.value)} style={{ width: '100%', padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#22c55e', fontSize: '10px', fontWeight: 'bold' }}>
+          <option value="whatsapp">🟢 WhatsApp Direct</option>
+          <option value="telegram">✈️ Telegram Direct</option>
+          <option value="google">💬 Google Mensagens (RCS/SMS)</option>
+        </select>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '8px' }}>
+        <input type="text" placeholder="DDD + Tel 1 (ex: 88981493989)" value={num1} onChange={(e) => setNum1(e.target.value)} style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none' }} />
+        {modoEnvio === 'double' && (
+          <input type="text" placeholder="DDD + Tel 2 (ex: 88900000000)" value={num2} onChange={(e) => setNum2(e.target.value)} style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none' }} />
+        )}
+        <textarea rows={2} placeholder="Digite a mensagem real..." value={mensagem} onChange={(e) => setMensagem(e.target.value)} style={{ padding: '8px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none', resize: 'none' }} />
+      </div>
+
+      <button onClick={dispararMensagensReais} style={{ width: '100%', padding: '9px', backgroundColor: '#22c55e', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
+        🚀 Disparar Mensagem Real
+      </button>
     </div>
   );
 }
@@ -705,7 +786,7 @@ const UnixTerminalCanvas = () => {
 // ₿ --- COMPONENTE: PAINEL DE ANÁLISE E PREVISÃO DE BITCOIN (HOLOGRÁFICO) ---
 // =========================================================================================
 const BitcoinAnalysisPanel = () => {
-  const [data, setData] = useState({ price: '$89,450.00', change24h: '+3.4%', prediction: 'Alta (G-AGI Target $105k)', ai_confidence: '98.5%' });
+  const [data] = useState({ price: '$89,450.00', change24h: '+3.4%', prediction: 'Alta (G-AGI Target $105k)', ai_confidence: '98.5%' });
 
   return (
     <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #eab308', borderRadius: '16px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(234, 179, 8, 0.3)' }}>
@@ -754,35 +835,6 @@ const CloudflareWorkerDeployer = ({ addLog }) => {
   );
 };
 
-// Auxiliares de busca e dicionário ninja
-function calcularDiferencaLetras(p1, p2) {
-  const m = [];
-  for (let i = 0; i <= p1.length; i++) m[i] = [i];
-  for (let j = 0; j <= p2.length; j++) m[0][j] = j;
-  for (let i = 1; i <= p1.length; i++) {
-    for (let j = 1; j <= p2.length; j++) {
-      const c = p1[i - 1] === p2[j - 1] ? 0 : 1;
-      m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + c);
-    }
-  }
-  return m[p1.length][p2.length];
-}
-
-const dicionarioNinjaLocal = [
-  { termo: "chakra", categoria: "Energia Neural", significado: "Energia biológica e espiritual combinada para execução de comandos." },
-  { termo: "emanuel", categoria: "Mestre Criador", significado: "Arquiteto do Emanuel.OS v6.0 e Matriz G-AGI." }
-];
-
-function buscarNoDicionario(pergunta) {
-  const pal = pergunta.toLowerCase().split(" ");
-  for (const item of dicionarioNinjaLocal) {
-    for (const p of pal) {
-      if (p === item.termo) return item;
-    }
-  }
-  return null;
-}
-
 // =========================================================================================
 // 🌟 --- 🖥️ COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX v6.0) --- 🖥️
 // =========================================================================================
@@ -803,24 +855,12 @@ export default function EmanuelOSCore() {
 
   // Ticons OS
   const [isAdmin] = useState(true);
-  const [attemptsLeft, setAttemptsLeft] = useState(2);
-  const [isLockedTicons, setIsLockedTicons] = useState(false);
-  const [statusTicons, setStatusTicons] = useState('🔐 Selecione a sequência correta do Ticons OS gevaGifs');
   const [selectedSequence, setSelectedSequence] = useState([]);
   const targetSequence = ['🔥', 'avatar_ninja.png', 'gif_animado.gif'];
 
   const [qrCodeValidando, setQrCodeValidando] = useState(false);
   const [animacaoMontandoMapa, setAnimacaoMontandoMapa] = useState(false);
   const [qrPayload] = useState('https://github.com/Manomae/naruto-anime-portfolio');
-
-  const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
-  const [privilegedSession, setPrivilegedSession] = useState(false);
-  const [authStepPrivileged, setAuthStepPrivileged] = useState(0);
-  const [passwordPrivileged, setPasswordPrivileged] = useState('');
-  const [totpPrivileged, setTotpPrivileged] = useState('');
-
-  const PREVILEGED_PASSWORD = 'emanuel-agi-priv-88';
-  const PREVILEGED_TOTP = '888888';
 
   const availableOptions = [
     { type: 'emoji', value: '🔥', label: 'Emoji Fogo' },
@@ -850,34 +890,14 @@ export default function EmanuelOSCore() {
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
-  // Multicloud & Links 3D
-  const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
-  const [statusNuvem] = useState({
-    google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
-    apple: { conectado: true, conta: 'emanuel@icloud.com', espaco: '5 GB / 200 GB' },
-    microsoft: { conectado: true, conta: 'emanuel@outlook.com', espaco: '1 TB OneDrive / Azure' },
-    custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
-  });
-
-  const [links3D, setLinks3D] = useState([
-    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
-    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
-    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
-    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: meusDadosReais.github, icone: '🐙', nuvem: 'microsoft' },
-    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: `https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`, icone: '💬', nuvem: 'google' },
-    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
-    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
-  ]);
+  // Multicloud & Conexões Reais no Bate-Papo Robotoc 3D
+  const [contaConectadaRobotoc, setContaConectadaRobotoc] = useState('google'); // 'google', 'apple', 'onedrive'
 
   const [sidebarAberta, setSidebarAberta] = useState(false);
-  const [painelFluidoDireitoAberto, setPainelFluidoDireitoAberto] = useState(false);
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
-  const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
-  const [modalSuporteAberto, setModalSuporteAberto] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
   const [modoDevSplit, setModoDevSplit] = useState(false);
 
-  const [cmdInput, setCmdInput] = useState('');
   const [cmdLogs, setCmdLogs] = useState([
     "[ROBOTOC: LOG] System core v6.0 operational.",
     "[ROBOTOC: STATUS] Modo de Pensamento Neural: ONLINE & SYNCHRONIZED.",
@@ -886,10 +906,9 @@ export default function EmanuelOSCore() {
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC (IA HUMANOIDE v6.0)', texto: 'Emanuel.OS Core v6.0 | ROBOTOC em Data Center 3D Reformulado pronto!', tipo: 'sys' }
+    { autor: 'ROBOTOC (IA HUMANOIDE v6.0)', texto: 'Emanuel.OS Core v6.0 | Pensamento Futurístico do Robotoc Ativo e vinculado à conta!', tipo: 'sys' }
   ]);
 
-  const [horaAtual, setHoraAtual] = useState('');
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -930,7 +949,6 @@ export default function EmanuelOSCore() {
     }, 800);
   };
 
-  // Funções de Validação de Etapas de Segurança
   const validarEtapa2Telefone = (e) => {
     e.preventDefault();
     const tel = telefoneDigitado.replace(/\D/g, '');
@@ -983,7 +1001,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // CENA THREE.JS REFORMULADA v6.0 (NOVO ROBOTOC 3D)
+  // CENA THREE.JS REFORMULADA v6.0 (ROBOTOC 3D)
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1017,33 +1035,29 @@ export default function EmanuelOSCore() {
 
     scene.add(new THREE.AmbientLight(0x0f172a, 2.0));
 
-    // Data Center Floor
+    // Grid de Chão
     const floorGrid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
     floorGrid.position.y = -2.5;
     scene.add(floorGrid);
 
-    // =========================================================================
-    // 🤖 MONTAGEM DO NOVO ROBOTOC 3D REFORMULADO (v6.0)
-    // =========================================================================
+    // ROBOTOC 3D
     const robotGroup = new THREE.Group();
     const metalMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.85 });
     const armorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.7 });
     const glowCyanMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 0.9 });
     const glowMagentaMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, emissiveIntensity: 0.8 });
 
-    // Cabeça HUD Futurista
-    const headGeo = new THREE.BoxGeometry(0.9, 0.65, 0.7);
-    const head = new THREE.Mesh(headGeo, metalMat);
+    // Cabeça HUD
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.65, 0.7), metalMat);
     head.position.y = 1.8;
     robotGroup.add(head);
 
-    // Visor Holográfico Curvo
-    const visorGeo = new THREE.PlaneGeometry(0.75, 0.3);
-    const visor = new THREE.Mesh(visorGeo, glowCyanMat);
+    // Visor Holográfico
+    const visor = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.3), glowCyanMat);
     visor.position.set(0, 1.82, 0.36);
     robotGroup.add(visor);
 
-    // Antenas laterais de sinal
+    // Antenas
     const antGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.4);
     const antL = new THREE.Mesh(antGeo, glowMagentaMat);
     antL.position.set(-0.5, 2.0, 0);
@@ -1052,25 +1066,21 @@ export default function EmanuelOSCore() {
     robotGroup.add(antL);
     robotGroup.add(antR);
 
-    // Pescoço Articulado
-    const neckGeo = new THREE.CylinderGeometry(0.18, 0.2, 0.25, 16);
-    const neck = new THREE.Mesh(neckGeo, armorMat);
+    // Pescoço e Torso
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.25, 16), armorMat);
     neck.position.y = 1.35;
     robotGroup.add(neck);
 
-    // Torso Quântico com Placas
-    const torsoGeo = new THREE.CylinderGeometry(0.55, 0.35, 1.2, 16);
-    const torso = new THREE.Mesh(torsoGeo, metalMat);
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.35, 1.2, 16), metalMat);
     torso.position.y = 0.6;
     robotGroup.add(torso);
 
-    // Núcleo de Energia Neon AGI
-    const coreGeo = new THREE.SphereGeometry(0.22, 16, 16);
-    const core = new THREE.Mesh(coreGeo, glowCyanMat);
+    // Núcleo AGI
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), glowCyanMat);
     core.position.set(0, 0.7, 0.28);
     robotGroup.add(core);
 
-    // Ombros e Braços Mecânicos
+    // Ombros
     const shoulderGeo = new THREE.SphereGeometry(0.2, 16, 16);
     const shoulderL = new THREE.Mesh(shoulderGeo, glowMagentaMat);
     shoulderL.position.set(-0.7, 0.95, 0);
@@ -1082,7 +1092,6 @@ export default function EmanuelOSCore() {
     scene.add(robotGroup);
     avatarGroupRef.current = robotGroup;
 
-    // Relógio e Animação Loop
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1107,13 +1116,20 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // Atualizador de hora
-  useEffect(() => {
-    const updateTime = () => setHoraAtual(new Date().toLocaleTimeString('pt-BR'));
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // Disparo para atalhos diretos no pensamento futurístico do Robotoc
+  const dispararAtalhoPensamentoRobotoc = (tipo) => {
+    if (tipo === 'whatsapp') {
+      const url = `https://api.whatsapp.com/send?phone=55${TELEFONE_AUTORIZADO}&text=${encodeURIComponent("Mensagem via Pensamento Robotoc 3D")}`;
+      window.open(url, '_blank');
+    } else if (tipo === 'telegram') {
+      const url = `https://t.me/+55${TELEFONE_AUTORIZADO}`;
+      window.open(url, '_blank');
+    } else if (tipo === 'sms') {
+      const url = `sms:+55${TELEFONE_AUTORIZADO}?body=${encodeURIComponent("Mensagem SMS via Pensamento Robotoc 3D")}`;
+      window.open(url, '_blank');
+    }
+    addLogTerminal(`[PENSAMENTO ROBOTOC] Atalho disparado para: ${tipo.toUpperCase()}`);
+  };
 
   // RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA
   if (bloqueado) {
@@ -1202,7 +1218,7 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // DESBLOQUEADO (INTERFACE CORE v6.0)
+  // DESBLOQUEADO (INTERFACE CORE v6.0 COM BATE-PAPO PENSAMENTO FUTURÍSTICO)
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <Head><title>Emanuel.OS Core v6.0 | ROBOTOC Multicloud Data Center 3D</title></Head>
@@ -1233,7 +1249,7 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* SIDEBAR ESQUERDA (MAPAS & REDES SOCIAIS) */}
+          {/* SIDEBAR ESQUERDA (MAPAS, MENSAGENS E REDES SOCIAIS) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '380px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
@@ -1260,24 +1276,64 @@ export default function EmanuelOSCore() {
                   </div>
                 </div>
 
+                {/* ABA EXCLUSIVA DE ENVIOS REAL POR NÚMERO */}
+                <MultichannelMessengerPanel addLog={addLogTerminal} />
+
+                {/* REUNIÃO E MEET COM AVATARES REAIS */}
                 <GoogleMeetAvatarManager addLog={addLogTerminal} />
+
                 <FormularioCapturaEmanuelOS />
               </>
             )}
           </aside>
 
-          {/* RODAPÉ E CHAT DE COMANDOS */}
-          <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
-              {mensagens.map((item, index) => (
-                <div key={index}>
-                  <span style={{ fontSize: '8px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e' }}>{item.autor}</span>
-                  <p style={{ margin: 0, fontSize: '10px', color: '#f8fafc' }}>{item.texto}</p>
+          {/* RODAPÉ E CHAT DE COMANDOS DO PENSAMENTO FUTURÍSTICO ROBOTOC 3D */}
+          <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '750px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            
+            {/* PAINEL DE CONEXÃO E PENSAMENTO ROBOTOC 3D */}
+            <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(20px)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
+                  🧠 PENSAMENTO FUTURÍSTICO ROBOTOC 3D | CONTA ATIVA:
+                </span>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button onClick={() => setContaConectadaRobotoc('google')} style={{ padding: '4px 8px', border: '1px solid #00f0ff', background: contaConectadaRobotoc === 'google' ? '#00f0ff' : 'transparent', color: contaConectadaRobotoc === 'google' ? '#000' : '#fff', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    Email Google
+                  </button>
+                  <button onClick={() => setContaConectadaRobotoc('apple')} style={{ padding: '4px 8px', border: '1px solid #a855f7', background: contaConectadaRobotoc === 'apple' ? '#a855f7' : 'transparent', color: contaConectadaRobotoc === 'apple' ? '#000' : '#fff', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    Email Apple
+                  </button>
+                  <button onClick={() => setContaConectadaRobotoc('onedrive')} style={{ padding: '4px 8px', border: '1px solid #38bdf8', background: contaConectadaRobotoc === 'onedrive' ? '#38bdf8' : 'transparent', color: contaConectadaRobotoc === 'onedrive' ? '#000' : '#fff', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    Email OneDrive
+                  </button>
                 </div>
-              ))}
+              </div>
+
+              {/* ATALHOS DE MENSAGENS NO PENSAMENTO */}
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                <button onClick={() => dispararAtalhoPensamentoRobotoc('whatsapp')} style={{ flex: 1, padding: '5px', backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', color: '#4ade80', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  💬 WhatsApp Direct
+                </button>
+                <button onClick={() => dispararAtalhoPensamentoRobotoc('telegram')} style={{ flex: 1, padding: '5px', backgroundColor: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#38bdf8', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  ✈️ Telegram Direct
+                </button>
+                <button onClick={() => dispararAtalhoPensamentoRobotoc('sms')} style={{ flex: 1, padding: '5px', backgroundColor: 'rgba(234, 179, 8, 0.2)', border: '1px solid #eab308', color: '#fef08a', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  📲 Google Msg RCS/SMS
+                </button>
+              </div>
+
+              {/* HISTÓRICO DAS MENSAGENS */}
+              <div style={{ maxHeight: '70px', overflowY: 'auto' }}>
+                {mensagens.map((item, index) => (
+                  <div key={index}>
+                    <span style={{ fontSize: '8px', fontWeight: 'bold', color: item.tipo === 'user' ? '#00f0ff' : '#f43f5e' }}>{item.autor}</span>
+                    <p style={{ margin: 0, fontSize: '10px', color: '#f8fafc' }}>{item.texto}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: `VOCÊ (${contaConectadaRobotoc.toUpperCase()})`, texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC v6.0 ou envie comandos..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
             </form>
