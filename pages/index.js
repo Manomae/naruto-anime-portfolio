@@ -74,9 +74,9 @@ function RobotocGear({ onConnectGear, highlightGear }) {
   };
 
   return (
-    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: highlightGear ? '2px solid #eab308' : '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: highlightGear ? '0 0 15px rgba(234,179,8,0.4)' : 'none' }}>
+    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: highlightGear ? '2px solid #eab308' : '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: highlightGear ? '0 0 15px rgba(234,179,8,0.6)' : 'none', transition: 'all 0.3s ease' }}>
       <span style={{ fontSize: '10px', color: highlightGear ? '#fef08a' : '#c084fc', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-        ⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR {highlightGear && '(CONEXÃO SOLICITADA)'}
+        ⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR {highlightGear && '(CONEXÃO SOLICITADA VIA ÁUDIO)'}
       </span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
         <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.4)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
@@ -1006,20 +1006,21 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       contentGroup.add(robot1);
       contentGroup.add(robot2);
     } else {
-      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS NA VITRINE
-      const mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
+      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS NA VITRINE (TODOS OS 9 MAPAS)
+      let mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
       let mapColor = 0x00f0ff;
-      if (modoAtual === 'mapa_terrestre') mapColor = 0x22c55e;
-      if (modoAtual === 'mapa_espacial') mapColor = 0x38bdf8;
-      if (modoAtual === 'mapa_quantico') mapColor = 0xc084fc;
-      if (modoAtual === 'mapa_orkut') mapColor = 0xea580c;
-      if (modoAtual === 'mapa_patologia') mapColor = 0xef4444;
-      if (modoAtual === 'mapa_ressonancia') mapColor = 0x06b6d4;
-      if (modoAtual === 'mapa_ia') mapColor = 0xf43f5e;
-      if (modoAtual === 'mapa_antiguidades') mapColor = 0xd97706;
-      if (modoAtual === 'mapa_aeroespacial') mapColor = 0x8b5cf6;
 
-      const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
+      if (modoAtual === 'mapa_terrestre') { mapGeo = new THREE.SphereGeometry(1.3, 32, 32); mapColor = 0x22c55e; }
+      if (modoAtual === 'mapa_espacial') { mapGeo = new THREE.TorusGeometry(1.2, 0.4, 16, 100); mapColor = 0x38bdf8; }
+      if (modoAtual === 'mapa_quantico') { mapGeo = new THREE.OctahedronGeometry(1.4, 0); mapColor = 0xc084fc; }
+      if (modoAtual === 'mapa_orkut') { mapGeo = new THREE.DodecahedronGeometry(1.3, 0); mapColor = 0xea580c; }
+      if (modoAtual === 'mapa_patologia') { mapGeo = new THREE.TorusKnotGeometry(0.9, 0.3, 100, 16); mapColor = 0xef4444; }
+      if (modoAtual === 'mapa_ressonancia') { mapGeo = new THREE.CylinderGeometry(0.8, 0.8, 1.8, 32); mapColor = 0x06b6d4; }
+      if (modoAtual === 'mapa_ia') { mapGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5); mapColor = 0xf43f5e; }
+      if (modoAtual === 'mapa_antiguidades') { mapGeo = new THREE.ConeGeometry(1.2, 1.8, 4); mapColor = 0xd97706; }
+      if (modoAtual === 'mapa_aeroespacial') { mapGeo = new THREE.TetrahedronGeometry(1.5, 0); mapColor = 0x8b5cf6; }
+
+      const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true, roughness: 0.1, metalness: 0.8 }));
       mapMesh.position.y = 0.8;
       contentGroup.add(mapMesh);
     }
@@ -1100,7 +1101,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento de Todos os Mapas Principais
+  // Mapeamento de Todos os Mapas Principais no Index.js
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/orkut' },
@@ -1179,7 +1180,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
         {/* SELETOR DE MAPAS NA SEDE DA VITRINE */}
         <div>
           <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-            🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE:
+            🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE (SEDE INDEX.JS):
           </span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
             {mapasDisponiveis.map(m => (
@@ -1204,7 +1205,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
             ⚡ CONSOLE DE TESTES AGI & HARDWARE
           </span>
           <p style={{ margin: 0, fontSize: '9px', color: '#cbd5e1' }}>
-            Inspeção de shaders WebGL em tempo real. Os avatares e mapas renderizados sincronizam com periféricos via bluetooth automaticamente.
+            Inspeção de shaders WebGL em tempo real. Os avatares e mapas renderizados sincronizam com periféricos via bluetooth automaticamente ao alternar o modo.
           </p>
         </div>
       </div>
@@ -1288,7 +1289,7 @@ export default function EmanuelOSCore() {
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
-  // Função para acionar mensagem de áudio Bluetooth
+  // Função para acionar mensagem de áudio Bluetooth e abrir o HUD
   const acionarSolicitacaoBluetooth = () => {
     setAndroidHudOpen(true);
     setSolicitarConexaoBluetooth(true);
