@@ -74,9 +74,9 @@ function RobotocGear({ onConnectGear, highlightGear }) {
   };
 
   return (
-    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: highlightGear ? '2px solid #eab308' : '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: highlightGear ? '0 0 15px rgba(234,179,8,0.6)' : 'none', transition: 'all 0.3s ease' }}>
+    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: highlightGear ? '2px solid #eab308' : '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: highlightGear ? '0 0 15px rgba(234,179,8,0.4)' : 'none' }}>
       <span style={{ fontSize: '10px', color: highlightGear ? '#fef08a' : '#c084fc', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-        ⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR {highlightGear && '(CONEXÃO SOLICITADA VIA ÁUDIO)'}
+        ⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR {highlightGear && '(CONEXÃO SOLICITADA)'}
       </span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
         <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.4)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
@@ -1006,21 +1006,20 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       contentGroup.add(robot1);
       contentGroup.add(robot2);
     } else {
-      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS NA VITRINE (TODOS OS 9 MAPAS)
-      let mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
+      // REPRESENTAÇÃO HOLOGRÁFICA DOS 9 MAPAS NA VITRINE
+      const mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
       let mapColor = 0x00f0ff;
+      if (modoAtual === 'mapa_terrestre') mapColor = 0x22c55e;
+      if (modoAtual === 'mapa_espacial') mapColor = 0x38bdf8;
+      if (modoAtual === 'mapa_quantico') mapColor = 0xc084fc;
+      if (modoAtual === 'mapa_orkut') mapColor = 0xea580c;
+      if (modoAtual === 'mapa_patologia') mapColor = 0xef4444;
+      if (modoAtual === 'mapa_ressonancia') mapColor = 0x06b6d4;
+      if (modoAtual === 'mapa_ia') mapColor = 0xf43f5e;
+      if (modoAtual === 'mapa_antiguidades') mapColor = 0xd97706;
+      if (modoAtual === 'mapa_aeroespacial') mapColor = 0x8b5cf6;
 
-      if (modoAtual === 'mapa_terrestre') { mapGeo = new THREE.SphereGeometry(1.3, 32, 32); mapColor = 0x22c55e; }
-      if (modoAtual === 'mapa_espacial') { mapGeo = new THREE.TorusGeometry(1.2, 0.4, 16, 100); mapColor = 0x38bdf8; }
-      if (modoAtual === 'mapa_quantico') { mapGeo = new THREE.OctahedronGeometry(1.4, 0); mapColor = 0xc084fc; }
-      if (modoAtual === 'mapa_orkut') { mapGeo = new THREE.DodecahedronGeometry(1.3, 0); mapColor = 0xea580c; }
-      if (modoAtual === 'mapa_patologia') { mapGeo = new THREE.TorusKnotGeometry(0.9, 0.3, 100, 16); mapColor = 0xef4444; }
-      if (modoAtual === 'mapa_ressonancia') { mapGeo = new THREE.CylinderGeometry(0.8, 0.8, 1.8, 32); mapColor = 0x06b6d4; }
-      if (modoAtual === 'mapa_ia') { mapGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5); mapColor = 0xf43f5e; }
-      if (modoAtual === 'mapa_antiguidades') { mapGeo = new THREE.ConeGeometry(1.2, 1.8, 4); mapColor = 0xd97706; }
-      if (modoAtual === 'mapa_aeroespacial') { mapGeo = new THREE.TetrahedronGeometry(1.5, 0); mapColor = 0x8b5cf6; }
-
-      const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true, roughness: 0.1, metalness: 0.8 }));
+      const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
       mapMesh.position.y = 0.8;
       contentGroup.add(mapMesh);
     }
@@ -1101,7 +1100,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento de Todos os Mapas Principais no Index.js
+  // Mapeamento de Todos os 9 Mapas Principais no Index.js
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/orkut' },
@@ -1177,10 +1176,10 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
           onRequestBluetoothConnection={onRequestBluetooth}
         />
 
-        {/* SELETOR DE MAPAS NA SEDE DA VITRINE */}
+        {/* SELETOR DOS 9 MAPAS NA SEDE DA VITRINE */}
         <div>
           <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-            🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE (SEDE INDEX.JS):
+            🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE:
           </span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
             {mapasDisponiveis.map(m => (
@@ -1205,7 +1204,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
             ⚡ CONSOLE DE TESTES AGI & HARDWARE
           </span>
           <p style={{ margin: 0, fontSize: '9px', color: '#cbd5e1' }}>
-            Inspeção de shaders WebGL em tempo real. Os avatares e mapas renderizados sincronizam com periféricos via bluetooth automaticamente ao alternar o modo.
+            Inspeção de shaders WebGL em tempo real. Os avatares e mapas renderizados sincronizam com periféricos via bluetooth automaticamente.
           </p>
         </div>
       </div>
@@ -1289,7 +1288,7 @@ export default function EmanuelOSCore() {
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
-  // Função para acionar mensagem de áudio Bluetooth e abrir o HUD
+  // Função para acionar mensagem de áudio Bluetooth e alternar para a conexão de periféricos
   const acionarSolicitacaoBluetooth = () => {
     setAndroidHudOpen(true);
     setSolicitarConexaoBluetooth(true);
@@ -1652,7 +1651,7 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* SIDEBAR ESQUERDA (MAPAS, MENSAGENS E PENSAMENTO NEURAL) */}
+          {/* SIDEBAR ESQUERDA (9 MAPAS INTEGRADOS, MENSAGENS E PENSAMENTO NEURAL) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
@@ -1669,13 +1668,17 @@ export default function EmanuelOSCore() {
                 <UnixTerminalCanvas />
 
                 <div style={{ padding: '12px', backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: '1px solid #334155' }}>
-                  <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central de Mapas Integrados completos</h3>
+                  <h3 style={{ color: '#00f0ff', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 9 Mapas Integrados</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                    <Link href="/espacial" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🪐 Espacial</Link>
                     <Link href="/mapa" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #16a34a', color: '#4ade80', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌍 Terrestre</Link>
-                    <Link href="/mapa-ia" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚡ Gerador 3D IA</Link>
-                    <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#c084fc', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🛸 Aeroespacial</Link>
-                    <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #8b5cf6', color: '#c084fc', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold', gridColumn: 'span 2' }}>⚛️ Quântico</Link>
+                    <Link href="/orkut" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #ea580c', color: '#fb923c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧡 Orkut</Link>
+                    <Link href="/espacial" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #0284c7', color: '#38bdf8', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🪐 Espacial</Link>
+                    <Link href="/ressonancia" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #06b6d4', color: '#22d3ee', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧬 Ressonância</Link>
+                    <Link href="/patologia" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #ef4444', color: '#fca5a5', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🔬 Patologia</Link>
+                    <Link href="/mapa-ia" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #f43f5e', color: '#fda4af', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚡ IA 3D</Link>
+                    <Link href="/antiguidades" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #d97706', color: '#fcd34d', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🏛️ Antiguidades</Link>
+                    <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #8b5cf6', color: '#c084fc', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚛️ Quântico</Link>
+                    <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#0f172a', border: '1px solid #9333ea', color: '#e879f9', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold', gridColumn: 'span 2' }}>🛸 Aeroespacial</Link>
                   </div>
                 </div>
 
