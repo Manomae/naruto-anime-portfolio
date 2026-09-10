@@ -1006,7 +1006,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       contentGroup.add(robot1);
       contentGroup.add(robot2);
     } else {
-      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS
+      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS NA VITRINE
       const mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
       let mapColor = 0x00f0ff;
       if (modoAtual === 'mapa_terrestre') mapColor = 0x22c55e;
@@ -1014,6 +1014,10 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       if (modoAtual === 'mapa_quantico') mapColor = 0xc084fc;
       if (modoAtual === 'mapa_orkut') mapColor = 0xea580c;
       if (modoAtual === 'mapa_patologia') mapColor = 0xef4444;
+      if (modoAtual === 'mapa_ressonancia') mapColor = 0x06b6d4;
+      if (modoAtual === 'mapa_ia') mapColor = 0xf43f5e;
+      if (modoAtual === 'mapa_antiguidades') mapColor = 0xd97706;
+      if (modoAtual === 'mapa_aeroespacial') mapColor = 0x8b5cf6;
 
       const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
       mapMesh.position.y = 0.8;
@@ -1053,7 +1057,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (groupVitrineRef.current && !isDragging) {
-        groupVitrineRef.current.rotation.y += 0.008; // Rodando na vitrine
+        groupVitrineRef.current.rotation.y += 0.008; // Rodando continuamente na vitrine
       }
       renderer.render(scene, camera);
     };
@@ -1078,7 +1082,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
           🤖 Avatares Vitrine
         </button>
         <button onClick={() => { onSelectModo('bluetooth'); if (onRequestBluetoothConnection) onRequestBluetoothConnection(); }} style={{ padding: '4px 8px', backgroundColor: modoAtual === 'bluetooth' ? '#eab308' : 'rgba(0,0,0,0.6)', color: modoAtual === 'bluetooth' ? '#000' : '#fff', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          📶 Modulo Bluetooth 3D
+          📶 Módulo Bluetooth 3D
         </button>
       </div>
     </div>
@@ -1096,7 +1100,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento dos Mapas
+  // Mapeamento de Todos os Mapas Principais
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/orkut' },
@@ -1616,7 +1620,7 @@ export default function EmanuelOSCore() {
         {/* LADO ESQUERDO / CENTRAL 3D */}
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* CENA PRINCIPAL DO ROBÔ - AÇÃO DE CLIQUE ADICIONADA */}
+          {/* CENA PRINCIPAL DO ROBÔ - CLIQUE ABRE O PAINEL FUTURISTA */}
           <div 
             ref={mountRef} 
             onClick={() => setJanelaRobotocDevAberta(true)}
@@ -1708,7 +1712,7 @@ export default function EmanuelOSCore() {
         )}
       </div>
 
-      {/* PAINEL FUTURISTA REDIMENSIONÁVEL ROBOTOC EMGEMINI (Aparece ao Clicar no Robô 3D) */}
+      {/* PAINEL FUTURISTA REDIMENSIONÁVEL ROBOTOC EMGEMINI */}
       {janelaRobotocDevAberta && (
         <WindowDevPanelRobotoc 
           onClose={() => setJanelaRobotocDevAberta(false)} 
