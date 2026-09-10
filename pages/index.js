@@ -11,167 +11,6 @@ import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
 // =========================================================================================
-// 🔲 --- COMPONENTE: JANELA FLUTUANTE EXPANSÍVEL E ARRASTÁVEL (ESTILO ANDROID FUTURISTA) ---
-// =========================================================================================
-function JanelaRobotocFuturista({ open, onClose }) {
-  const [size, setSize] = useState({ width: 500, height: 420 });
-  const [pos, setPos] = useState({ x: 100, y: 80 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const dragStart = useRef({ x: 0, y: 0 });
-  const resizeStart = useRef({ w: 0, h: 0, x: 0, y: 0 });
-
-  const [tab, setTab] = useState('ia_core');
-  const [promptAGI, setPromptAGI] = useState('');
-  const [respostaAGI, setRespostaAGI] = useState('Sistemas neurais ROBOTOC EMgemini operacionais. Insira um comando ou prompt quântico.');
-
-  if (!open) return null;
-
-  // Lógica de Arraste (Drag)
-  const handleMouseDownHeader = (e) => {
-    setIsDragging(true);
-    dragStart.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
-  };
-
-  // Lógica de Redimensionamento (Resize)
-  const handleMouseDownResize = (e) => {
-    e.stopPropagation();
-    setIsResizing(true);
-    resizeStart.current = { w: size.width, h: size.height, x: e.clientX, y: e.clientY };
-  };
-
-  const handleMouseMove = (e) => {
-    if (isDragging) {
-      setPos({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
-    } else if (isResizing) {
-      const dw = e.clientX - resizeStart.current.x;
-      const dh = e.clientY - resizeStart.current.y;
-      setSize({
-        width: Math.max(320, resizeStart.current.w + dw),
-        height: Math.max(250, resizeStart.current.h + dh)
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setIsResizing(false);
-  };
-
-  const executarSimulacaoEMgemini = () => {
-    if (!promptAGI.trim()) return;
-    setRespostaAGI(`[EMgemini AGI]: Processando "${promptAGI}"...\nOtimização quântica concluída. Código e rotinas compilados com sucesso no núcleo ROBOTOC.`);
-    setPromptAGI('');
-  };
-
-  return (
-    <div
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      style={{
-        position: 'fixed',
-        left: `${pos.x}px`,
-        top: `${pos.y}px`,
-        width: `${size.width}px`,
-        height: `${size.height}px`,
-        backgroundColor: 'rgba(2, 6, 23, 0.96)',
-        border: '2px solid #00f0ff',
-        borderRadius: '16px',
-        backdropFilter: 'blur(20px)',
-        zIndex: 300,
-        boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        color: '#fff',
-        fontFamily: 'sans-serif'
-      }}
-    >
-      {/* BARRA DE TÍTULO ARRASTÁVEL */}
-      <div
-        onMouseDown={handleMouseDownHeader}
-        style={{
-          padding: '10px 14px',
-          background: 'linear-gradient(90deg, rgba(0,240,255,0.2) 0%, rgba(15,23,42,0.8) 100%)',
-          borderBottom: '1px solid rgba(0,240,255,0.4)',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          display: 'flex',
-          justify: 'space-between',
-          alignItems: 'center',
-          userSelect: 'none'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '14px' }}>🤖</span>
-          <strong style={{ fontSize: '11px', color: '#00f0ff', letterSpacing: '0.5px' }}>
-            ROBOTOC EMgemini | Dev Studio Futurista
-          </strong>
-        </div>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <button onClick={() => setSize({ width: 340, height: 260 })} style={{ background: 'none', border: '1px solid #334155', color: '#94a3b8', borderRadius: '4px', fontSize: '9px', cursor: 'pointer' }}>➖ Min</button>
-          <button onClick={() => setSize({ width: 800, height: 550 })} style={{ background: 'none', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '4px', fontSize: '9px', cursor: 'pointer' }}>🔲 Max</button>
-          <button onClick={onClose} style={{ background: '#ef4444', border: 'none', color: '#fff', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', padding: '1px 6px' }}>✕</button>
-        </div>
-      </div>
-
-      {/* ABAS DO PAINEL */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #1e293b', backgroundColor: '#020617' }}>
-        <button onClick={() => setTab('ia_core')} style={{ flex: 1, padding: '8px', border: 'none', borderBottom: tab === 'ia_core' ? '2px solid #00f0ff' : 'none', background: tab === 'ia_core' ? 'rgba(0,240,255,0.1)' : 'transparent', color: tab === 'ia_core' ? '#00f0ff' : '#64748b', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-          🧠 Núcleo AGI
-        </button>
-        <button onClick={() => setTab('quantum_logs')} style={{ flex: 1, padding: '8px', border: 'none', borderBottom: tab === 'quantum_logs' ? '2px solid #a855f7' : 'none', background: tab === 'quantum_logs' ? 'rgba(168,85,247,0.1)' : 'transparent', color: tab === 'quantum_logs' ? '#c084fc' : '#64748b', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-          ⚡ Compilador 3D
-        </button>
-      </div>
-
-      {/* CONTEÚDO DA JANELA */}
-      <div style={{ flexGrow: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {tab === 'ia_core' ? (
-          <>
-            <div style={{ backgroundColor: '#010409', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px', flexGrow: 1, fontFamily: 'monospace', fontSize: '11px', color: '#38bdf8', whiteSpace: 'pre-wrap' }}>
-              {respostaAGI}
-            </div>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <input
-                type="text"
-                value={promptAGI}
-                onChange={(e) => setPromptAGI(e.target.value)}
-                placeholder="Digite seu comando para a IA EMgemini..."
-                style={{ flexGrow: 1, padding: '8px', backgroundColor: '#09090b', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff', fontSize: '10px', outline: 'none' }}
-              />
-              <button onClick={executarSimulacaoEMgemini} style={{ padding: '8px 12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
-                Enviar
-              </button>
-            </div>
-          </>
-        ) : (
-          <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
-            <p><strong>Status do Motor ROBOTOC 3D:</strong> Ativo (60 FPS)</p>
-            <p><strong>Servidor EMgemini:</strong> Conectado ao Vault Quântico.</p>
-            <p><strong>Ambiente Android Futurista:</strong> Permite redimensionamento em tempo real e testes de código por arrasto.</p>
-          </div>
-        )}
-      </div>
-
-      {/* ALÇA DE REDIMENSIONAMENTO (CANTO INFERIOR DIREITO) */}
-      <div
-        onMouseDown={handleMouseDownResize}
-        style={{
-          width: '14px',
-          height: '14px',
-          position: 'absolute',
-          right: 0,
-          bottom: 0,
-          cursor: 'se-resize',
-          background: 'linear-gradient(135deg, transparent 50%, #00f0ff 50%)',
-          borderBottomRightRadius: '14px'
-        }}
-      />
-    </div>
-  );
-}
-
-// =========================================================================================
 // 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
 // =========================================================================================
 function MotionTracker({ onFrameCapture }) {
@@ -221,7 +60,7 @@ function MotionTracker({ onFrameCapture }) {
 // =========================================================================================
 // ⚙️ --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR ---
 // =========================================================================================
-function RobotocGear({ onConnectGear }) {
+function RobotocGear({ onConnectGear, highlightGear }) {
   const [gears, setGears] = useState({
     headset: false,
     mouse: false,
@@ -235,16 +74,18 @@ function RobotocGear({ onConnectGear }) {
   };
 
   return (
-    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff' }}>
-      <span style={{ fontSize: '10px', color: '#c084fc', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR</span>
+    <div style={{ background: 'rgba(2, 6, 23, 0.9)', border: highlightGear ? '2px solid #eab308' : '1px solid #a855f7', borderRadius: '12px', padding: '10px', color: '#fff', boxShadow: highlightGear ? '0 0 15px rgba(234,179,8,0.4)' : 'none' }}>
+      <span style={{ fontSize: '10px', color: highlightGear ? '#fef08a' : '#c084fc', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+        ⚙️ PERIFÉRICOS NEURAIS ROBOTOC GEAR {highlightGear && '(CONEXÃO SOLICITADA)'}
+      </span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-        <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
+        <button onClick={() => toggleGear('headset')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.headset ? 'rgba(168,85,247,0.4)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
           🎧 Headset
         </button>
-        <button onClick={() => toggleGear('mouse')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.mouse ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
+        <button onClick={() => toggleGear('mouse')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.mouse ? 'rgba(168,85,247,0.4)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
           🖱️ Mouse 3D
         </button>
-        <button onClick={() => toggleGear('keyboard')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.keyboard ? 'rgba(168,85,247,0.3)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
+        <button onClick={() => toggleGear('keyboard')} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #a855f7', background: gears.keyboard ? 'rgba(168,85,247,0.4)' : 'transparent', color: '#fff', fontSize: '9px', cursor: 'pointer' }}>
           ⌨️ Glass Key
         </button>
       </div>
@@ -1027,7 +868,7 @@ const BitcoinAnalysisPanel = () => {
   return (
     <div style={{ backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #eab308', borderRadius: '16px', padding: '16px', color: '#fff', margin: '10px 0', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(234, 179, 8, 0.3)' }}>
       <h3 style={{ color: '#eab308', fontSize: '13px', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        ₿ ANALÍTICA & PREVISÃO BITCOIN <span style={{ fontSize: '9px', color: '#fff', border: '1px solid #fff', padding: '1px 5px', borderRadius: '8px' }}>G-AGI QUANT CORE v6.0</span>
+        ₿ ANALÍTICA & PREVISÃO BITCOIN <span style={{ fontSize: '9px', border: '1px solid #fff', padding: '1px 5px', borderRadius: '8px' }}>G-AGI QUANT CORE v6.0</span>
       </h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
         <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid #eab308', borderRadius: '10px', padding: '10px' }}>
@@ -1070,6 +911,308 @@ const CloudflareWorkerDeployer = ({ addLog }) => {
     </div>
   );
 };
+
+// =========================================================================================
+// 🏛️ --- COMPONENTE: VITRINE VIRTUAL 3D DE VIDRO GIRATÓRIA (DUOS AVATARES & MAPAS) ---
+// =========================================================================================
+function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnection }) {
+  const container3dRef = useRef(null);
+  const sceneRef = useRef(null);
+  const groupVitrineRef = useRef(null);
+
+  useEffect(() => {
+    if (!container3dRef.current) return;
+    const width = container3dRef.current.clientWidth;
+    const height = container3dRef.current.clientHeight;
+
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 2.5, 9);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container3dRef.current.appendChild(renderer.domElement);
+
+    // Iluminação Futurista
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+
+    const spotCyan = new THREE.SpotLight(0x00f0ff, 5);
+    spotCyan.position.set(-5, 8, 5);
+    scene.add(spotCyan);
+
+    const spotPurple = new THREE.SpotLight(0xa855f7, 5);
+    spotPurple.position.set(5, 8, 5);
+    scene.add(spotPurple);
+
+    // BASE DA VITRINE DE VIDRO
+    const vitrineGroup = new THREE.Group();
+
+    // Pedestal de Vidro
+    const baseGeo = new THREE.CylinderGeometry(3.5, 3.8, 0.4, 32);
+    const baseMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a, roughness: 0.1, metalness: 0.9,
+      transparent: true, opacity: 0.85
+    });
+    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+    baseMesh.position.y = -1.2;
+    vitrineGroup.add(baseMesh);
+
+    // Anel Neon de Borda da Vitrine
+    const ringGeo = new THREE.TorusGeometry(3.6, 0.05, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: modoAtual === 'bluetooth' ? 0xeab308 : 0x00f0ff });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.rotation.x = Math.PI / 2;
+    ringMesh.position.y = -1.0;
+    vitrineGroup.add(ringMesh);
+
+    // Cúpula / Cilindro de Vidro Futurista
+    const glassGeo = new THREE.CylinderGeometry(3.5, 3.5, 4.5, 32, 1, true);
+    const glassMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff, transmission: 0.9, opacity: 1, transparent: true,
+      roughness: 0.05, ior: 1.5, thickness: 0.5, side: THREE.DoubleSide
+    });
+    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.position.y = 1.0;
+    vitrineGroup.add(glassMesh);
+
+    // CONTEÚDO 3D DA VITRINE (AVATARES OU MAPAS HOLOGRÁFICOS)
+    const contentGroup = new THREE.Group();
+
+    if (modoAtual === 'avatares' || modoAtual === 'bluetooth') {
+      // AVATAR 1: ROBOTOC PRINCIPAL (AZUL & BRANCO)
+      const robot1 = new THREE.Group();
+      const body1 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.8, roughness: 0.2 }));
+      const head1 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+      const visor1 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.62), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
+      head1.position.y = 0.95;
+      visor1.position.y = 0.95;
+      robot1.add(body1, head1, visor1);
+      robot1.position.set(-1.4, 0.2, 0);
+
+      // AVATAR 2: ROBOTOC BLUETOOTH (ROXO & OURO QUÂNTICO)
+      const robot2 = new THREE.Group();
+      const body2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xa855f7, metalness: 0.9, roughness: 0.1 }));
+      const head2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0x581c87 }));
+      const visor2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.62), new THREE.MeshBasicMaterial({ color: 0xeab308 }));
+      head2.position.y = 0.95;
+      visor2.position.y = 0.95;
+      robot2.add(body2, head2, visor2);
+      robot2.position.set(1.4, 0.2, 0);
+
+      contentGroup.add(robot1);
+      contentGroup.add(robot2);
+    } else {
+      // REPRESENTAÇÃO HOLOGRÁFICA DOS MAPAS
+      const mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
+      let mapColor = 0x00f0ff;
+      if (modoAtual === 'mapa_terrestre') mapColor = 0x22c55e;
+      if (modoAtual === 'mapa_espacial') mapColor = 0x38bdf8;
+      if (modoAtual === 'mapa_quantico') mapColor = 0xc084fc;
+      if (modoAtual === 'mapa_orkut') mapColor = 0xea580c;
+      if (modoAtual === 'mapa_patologia') mapColor = 0xef4444;
+
+      const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
+      mapMesh.position.y = 0.8;
+      contentGroup.add(mapMesh);
+    }
+
+    vitrineGroup.add(contentGroup);
+    scene.add(vitrineGroup);
+    groupVitrineRef.current = vitrineGroup;
+
+    // Interatividade com Mouse / Touchpad
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging || !groupVitrineRef.current) return;
+      const deltaMove = { x: e.clientX - previousMousePosition.x, y: e.clientY - previousMousePosition.y };
+      groupVitrineRef.current.rotation.y += deltaMove.x * 0.01;
+      groupVitrineRef.current.rotation.x += deltaMove.y * 0.005;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseUp = () => { isDragging = false; };
+
+    const domEl = container3dRef.current;
+    domEl.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    // Loop de Animação
+    let animationFrameId;
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      if (groupVitrineRef.current && !isDragging) {
+        groupVitrineRef.current.rotation.y += 0.008; // Rodando na vitrine
+      }
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (domEl) {
+        domEl.removeEventListener('mousedown', handleMouseDown);
+        domEl.removeChild(renderer.domElement);
+      }
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [modoAtual]);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '280px', backgroundColor: 'rgba(2, 6, 23, 0.8)', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,240,255,0.3)' }}>
+      <div ref={container3dRef} style={{ width: '100%', height: '100%', cursor: 'grab' }} />
+      <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 10, display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <button onClick={() => onSelectModo('avatares')} style={{ padding: '4px 8px', backgroundColor: modoAtual === 'avatares' ? '#00f0ff' : 'rgba(0,0,0,0.6)', color: modoAtual === 'avatares' ? '#000' : '#fff', border: '1px solid #00f0ff', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🤖 Avatares Vitrine
+        </button>
+        <button onClick={() => { onSelectModo('bluetooth'); if (onRequestBluetoothConnection) onRequestBluetoothConnection(); }} style={{ padding: '4px 8px', backgroundColor: modoAtual === 'bluetooth' ? '#eab308' : 'rgba(0,0,0,0.6)', color: modoAtual === 'bluetooth' ? '#000' : '#fff', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          📶 Modulo Bluetooth 3D
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================================
+// 🪟 --- COMPONENTE: PAINEL FUTURISTA REDIMENSIONÁVEL E ARRASTÁVEL (EMGEMINI DEV) ---
+// =========================================================================================
+function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
+  const [size, setSize] = useState({ width: 520, height: 580 });
+  const [pos, setPos] = useState({ x: 80, y: 60 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [modoVitrine, setModoVitrine] = useState('avatares');
+
+  // Mapeamento dos Mapas
+  const mapasDisponiveis = [
+    { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
+    { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/orkut' },
+    { id: 'mapa_espacial', nome: '🪐 Espacial', rota: '/espacial' },
+    { id: 'mapa_ressonancia', nome: '🧬 Ressonância', rota: '/ressonancia' },
+    { id: 'mapa_patologia', nome: '🔬 Patologia', rota: '/patologia' },
+    { id: 'mapa_ia', nome: '⚡ IA 3D', rota: '/mapa-ia' },
+    { id: 'mapa_antiguidades', nome: '🏛️ Antiguidades', rota: '/antiguidades' },
+    { id: 'mapa_quantico', nome: '⚛️ Quântico', rota: '/mapa-quantico' },
+    { id: 'mapa_aeroespacial', nome: '🛸 Aeroespacial', rota: '/mapaaeroespacial' }
+  ];
+
+  const handleMouseDownHeader = (e) => {
+    setIsDragging(true);
+    setDragOffset({ x: e.clientX - pos.x, y: e.clientY - pos.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPos({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y });
+    } else if (isResizing) {
+      setSize({ width: Math.max(380, e.clientX - pos.x), height: Math.max(400, e.clientY - pos.y) });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setIsResizing(false);
+  };
+
+  useEffect(() => {
+    if (isDragging || isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, isResizing]);
+
+  return (
+    <div style={{
+      position: 'fixed', top: `${pos.y}px`, left: `${pos.x}px`, width: `${size.width}px`, height: `${size.height}px`,
+      backgroundColor: 'rgba(2, 6, 23, 0.95)', border: '2px solid #00f0ff', borderRadius: '18px',
+      backdropFilter: 'blur(25px)', zIndex: 300, boxShadow: '0 0 40px rgba(0,240,255,0.3)',
+      display: 'flex', flexDirection: 'column', overflow: 'hidden', color: '#fff', fontFamily: 'sans-serif'
+    }}>
+      {/* BARRA DE TÍTULO / ARRASTAR */}
+      <div 
+        onMouseDown={handleMouseDownHeader}
+        style={{ padding: '12px 16px', backgroundColor: 'rgba(15, 23, 42, 0.9)', borderBottom: '1px solid #00f0ff', cursor: 'grab', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px' }}>💎</span>
+          <strong style={{ fontSize: '12px', color: '#00f0ff', letterSpacing: '0.5px' }}>
+            PAINEL FUTURISTA DE DESENVOLVIMENTO ROBOTOC EMgemini
+          </strong>
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#00f0ff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+      </div>
+
+      {/* CONTEÚDO EXPANSÍVEL / ROLÁVEL */}
+      <div style={{ flexGrow: 1, padding: '14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+          🏛️ <strong>Vitrine Virtual 3D de Vidro</strong> - Modelos Giratórios & Maquetes Interativas de Mapas
+        </span>
+
+        {/* COMPONENTE DA VITRINE 3D */}
+        <VitrineVirtual3D 
+          modoAtual={modoVitrine} 
+          onSelectModo={(m) => setModoVitrine(m)}
+          onRequestBluetoothConnection={onRequestBluetooth}
+        />
+
+        {/* SELETOR DE MAPAS NA SEDE DA VITRINE */}
+        <div>
+          <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+            🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE:
+          </span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+            {mapasDisponiveis.map(m => (
+              <button
+                key={m.id}
+                onClick={() => setModoVitrine(m.id)}
+                style={{
+                  padding: '6px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.3)',
+                  backgroundColor: modoVitrine === m.id ? 'rgba(0,240,255,0.3)' : 'rgba(15,23,42,0.8)',
+                  color: '#fff', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer'
+                }}
+              >
+                {m.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* FERRAMENTAS DE DESENVOLVEDOR EMBUTIDAS */}
+        <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.8)', padding: '10px', borderRadius: '10px', border: '1px solid #334155' }}>
+          <span style={{ fontSize: '10px', color: '#4ade80', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            ⚡ CONSOLE DE TESTES AGI & HARDWARE
+          </span>
+          <p style={{ margin: 0, fontSize: '9px', color: '#cbd5e1' }}>
+            Inspeção de shaders WebGL em tempo real. Os avatares e mapas renderizados sincronizam com periféricos via bluetooth automaticamente.
+          </p>
+        </div>
+      </div>
+
+      {/* ÍCONE DE REDIMENSIONAMENTO NO CANTO INFERIOR */}
+      <div 
+        onMouseDown={() => setIsResizing(true)}
+        style={{ position: 'absolute', bottom: 0, right: 0, width: '16px', height: '16px', cursor: 'nwse-resize', background: 'linear-gradient(135deg, transparent 50%, #00f0ff 50%)' }}
+      />
+    </div>
+  );
+}
 
 // =========================================================================================
 // 🌟 --- 🖥️ COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX v6.0) --- 🖥️
@@ -1116,9 +1259,10 @@ export default function EmanuelOSCore() {
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
   const [modoDevSplit, setModoDevSplit] = useState(false);
-
-  // ESTADO DA JANELA FLUTUANTE ROBOTOC EMgemini
-  const [janelaRobotocAberta, setJanelaRobotocAberta] = useState(false);
+  
+  // ESTADO DA JANELA FUTURISTA ROBOTOC EMGEMINI
+  const [janelaRobotocDevAberta, setJanelaRobotocDevAberta] = useState(false);
+  const [solicitarConexaoBluetooth, setSolicitarConexaoBluetooth] = useState(false);
 
   const [cmdLogs, setCmdLogs] = useState([
     "[ROBOTOC: LOG] System core v6.0 operational.",
@@ -1128,9 +1272,10 @@ export default function EmanuelOSCore() {
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS v6.0 | ROBOTOC 3D em Azul Neon e Branco Quântico ativado!', tipo: 'sys' }
+    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS v6.0 | ROBOTOC 3D em Azul Neon e Branco Quântico ativado! Clique no Robô para abrir o Painel Futurista.', tipo: 'sys' }
   ]);
 
+  const [horaAtual, setHoraAtual] = useState('');
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -1138,6 +1283,17 @@ export default function EmanuelOSCore() {
   const orbMeshRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
+
+  // Função para acionar mensagem de áudio Bluetooth
+  const acionarSolicitacaoBluetooth = () => {
+    setAndroidHudOpen(true);
+    setSolicitarConexaoBluetooth(true);
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance("Deseja se conectar ao sistema Robotoc com teclado, mouse ou fone bluetooth?");
+      utterance.lang = 'pt-BR';
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   // Autenticação 3 Camadas
   const processarAutenticacao3Camadas = (e) => {
@@ -1216,7 +1372,7 @@ export default function EmanuelOSCore() {
   };
 
   // =========================================================================
-  // 🤖 CENA THREE.JS: ROBOTOC 3D COM DETECÇÃO DE CLIQUE (RAYCASTER)
+  // 🤖 CENA THREE.JS: ROBOTOC 3D + BOLA HOLOGRÁFICA (AZUL NEON & BRANCO)
   // =========================================================================
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
@@ -1252,7 +1408,7 @@ export default function EmanuelOSCore() {
 
     scene.add(new THREE.AmbientLight(0x0f172a, 1.8));
 
-    // Grade holográfica
+    // Grade holográfica de fundo
     const grid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
     grid.position.y = -2.6;
     scene.add(grid);
@@ -1266,14 +1422,17 @@ export default function EmanuelOSCore() {
     // GRUPO ROBOTOC 3D
     const robotGroup = new THREE.Group();
 
+    // Capacete Robótico Futurista
     const head = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.75, 0.8), whiteArmorMat);
     head.position.y = 1.9;
     robotGroup.add(head);
 
+    // Visor Holográfico Azul
     const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.28, 0.82), cyanGlowMat);
     visor.position.set(0, 1.92, 0.02);
     robotGroup.add(visor);
 
+    // Orelhas/Antenas Articuladas Laterais
     const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.4), blueMetalMat);
     earL.rotation.z = Math.PI / 2;
     earL.position.set(-0.55, 1.9, 0);
@@ -1282,18 +1441,22 @@ export default function EmanuelOSCore() {
     robotGroup.add(earL);
     robotGroup.add(earR);
 
+    // Pescoço Cibernético
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 0.3, 16), blueMetalMat);
     neck.position.y = 1.4;
     robotGroup.add(neck);
 
+    // Torso em Armadura Branca e Azul
     const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.4, 1.3, 16), whiteArmorMat);
     chest.position.y = 0.6;
     robotGroup.add(chest);
 
+    // Núcleo de Energia (Arc Reactor Azul)
     const core = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), cyanGlowMat);
     core.position.set(0, 0.75, 0.35);
     robotGroup.add(core);
 
+    // Ombros Robóticos
     const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), blueMetalMat);
     shoulderL.position.set(-0.8, 1.05, 0);
     const shoulderR = shoulderL.clone();
@@ -1301,7 +1464,7 @@ export default function EmanuelOSCore() {
     robotGroup.add(shoulderL);
     robotGroup.add(shoulderR);
 
-    // BOLA HOLOGRÁFICA 3D
+    // BOLA HOLOGRÁFICA 3D FLUTUANTE
     const orbGroup = new THREE.Group();
     const innerOrb = new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 32), whiteGlowMat);
     const outerWire = new THREE.Mesh(
@@ -1317,28 +1480,7 @@ export default function EmanuelOSCore() {
     scene.add(robotGroup);
     avatarGroupRef.current = robotGroup;
 
-    // LÓGICA DE INTERCEPTAÇÃO DE CLIQUE NO ROBOTOC (RAYCASTER)
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const handleCanvasClick = (event) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(robotGroup.children, true);
-
-      if (intersects.length > 0) {
-        // Ao clicar em qualquer parte do Robotoc 3D, abre a janela flutuante estilo Android Futurista
-        setJanelaRobotocAberta(true);
-      }
-    };
-
-    const domElem = renderer.domElement;
-    domElem.addEventListener('click', handleCanvasClick);
-
-    // Loop de Animação
+    // Loop de Animação Quântica
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1362,7 +1504,6 @@ export default function EmanuelOSCore() {
     animate();
 
     return () => {
-      domElem.removeEventListener('click', handleCanvasClick);
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
@@ -1370,7 +1511,15 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // RENDERIZAÇÃO DA TELA DE BLOQUEIO
+  // Atualizador de hora
+  useEffect(() => {
+    const updateTime = () => setHoraAtual(new Date().toLocaleTimeString('pt-BR'));
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020204', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
@@ -1457,7 +1606,7 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // INTERFACE CORE v6.0 DESBLOQUEADA
+  // DESBLOQUEADO (INTERFACE CORE v6.0)
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#020617', color: '#fff', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <Head><title>Emanuel.OS Core v6.0 | ROBOTOC 3D Azul & Branco</title></Head>
@@ -1467,7 +1616,13 @@ export default function EmanuelOSCore() {
         {/* LADO ESQUERDO / CENTRAL 3D */}
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'pointer' }} />
+          {/* CENA PRINCIPAL DO ROBÔ - AÇÃO DE CLIQUE ADICIONADA */}
+          <div 
+            ref={mountRef} 
+            onClick={() => setJanelaRobotocDevAberta(true)}
+            title="Clique no Robotoc 3D para abrir o Painel Futurista ROBOTOC EMgemini!"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'pointer' }} 
+          />
 
           {/* BARRA SUPERIOR DE CONTROLES */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -1486,9 +1641,13 @@ export default function EmanuelOSCore() {
             <button onClick={() => setModalCreatorStudioAberto(true)} style={{ backgroundColor: 'rgba(255, 0, 127, 0.15)', border: '1px solid #ff007f', color: '#ff007f', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
               📊 Creator Studio
             </button>
+
+            <button onClick={() => setJanelaRobotocDevAberta(true)} style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', border: '1px solid #eab308', color: '#fef08a', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>
+              🤖 Painel EMgemini Dev 3D
+            </button>
           </div>
 
-          {/* SIDEBAR ESQUERDA */}
+          {/* SIDEBAR ESQUERDA (MAPAS, MENSAGENS E PENSAMENTO NEURAL) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(7, 7, 12, 0.95)', backdropFilter: 'blur(30px)',
@@ -1535,7 +1694,7 @@ export default function EmanuelOSCore() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(5, 12, 24, 0.9)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou clique nele para abrir o painel..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou envie comandos neurais..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '10px', flexGrow: 1 }} />
               <button type="submit" style={{ backgroundColor: '#00f0ff', color: '#000', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
             </form>
           </div>
@@ -1549,13 +1708,18 @@ export default function EmanuelOSCore() {
         )}
       </div>
 
-      {/* JANELA FLUTUANTE EXPANSÍVEL DO ROBOTOC 3D */}
-      <JanelaRobotocFuturista open={janelaRobotocAberta} onClose={() => setJanelaRobotocAberta(false)} />
+      {/* PAINEL FUTURISTA REDIMENSIONÁVEL ROBOTOC EMGEMINI (Aparece ao Clicar no Robô 3D) */}
+      {janelaRobotocDevAberta && (
+        <WindowDevPanelRobotoc 
+          onClose={() => setJanelaRobotocDevAberta(false)} 
+          onRequestBluetooth={acionarSolicitacaoBluetooth}
+        />
+      )}
 
       {/* GAVETA ANDROID HUD LATERAL */}
-      <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)}>
+      <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
         <MotionTracker />
-        <RobotocGear onConnectGear={(t, s) => addLogTerminal(`[GEAR] ${t}: ${s ? 'ON' : 'OFF'}`)} />
+        <RobotocGear highlightGear={solicitarConexaoBluetooth} onConnectGear={(t, s) => addLogTerminal(`[GEAR] ${t}: ${s ? 'ON' : 'OFF'}`)} />
         <BitcoinAnalysisPanel />
         <CloudflareWorkerDeployer addLog={addLogTerminal} />
       </AndroidHUDPanel>
