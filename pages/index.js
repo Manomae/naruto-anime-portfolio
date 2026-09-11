@@ -1229,6 +1229,28 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
+  // Dados Reais Integrados
+  const meusDadosReais = {
+    youtube: 'https://youtube.com',
+    tiktok: 'https://tiktok.com',
+    instagram: 'https://instagram.com',
+    github: 'https://github.com/Manomae/naruto-anime-portfolio',
+    whatsapp: '5588981493989',
+    facebook: 'https://facebook.com',
+    threads: 'https://threads.net'
+  };
+
+  // ESTADO DE LINKS 3D DINÂMICOS DAS REDES SOCIAIS
+  const [linksSociais3D, setLinksSociais3D] = useState([
+    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
+    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
+    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
+    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: meusDadosReais.github, icone: '🐙', nuvem: 'microsoft' },
+    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: `https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`, icone: '💬', nuvem: 'google' },
+    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
+    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
+  ]);
+
   // Seguranças Triplas
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
   const [validandoServidores, setValidandoServidores] = useState(false);
@@ -1743,6 +1765,41 @@ export default function EmanuelOSCore() {
             <button onClick={() => setJanelaRobotocDevAberta(true)} style={{ backgroundColor: '#0284c7', border: 'none', color: '#fff', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(2,132,199,0.3)' }}>
               🤖 Painel EMgemini Dev 3D
             </button>
+          </div>
+
+          {/* PAINEL DE LINKS SOCIAIS 3D DINÂMICOS */}
+          <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '240px' }}>
+            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
+              🌐 LINKS SOCIAIS 3D DINÂMICOS
+            </span>
+            {linksSociais3D.map((item) => (
+              <a
+                key={item.id}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                  border: '1px solid #00f0ff',
+                  borderRadius: '8px',
+                  color: '#0f172a',
+                  textDecoration: 'none',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 2px 8px rgba(0,240,255,0.15)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span>{item.icone}</span>
+                <span style={{ flexGrow: 1 }}>{item.titulo}</span>
+                <span style={{ fontSize: '8px', color: '#0284c7', textTransform: 'uppercase' }}>[{item.nuvem}]</span>
+              </a>
+            ))}
           </div>
 
           {/* SIDEBAR ESQUERDA (9 MAPAS INTEGRADOS, MENSAGENS E PENSAMENTO NEURAL) */}
