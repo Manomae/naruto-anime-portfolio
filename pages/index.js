@@ -280,7 +280,7 @@ function AndroidHUDPanel({ open, onClose, children }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '16px' }}>🤖</span>
-          <strong style={{ fontSize: '12px', color: '#0284c7' }}>ANDROID HUD SYSTEM v6.0</strong>
+          <strong style={{ fontSize: '12px', color: '#0284c7' }}>ANDROID 16 NEURAL OS HUD v6.0</strong>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>✕</button>
       </div>
@@ -410,16 +410,33 @@ function EMCreatorStudio({ onClose }) {
 }
 
 // =========================================================================================
-// 💻 --- PAINEL DE DESENVOLVEDOR SPLIT SCREEN v6.0 COM INSPEÇÃO EM TEMPO REAL ---
+// 💻 --- PAINEL DE DESENVOLVEDOR SPLIT SCREEN v6.0 COM SUPORTE A LINGUAGENS RARAS ---
 // =========================================================================================
 function PainelDevSplitScreen({ onClose }) {
-  const [linguagem, setLinguagem] = useState('javascript');
-  const [codigoFonte, setCodigoFonte] = useState(
-    `// Emanuel.OS Dev Studio v6.0 - Ambiente de Desenvolvimento\n// Assistência ativa via IA Gemini AGI Core v6.0 e Robotoc 3D\n\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
-  );
-  const [blocoRascunho, setBlocoRascunho] = useState("Notas de dev: Verificar integração do Robotoc 3D com os mapas e Quick Actions.");
+  const [linguagem, setLinguagem] = useState('mojo');
+  
+  const modelosDeCodigo = {
+    mojo: `// Emanuel.OS Kernel Core - Exemplo em Mojo 🔥 (Alta Performance AGI)\nfn main():\n    let status: String = "EM-CORE-ONLINE"\n    print("Mojo Engine Inicializado no Kernel Neural: " + status)`,
+    zig: `// Emanuel.OS Native Module em Zig ⚡\nconst std = @import("std");\n\npub fn main() void {\n    std.debug.print("Kernel Emanuel.OS rodando sem Overhead em Zig!\\n", .{});\n}`,
+    nim: `# Emanuel.OS Neural Script em Nim 👑\ntype KernelState = enum\n  Online, Synchronizing, Quantum\n\nproc status(k: KernelState) =\n  echo "Status Atual: ", k\n\nstatus(KernelState.Quantum)`,
+    elixir: `# Emanuel.OS Concorrência em Elixir 💧\ndefmodule EmanuelOS.Kernel do\n  def status do\n    IO.puts "Kernel Elixir processando em nós simultâneos..."\n  end\nend\nEmanuelOS.Kernel.status()`,
+    crystal: `# Emanuel.OS Fast System em Crystal 💎\nclass NeuralCore\n  def initialize(@status : String)\n  end\n  def run\n    puts "Executando Cristal Neural: #{@status}"\n  end\nend\nNeuralCore.new("100% Estável").run`,
+    qsharp: `// Emanuel.OS Quântico em Q# / Quantum C++ ⚛️\nnamespace EmanuelOS.Quantum {\n    open Microsoft.Quantum.Canon;\n    open Microsoft.Quantum.Intrinsic;\n    \n    operation TesteEmanuel() : Result {\n        using (q = Qubit()) {\n            H(q);\n            return M(q);\n        }\n    }\n}`,
+    javascript: `// Emanuel.OS Dev Studio v6.0 - JavaScript (Next.js/React)\nfunction inicializarModuloEmanuel() {\n  const status = "ONLINE";\n  console.log(\`Sincronizando componentes neurais... [\${status}]\`);\n  return true;\n}`
+  };
+
+  const [codigoFonte, setCodigoFonte] = useState(modelosDeCodigo.mojo);
+  const [blocoRascunho, setBlocoRascunho] = useState("Notas de Dev Core: Explorando sintaxe de Mojo e Zig para o kernel Android 16 Neural.");
   const [analisandoIA, setAnalisandoIA] = useState(false);
   const [relatorioErros, setRelatorioErros] = useState([]);
+
+  const aoMudarLinguagem = (e) => {
+    const novaLang = e.target.value;
+    setLinguagem(novaLang);
+    if (modelosDeCodigo[novaLang]) {
+      setCodigoFonte(modelosDeCodigo[novaLang]);
+    }
+  };
 
   const falarExplicacaoVoz = (texto) => {
     if ('speechSynthesis' in window) {
@@ -449,7 +466,7 @@ function PainelDevSplitScreen({ onClose }) {
       });
 
       if (errosDetectados.length === 0) {
-        errosDetectados.push({ linha: 0, tipo: 'sucesso', texto: '✅ IA EMgemini: Código analisado sem erros ou bugs críticos!', cor: '#16a34a' });
+        errosDetectados.push({ linha: 0, tipo: 'sucesso', texto: `✅ IA EMgemini: Código em ${linguagem.toUpperCase()} compilado e validado no núcleo!`, cor: '#16a34a' });
       } else {
         errosDetectados.push({ linha: 0, tipo: 'corrigido', texto: '🔧 IA EMgemini aplicou auto-correção sugerida nas linhas identificadas!', cor: '#16a34a' });
       }
@@ -457,19 +474,19 @@ function PainelDevSplitScreen({ onClose }) {
       setRelatorioErros(errosDetectados);
 
       if (modo === 'explicar') {
-        const explicacao = `O código atual em ${linguagem} possui ${linhas.length} linhas de execução.`;
+        const explicacao = `O código atual em ${linguagem} possui ${linhas.length} linhas de execução no núcleo Emanuel.OS.`;
         falarExplicacaoVoz(explicacao);
       }
     }, 1000);
   };
 
   const baixarCodigoArquivo = () => {
-    const ext = linguagem === 'javascript' ? 'js' : linguagem === 'python' ? 'py' : linguagem === 'typescript' ? 'ts' : 'txt';
+    const ext = linguagem === 'javascript' ? 'js' : linguagem === 'python' ? 'py' : linguagem === 'mojo' ? 'mojo' : linguagem === 'zig' ? 'zig' : 'txt';
     const blob = new Blob([codigoFonte], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `EmanuelOS_Projeto.${ext}`;
+    a.download = `EmanuelOS_Core_${linguagem}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -481,7 +498,7 @@ function PainelDevSplitScreen({ onClose }) {
     doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(2, 132, 199);
     doc.setFontSize(16);
-    doc.text("EMANUEL.OS - DEV WORKSTATION REPORT v6.0", 15, 18);
+    doc.text("EMANUEL.OS - DEV WORKSTATION CORE REPORT v6.0", 15, 18);
     doc.setFontSize(9);
     doc.setTextColor(15, 23, 42);
     doc.text(`LINGUAGEM: ${linguagem.toUpperCase()} | DATA: ${new Date().toLocaleDateString('pt-BR')}`, 15, 25);
@@ -506,7 +523,7 @@ function PainelDevSplitScreen({ onClose }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '14px' }}>👨‍💻</span>
           <strong style={{ fontSize: '12px', color: '#0284c7', fontFamily: 'sans-serif' }}>
-            Emanuel.OS Dev Workstation | Split Screen v6.0
+            Emanuel.OS Dev Notepad Core | Split Screen v6.0
           </strong>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>
@@ -517,30 +534,31 @@ function PainelDevSplitScreen({ onClose }) {
       <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
         <select
           value={linguagem}
-          onChange={(e) => setLinguagem(e.target.value)}
+          onChange={aoMudarLinguagem}
           style={{ backgroundColor: '#ffffff', border: '1px solid #0284c7', color: '#0284c7', padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', outline: 'none' }}
         >
-          <option value="javascript">JavaScript (Next.js/React)</option>
-          <option value="python">Python (AI/ML)</option>
-          <option value="typescript">TypeScript</option>
-          <option value="html">HTML5 / CSS3</option>
-          <option value="cpp">C++ Quântico</option>
-          <option value="sql">SQL / Database</option>
+          <option value="mojo">Mojo 🔥 (IA & GPU Core)</option>
+          <option value="zig">Zig ⚡ (Kernel Nativo)</option>
+          <option value="nim">Nim 👑 (Sintaxe Pythonic Rápida)</option>
+          <option value="elixir">Elixir 💧 (Sistemas Concorrentes)</option>
+          <option value="crystal">Crystal 💎 (Sintaxe Ruby em C)</option>
+          <option value="qsharp">Q# / C++ Quântico ⚛️</option>
+          <option value="javascript">JavaScript (React/Next.js)</option>
         </select>
 
         <button onClick={() => analisarECorrigirCodigoIA('bugs')} style={{ padding: '6px 10px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          🔍 Checar Bugs e Linhas Erradas
+          🔍 Checar Bugs
         </button>
         <button onClick={() => analisarECorrigirCodigoIA('otimizar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(168,85,247,0.1)', border: '1px solid #a855f7', color: '#a855f7', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          ⚡ Otimizar IA EMgemini
+          ⚡ Otimizar Kernel
         </button>
         <button onClick={() => analisarECorrigirCodigoIA('explicar')} style={{ padding: '6px 10px', backgroundColor: 'rgba(234,179,8,0.1)', border: '1px solid #eab308', color: '#d97706', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          🔊 Explicar em Áudio/Texto
+          🔊 Explicar em Áudio
         </button>
       </div>
 
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <span style={{ fontSize: '9px', color: '#64748b', fontFamily: 'sans-serif' }}>CÓDIGO FONTE DO PROJETO ({linguagem.toUpperCase()}):</span>
+        <span style={{ fontSize: '9px', color: '#64748b', fontFamily: 'sans-serif' }}>NÚCLEO DO SISTEMA ({linguagem.toUpperCase()}):</span>
         <textarea
           value={codigoFonte}
           onChange={(e) => setCodigoFonte(e.target.value)}
@@ -742,119 +760,124 @@ function GoogleMeetAvatarManager({ addLog }) {
 }
 
 // =========================================================================================
-// 🖥️ --- COMPONENTE: TERMINAL NATIVO UNIX-LIKE EM CANVAS ---
+// 🖥️ --- NOVO COMPONENTE: EM POWERSHELL AI TERMINAL (DESIGN WINDOWS 11 + BRANCO E AZUL) ---
 // =========================================================================================
-const UnixTerminalCanvas = () => {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
+const EMPowerShellTerminal = () => {
+  const [activeTab, setActiveTab] = useState('powershell');
   const [history, setHistory] = useState([
-    'Emanuel.OS v6.0 - Terminal Nativo v1.0 [Kernel 6.x-like]',
-    'ROBOTOC Neural Shell - Digite "help" para comandos.',
+    'Emanuel.OS [Versão 6.0.22621.1000] - Windows 11 Fluent Kernel',
+    '(c) Emanuel Corporation. Todos os direitos reservados no Android 16 Neural OS.',
     ' ',
-    'root@emanuel-os:~# '
+    'PS C:\\EmanuelOS\\Kernel> '
   ]);
   const [currentLine, setCurrentLine] = useState('');
-  const [currentPath, setCurrentPath] = useState('/home/emanuel');
+  const [aiPrompt, setAiPrompt] = useState('');
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const container = containerRef.current;
-
-    const dpr = window.devicePixelRatio || 1;
-    const rect = container.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-    ctx.font = '12px "Courier New", Courier, monospace';
-    ctx.fillStyle = '#38bdf8';
-    const lineHeight = 16;
-    const padding = 10;
-    const maxLines = Math.floor((rect.height - padding * 2) / lineHeight);
-
-    const linesToDraw = history.slice(-maxLines);
-    linesToDraw.forEach((line, index) => {
-      if (line.includes('root@emanuel-os')) {
-        const parts = line.split('# ');
-        ctx.fillStyle = '#ef4444';
-        ctx.fillText(parts[0], padding, padding + (index + 1) * lineHeight);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillText('# ' + (parts[1] || ''), padding + ctx.measureText(parts[0]).width, padding + (index + 1) * lineHeight);
-      } else {
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillText(line, padding, padding + (index + 1) * lineHeight);
-      }
-    });
-
-    const prompt = `root@emanuel-os:${currentPath}# `;
-    const promptWidth = ctx.measureText(prompt).width;
-    ctx.fillStyle = '#ef4444';
-    ctx.fillText(prompt, padding, padding + (linesToDraw.length + 1) * lineHeight);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(currentLine, padding + promptWidth, padding + (linesToDraw.length + 1) * lineHeight);
-
-    if (Math.floor(Date.now() / 500) % 2 === 0) {
-      const cursorX = padding + promptWidth + ctx.measureText(currentLine).width;
-      const cursorY = padding + (linesToDraw.length + 0.3) * lineHeight;
-      ctx.fillRect(cursorX, cursorY, 7, lineHeight);
+  const executarComandoIA = (tipo) => {
+    let out = [];
+    if (tipo === 'deploy') {
+      out = [
+        'PS C:\\EmanuelOS\\Kernel> Invoke-EMDeployPipeline -Target "Cloudflare Edge"',
+        '⚡ [EM-AI] Compilando assets do núcleo...',
+        '✅ Deploy do Kernel efetuado com sucesso na borda quântica!'
+      ];
+    } else if (tipo === 'optimize') {
+      out = [
+        'PS C:\\EmanuelOS\\Kernel> Optimize-EMSystemMemory -Degree Maximum',
+        '🧠 [EM-AI] Analisando threads do Robotoc 3D e WebGL...',
+        '✅ Memória otimizada! Consumo reduzido em 34%.'
+      ];
+    } else if (tipo === 'refactor') {
+      out = [
+        'PS C:\\EmanuelOS\\Kernel> Refactor-EMCode -Target "Mojo/Zig Core"',
+        '🔍 [EM-AI] Identificadas 0 vulnerabilidades.',
+        '✨ Código do núcleo refatorado com 100% de integridade.'
+      ];
     }
-  }, [history, currentLine, currentPath]);
+    setHistory(prev => [...prev, ...out, ' ']);
+  };
 
   const handleCommand = (cmd) => {
     let output = [];
-    const tokens = cmd.trim().split(' ');
-    const commandName = tokens[0];
+    const lower = cmd.trim().toLowerCase();
 
-    switch (commandName) {
-      case 'help':
-        output = ['Comandos disponíveis:', '  help, ls, cd, cat, pwd, clear, whoami, uname, emanuel-agi'];
-        break;
-      case 'ls':
-        output = ['bin/  home/  var/  README.txt'];
-        break;
-      case 'pwd':
-        output = [currentPath];
-        break;
-      case 'clear':
-        setHistory([]);
-        return;
-      case 'whoami':
-        output = ['root'];
-        break;
-      case 'uname':
-        output = ['EmanuelOS 6.1.0- G-AGI v6.0 x86_64 ROBOTOC Shell'];
-        break;
-      case 'emanuel-agi':
-        output = ['Conectando ao núcleo G-AGI...', 'Acesso concedido. ROBOTOC v6.0 online.'];
-        break;
-      case '':
-        break;
-      default:
-        output = [`${commandName}: command not found`];
+    if (lower === 'help') {
+      output = ['Comandos EM PowerShell:', '  Get-EMStatus, Start-EMRobotoc, Connect-EMNeural, Clear, Get-HelpLanguage'];
+    } else if (lower === 'get-emstatus') {
+      output = ['EM-OS Kernel: ONLINE', 'Nível AGI: 98.4%', 'Renderizador: WebGL 3D PBR Ceramic/Cyan'];
+    } else if (lower === 'clear') {
+      setHistory([]);
+      return;
+    } else if (cmd.trim() !== '') {
+      output = [`${cmd} : O termo não é reconhecido como nome de um cmdlet no EM.OS.`];
     }
 
-    setHistory(prev => [...prev, `root@emanuel-os:${currentPath}# ${cmd}`, ...output, ' ']);
+    setHistory(prev => [...prev, `PS C:\\EmanuelOS\\Kernel> ${cmd}`, ...output, ' ']);
     setCurrentLine('');
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleCommand(currentLine);
-    else if (e.key === 'Backspace') setCurrentLine(prev => prev.slice(0, -1));
-    else if (e.key.length === 1) setCurrentLine(prev => prev + e.key);
-  };
-
   return (
-    <div 
-      ref={containerRef} 
-      style={{ width: '100%', height: '200px', backgroundColor: '#0f172a', border: '2px solid #00f0ff', borderRadius: '10px', padding: '5px', boxSizing: 'border-box', overflow: 'hidden' }}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-    >
-      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+    <div style={{
+      width: '100%', height: '240px', backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      border: '2px solid #00f0ff', borderRadius: '12px', overflow: 'hidden',
+      boxShadow: '0 0 20px rgba(0, 240, 255, 0.2)', display: 'flex', flexDirection: 'column'
+    }}>
+      {/* BARRA DE ABAS ESTILO WINDOWS 11 */}
+      <div style={{ backgroundColor: '#e0f2fe', padding: '6px 10px 0 10px', display: 'flex', gap: '4px', borderBottom: '1px solid #bae6fd' }}>
+        <button
+          onClick={() => setActiveTab('powershell')}
+          style={{
+            padding: '6px 12px', borderRadius: '8px 8px 0 0', border: '1px solid #00f0ff', borderBottom: 'none',
+            backgroundColor: activeTab === 'powershell' ? '#ffffff' : 'transparent', color: '#0284c7',
+            fontSize: '10px', fontWeight: 'bold', cursor: 'pointer'
+          }}
+        >
+          💙 EM PowerShell 7.4
+        </button>
+        <button
+          onClick={() => setActiveTab('cmd')}
+          style={{
+            padding: '6px 12px', borderRadius: '8px 8px 0 0', border: '1px solid #cbd5e1', borderBottom: 'none',
+            backgroundColor: activeTab === 'cmd' ? '#ffffff' : 'transparent', color: '#64748b',
+            fontSize: '10px', fontWeight: 'bold', cursor: 'pointer'
+          }}
+        >
+          🖤 Prompt de Comando Classic
+        </button>
+      </div>
+
+      {/* BARRA POWER POWERSHEW IA DE COMANDOS ESPECÍFICOS */}
+      <div style={{ backgroundColor: '#f0f9ff', padding: '6px 10px', borderBottom: '1px solid #bae6fd', display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7' }}>⚡ EM POWER-IA:</span>
+        <button onClick={() => executarComandoIA('deploy')} style={{ padding: '3px 8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🚀 Deploy Auto
+        </button>
+        <button onClick={() => executarComandoIA('optimize')} style={{ padding: '3px 8px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🧠 Otimizar Memória
+        </button>
+        <button onClick={() => executarComandoIA('refactor')} style={{ padding: '3px 8px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
+          🔧 Refatorar Código IA
+        </button>
+      </div>
+
+      {/* ÁREA DE TERMINAL */}
+      <div style={{ flexGrow: 1, padding: '10px', backgroundColor: '#0f172a', color: '#38bdf8', fontFamily: 'Consolas, monospace', fontSize: '11px', overflowY: 'auto' }}>
+        {history.map((line, idx) => (
+          <div key={idx} style={{ color: line.startsWith('PS') ? '#00f0ff' : line.includes('EM-AI') ? '#22c55e' : '#e2e8f0' }}>
+            {line}
+          </div>
+        ))}
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <span style={{ color: '#00f0ff' }}>PS C:\EmanuelOS\Kernel&gt;</span>
+          <input
+            type="text"
+            value={currentLine}
+            onChange={(e) => setCurrentLine(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCommand(currentLine)}
+            style={{ flexGrow: 1, backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#ffffff', fontFamily: 'Consolas, monospace', fontSize: '11px' }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -993,13 +1016,13 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       robot1.add(body1, head1, visor1);
       robot1.position.set(-1.4, 0.2, 0);
 
-      // AVATAR 2: ROBOTOC BLUETOOTH (AZUL ROYAL & BRANCO)
+      // AVATAR 2: ROBÔ HUMANOIDE PARCEIRO 3D (PARECIDO COM HUMANO DA NOVA ATUALIZAÇÃO)
       const robot2 = new THREE.Group();
-      const body2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 }));
-      const head2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-      const visor2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.62), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
+      const body2 = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 1.3, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 }));
+      const head2 = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1 }));
+      const visor2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.15, 0.42), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
       head2.position.y = 0.95;
-      visor2.position.y = 0.95;
+      visor2.position.set(0, 0.95, 0.15);
       robot2.add(body2, head2, visor2);
       robot2.position.set(1.4, 0.2, 0);
 
@@ -1079,7 +1102,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       <div ref={container3dRef} style={{ width: '100%', height: '100%', cursor: 'grab' }} />
       <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 10, display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         <button onClick={() => onSelectModo('avatares')} style={{ padding: '4px 8px', backgroundColor: modoAtual === 'avatares' ? '#0284c7' : 'rgba(255,255,255,0.8)', color: modoAtual === 'avatares' ? '#fff' : '#0f172a', border: '1px solid #0284c7', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
-          🤖 Avatares Vitrine
+          🤖 Dupla de Avatares 3D
         </button>
         <button onClick={() => { onSelectModo('bluetooth'); if (onRequestBluetoothConnection) onRequestBluetoothConnection(); }} style={{ padding: '4px 8px', backgroundColor: modoAtual === 'bluetooth' ? '#eab308' : 'rgba(255,255,255,0.8)', color: modoAtual === 'bluetooth' ? '#fff' : '#0f172a', border: '1px solid #eab308', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
           📶 Módulo Bluetooth 3D
@@ -1482,11 +1505,11 @@ export default function EmanuelOSCore() {
     });
 
     // =========================================================================
-    // 🤖 CONSTRUÇÃO DO ROBÔ HUMANOIDE 3D (SUPER DESIGN)
+    // 🤖 CONSTRUÇÃO DO ROBÔ HUMANOIDE 3D (SUPER DESIGN - NOVO ROBÔ TIPO HUMANO)
     // =========================================================================
     const humanoidRobot = new THREE.Group();
 
-    // 1. CABEÇA HUMANOIDE
+    // 1. CABEÇA HUMANOIDE (DESIGN ULTRA HUMANO)
     const headGroup = new THREE.Group();
     const skull = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), whiteCeramicMat);
     skull.scale.set(0.9, 1.1, 0.95);
@@ -1559,7 +1582,7 @@ export default function EmanuelOSCore() {
     humanoidRobot.add(armL, armR);
 
     // =========================================================================
-    // 🔮 SUPER BOLA HOLOGRÁFICA 3D FLUTUANTE MULTICAMADAS
+    // 🔮 MANTIDA INTEGRALMENTE: BOLA HOLOGRÁFICA 3D FLUTUANTE MULTICAMADAS
     // =========================================================================
     const holoOrbGroup = new THREE.Group();
 
@@ -1755,7 +1778,7 @@ export default function EmanuelOSCore() {
             </button>
 
             <button onClick={() => setAndroidHudOpen(true)} style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
-              📱 Android HUD v6.0
+              📱 Android 16 Neural OS
             </button>
 
             <button onClick={() => setModalCreatorStudioAberto(true)} style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #0284c7', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
@@ -1802,9 +1825,9 @@ export default function EmanuelOSCore() {
             ))}
           </div>
 
-          {/* SIDEBAR ESQUERDA (9 MAPAS INTEGRADOS, MENSAGENS E PENSAMENTO NEURAL) */}
+          {/* SIDEBAR ESQUERDA (9 MAPAS INTEGRADOS, MENSAGENS E PENSAMENTO NEURAL + POWERSHELL W11) */}
           <aside style={{
-            position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
+            position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '410px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
             borderRight: '1px solid rgba(0, 240, 255, 0.4)', padding: sidebarAberta ? '20px' : '0px',
             display: 'flex', flexDirection: 'column', gap: '15px', height: '100vh', overflowY: 'auto', zIndex: 90,
@@ -1816,18 +1839,19 @@ export default function EmanuelOSCore() {
                   Contexto: EMANUEL<span style={{ color: '#0284c7' }}>.OS v6.0</span>
                 </h1>
 
-                <UnixTerminalCanvas />
+                {/* NOVO POWERSHELL WINDOWS 11 ESTILO BRANCO E AZUL */}
+                <EMPowerShellTerminal />
 
                 <div style={{ padding: '12px', backgroundColor: 'rgba(240, 249, 255, 0.8)', borderRadius: '12px', border: '1px solid #bae6fd' }}>
                   <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 9 Mapas Integrados</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     <Link href="/mapa" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #16a34a', color: '#16a34a', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌍 Terrestre</Link>
-                    <Link href="/mapa-orkut" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ea580c', color: '#ea580c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧡 Orkut</Link>
+                    <Link href="/orkut" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ea580c', color: '#ea580c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧡 Orkut</Link>
                     <Link href="/espacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #0284c7', color: '#0284c7', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🪐 Espacial</Link>
-                    <Link href="/mapa-ressonancia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #06b6d4', color: '#06b6d4', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧬 Ressonância</Link>
-                    <Link href="/mapa-patologia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🔬 Patologia</Link>
+                    <Link href="/ressonancia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #06b6d4', color: '#06b6d4', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧬 Ressonância</Link>
+                    <Link href="/patologia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🔬 Patologia</Link>
                     <Link href="/mapa-ia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #f43f5e', color: '#f43f5e', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚡ IA 3D</Link>
-                    <Link href="/mapa-antiguidades" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #d97706', color: '#d97706', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🏛️ Antiguidades</Link>
+                    <Link href="/antiguidades" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #d97706', color: '#d97706', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🏛️ Antiguidades</Link>
                     <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #8b5cf6', color: '#8b5cf6', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚛️ Quântico</Link>
                     <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #9333ea', color: '#9333ea', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold', gridColumn: 'span 2' }}>🛸 Aeroespacial</Link>
                   </div>
@@ -1859,7 +1883,7 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* LADO DIREITO (MODO DEV SPLIT SCREEN) */}
+        {/* LADO DIREITO (MODO DEV SPLIT SCREEN CONECTADO AO NOTEPAD CORE) */}
         {modoDevSplit && (
           <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
