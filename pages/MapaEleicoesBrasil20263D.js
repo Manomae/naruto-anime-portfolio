@@ -26,8 +26,8 @@ export default function MapaEleicoesBrasil20263D() {
     { id: '55', nome: "Ronaldo Caiado", partido: "PSD", stats: 6, votosAbsolutos: "Aguardando TSE", cor: 0x00ff88, img: "https://via.placeholder.com/150/00ff88/ffffff?text=Caiado", noticias: "Fórum de agronegócio, segurança pública e reuniões federativas.", engajamentoWeb: "Médio 🛜" },
     { id: '70', nome: "Augusto Cury", partido: "Avante", stats: 5, votosAbsolutos: "Aguardando TSE", cor: 0x9900ff, img: "https://via.placeholder.com/150/9900ff/ffffff?text=Cury", noticias: "Lançamento de propostas para gestão da inteligência emocional e educação.", engajamentoWeb: "Alto 🛜" },
     { id: '30', nome: "Romeu Zema", partido: "Novo", stats: 4, votosAbsolutos: "Aguardando TSE", cor: 0xffaa00, img: "https://via.placeholder.com/150/ffaa00/ffffff?text=Zema", noticias: "Encontros industriais e debates sobre simplificação tributária.", engajamentoWeb: "Médio 🛜" },
-    { id: '29', name: "Renan Santos", partido: "Missão", stats: 3, votosAbsolutos: "Aguardando TSE", cor: 0x00ffff, img: "https://via.placeholder.com/150/00ffff/ffffff?text=Renan", noticias: "Transmissões digitais e congressos de mobilização de militância.", engajamentoWeb: "Alto 🛜" },
-    { id: '28', nome: "Pablo Marçal", partido: "PRTB", stats: 3, votosAbsolutos: "Aguardando TSE", cor: 0x555555, img: "https://via.placeholder.com/150/555555/ffffff?text=Marcal", news: "Atualizações jurídicas do registro e lives com plano de governo.", engajamentoWeb: "Viral 🛜" },
+    { id: '29', nome: "Renan Santos", partido: "Missão", stats: 3, votosAbsolutos: "Aguardando TSE", cor: 0x00ffff, img: "https://via.placeholder.com/150/00ffff/ffffff?text=Renan", noticias: "Transmissões digitais e congressos de mobilização de militância.", engajamentoWeb: "Alto 🛜" },
+    { id: '28', nome: "Pablo Marçal", partido: "PRTB", stats: 3, votosAbsolutos: "Aguardando TSE", cor: 0x555555, img: "https://via.placeholder.com/150/555555/ffffff?text=Marcal", noticias: "Atualizações jurídicas do registro e lives com plano de governo.", engajamentoWeb: "Viral 🛜" },
     { id: '27', nome: "Clariana Barão", partido: "DC", stats: 1, votosAbsolutos: "Aguardando TSE", cor: 0xff00ff, img: "https://via.placeholder.com/150/ff00ff/ffffff?text=Clariana", noticias: "Apresentação da diretriz nacional de centro-direita e ética pública.", engajamentoWeb: "Estável 🛜" },
     { id: '21', nome: "Edmilson Costa", partido: "PCB", stats: 1, votosAbsolutos: "Aguardando TSE", cor: 0x880000, img: "https://via.placeholder.com/150/880000/ffffff?text=Edmilson", noticias: "Debates comunitários sobre direitos sociais e pautas trabalhistas.", engajamentoWeb: "Moderado 🛜" },
     { id: '16', nome: "Hertz Dias", partido: "PSTU", stats: 1, votosAbsolutos: "Aguardando TSE", cor: 0xaa0000, img: "https://via.placeholder.com/150/aa0000/ffffff?text=Hertz", noticias: "Encontros com coletivos populares, sindicatos e mobilização de rua.", engajamentoWeb: "Moderado 🛜" },
@@ -450,7 +450,7 @@ export default function MapaEleicoesBrasil20263D() {
       <div style={{ position: 'absolute', bottom: '25px', left: '25px', zIndex: 30, backgroundColor: 'rgba(5, 12, 25, 0.95)', border: '1px solid #00aeff', borderRadius: '14px', padding: '14px 18px', maxWidth: '340px', boxShadow: '0 0 20px rgba(0, 174, 255, 0.3)', display: 'flex', gap: '12px', alignItems: 'center' }}>
         <div style={{ fontSize: '2rem' }}>🤖</div>
         <div>
-          <h4 style="margin: 0; color: #00aeff; font-size: 0.85rem;">ROBOTOC Eleitoral 3D</h4>
+          <h4 style={{ margin: 0, color: '#00aeff', fontSize: '0.85rem' }}>ROBOTOC Eleitoral 3D</h4>
           <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: '#ddd', lineHeight: '1.3' }}>{falaRobotoc}</p>
         </div>
       </div>
