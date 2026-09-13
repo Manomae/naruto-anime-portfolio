@@ -415,7 +415,6 @@ function EMCreatorStudio({ onClose }) {
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('mojo');
   
-  // Modelos de código de exemplo para instigar curiosidade e busca por conhecimento
   const templatesExoticos = {
     mojo: `// Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
     zig: `// Zig System Language\nconst std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("🧠 Núcleo de Baixo Nível do Android 16 Neural OS EM Ativo!\\n", .{});\n}`,
@@ -431,7 +430,6 @@ function PainelDevSplitScreen({ onClose }) {
   const [analisandoIA, setAnalisandoIA] = useState(false);
   const [relatorioErros, setRelatorioErros] = useState([]);
 
-  // ESTADOS DA NOVA EM POWER SHELL IA
   const [cmdPowerInput, setCmdPowerInput] = useState('');
   const [cmdPowerLogs, setCmdPowerLogs] = useState([
     "Windows PowerShell EM [Versão 10.0.26100.1] - Emanuel.OS Workstation Core",
@@ -464,7 +462,7 @@ function PainelDevSplitScreen({ onClose }) {
         "  ai-optimize-core  -> Otimiza rotinas WebGL e sintaxe de baixo nível",
         "  ai-generate-code  -> Gera boilerplate automático na linguagem exótica selecionada",
         "  ai-scan-security  -> Executa varredura profunda de segurança de 7 camadas",
-        "  sys-info-em       -> Exibe o estado em tempo real dos 9 módulos e periféricos"
+        "  sys-info-em       -> Exibe o estado em tempo real dos 10 mapas e periféricos"
       ];
     } else if (cmd === 'ai-optimize-core') {
       res = ["⚡ IA EM Power Shell: Código compilado, vetores paralelizados e otimização concluída."];
@@ -473,7 +471,7 @@ function PainelDevSplitScreen({ onClose }) {
     } else if (cmd === 'ai-scan-security') {
       res = ["🛡️ IA EM Power Shell: Varredura de 7 Camadas concluída. 0 vulnerabilidades no Kernel!"];
     } else if (cmd === 'sys-info-em') {
-      res = ["🌐 STATUS DA REDE: 9 Mapas Sincronizados | Android 16 Neural OS EM: Ativo | Periféricos: OK"];
+      res = ["🌐 STATUS DA REDE: 10 Mapas Sincronizados | Android 16 Neural OS EM: Ativo | Periféricos: OK"];
     } else {
       res = [`PS C:\\EmanuelOS\\Kernel> ${cmd} : O comando não foi reconhecido. Tente 'help-em'.`];
     }
@@ -561,7 +559,6 @@ function PainelDevSplitScreen({ onClose }) {
         </button>
       </div>
 
-      {/* SELEÇÃO DE LINGUAGENS EXÓTICAS E TRADICIONAIS */}
       <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '9px', color: '#0284c7', fontFamily: 'sans-serif', fontWeight: 'bold' }}>LINGUAGENS NÚCLEO:</span>
         <select
@@ -597,7 +594,6 @@ function PainelDevSplitScreen({ onClose }) {
         </button>
       </div>
 
-      {/* ÁREA DO NOTEPAD DEV NÚCLEO */}
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '6px', minHeight: '180px' }}>
         <span style={{ fontSize: '9px', color: '#64748b', fontFamily: 'sans-serif' }}>NOTEPAD DEV NÚCLEO - CÓDIGO FONTE ({linguagem.toUpperCase()}):</span>
         <textarea
@@ -623,7 +619,6 @@ function PainelDevSplitScreen({ onClose }) {
         </div>
       )}
 
-      {/* 🚀 NOVA BARRA EM POWER SHELL (CMD ESTILO WINDOWS 11 BRANCO E AZUL) */}
       <div style={{ backgroundColor: '#ffffff', border: '1.5px solid #00f0ff', borderRadius: '10px', padding: '10px', boxShadow: '0 4px 15px rgba(0,240,255,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid #e0f2fe', paddingBottom: '4px', marginBottom: '6px' }}>
           <span style={{ fontSize: '11px' }}>🖥️</span>
@@ -1023,7 +1018,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container3dRef.current.appendChild(renderer.domElement);
 
-    // Iluminação Futurista Branca e Azul
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
@@ -1035,10 +1029,8 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     spotWhite.position.set(5, 8, 5);
     scene.add(spotWhite);
 
-    // BASE DA VITRINE DE VIDRO
     const vitrineGroup = new THREE.Group();
 
-    // Pedestal de Vidro
     const baseGeo = new THREE.CylinderGeometry(3.5, 3.8, 0.4, 32);
     const baseMat = new THREE.MeshStandardMaterial({
       color: 0xf8fafc, roughness: 0.1, metalness: 0.9,
@@ -1048,7 +1040,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     baseMesh.position.y = -1.2;
     vitrineGroup.add(baseMesh);
 
-    // Anel Neon de Borda da Vitrine
     const ringGeo = new THREE.TorusGeometry(3.6, 0.05, 16, 100);
     const ringMat = new THREE.MeshBasicMaterial({ color: modoAtual === 'bluetooth' ? 0xeab308 : 0x0284c7 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
@@ -1056,7 +1047,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     ringMesh.position.y = -1.0;
     vitrineGroup.add(ringMesh);
 
-    // Cúpula / Cilindro de Vidro Futurista
     const glassGeo = new THREE.CylinderGeometry(3.5, 3.5, 4.5, 32, 1, true);
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff, transmission: 0.9, opacity: 1, transparent: true,
@@ -1066,11 +1056,9 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     glassMesh.position.y = 1.0;
     vitrineGroup.add(glassMesh);
 
-    // CONTEÚDO 3D DA VITRINE (AVATARES OU MAPAS HOLOGRÁFICOS)
     const contentGroup = new THREE.Group();
 
     if (modoAtual === 'avatares' || modoAtual === 'bluetooth') {
-      // AVATAR 1: ROBOTOC PRINCIPAL (BRANCO & AZUL)
       const robot1 = new THREE.Group();
       const body1 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8, roughness: 0.2 }));
       const head1 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
@@ -1080,7 +1068,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       robot1.add(body1, head1, visor1);
       robot1.position.set(-1.4, 0.2, 0);
 
-      // AVATAR 2: ROBOTOC BLUETOOTH (AZUL ROYAL & BRANCO)
       const robot2 = new THREE.Group();
       const body2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 }));
       const head2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0xffffff }));
@@ -1093,7 +1080,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       contentGroup.add(robot1);
       contentGroup.add(robot2);
     } else {
-      // REPRESENTAÇÃO HOLOGRÁFICA DOS 9 MAPAS NA VITRINE
       const mapGeo = new THREE.IcosahedronGeometry(1.3, 2);
       let mapColor = 0x0284c7;
       if (modoAtual === 'mapa_terrestre') mapColor = 0x22c55e;
@@ -1105,6 +1091,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       if (modoAtual === 'mapa_ia') mapColor = 0xf43f5e;
       if (modoAtual === 'mapa_antiguidades') mapColor = 0xd97706;
       if (modoAtual === 'mapa_aeroespacial') mapColor = 0x8b5cf6;
+      if (modoAtual === 'mapa_eleicoes2026') mapColor = 0x00ffcc;
 
       const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
       mapMesh.position.y = 0.8;
@@ -1115,7 +1102,6 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     scene.add(vitrineGroup);
     groupVitrineRef.current = vitrineGroup;
 
-    // Interatividade com Mouse / Touchpad
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
@@ -1139,12 +1125,11 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
-    // Loop de Animação
     let animationFrameId;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (groupVitrineRef.current && !isDragging) {
-        groupVitrineRef.current.rotation.y += 0.008; // Rodando continuamente na vitrine
+        groupVitrineRef.current.rotation.y += 0.008;
       }
       renderer.render(scene, camera);
     };
@@ -1187,7 +1172,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento de Todos os 9 Mapas Principais no Index.js
+  // Mapeamento dos 10 Mapas com o Novo Mapa Eleições Brasil 2026 3D
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/orkut' },
@@ -1197,7 +1182,8 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
     { id: 'mapa_ia', nome: '⚡ IA 3D', rota: '/mapa-ia' },
     { id: 'mapa_antiguidades', nome: '🏛️ Antiguidades', rota: '/antiguidades' },
     { id: 'mapa_quantico', nome: '⚛️ Quântico', rota: '/mapa-quantico' },
-    { id: 'mapa_aeroespacial', nome: '🛸 Aeroespacial', rota: '/mapaaeroespacial' }
+    { id: 'mapa_aeroespacial', nome: '🛸 Aeroespacial', rota: '/mapaaeroespacial' },
+    { id: 'mapa_eleicoes2026', nome: '🗳️ Eleições 2026 3D', rota: '/elecoes2026' }
   ];
 
   const handleMouseDownHeader = (e) => {
@@ -1236,7 +1222,6 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
       backdropFilter: 'blur(25px)', zIndex: 300, boxShadow: '0 0 40px rgba(0,240,255,0.25)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', color: '#0f172a', fontFamily: 'sans-serif'
     }}>
-      {/* BARRA DE TÍTULO / ARRASTAR */}
       <div 
         onMouseDown={handleMouseDownHeader}
         style={{ padding: '12px 16px', backgroundColor: 'rgba(240, 249, 255, 0.95)', borderBottom: '1px solid #00f0ff', cursor: 'grab', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -1250,20 +1235,17 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>✕</button>
       </div>
 
-      {/* CONTEÚDO EXPANSÍVEL / ROLÁVEL */}
       <div style={{ flexGrow: 1, padding: '14px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <span style={{ fontSize: '10px', color: '#64748b' }}>
           🏛️ <strong>Vitrine Virtual 3D de Vidro</strong> - Modelos Giratórios & Maquetes Interativas de Mapas
         </span>
 
-        {/* COMPONENTE DA VITRINE 3D */}
         <VitrineVirtual3D 
           modoAtual={modoVitrine} 
           onSelectModo={(m) => setModoVitrine(m)}
           onRequestBluetoothConnection={onRequestBluetooth}
         />
 
-        {/* SELETOR DOS 9 MAPAS NA SEDE DA VITRINE */}
         <div>
           <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
             🌐 SELECIONAR MAQUETE 3D DE MAPA NA VITRINE:
@@ -1285,7 +1267,6 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
           </div>
         </div>
 
-        {/* FERRAMENTAS DE DESENVOLVEDOR EMBUTIDAS */}
         <div style={{ backgroundColor: '#f0f9ff', padding: '10px', borderRadius: '10px', border: '1px solid #bae6fd' }}>
           <span style={{ fontSize: '10px', color: '#16a34a', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
             ⚡ CONSOLE DE TESTES AGI & HARDWARE
@@ -1296,7 +1277,6 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
         </div>
       </div>
 
-      {/* ÍCONE DE REDIMENSIONAMENTO NO CANTO INFERIOR */}
       <div 
         onMouseDown={() => setIsResizing(true)}
         style={{ position: 'absolute', bottom: 0, right: 0, width: '16px', height: '16px', cursor: 'nwse-resize', background: 'linear-gradient(135deg, transparent 50%, #00f0ff 50%)' }}
@@ -1316,7 +1296,6 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  // Dados Reais Integrados
   const meusDadosReais = {
     youtube: 'https://youtube.com',
     tiktok: 'https://tiktok.com',
@@ -1327,7 +1306,6 @@ export default function EmanuelOSCore() {
     threads: 'https://threads.net'
   };
 
-  // ESTADO DE LINKS 3D DINÂMICOS DAS REDES SOCIAIS
   const [linksSociais3D, setLinksSociais3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
     { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
@@ -1338,14 +1316,12 @@ export default function EmanuelOSCore() {
     { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
   ]);
 
-  // Seguranças Triplas
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
   const [validandoServidores, setValidandoServidores] = useState(false);
   const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única de 3 Camadas de Segurança');
   const [tentativasInvasao, setTentativasInvasao] = useState(0);
   const [bloqueioInvasor, setBloqueioInvasor] = useState(false);
 
-  // Ticons OS
   const [isAdmin] = useState(true);
   const [selectedSequence, setSelectedSequence] = useState([]);
   const targetSequence = ['🔥', 'avatar_ninja.png', 'gif_animado.gif'];
@@ -1373,7 +1349,6 @@ export default function EmanuelOSCore() {
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
   const [modoDevSplit, setModoDevSplit] = useState(false);
 
-  // ESTADO DA JANELA FUTURISTA ROBOTOC EMGEMINI
   const [janelaRobotocDevAberta, setJanelaRobotocDevAberta] = useState(false);
   const [solicitarConexaoBluetooth, setSolicitarConexaoBluetooth] = useState(false);
 
@@ -1397,7 +1372,6 @@ export default function EmanuelOSCore() {
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
-  // Função para acionar mensagem de áudio Bluetooth e alternar para a conexão de periféricos
   const acionarSolicitacaoBluetooth = () => {
     setAndroidHudOpen(true);
     setSolicitarConexaoBluetooth(true);
@@ -1408,7 +1382,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // Autenticação 3 Camadas
   const processarAutenticacao3Camadas = (e) => {
     e.preventDefault();
     if (bloqueioInvasor) return alert("🚨 ACESSO BLOQUEADO! Intrusão detectada neste dispositivo.");
@@ -1441,7 +1414,6 @@ export default function EmanuelOSCore() {
     }, 800);
   };
 
-  // Funções de Validação de Etapas
   const validarEtapa2Telefone = (e) => {
     e.preventDefault();
     const tel = telefoneDigitado.replace(/\D/g, '');
@@ -1484,9 +1456,6 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // =========================================================================
-  // 🤖 SUPER DESIGN 3D: ROBÔ HUMANOIDE PARECIDO COM HUMANO + BOLA HOLOGRÁFICA
-  // =========================================================================
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1496,7 +1465,6 @@ export default function EmanuelOSCore() {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Fundo Gradiente Suave Branco/Azul Futurista via Neblina e Cor
     scene.background = new THREE.Color(0xf0f9ff);
     scene.fog = new THREE.FogExp2(0xe0f2fe, 0.025);
 
@@ -1511,9 +1479,6 @@ export default function EmanuelOSCore() {
     renderer.toneMappingExposure = 1.25;
     mountRef.current.appendChild(renderer.domElement);
 
-    // =========================================================================
-    // 💡 SISTEMA DE ILUMINAÇÃO FUTURISTA HIGH-TECH
-    // =========================================================================
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.4);
     scene.add(ambientLight);
 
@@ -1529,14 +1494,10 @@ export default function EmanuelOSCore() {
     blueFillLight.position.set(6, -2, 5);
     scene.add(blueFillLight);
 
-    // Grade holográfica no chão em azul e branco
     const grid = new THREE.GridHelper(40, 40, 0x00f0ff, 0xbae6fd);
     grid.position.y = -3.2;
     scene.add(grid);
 
-    // =========================================================================
-    // 🎨 MATERIAIS PBR (BRANCO CERÂMICO, METÁLICO & AZUL NEON)
-    // =========================================================================
     const whiteCeramicMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       roughness: 0.1,
@@ -1568,30 +1529,23 @@ export default function EmanuelOSCore() {
       ior: 1.2
     });
 
-    // =========================================================================
-    // 🤖 CONSTRUÇÃO DO ROBÔ HUMANOIDE 3D (DESING ANATÔMICO HUMANO)
-    // =========================================================================
     const humanoidRobot = new THREE.Group();
 
-    // 1. CABEÇA COM TRACEJADOS ANATÔMICOS
     const headGroup = new THREE.Group();
     const skull = new THREE.Mesh(new THREE.SphereGeometry(0.72, 32, 32), whiteCeramicMat);
     skull.scale.set(0.9, 1.15, 0.95);
     headGroup.add(skull);
 
-    // Visor Panorâmico Curvo Estilo Humanoide
     const visorGeo = new THREE.SphereGeometry(0.70, 32, 16, 0, Math.PI, 0, Math.PI * 0.42);
     const visorMesh = new THREE.Mesh(visorGeo, cyanGlowMat);
     visorMesh.rotation.x = -Math.PI / 10;
     visorMesh.position.set(0, 0.08, 0.04);
     headGroup.add(visorMesh);
 
-    // Linha do Queixo Humanoide
     const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.38, 0.52), blueMetallicMat);
     jaw.position.set(0, -0.52, 0.12);
     headGroup.add(jaw);
 
-    // Orelhas de Conexão Neural
     const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.35, 16), blueMetallicMat);
     earL.rotation.z = Math.PI / 2;
     earL.position.set(-0.66, 0.1, 0);
@@ -1602,17 +1556,14 @@ export default function EmanuelOSCore() {
     headGroup.position.y = 2.05;
     humanoidRobot.add(headGroup);
 
-    // 2. PESCOÇO ARTICULADO
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.3, 0.42, 16), blueMetallicMat);
     neck.position.y = 1.38;
     humanoidRobot.add(neck);
 
-    // 3. TORSO ANATÔMICO & PEITORAL
     const chestGroup = new THREE.Group();
     const mainChest = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.58, 1.45, 16), whiteCeramicMat);
     chestGroup.add(mainChest);
 
-    // Placas Peitorais Duplas
     const plateL = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.72, 0.2), blueMetallicMat);
     plateL.position.set(-0.4, 0.1, 0.4);
     plateL.rotation.y = -Math.PI / 12;
@@ -1621,7 +1572,6 @@ export default function EmanuelOSCore() {
     plateR.rotation.y = Math.PI / 12;
     chestGroup.add(plateL, plateR);
 
-    // Reator Arc Quântico Central
     const arcReactor = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.1, 32), cyanGlowMat);
     arcReactor.rotation.x = Math.PI / 2;
     arcReactor.position.set(0, 0.2, 0.44);
@@ -1630,7 +1580,6 @@ export default function EmanuelOSCore() {
     chestGroup.position.y = 0.45;
     humanoidRobot.add(chestGroup);
 
-    // 4. OMBROS E BRAÇOS ARTICULADOS
     const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 24), whiteCeramicMat);
     shoulderL.position.set(-1.08, 0.92, 0);
     const shoulderR = shoulderL.clone();
@@ -1645,30 +1594,23 @@ export default function EmanuelOSCore() {
     armR.rotation.z = -Math.PI / 18;
     humanoidRobot.add(armL, armR);
 
-    // =========================================================================
-    // 🔮 BOLA HOLOGRÁFICA 3D MANTIDA E APERFEIÇOADA
-    // =========================================================================
     const holoOrbGroup = new THREE.Group();
 
-    // Núcleo Intenso
     const orbCore = new THREE.Mesh(
       new THREE.SphereGeometry(0.4, 32, 32),
       cyanGlowMat
     );
 
-    // Camada Intermediária de Vidro Holográfico
     const orbGlass = new THREE.Mesh(
       new THREE.SphereGeometry(0.58, 32, 32),
       glassHoloMat
     );
 
-    // Anel Orbital 1 (Geometria Sagrada / Wireframe)
     const orbWire1 = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.75, 2),
       new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true })
     );
 
-    // Anel Orbital 2 (Giro em Ângulo)
     const orbRing2 = new THREE.Mesh(
       new THREE.TorusGeometry(0.9, 0.02, 16, 100),
       new THREE.MeshBasicMaterial({ color: 0x0284c7 })
@@ -1683,9 +1625,6 @@ export default function EmanuelOSCore() {
     scene.add(humanoidRobot);
     avatarGroupRef.current = humanoidRobot;
 
-    // =========================================================================
-    // 🔄 LOOP DE ANIMAÇÃO E FLUTUAÇÃO
-    // =========================================================================
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -1694,13 +1633,11 @@ export default function EmanuelOSCore() {
       const time = clock.getElapsedTime();
 
       if (avatarGroupRef.current) {
-        // Flutuação suave do Robô Humanoide
         avatarGroupRef.current.position.y = Math.sin(time * 1.8) * 0.12;
         avatarGroupRef.current.rotation.y = Math.sin(time * 0.6) * 0.15;
       }
 
       if (orbMeshRef.current) {
-        // Rotação independente e flutuação da Bola Holográfica
         orbMeshRef.current.rotation.x = time * 0.8;
         orbMeshRef.current.rotation.y = time * 1.2;
         orbMeshRef.current.position.y = 1.2 + Math.cos(time * 2.2) * 0.15;
@@ -1718,7 +1655,6 @@ export default function EmanuelOSCore() {
     };
   }, [bloqueado]);
 
-  // Atualizador de hora
   useEffect(() => {
     const updateTime = () => setHoraAtual(new Date().toLocaleTimeString('pt-BR'));
     updateTime();
@@ -1726,7 +1662,6 @@ export default function EmanuelOSCore() {
     return () => clearInterval(timer);
   }, []);
 
-  // RENDERIZAÇÃO DA TELA DE BLOQUEIO / SEGURANÇA (FUNDO BRANCO & AZUL FUTURISTA)
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0f172a', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
@@ -1813,17 +1748,14 @@ export default function EmanuelOSCore() {
     );
   }
 
-  // DESBLOQUEADO (INTERFACE CORE v6.0 - FUNDO BRANCO & AZUL FUTURISTA)
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', color: '#0f172a', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <Head><title>Emanuel.OS Workstation v6.0 | ROBOTOC 3D & Android 16 Neural</title></Head>
 
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
-        {/* LADO ESQUERDO / CENTRAL 3D */}
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* CENA PRINCIPAL DO ROBÔ - CLIQUE ABRE O PAINEL FUTURISTA */}
           <div 
             ref={mountRef} 
             onClick={() => setJanelaRobotocDevAberta(true)}
@@ -1831,7 +1763,6 @@ export default function EmanuelOSCore() {
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'pointer' }} 
           />
 
-          {/* BARRA SUPERIOR DE CONTROLES */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#ffffff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               {sidebarAberta ? '✕' : '☰'}
@@ -1854,7 +1785,6 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* PAINEL DE LINKS SOCIAIS 3D DINÂMICOS */}
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '240px' }}>
             <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               🌐 LINKS SOCIAIS 3D DINÂMICOS
@@ -1889,7 +1819,7 @@ export default function EmanuelOSCore() {
             ))}
           </div>
 
-          {/* SIDEBAR ESQUERDA (9 MAPAS INTEGRADOS, MENSAGENS E PENSAMENTO NEURAL) */}
+          {/* SIDEBAR ESQUERDA (CENTRAL DE TODOS OS 10 MAPAS INTEGRADOS) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
@@ -1905,8 +1835,9 @@ export default function EmanuelOSCore() {
 
                 <UnixTerminalCanvas />
 
+                {/* PAINEL COMPLETO DE TODOS OS 10 MAPAS */}
                 <div style={{ padding: '12px', backgroundColor: 'rgba(240, 249, 255, 0.8)', borderRadius: '12px', border: '1px solid #bae6fd' }}>
-                  <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 9 Mapas Integrados</h3>
+                  <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 10 Mapas Integrados</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     <Link href="/mapa" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #16a34a', color: '#16a34a', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌍 Terrestre</Link>
                     <Link href="/orkut" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ea580c', color: '#ea580c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧡 Orkut</Link>
@@ -1916,7 +1847,8 @@ export default function EmanuelOSCore() {
                     <Link href="/mapa-ia" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #f43f5e', color: '#f43f5e', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚡ IA 3D</Link>
                     <Link href="/antiguidades" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #d97706', color: '#d97706', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🏛️ Antiguidades</Link>
                     <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #8b5cf6', color: '#8b5cf6', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚛️ Quântico</Link>
-                    <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #9333ea', color: '#9333ea', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold', gridColumn: 'span 2' }}>🛸 Aeroespacial</Link>
+                    <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #9333ea', color: '#9333ea', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🛸 Aeroespacial</Link>
+                    <Link href="/elecoes2026" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #00ffcc', color: '#00cc99', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🗳️ Eleições 2026 3D</Link>
                   </div>
                 </div>
 
@@ -1928,7 +1860,6 @@ export default function EmanuelOSCore() {
             )}
           </aside>
 
-          {/* RODAPÉ E CHAT DE COMANDOS */}
           <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
               {mensagens.map((item, index) => (
@@ -1946,7 +1877,6 @@ export default function EmanuelOSCore() {
           </div>
         </div>
 
-        {/* LADO DIREITO (MODO DEV SPLIT SCREEN COM NOTEPAD DEV NÚCLEO E EM POWER SHELL) */}
         {modoDevSplit && (
           <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
@@ -1954,7 +1884,6 @@ export default function EmanuelOSCore() {
         )}
       </div>
 
-      {/* PAINEL FUTURISTA REDIMENSIONÁVEL ROBOTOC EMGEMINI */}
       {janelaRobotocDevAberta && (
         <WindowDevPanelRobotoc 
           onClose={() => setJanelaRobotocDevAberta(false)} 
@@ -1962,7 +1891,6 @@ export default function EmanuelOSCore() {
         />
       )}
 
-      {/* GAVETA ANDROID HUD LATERAL */}
       <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
         <MotionTracker />
         <RobotocGear highlightGear={solicitarConexaoBluetooth} onConnectGear={(t, s) => addLogTerminal(`[GEAR] ${t}: ${s ? 'ON' : 'OFF'}`)} />
@@ -1970,7 +1898,6 @@ export default function EmanuelOSCore() {
         <CloudflareWorkerDeployer addLog={addLogTerminal} />
       </AndroidHUDPanel>
 
-      {/* MODAL CREATOR STUDIO */}
       {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
     </div>
   );
