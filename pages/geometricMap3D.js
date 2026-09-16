@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+Import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GoogleGenAI } from '@google/genai';
@@ -138,18 +138,18 @@ export class MathSolverAI {
   async solveProblem({ text, imageFile, audioFile }) {
     const contents = [];
 
-    // Suporte para envio simultâneo de Imagem
+    // 1. Anexo de Imagem (Foto enviada)
     if (imageFile) {
       const imageBase64 = await this.fileToBase64(imageFile);
       contents.push({
         inlineData: {
           data: imageBase64,
-          mimeType: imageFile.type || 'image/png'
+          mimeType: imageFile.type || 'image/jpeg'
         }
       });
     }
 
-    // Suporte para envio simultâneo de Áudio Real
+    // 2. Anexo de Áudio Real (Comando ou Pergunta gravada em voz)
     if (audioFile) {
       const audioBase64 = await this.fileToBase64(audioFile);
       contents.push({
@@ -160,22 +160,22 @@ export class MathSolverAI {
       });
     }
 
+    // 3. Instruções de Prompt dinâmico
+    const promptInstructions = text 
+      ? `Solicitação do usuário/Texto colado: "${text}"`
+      : 'Analise os arquivos enviados (imagem e/ou áudio) e execute a instrução solicitada pelo usuário.';
+
+    contents.push(promptInstructions);
+
     const systemPrompt = `
-      Você é um assistente especialista em matemática, análise multimodal e computação gráfica 3D.
-      
-      Instruções de processamento:
-      1. Analise cuidadosamente qualquer combinação de entradas enviadas (imagem, áudio gravado do usuário e/ou texto digitado/copiado).
-      2. Interprete integralmente a intenção do usuário — seja um cálculo, um texto copiado e colado da internet, uma pergunta teórica ou uma instrução por voz sobre o que fazer com a foto do problema.
-      3. Resolva o problema matemático passo a passo de forma clara e rigorosa.
-      4. Se o problema envolver ou puder ser modelado por uma Progressão Geométrica (PG), identifique os parâmetros (a1: primeiro termo, q: razão, n: número de termos) e adicione OBRIGATORIAMENTE no final da resposta exatamente esta linha formatada em JSON:
+      Você é um assistente especialista em matemática, visão computacional e análise multimodal avançada.
+      INSTRUÇÕES DE EXECUÇÃO:
+      1. Se houver um áudio anexado, ouça com atenção as instruções em voz do usuário sobre o que fazer com a imagem/foto ou com a questão apresentada.
+      2. Se houver texto colado da internet, fórmulas ou cálculos inseridos diretamente pelo usuário, interprete o conteúdo exatamente como foi fornecido.
+      3. Correlacione todas as mídias fornecidas (Texto + Foto + Áudio) para responder com máxima precisão e detalhamento passo a passo.
+      4. Caso o problema envolva uma Progressão Geométrica (PG) ou se o usuário pedir para gerar/projetar uma PG no mapa 3D, adicione obrigatoriamente no final da resposta a linha formatada exatamente como o JSON a seguir:
          [PG_DATA]: {"a1": numero, "q": numero, "n": numero}
     `;
-
-    const promptText = text
-      ? `Orientação/Pergunta do usuário: ${text}`
-      : 'Siga exatamente as instruções fornecidas no áudio/imagem gravado para resolver e analisar o problema exibido.';
-
-    contents.push(promptText);
 
     const response = await this.ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -281,7 +281,7 @@ export class MathUIController {
       </div>
 
       <div class="ui-group">
-        <label>Gravação de Áudio ao Vivo (Microfone):</label>
+        <label>Gravação de Áudio ao Vivo (Instrução para a IA):</label>
         <div class="btn-grid">
           <button id="btn-record-audio" class="btn">Grave Voz 🎙️</button>
           <button id="btn-stop-audio" class="btn btn-danger" disabled>Parar ⏹️</button>
@@ -290,7 +290,7 @@ export class MathUIController {
       </div>
 
       <div class="ui-group">
-        <label>Ou digite a questão matemática:</label>
+        <label>Ou digite / cole a questão matemática:</label>
         <textarea id="input-text-prompt" rows="2" placeholder="Ex: Qual a soma dos 10 primeiros termos de uma PG com a1=2 e q=3?"></textarea>
       </div>
 
@@ -313,7 +313,7 @@ export class MathUIController {
     const fileInput = document.getElementById('input-file');
     fileInput?.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        document.getElementById('file-name-display').textContent = `Imagem: ${e.target.files[0].name}`;
+        document.getElementById('file-name-display').textContent = `Foto: ${e.target.files[0].name}`;
       }
     });
 
@@ -364,19 +364,11 @@ export class MathUIController {
     const textPrompt = document.getElementById('input-text-prompt').value;
     const fileInput = document.getElementById('input-file');
     
-    let imageFile = null;
-    let audioFile = null;
-
-    if (fileInput.files.length > 0) {
-      imageFile = fileInput.files[0];
-    }
-
-    if (this.recordedAudioBlob) {
-      audioFile = this.recordedAudioBlob;
-    }
+    let imageFile = fileInput.files.length > 0 ? fileInput.files[0] : null;
+    let audioFile = this.recordedAudioBlob || null;
 
     if (!textPrompt && !imageFile && !audioFile) {
-      alert('Por favor, digite uma pergunta, grave um áudio ou envie uma imagem.');
+      alert('Por favor, digite/cole um texto, anexe uma foto ou grave um áudio.');
       return;
     }
 
