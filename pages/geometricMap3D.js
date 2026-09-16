@@ -1,3 +1,4 @@
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GoogleGenAI } from '@google/genai';
@@ -7,8 +8,8 @@ import { GoogleGenAI } from '@google/genai';
 // ==========================================
 
 export class GeometricProgressionMap3D {
-  constructor(containerId) {
-    this.container = document.getElementById(containerId) || document.body;
+  constructor(container) {
+    this.container = container;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -22,7 +23,7 @@ export class GeometricProgressionMap3D {
   }
 
   init() {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(this.container.clientWidth || window.innerWidth, this.container.clientHeight || window.innerHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.container.appendChild(this.renderer.domElement);
 
@@ -46,13 +47,12 @@ export class GeometricProgressionMap3D {
     this.pgGroup = new THREE.Group();
     this.scene.add(this.pgGroup);
 
-    window.addEventListener('resize', () => this.onWindowResize());
+    this.onResize = () => this.onWindowResize();
+    window.addEventListener('resize', this.onResize);
     this.animate();
   }
 
-  // Plota o gráfico 3D da PG: a_n = a1 * q^(n-1)
   renderPG(a1, q, nTerms) {
-    // Limpa a renderização anterior
     while (this.pgGroup.children.length > 0) {
       const obj = this.pgGroup.children.pop();
       if (obj.geometry) obj.geometry.dispose();
@@ -60,17 +60,15 @@ export class GeometricProgressionMap3D {
     }
 
     const points = [];
-    const validTerms = Math.min(Math.max(nTerms, 1), 30); // Limite de termos para legibilidade visual
+    const validTerms = Math.min(Math.max(nTerms, 1), 30);
 
     for (let n = 1; n <= validTerms; n++) {
       const val = a1 * Math.pow(q, n - 1);
 
-      // Coordenadas Tridimensionais
       const x = (n - 1) * 2 - (validTerms * 0.9);
-      const y = Math.min(Math.max(val / 2, -50), 50); // Clamping para prevenir estouro de tela
+      const y = Math.min(Math.max(val / 2, -50), 50);
       const z = Math.sin(n * 0.5) * 2;
 
-      // Criar o cilindro 3D de cada termo
       const height = Math.max(Math.abs(y * 2), 0.2);
       const geometry = new THREE.CylinderGeometry(0.35, 0.35, height, 16);
       const material = new THREE.MeshPhongMaterial({
@@ -85,7 +83,6 @@ export class GeometricProgressionMap3D {
       points.push(new THREE.Vector3(x, y >= 0 ? height : -height, z));
     }
 
-    // Curva 3D fluida conectando os pontos
     if (points.length > 1) {
       const curve = new THREE.CatmullRomCurve3(points);
       const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.1, 8, false);
@@ -96,15 +93,24 @@ export class GeometricProgressionMap3D {
   }
 
   animate() {
-    requestAnimationFrame(() => this.animate());
+    this.animFrame = requestAnimationFrame(() => this.animate());
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
   onWindowResize() {
+    if (!this.container) return;
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  destroy() {
+    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.renderer && this.renderer.domElement && this.renderer.domElement.parentNode) {
+      this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+    }
   }
 }
 
@@ -117,7 +123,6 @@ export class MathSolverAI {
     this.ai = new GoogleGenAI({ apiKey });
   }
 
-  // Converte File/Blob para Base64 do navegador
   fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -130,7 +135,6 @@ export class MathSolverAI {
     });
   }
 
-  // Resolve o problema e tenta extrair parâmetros de PG
   async solveProblem({ text, file, mimeType }) {
     const contents = [];
 
@@ -185,9 +189,11 @@ export class MathUIController {
     this.attachEvents();
   }
 
-  // Injeta o CSS e os controles de interface na página
   createUI() {
+    if (document.getElementById('math-ui-panel')) return;
+
     const style = document.createElement('style');
+    style.id = 'math-ui-style';
     style.textContent = `
       #math-ui-panel {
         position: absolute;
@@ -237,7 +243,6 @@ export class MathUIController {
     panel.innerHTML = `
       <h3>PG 3D + Gemini AI Solver</h3>
       
-      <!-- Controles de Ajuste Manual da PG -->
       <div class="ui-group">
         <label>Termo Inicial (a1) / Razão (q) / Termos (n)</label>
         <div style="display: flex; gap: 6px;">
@@ -250,7 +255,6 @@ export class MathUIController {
 
       <hr style="border-color: #333; margin: 12px 0;">
 
-      <!-- Envio Multimodal para a IA -->
       <div class="ui-group">
         <label>Enviar Foto / Imagem do Problema:</label>
         <div class="file-input-wrapper">
@@ -282,31 +286,27 @@ export class MathUIController {
     document.body.appendChild(panel);
   }
 
-  // Configura os ouvintes de eventos da interface
   attachEvents() {
-    // Atualização manual da PG
-    document.getElementById('btn-update-pg').addEventListener('click', () => {
+    document.getElementById('btn-update-pg')?.addEventListener('click', () => {
       const a1 = parseFloat(document.getElementById('input-a1').value) || 1;
       const q = parseFloat(document.getElementById('input-q').value) || 1;
       const n = parseInt(document.getElementById('input-n').value) || 10;
       this.map3d.renderPG(a1, q, n);
     });
 
-    // Upload de arquivo / Imagem
     const fileInput = document.getElementById('input-file');
-    fileInput.addEventListener('change', (e) => {
+    fileInput?.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
         document.getElementById('file-name-display').textContent = `Anexo: ${e.target.files[0].name}`;
-        this.recordedAudioBlob = null; // Limpa áudio gravado se anexar arquivo
+        this.recordedAudioBlob = null;
       }
     });
 
-    // Gravação de Áudio com MediaRecorder API
     const recordBtn = document.getElementById('btn-record-audio');
     const stopBtn = document.getElementById('btn-stop-audio');
     const audioPreview = document.getElementById('audio-preview');
 
-    recordBtn.addEventListener('click', async () => {
+    recordBtn?.addEventListener('click', async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         this.mediaRecorder = new MediaRecorder(stream);
@@ -320,7 +320,7 @@ export class MathUIController {
           this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
           audioPreview.src = URL.createObjectURL(this.recordedAudioBlob);
           audioPreview.style.display = 'block';
-          fileInput.value = ''; // Limpa upload por arquivo
+          fileInput.value = '';
           document.getElementById('file-name-display').textContent = 'Áudio gravado pronto!';
         };
 
@@ -333,21 +333,19 @@ export class MathUIController {
       }
     });
 
-    stopBtn.addEventListener('click', () => {
+    stopBtn?.addEventListener('click', () => {
       if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
         this.mediaRecorder.stop();
-        this.mediaRecorder.stream.getTracks().forEach(track => track.stop()); // Desliga microfone
+        this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
         recordBtn.disabled = false;
         stopBtn.disabled = true;
         recordBtn.textContent = 'Grave Voz 🎙️';
       }
     });
 
-    // Envios para a IA Gemini
-    document.getElementById('btn-submit-ai').addEventListener('click', () => this.handleAISubmission());
+    document.getElementById('btn-submit-ai')?.addEventListener('click', () => this.handleAISubmission());
   }
 
-  // Processa a requisição e envia os dados multimodais para o Gemini
   async handleAISubmission() {
     const responseBox = document.getElementById('response-box');
     const textPrompt = document.getElementById('input-text-prompt').value;
@@ -381,7 +379,6 @@ export class MathUIController {
 
       responseBox.textContent = resultText;
 
-      // Verifica se a resposta contém os dados extraídos de PG e atualiza o mapa 3D
       const pgMatch = resultText.match(/\[PG_DATA\]:\s*(\{.*\})/);
       if (pgMatch) {
         try {
@@ -391,28 +388,51 @@ export class MathUIController {
           document.getElementById('input-n').value = pgData.n || 10;
           this.map3d.renderPG(pgData.a1, pgData.q, pgData.n || 10);
         } catch (e) {
-          console.warn('Falha ao processar os parâmetros JSON de PG:', e);
+          console.warn('Falha ao processar JSON de PG:', e);
         }
       }
     } catch (err) {
       responseBox.textContent = 'Erro ao consultar a IA: ' + err.message;
     }
   }
+
+  destroy() {
+    const panel = document.getElementById('math-ui-panel');
+    const style = document.getElementById('math-ui-style');
+    if (panel) panel.remove();
+    if (style) style.remove();
+  }
 }
 
 // ==========================================
-// 4. INICIALIZAÇÃO
+// 4. COMPONENTE REACT (NEXT.JS COMPATÍVEL)
 // ==========================================
 
-// Substitua 'SUA_CHAVE_API_GEMINI' pela chave obtida no Google AI Studio
-const API_KEY = 'SUA_CHAVE_API_GEMINI';
+export default function GeometricMapPage() {
+  const containerRef = useRef(null);
 
-const container = document.createElement('div');
-container.id = 'canvas-container';
-document.body.appendChild(container);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !containerRef.current) return;
 
-const map3D = new GeometricProgressionMap3D('canvas-container');
-map3D.renderPG(1, 1.5, 10); // Inicialização Padrão
+    const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || 'SUA_CHAVE_API_GEMINI';
 
-const solverAI = new MathSolverAI(API_KEY);
-new MathUIController(map3D, solverAI);
+    const map3D = new GeometricProgressionMap3D(containerRef.current);
+    map3D.renderPG(1, 1.5, 10);
+
+    const solverAI = new MathSolverAI(API_KEY);
+    const uiController = new MathUIController(map3D, solverAI);
+
+    return () => {
+      uiController.destroy();
+      map3D.destroy();
+    };
+  }, []);
+
+  return (
+    <div 
+      ref={containerRef} 
+      id="canvas-container" 
+      style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative', background: '#000' }} 
+    />
+  );
+}
