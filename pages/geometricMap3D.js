@@ -1,4 +1,4 @@
-Import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GoogleGenAI } from '@google/genai';
@@ -135,45 +135,53 @@ export class MathSolverAI {
     });
   }
 
-  async solveProblem({ text, imageFile, audioFile }) {
+  async solveProblem({ text, imageFile, audioBlob }) {
     const contents = [];
 
-    // 1. Anexo de Imagem (Foto enviada)
+    // 1. Processa foto/imagem se houver
     if (imageFile) {
       const imageBase64 = await this.fileToBase64(imageFile);
       contents.push({
         inlineData: {
           data: imageBase64,
-          mimeType: imageFile.type || 'image/jpeg'
+          mimeType: imageFile.type || 'image/png'
         }
       });
     }
 
-    // 2. Anexo de Áudio Real (Comando ou Pergunta gravada em voz)
-    if (audioFile) {
-      const audioBase64 = await this.fileToBase64(audioFile);
+    // 2. Processa gravação de áudio em tempo real se houver
+    if (audioBlob) {
+      const audioBase64 = await this.fileToBase64(audioBlob);
       contents.push({
         inlineData: {
           data: audioBase64,
-          mimeType: audioFile.type || 'audio/webm'
+          mimeType: 'audio/webm'
         }
       });
     }
 
-    // 3. Instruções de Prompt dinâmico
-    const promptInstructions = text 
-      ? `Solicitação do usuário/Texto colado: "${text}"`
-      : 'Analise os arquivos enviados (imagem e/ou áudio) e execute a instrução solicitada pelo usuário.';
-
-    contents.push(promptInstructions);
+    // 3. Processa texto digitado, copiado ou prompt base
+    let promptText = text ? text : '';
+    if (!promptText) {
+      if (imageFile && audioBlob) {
+        promptText = 'Ouça o áudio do usuário e execute a instrução solicitada com base na imagem fornecida.';
+      } else if (audioBlob) {
+        promptText = 'Transcreva e resolva a instrução ou problema matemático gravado no áudio.';
+      } else if (imageFile) {
+        promptText = 'Analise a imagem fornecida e resolva o problema matemático contido nela.';
+      }
+    }
+    
+    contents.push(promptText);
 
     const systemPrompt = `
-      Você é um assistente especialista em matemática, visão computacional e análise multimodal avançada.
-      INSTRUÇÕES DE EXECUÇÃO:
-      1. Se houver um áudio anexado, ouça com atenção as instruções em voz do usuário sobre o que fazer com a imagem/foto ou com a questão apresentada.
-      2. Se houver texto colado da internet, fórmulas ou cálculos inseridos diretamente pelo usuário, interprete o conteúdo exatamente como foi fornecido.
-      3. Correlacione todas as mídias fornecidas (Texto + Foto + Áudio) para responder com máxima precisão e detalhamento passo a passo.
-      4. Caso o problema envolva uma Progressão Geométrica (PG) ou se o usuário pedir para gerar/projetar uma PG no mapa 3D, adicione obrigatoriamente no final da resposta a linha formatada exatamente como o JSON a seguir:
+      Você é um assistente especialista em matemática e análise multimodal.
+      
+      Instruções de Resposta:
+      1. Se o usuário forneceu áudio e imagem, interprete o comando falado no áudio em relação ao conteúdo visual da imagem.
+      2. Aceite e interprete com precisão perguntas, expressões matemáticas, textos copiados da internet ou descrições em linguagem natural.
+      3. Resolva o problema matemático passo a passo de forma clara.
+      4. Se o problema envolver ou puder ser representado por uma Progressão Geométrica (PG), inclua obrigatoriamente no final da resposta a seguinte linha exata em formato JSON:
          [PG_DATA]: {"a1": numero, "q": numero, "n": numero}
     `;
 
@@ -281,7 +289,7 @@ export class MathUIController {
       </div>
 
       <div class="ui-group">
-        <label>Gravação de Áudio ao Vivo (Instrução para a IA):</label>
+        <label>Gravação de Áudio ao Vivo (Microfone):</label>
         <div class="btn-grid">
           <button id="btn-record-audio" class="btn">Grave Voz 🎙️</button>
           <button id="btn-stop-audio" class="btn btn-danger" disabled>Parar ⏹️</button>
@@ -313,7 +321,7 @@ export class MathUIController {
     const fileInput = document.getElementById('input-file');
     fileInput?.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        document.getElementById('file-name-display').textContent = `Foto: ${e.target.files[0].name}`;
+        document.getElementById('file-name-display').textContent = `Imagem anexada: ${e.target.files[0].name}`;
       }
     });
 
@@ -365,21 +373,21 @@ export class MathUIController {
     const fileInput = document.getElementById('input-file');
     
     let imageFile = fileInput.files.length > 0 ? fileInput.files[0] : null;
-    let audioFile = this.recordedAudioBlob || null;
+    let audioBlob = this.recordedAudioBlob;
 
-    if (!textPrompt && !imageFile && !audioFile) {
-      alert('Por favor, digite/cole um texto, anexe uma foto ou grave um áudio.');
+    if (!textPrompt && !imageFile && !audioBlob) {
+      alert('Por favor, digite um texto, anexe uma imagem ou grave um áudio para prosseguir.');
       return;
     }
 
     responseBox.style.display = 'block';
-    responseBox.textContent = 'Analisando dados multimodais com o Gemini AI... Aguarde.';
+    responseBox.textContent = 'Analisando problema com o Gemini AI... Aguarde.';
 
     try {
       const resultText = await this.solverAI.solveProblem({
         text: textPrompt,
         imageFile: imageFile,
-        audioFile: audioFile
+        audioBlob: audioBlob
       });
 
       responseBox.textContent = resultText;
