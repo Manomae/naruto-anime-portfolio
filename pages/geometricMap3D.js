@@ -135,31 +135,52 @@ export class MathSolverAI {
     });
   }
 
-  async solveProblem({ text, file, mimeType }) {
+  async solveProblem({ text, imageFile, audioBlob }) {
     const contents = [];
 
-    if (file) {
-      const base64Data = await this.fileToBase64(file);
+    // Se houver uma imagem anexada, insere no array de conteúdos
+    if (imageFile) {
+      const imageBase64 = await this.fileToBase64(imageFile);
       contents.push({
         inlineData: {
-          data: base64Data,
-          mimeType: mimeType || file.type
+          data: imageBase64,
+          mimeType: imageFile.type || 'image/jpeg'
+        }
+      });
+    }
+
+    // Se houver um áudio gravado, insere também no array de conteúdos
+    if (audioBlob) {
+      const audioBase64 = await this.fileToBase64(audioBlob);
+      contents.push({
+        inlineData: {
+          data: audioBase64,
+          mimeType: audioBlob.type || 'audio/webm'
         }
       });
     }
 
     const systemPrompt = `
-      Você é um assistente especialista em matemática e análise multimodal.
-      1. Resolva o problema matemático passo a passo.
-      2. Se o problema envolver uma Progressão Geométrica (PG), adicione no final da resposta exatamente esta linha formatada em JSON:
+      Você é um assistente especialista em matemática e análise multimodal avançada.
+      Instruções de processamento:
+      1. Se houver uma imagem e um áudio/texto, interprete o áudio/texto como instruções explícitas sobre o que fazer com a imagem ou problema matemático fornecido.
+      2. Mantenha a interpretação fidedigna ao texto digitado, copiado ou falado pelo usuário.
+      3. Resolva o problema matemático passo a passo com precisão técnica.
+      4. Se o problema envolver ou puder ser modelado como uma Progressão Geométrica (PG), adicione no final da resposta exatamente esta linha formatada em JSON:
          [PG_DATA]: {"a1": numero, "q": numero, "n": numero}
     `;
 
-    const promptText = text
-      ? `Resolva o seguinte problema: ${text}`
-      : 'Analise o problema contido na imagem/áudio fornecido e apresente a solução detalhada.';
+    // Constrói o texto do prompt combinando o texto digitado e referências contextuais
+    let combinedPrompt = text ? `Texto/Pergunta fornecida: ${text}\n` : '';
+    if (imageFile && audioBlob) {
+      combinedPrompt += 'Analise a imagem enviada seguindo as instruções ditas no áudio anexado e resolva a questão.';
+    } else if (imageFile && !audioBlob && !text) {
+      combinedPrompt += 'Analise o problema contido na imagem fornecida e apresente a solução detalhada.';
+    } else if (audioBlob && !imageFile && !text) {
+      combinedPrompt += 'Ouça o áudio enviado e resolva o problema ou instrução matemática mencionada.';
+    }
 
-    contents.push(promptText);
+    contents.push(combinedPrompt);
 
     const response = await this.ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -298,7 +319,6 @@ export class MathUIController {
     fileInput?.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
         document.getElementById('file-name-display').textContent = `Anexo: ${e.target.files[0].name}`;
-        this.recordedAudioBlob = null;
       }
     });
 
@@ -320,8 +340,6 @@ export class MathUIController {
           this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
           audioPreview.src = URL.createObjectURL(this.recordedAudioBlob);
           audioPreview.style.display = 'block';
-          fileInput.value = '';
-          document.getElementById('file-name-display').textContent = 'Áudio gravado pronto!';
         };
 
         this.mediaRecorder.start();
@@ -351,18 +369,13 @@ export class MathUIController {
     const textPrompt = document.getElementById('input-text-prompt').value;
     const fileInput = document.getElementById('input-file');
     
-    let targetFile = null;
-    let mimeType = null;
+    let imageFile = null;
 
     if (fileInput.files.length > 0) {
-      targetFile = fileInput.files[0];
-      mimeType = targetFile.type;
-    } else if (this.recordedAudioBlob) {
-      targetFile = this.recordedAudioBlob;
-      mimeType = 'audio/webm';
+      imageFile = fileInput.files[0];
     }
 
-    if (!textPrompt && !targetFile) {
+    if (!textPrompt && !imageFile && !this.recordedAudioBlob) {
       alert('Por favor, digite uma pergunta, anexe uma imagem/áudio ou grave um áudio.');
       return;
     }
@@ -373,8 +386,8 @@ export class MathUIController {
     try {
       const resultText = await this.solverAI.solveProblem({
         text: textPrompt,
-        file: targetFile,
-        mimeType: mimeType
+        imageFile: imageFile,
+        audioBlob: this.recordedAudioBlob
       });
 
       responseBox.textContent = resultText;
