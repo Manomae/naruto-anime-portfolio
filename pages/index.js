@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
+import { coreAssistant } from '../coreAssistantEngine';
 
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
