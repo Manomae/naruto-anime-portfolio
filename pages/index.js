@@ -11,6 +11,9 @@ import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
+// Importação do Componente Yu-Gi-Oh! 3D
+import YugiohDuelLinks3D from './YugiohDuelLinks3D';
+
 // =========================================================================================
 // 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
 // =========================================================================================
@@ -1299,6 +1302,9 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
+  // Estado para controlar a visibilidade do Minijogo Yu-Gi-Oh! 3D
+  const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
+
   const meusDadosReais = {
     youtube: 'https://youtube.com',
     tiktok: 'https://tiktok.com',
@@ -1786,6 +1792,11 @@ export default function EmanuelOSCore() {
             <button onClick={() => setJanelaRobotocDevAberta(true)} style={{ backgroundColor: '#0284c7', border: 'none', color: '#fff', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', boxShadow: '0 0 15px rgba(2,132,199,0.3)' }}>
               🤖 Painel EMgemini Dev 3D
             </button>
+
+            {/* BOTÃO INTEGRADO DO JOGO YU-GI-OH! 3D */}
+            <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ backgroundColor: yugiohGameAberto ? '#eab308' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #eab308', color: yugiohGameAberto ? '#fff' : '#d97706', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
+              ⚔️ {yugiohGameAberto ? 'Fechar Duel Links' : 'Yu-Gi-Oh! Duel Links 3D'}
+            </button>
           </div>
 
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '240px' }}>
@@ -1893,6 +1904,21 @@ export default function EmanuelOSCore() {
           onClose={() => setJanelaRobotocDevAberta(false)} 
           onRequestBluetooth={acionarSolicitacaoBluetooth}
         />
+      )}
+
+      {/* RENDERIZAÇÃO OVERLAY DO MINIJOGO YU-GI-OH! 3D */}
+      {yugiohGameAberto && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 400,
+          backgroundColor: '#0a0f1d'
+        }}>
+          <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />
+        </div>
       )}
 
       <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
