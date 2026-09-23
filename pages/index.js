@@ -12,7 +12,7 @@ import { Document, Packer, Paragraph, TextRun } from "docx";
 import pptxgen from "pptxgenjs";
 
 // Importação do Componente Yu-Gi-Oh! 3D
-import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
+import YugiohDuelLinks3D from '@/components/YugiohDuelLinks3D';
 
 // =========================================================================================
 // 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
