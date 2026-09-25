@@ -5,7 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
-import { autoCompleterEngine } from '../utils/palavrasAutoComplemento';
+import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
 
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
