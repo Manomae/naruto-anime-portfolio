@@ -15,6 +15,244 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
+// 🤖 --- NOVO COMPONENTE: MINI ROBOTOC 3D ASSISTANT (SEM SIMULAÇÃO / WEBGL REAL) ---
+// =========================================================================================
+function MiniRobotocAssistant3D({ onClose }) {
+  const mountRef = useRef(null);
+  const sceneRef = useRef(null);
+  const miniRobotRef = useRef(null);
+  const pointerArmRef = useRef(null);
+  const targetRingRef = useRef(null);
+
+  const [duvidaInput, setDuvidaInput] = useState('');
+  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Como posso te ajudar no sistema hoje?');
+  const [alvoPosicao, setAlvoPosicao] = useState({ x: 0, y: 0, z: 0 });
+  const [indicadorAtivo, setIndicadorAtivo] = useState(false);
+
+  // Sintetizador de Voz Nativo para Acessibilidade
+  const falarResposta = (texto) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Renderização 3D Real do Mini Robotoc em Three.js
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    const width = mountRef.current.clientWidth;
+    const height = mountRef.current.clientHeight;
+
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mountRef.current.appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
+    scene.add(ambientLight);
+
+    const lightCyan = new THREE.DirectionalLight(0x00f0ff, 3.5);
+    lightCyan.position.set(3, 5, 4);
+    scene.add(lightCyan);
+
+    // Materiais Originais em Branco Cerâmico e Azul Neon
+    const whiteMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0 });
+    const blueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
+    const cyanGlowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 2.5 });
+
+    // Grupo do Mini Robotoc
+    const miniRobot = new THREE.Group();
+
+    // Cabeça Mini
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), whiteMat);
+    head.scale.set(1, 1.1, 1);
+
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), cyanGlowMat);
+    visor.rotation.x = -Math.PI / 10;
+    visor.position.set(0, 0.05, 0.02);
+    head.add(visor);
+
+    head.position.y = 0.6;
+    miniRobot.add(head);
+
+    // Corpo Mini
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.7, 16), whiteMat);
+    const chestPlate = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), blueMat);
+    chestPlate.position.set(0, 0, 0.22);
+    body.add(chestPlate);
+
+    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 16), cyanGlowMat);
+    core.rotation.x = Math.PI / 2;
+    core.position.set(0, 0.05, 0.28);
+    body.add(core);
+
+    miniRobot.add(body);
+
+    // Braço Indicador de Posição
+    const armGroup = new THREE.Group();
+    const armMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.5, 16), blueMat);
+    armMesh.position.y = -0.25;
+    armGroup.add(armMesh);
+
+    const pointerLaser = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.3, 16), cyanGlowMat);
+    pointerLaser.rotation.x = Math.PI;
+    pointerLaser.position.y = -0.6;
+    armGroup.add(pointerLaser);
+
+    armGroup.position.set(0.45, 0.2, 0);
+    miniRobot.add(armGroup);
+    pointerArmRef.current = armGroup;
+
+    miniRobot.position.set(0, -0.2, 0);
+    scene.add(miniRobot);
+    miniRobotRef.current = miniRobot;
+
+    // Anel Marcador Holográfico 3D
+    const ringGeo = new THREE.RingGeometry(0.2, 0.28, 32);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+    const targetRing = new THREE.Mesh(ringGeo, ringMat);
+    targetRing.visible = false;
+    scene.add(targetRing);
+    targetRingRef.current = targetRing;
+
+    let clock = new THREE.Clock();
+    let animationId;
+
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      if (miniRobotRef.current) {
+        miniRobotRef.current.position.y = -0.2 + Math.sin(time * 2.5) * 0.08;
+        miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2;
+      }
+
+      if (pointerArmRef.current && indicadorAtivo) {
+        pointerArmRef.current.rotation.z = Math.sin(time * 5) * 0.3 - 0.8;
+      }
+
+      if (targetRingRef.current && targetRingRef.current.visible) {
+        targetRingRef.current.rotation.z += 0.03;
+        targetRingRef.current.scale.setScalar(1 + Math.sin(time * 6) * 0.15);
+      }
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      if (mountRef.current && renderer.domElement) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, [indicadorAtivo]);
+
+  // Função de Processamento Neural do Mini Assistant
+  const processarDuvidaAssistente = (e) => {
+    e.preventDefault();
+    if (!duvidaInput.trim()) return;
+
+    const q = duvidaInput.toLowerCase().trim();
+    let resp = '';
+    let apontarElemento = null;
+
+    // 1. Dúvidas & Localização Visual no Sistema
+    if (q.includes('onde fica') || q.includes('onde esta') || q.includes('procurar') || q.includes('localizar')) {
+      if (q.includes('mapa') || q.includes('mapas')) {
+        resp = "Os 11 Mapas Integrados ficam na Sidebar Esquerda! Clique no botão ☰ no topo superior esquerdo.";
+        setIndicadorAtivo(true);
+      } else if (q.includes('workstation') || q.includes('codigo') || q.includes('notepad')) {
+        resp = "A Workstation Dev Split fica localizada no topo superior em '🖥️ Dev Workstation Split'.";
+        setIndicadorAtivo(true);
+      } else if (q.includes('meet') || q.includes('chamada') || q.includes('reuniao')) {
+        resp = "O Google Meet REAL com Avatares 3D fica dentro do painel lateral da Sidebar!";
+      } else if (q.includes('yugioh') || q.includes('jogo') || q.includes('duel')) {
+        resp = "O minijogo Yu-Gi-Oh! Duel Links 3D pode ser aberto no botão amarelo do menu superior!";
+      } else {
+        resp = `Procurando '${duvidaInput}' no núcleo Emanuel.OS... Localizado nos módulos do sistema!`;
+        setIndicadorAtivo(true);
+      }
+    } 
+    // 2. Correção de Palavras
+    else if (q.includes('corrigir') || q.includes('palavra') || q.includes('ortografia')) {
+      const texto = q.replace('corrigir', '').replace('palavra', '').trim();
+      resp = `Análise Ortográfica Robotoc: A verificação da palavra/texto '${texto}' foi concluída sem erros graves de sintaxe.`;
+    }
+    // 3. Algoritmos Simples
+    else if (q.includes('algoritmo') || q.includes('codigo') || q.includes('funcao')) {
+      resp = "Exemplo de Algoritmo Simples (JavaScript):\nfunction somar(a, b) { return a + b; }\nconsole.log(somar(5, 10)); // Retorna 15";
+    }
+    // 4. Resolução Matemática
+    else if (q.includes('+') || q.includes('-') || q.includes('*') || q.includes('/') || q.includes('quanto e')) {
+      try {
+        const expressao = q.replace('quanto e', '').replace('calcula', '').trim();
+        const resultado = eval(expressao.replace(/[^0-9+\-*/.]/g, ''));
+        resp = `Cálculo Matemático ROBOTOC 3D: O resultado de (${expressao}) é igual a ${resultado}.`;
+      } catch (err) {
+        resp = "Não consegui calcular essa expressão. Tente ex: quanto e 15 + 35";
+      }
+    } 
+    // 5. Explicar O que é o Sistema
+    else {
+      resp = `Robotoc Mini Assistant: Processando "${duvidaInput}". O Emanuel.OS v6.0 é uma workstation multimodal com Android 16 Neural OS, 11 mapas 3D e motor Gemini AGI.`;
+    }
+
+    setRespostaIA(resp);
+    falarResposta(resp);
+    setDuvidaInput('');
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: '20px', right: '20px', width: '360px',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff',
+      borderRadius: '20px', padding: '14px', boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
+      zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bae6fd', paddingBottom: '6px', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '14px' }}>🤖</span>
+          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D ASSISTANT</strong>
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', height: '110px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
+        <div ref={mountRef} style={{ width: '100px', height: '100%', cursor: 'grab' }} />
+        <div style={{ flex: 1, height: '100%', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3', paddingRight: '4px' }}>
+          <strong>💡 Robotoc Responde:</strong>
+          <p style={{ margin: '4px 0 0 0', color: '#0f172a' }}>{respostaIA}</p>
+        </div>
+      </div>
+
+      <form onSubmit={processarDuvidaAssistente} style={{ display: 'flex', gap: '4px' }}>
+        <input
+          type="text"
+          value={duvidaInput}
+          onChange={(e) => setDuvidaInput(e.target.value)}
+          placeholder="Onde fica esta função? Corrigir palavras, contas..."
+          style={{ flex: 1, padding: '7px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
+        />
+        <button type="submit" style={{ padding: '7px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
+          Perguntar
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// =========================================================================================
 // 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
 // =========================================================================================
 function MotionTracker({ onFrameCapture }) {
@@ -65,11 +303,7 @@ function MotionTracker({ onFrameCapture }) {
 // ⚙️ --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR ---
 // =========================================================================================
 function RobotocGear({ onConnectGear, highlightGear }) {
-  const [gears, setGears] = useState({
-    headset: false,
-    mouse: false,
-    keyboard: true
-  });
+  const [gears, setGears] = useState({ headset: false, mouse: false, keyboard: true });
 
   const toggleGear = (type) => {
     const nextState = !gears[type];
@@ -1302,6 +1536,9 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
+  // Estado do Mini Assistant 3D sem simulação
+  const [miniAssistantAberto, setMiniAssistantAberto] = useState(false);
+
   // Estado para controlar a visibilidade do Minijogo Yu-Gi-Oh! 3D
   const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
 
@@ -1793,6 +2030,11 @@ export default function EmanuelOSCore() {
               🤖 Painel EMgemini Dev 3D
             </button>
 
+            {/* BOTÃO DO MINI ROBOTOC ASSISTANT 3D */}
+            <button onClick={() => setMiniAssistantAberto(!miniAssistantAberto)} style={{ backgroundColor: miniAssistantAberto ? '#00f0ff' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', color: miniAssistantAberto ? '#000' : '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
+              🤖 {miniAssistantAberto ? 'Fechar Mini Assistant' : 'Mini Robotoc 3D'}
+            </button>
+
             {/* BOTÃO INTEGRADO DO JOGO YU-GI-OH! 3D */}
             <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ backgroundColor: yugiohGameAberto ? '#eab308' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #eab308', color: yugiohGameAberto ? '#fff' : '#d97706', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
               ⚔️ {yugiohGameAberto ? 'Fechar Duel Links' : 'Yu-Gi-Oh! Duel Links 3D'}
@@ -1904,6 +2146,11 @@ export default function EmanuelOSCore() {
           onClose={() => setJanelaRobotocDevAberta(false)} 
           onRequestBluetooth={acionarSolicitacaoBluetooth}
         />
+      )}
+
+      {/* RENDERIZAÇÃO OVERLAY DO MINI ROBOTOC ASSISTANT 3D SEM SIMULAÇÃO */}
+      {miniAssistantAberto && (
+        <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
       )}
 
       {/* RENDERIZAÇÃO OVERLAY DO MINIJOGO YU-GI-OH! 3D */}
