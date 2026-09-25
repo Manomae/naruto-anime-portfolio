@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
+import { autoCompleterEngine } from '../utils/palavrasAutoComplemento';
 
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
@@ -15,7 +16,7 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
-// 🤖 --- NOVO COMPONENTE: MINI ROBOTOC 3D ASSISTANT (SEM SIMULAÇÃO / WEBGL REAL) ---
+// 🤖 --- NOVO COMPONENTE: MINI ROBOTOC 3D ASSISTANT (AUTO-COMPLEMENTO REAL COM TAB/➔) ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
   const mountRef = useRef(null);
@@ -25,22 +26,55 @@ function MiniRobotocAssistant3D({ onClose }) {
   const targetRingRef = useRef(null);
 
   const [duvidaInput, setDuvidaInput] = useState('');
-  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Como posso te ajudar no sistema hoje?');
-  const [alvoPosicao, setAlvoPosicao] = useState({ x: 0, y: 0, z: 0 });
+  const [sugestoes, setSugestoes] = useState([]); // Lista de palavras sugeridas
+  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Digite algo e aperte TAB ou Seta Direita para autocompletar!');
   const [indicadorAtivo, setIndicadorAtivo] = useState(false);
 
-  // Sintetizador de Voz Nativo para Acessibilidade
+  // Escuta a digitação e busca sugestões instantâneas no motor palavrasAutoComplemento.js
+  const handleInputChange = (e) => {
+    const valor = e.target.value;
+    setDuvidaInput(valor);
+
+    // Extrai a última palavra sendo digitada no campo
+    const ultimasPalavras = valor.split(' ');
+    const ultimaPalavra = ultimasPalavras[ultimasPalavras.length - 1];
+
+    if (ultimaPalavra.length >= 1) {
+      const match = autoCompleterEngine.buscarCompletar(ultimaPalavra, 4);
+      setSugestoes(match);
+    } else {
+      setSugestoes([]);
+    }
+  };
+
+  // Aplica a palavra auto-completada no campo de texto
+  const aplicarSugestao = (palavraSugerida) => {
+    if (!palavraSugerida) return;
+    const palavras = duvidaInput.split(' ');
+    palavras[palavras.length - 1] = palavraSugerida;
+    const textoCompleto = palavras.join(' ') + ' ';
+    setDuvidaInput(textoCompleto);
+    setSugestoes([]);
+  };
+
+  // Captura as teclas TAB e Seta Direita para autocompletar
+  const handleKeyDown = (e) => {
+    if ((e.key === 'Tab' || e.key === 'ArrowRight') && sugestoes.length > 0) {
+      e.preventDefault(); // Impede a perda de foco ao pressionar Tab
+      aplicarSugestao(sugestoes[0]); // Aceita automaticamente a primeira sugestão
+    }
+  };
+
   const falarResposta = (texto) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = 'pt-BR';
-      utterance.rate = 1.0;
       window.speechSynthesis.speak(utterance);
     }
   };
 
-  // Renderização 3D Real do Mini Robotoc em Three.js
+  // Renderização WebGL do Mini Robotoc em Three.js
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -65,15 +99,12 @@ function MiniRobotocAssistant3D({ onClose }) {
     lightCyan.position.set(3, 5, 4);
     scene.add(lightCyan);
 
-    // Materiais Originais em Branco Cerâmico e Azul Neon
     const whiteMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0 });
     const blueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
     const cyanGlowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 2.5 });
 
-    // Grupo do Mini Robotoc
     const miniRobot = new THREE.Group();
 
-    // Cabeça Mini
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), whiteMat);
     head.scale.set(1, 1.1, 1);
 
@@ -85,7 +116,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     head.position.y = 0.6;
     miniRobot.add(head);
 
-    // Corpo Mini
     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.7, 16), whiteMat);
     const chestPlate = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), blueMat);
     chestPlate.position.set(0, 0, 0.22);
@@ -98,7 +128,6 @@ function MiniRobotocAssistant3D({ onClose }) {
 
     miniRobot.add(body);
 
-    // Braço Indicador de Posição
     const armGroup = new THREE.Group();
     const armMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.5, 16), blueMat);
     armMesh.position.y = -0.25;
@@ -117,14 +146,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     scene.add(miniRobot);
     miniRobotRef.current = miniRobot;
 
-    // Anel Marcador Holográfico 3D
-    const ringGeo = new THREE.RingGeometry(0.2, 0.28, 32);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
-    const targetRing = new THREE.Mesh(ringGeo, ringMat);
-    targetRing.visible = false;
-    scene.add(targetRing);
-    targetRingRef.current = targetRing;
-
     let clock = new THREE.Clock();
     let animationId;
 
@@ -137,15 +158,6 @@ function MiniRobotocAssistant3D({ onClose }) {
         miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2;
       }
 
-      if (pointerArmRef.current && indicadorAtivo) {
-        pointerArmRef.current.rotation.z = Math.sin(time * 5) * 0.3 - 0.8;
-      }
-
-      if (targetRingRef.current && targetRingRef.current.visible) {
-        targetRingRef.current.rotation.z += 0.03;
-        targetRingRef.current.scale.setScalar(1 + Math.sin(time * 6) * 0.15);
-      }
-
       renderer.render(scene, camera);
     };
     animate();
@@ -156,66 +168,34 @@ function MiniRobotocAssistant3D({ onClose }) {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [indicadorAtivo]);
+  }, []);
 
-  // Função de Processamento Neural do Mini Assistant
   const processarDuvidaAssistente = (e) => {
     e.preventDefault();
     if (!duvidaInput.trim()) return;
 
+    // Adiciona palavra nova ao banco de dados dinamicamente caso seja uma palavra nova
+    autoCompleterEngine.adicionarNovaPalavra(duvidaInput.trim());
+
     const q = duvidaInput.toLowerCase().trim();
     let resp = '';
-    let apontarElemento = null;
 
-    // 1. Dúvidas & Localização Visual no Sistema
-    if (q.includes('onde fica') || q.includes('onde esta') || q.includes('procurar') || q.includes('localizar')) {
-      if (q.includes('mapa') || q.includes('mapas')) {
-        resp = "Os 11 Mapas Integrados ficam na Sidebar Esquerda! Clique no botão ☰ no topo superior esquerdo.";
-        setIndicadorAtivo(true);
-      } else if (q.includes('workstation') || q.includes('codigo') || q.includes('notepad')) {
-        resp = "A Workstation Dev Split fica localizada no topo superior em '🖥️ Dev Workstation Split'.";
-        setIndicadorAtivo(true);
-      } else if (q.includes('meet') || q.includes('chamada') || q.includes('reuniao')) {
-        resp = "O Google Meet REAL com Avatares 3D fica dentro do painel lateral da Sidebar!";
-      } else if (q.includes('yugioh') || q.includes('jogo') || q.includes('duel')) {
-        resp = "O minijogo Yu-Gi-Oh! Duel Links 3D pode ser aberto no botão amarelo do menu superior!";
-      } else {
-        resp = `Procurando '${duvidaInput}' no núcleo Emanuel.OS... Localizado nos módulos do sistema!`;
-        setIndicadorAtivo(true);
-      }
-    } 
-    // 2. Correção de Palavras
-    else if (q.includes('corrigir') || q.includes('palavra') || q.includes('ortografia')) {
-      const texto = q.replace('corrigir', '').replace('palavra', '').trim();
-      resp = `Análise Ortográfica Robotoc: A verificação da palavra/texto '${texto}' foi concluída sem erros graves de sintaxe.`;
-    }
-    // 3. Algoritmos Simples
-    else if (q.includes('algoritmo') || q.includes('codigo') || q.includes('funcao')) {
-      resp = "Exemplo de Algoritmo Simples (JavaScript):\nfunction somar(a, b) { return a + b; }\nconsole.log(somar(5, 10)); // Retorna 15";
-    }
-    // 4. Resolução Matemática
-    else if (q.includes('+') || q.includes('-') || q.includes('*') || q.includes('/') || q.includes('quanto e')) {
-      try {
-        const expressao = q.replace('quanto e', '').replace('calcula', '').trim();
-        const resultado = eval(expressao.replace(/[^0-9+\-*/.]/g, ''));
-        resp = `Cálculo Matemático ROBOTOC 3D: O resultado de (${expressao}) é igual a ${resultado}.`;
-      } catch (err) {
-        resp = "Não consegui calcular essa expressão. Tente ex: quanto e 15 + 35";
-      }
-    } 
-    // 5. Explicar O que é o Sistema
-    else {
-      resp = `Robotoc Mini Assistant: Processando "${duvidaInput}". O Emanuel.OS v6.0 é uma workstation multimodal com Android 16 Neural OS, 11 mapas 3D e motor Gemini AGI.`;
+    if (q.includes('onde fica') || q.includes('onde esta') || q.includes('mapa') || q.includes('workstation')) {
+      resp = `Localizando '${duvidaInput}' no sistema... O Mini Robotoc encontrou os módulos correspondentes!`;
+      setIndicadorAtivo(true);
+    } else {
+      resp = `Entendido! Analisando: "${duvidaInput}". O Mini Robotoc processou seu comando no Emanuel.OS!`;
     }
 
     setRespostaIA(resp);
     falarResposta(resp);
+    setSugestoes([]);
     setDuvidaInput('');
   };
 
   return (
     <div style={{
-      position: 'fixed', bottom: '20px', right: '20px', width: '360px',
+      position: 'fixed', bottom: '20px', right: '20px', width: '370px',
       backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff',
       borderRadius: '20px', padding: '14px', boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
       zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif'
@@ -223,29 +203,54 @@ function MiniRobotocAssistant3D({ onClose }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bae6fd', paddingBottom: '6px', marginBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '14px' }}>🤖</span>
-          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D ASSISTANT</strong>
+          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D AUTO-COMPLETE</strong>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', height: '110px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
-        <div ref={mountRef} style={{ width: '100px', height: '100%', cursor: 'grab' }} />
-        <div style={{ flex: 1, height: '100%', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3', paddingRight: '4px' }}>
-          <strong>💡 Robotoc Responde:</strong>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', height: '100px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
+        <div ref={mountRef} style={{ width: '90px', height: '100%', cursor: 'grab' }} />
+        <div style={{ flex: 1, height: '100%', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
+          <strong>💡 Status Robotoc:</strong>
           <p style={{ margin: '4px 0 0 0', color: '#0f172a' }}>{respostaIA}</p>
         </div>
       </div>
+
+      {/* BALÃO DE SUGESTÕES COM DESTAQUE PARA ATALHO DE TECLADO (TAB / SETA DIREITA) */}
+      {sugestoes.length > 0 && (
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px', backgroundColor: '#f0f9ff', padding: '6px', borderRadius: '8px', border: '1px solid #00f0ff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: 'bold' }}>⚡ COMPLEMENTOS SUGERIDOS:</span>
+            <span style={{ fontSize: '7.5px', backgroundColor: '#0284c7', color: '#fff', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold' }}>Pressione TAB ou ➔</span>
+          </div>
+          {sugestoes.map((sug, i) => (
+            <button
+              key={i}
+              onClick={() => aplicarSugestao(sug)}
+              style={{
+                backgroundColor: i === 0 ? '#00f0ff' : '#ffffff',
+                border: '1px solid #0284c7',
+                color: i === 0 ? '#000' : '#0284c7',
+                padding: '3px 8px', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer'
+              }}
+            >
+              {sug} {i === 0 ? '↹' : '↵'}
+            </button>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={processarDuvidaAssistente} style={{ display: 'flex', gap: '4px' }}>
         <input
           type="text"
           value={duvidaInput}
-          onChange={(e) => setDuvidaInput(e.target.value)}
-          placeholder="Onde fica esta função? Corrigir palavras, contas..."
-          style={{ flex: 1, padding: '7px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Digite 1 ou 2 letras (Aperte TAB ou ➔ pra aceitar)..."
+          style={{ flex: 1, padding: '8px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
         />
-        <button type="submit" style={{ padding: '7px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
-          Perguntar
+        <button type="submit" style={{ padding: '8px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
+          Enviar
         </button>
       </form>
     </div>
