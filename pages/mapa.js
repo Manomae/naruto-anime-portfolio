@@ -26,7 +26,7 @@ export default function MapaTerrestreEmanuel() {
   const [localSelecionado, setLocalSelecionado] = useState(null);
   const [alertaAbalroamento, setAlertaAbalroamento] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(null);
-  
+
   // 🌟 CONTROLE DA BARRA FLUIDA SUPERIOR RETRÁTIL E MENU UTILITÁRIOS
   const [isBarraFluidaOpen, setIsBarraFluidaOpen] = useState(false);
   const [menuUtilitariosAberto, setMenuUtilitariosAberto] = useState(false);
@@ -89,7 +89,7 @@ export default function MapaTerrestreEmanuel() {
 
   const [urlOuTermoNavegador, setUrlOuTermoNavegador] = useState('https://emanuel-os.com/search');
   const [motorBuscaSelecionado, setMotorBuscaSelecionado] = useState('google');
-  const [browserAsset, setBrowserAsset] = useState({
+  const [browserAsset] = useState({
     titulo: 'Emanuel.OS Quantum Browser v5.1',
     subtitulo: 'Pensamento Neural ROBOTOC Multimodal Active',
     imagem: null,
@@ -103,19 +103,24 @@ export default function MapaTerrestreEmanuel() {
     alertaPreservacao: "⚡ MATRIZ GEMINI AI: Eólica, Solar, Nuclear, Hidrelétrica e 5G"
   };
 
-  const estabelecimentos = [
-    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, posicao: { x: -6, y: 3, z: -4 }, ipCriptografado: 'AES256-88F9-EMA', tipo: 'tech' },
-    { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, posicao: { x: 7, y: 2, z: 6 }, ipCriptografado: 'AES256-OCEAN-BIO', tipo: 'oceano' },
-    { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, posicao: { x: -5, y: 3.2, z: 5 }, ipCriptografado: 'AES256-NUK-POWER', tipo: 'energia' },
-    { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, posicao: { x: 7, y: 2, z: -6 }, ipCriptografado: 'AES256-SOLAR-PWR', tipo: 'energia' },
-    { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, posicao: { x: -8, y: 3.8, z: -8 }, ipCriptografado: 'AES256-5G-EOLICA', tipo: 'telecom' },
-    { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, posicao: { x: 8, y: 2.5, z: 1 }, ipCriptografado: 'AES256-HIDRO-POWER', tipo: 'energia' },
-    { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, posicao: { x: 0, y: 1.5, z: 2 }, ipCriptografado: 'AES256-UNIV-RECRUIT', tipo: 'estudo' },
-    { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, posicao: { x: 4, y: 2.8, z: -1 }, ipCriptografado: 'AES256-LAB-FARMA', tipo: 'comercio' },
-    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, posicao: { x: -3, y: 2.5, z: -7 }, ipCriptografado: 'AES256-COAST-GUARD', tipo: 'emergencia' },
-    { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, posicao: { x: 10, y: 3, z: -10 }, ipCriptografado: 'AES256-CATARATAS-3D', tipo: 'oceano' },
-    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, posicao: { x: -12, y: 2, z: 8 }, ipCriptografado: 'AES256-KITESURF-NEON', tipo: 'oceano' }
-  ];
+  // 🏙️ ESTADO DOS PRÉDIOS E HOLOGRAMAS LOCAIS (EDITÁVEIS EM TEMPO REAL)
+  const [estabelecimentosState, setEstabelecimentosState] = useState([
+    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, posicao: { x: -6, y: 3, z: -4 }, ipCriptografado: 'AES256-88F9-EMA', tipo: 'tech', trabalho: 'Engenharia de Software & AGI Node', tecnologias: ['Next.js', 'Three.js', 'Tailwind', 'Node.js', 'Python'], animes: ['Naruto', 'Bleach', 'Yu-Gi-Oh!'], email: 'leeheroi123@gmail.com', telefone: '(88) 98149-3989', dispositivos: ['Laptop Linux OS', 'Android HUD Terminal', 'Quantum Workstation'] },
+    { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, posicao: { x: 7, y: 2, z: 6 }, ipCriptografado: 'AES256-OCEAN-BIO', tipo: 'oceano', trabalho: 'Análise de Mapeamento Fluvial', tecnologias: ['WebGL', 'ONNX Web', 'Math.js'], animes: ['Cowboy Bebop', 'Dandadan'], email: 'ocean.node@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Sonda Submarina 3D', 'Tablet Oceanográfico'] },
+    { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, posicao: { x: -5, y: 3.2, z: 5 }, ipCriptografado: 'AES256-NUK-POWER', tipo: 'energia', trabalho: 'Monitoramento de Matriz Energética', tecnologias: ['C++', 'Rust', 'TensorFlow'], animes: ['Dragon Ball', 'Kaiju No. 8'], email: 'nuclear.core@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Console do Reator Alpha', 'Sensor de Fusão'] },
+    { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, posicao: { x: 7, y: 2, z: -6 }, ipCriptografado: 'AES256-SOLAR-PWR', tipo: 'energia', trabalho: 'Gestão de Energia Fotovoltaica', tecnologias: ['JavaScript', 'Canvas API'], animes: ['Sakamoto Days'], email: 'solar@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Inversor Inteligente 6G'] },
+    { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, posicao: { x: -8, y: 3.8, z: -8 }, ipCriptografado: 'AES256-5G-EOLICA', tipo: 'telecom', trabalho: 'Sincronização de Banda Ultralarga', tecnologias: ['Microserviços', 'WebSocket'], animes: ['Boruto'], email: 'telecom@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Roteador Mesh Quantum'] },
+    { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, posicao: { x: 8, y: 2.5, z: 1 }, ipCriptografado: 'AES256-HIDRO-POWER', tipo: 'energia', trabalho: 'Controle de Escoamento de Água', tecnologias: ['Python', 'SciPy'], animes: ['Naruto Shippuden'], email: 'hidro@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Telemetria Fluvial V3'] },
+    { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, posicao: { x: 0, y: 1.5, z: 2 }, ipCriptografado: 'AES256-UNIV-RECRUIT', tipo: 'estudo', trabalho: 'Desenvolvimento Acadêmico & IA', tecnologias: ['Next.js', 'Data Science'], animes: ['Bleach'], email: 'universidade@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Terminal de Pesquisa'] },
+    { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, posicao: { x: 4, y: 2.8, z: -1 }, ipCriptografado: 'AES256-LAB-FARMA', tipo: 'comercio', trabalho: 'Pesquisa Farmacêutica & Biotec', tecnologias: ['PDF-Lib', 'React Native'], animes: ['Yu-Gi-Oh! GX'], email: 'farma@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Scanner Biométrico'] },
+    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, posicao: { x: -3, y: 2.5, z: -7 }, ipCriptografado: 'AES256-COAST-GUARD', tipo: 'emergencia', trabalho: 'Patrulha e Segurança Costeira', tecnologias: ['Visão Computacional', 'ONNX'], animes: ['Naruto'], email: 'guardacosteira@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Radar Naval 3D'] },
+    { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, posicao: { x: 10, y: 3, z: -10 }, ipCriptografado: 'AES256-CATARATAS-3D', tipo: 'oceano', trabalho: 'Preservação de Reservas Naturais', tecnologias: ['Three.js Shaders'], animes: ['Dragon Ball Z'], email: 'cataratas@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Estação de Monitoramento'] },
+    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, posicao: { x: -12, y: 2, z: 8 }, ipCriptografado: 'AES256-KITESURF-NEON', tipo: 'oceano', trabalho: 'Treinamento de Atletas & Hidrodinâmica', tecnologias: ['Simulação Física Canvas2D'], animes: ['Dandadan'], email: 'kitesurf@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Anemômetro Digital 6G'] }
+  ]);
+
+  // ESTADOS DO FORMULÁRIO DO HOLOGRAMA EDITÁVEL
+  const [novaTecnologia, setNovaTecnologia] = useState('');
+  const [novoAnime, setNovoAnime] = useState('');
 
   // RELÓGIO
   useEffect(() => {
@@ -317,7 +322,7 @@ export default function MapaTerrestreEmanuel() {
     gridHelper.position.y = -0.49;
     scene.add(gridHelper);
 
-    // 🥽 MODELAGEM 3D DO ÓCULOS FUTURISTA (CÂMERA ULTRA MODERNA QUE ACOMPANHA SELEÇÕES)
+    // 🥽 MODELAGEM 3D DO ÓCULOS FUTURISTA
     const oculosGroup = new THREE.Group();
     const armacaoGeo = new THREE.TorusGeometry(0.5, 0.08, 16, 32);
     const armacaoMat = new THREE.MeshStandardMaterial({ color: 0x111122, metalness: 0.9, roughness: 0.1 });
@@ -347,39 +352,31 @@ export default function MapaTerrestreEmanuel() {
     scene.add(oculosGroup);
     oculosGroupRef.current = oculosGroup;
 
-    // 🏔️🌊 CATARATAS DO IGUAÇU ULTRARREALISTAS 3D (RELEVO DE TERRA, PARQUE FLORESTAL E CACHOEIRA FLUIDA SOB A PISTA)
+    // 🏔️🌊 CATARATAS DO IGUAÇU ULTRARREALISTAS 3D
     const cataratasGroup = new THREE.Group();
 
-    // 1. Montanhas 3D com Relevo em Ondulação Natural (Sobe e Desce)
     const montanhaGeo = new THREE.PlaneGeometry(12, 10, 24, 24);
     montanhaGeo.rotateX(-Math.PI / 2);
     const posAttr = montanhaGeo.attributes.position;
     for (let i = 0; i < posAttr.count; i++) {
       const x = posAttr.getX(i);
       const z = posAttr.getZ(i);
-      // Criação de altos e baixos para simular as montanhas reais
       const eleva = Math.sin(x * 0.5) * Math.cos(z * 0.5) * 1.8 + Math.cos(x * 0.8) * 1.2;
       posAttr.setY(i, Math.max(0, eleva));
     }
     montanhaGeo.computeVertexNormals();
 
-    const terraMat = new THREE.MeshStandardMaterial({
-      color: 0x4a3525,
-      roughness: 0.95,
-      metalness: 0.1
-    });
+    const terraMat = new THREE.MeshStandardMaterial({ color: 0x4a3525, roughness: 0.95, metalness: 0.1 });
     const montanhaMesh = new THREE.Mesh(montanhaGeo, terraMat);
     montanhaMesh.position.set(10, 2.0, -10);
     cataratasGroup.add(montanhaMesh);
 
-    // Paredão de Rocha da Encosta da Cachoeira
     const paredaoRochaGeo = new THREE.BoxGeometry(10, 4.5, 3);
     const rochaMat = new THREE.MeshStandardMaterial({ color: 0x222a35, roughness: 0.9, metalness: 0.2 });
     const paredaoRochaMesh = new THREE.Mesh(paredaoRochaGeo, rochaMat);
     paredaoRochaMesh.position.set(10, 2.25, -7.5);
     cataratasGroup.add(paredaoRochaMesh);
 
-    // 2. Parque Florestal do Lado das Cataratas (Mata Nativa Densas Árvores 3D)
     const parqueGroup = new THREE.Group();
     const folhaMat = new THREE.MeshStandardMaterial({ color: 0x00cc44, roughness: 0.6, emissive: 0x003311, emissiveIntensity: 0.2 });
     const troncoMat = new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.9 });
@@ -399,7 +396,6 @@ export default function MapaTerrestreEmanuel() {
     }
     cataratasGroup.add(parqueGroup);
 
-    // 3. Queda d'Água Fluida 3D em Camadas Translúcidas
     const cascataGeo = new THREE.PlaneGeometry(5, 5.2, 16, 16);
     const cascataMat = new THREE.MeshStandardMaterial({
       color: 0x00e5ff,
@@ -413,7 +409,6 @@ export default function MapaTerrestreEmanuel() {
     cascataMesh.position.set(10, 2.4, -6.0);
     cataratasGroup.add(cascataMesh);
 
-    // 4. Canal Orgânico de Água Organizada Transcorrendo sob a Pista Neon
     const canalAguaGeo = new THREE.PlaneGeometry(4, 12, 16, 16);
     canalAguaGeo.rotateX(-Math.PI / 2);
     const canalAguaMat = new THREE.MeshStandardMaterial({
@@ -427,7 +422,6 @@ export default function MapaTerrestreEmanuel() {
     canalAguaMesh.position.set(10, 0.02, -1);
     cataratasGroup.add(canalAguaMesh);
 
-    // 5. Névoa e Espuma Bio-Luminescente na Base da Queda d'Água
     const espumaGroup = new THREE.Group();
     const espumaMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.65 });
     for (let e = 0; e < 6; e++) {
@@ -439,29 +433,25 @@ export default function MapaTerrestreEmanuel() {
 
     scene.add(cataratasGroup);
 
-    // 🏄‍♀️ KITESURF 3D REALISTA COM AVATAR FEMININO (MELHOR VISUALIZAÇÃO E POSIÇÃO DESTACADA)
+    // 🏄‍♀️ KITESURF 3D REALISTA COM AVATAR FEMININO
     const kitesurfGroup = new THREE.Group();
 
-    // Prancha Hidrodinâmica
     const pranchaGeo = new THREE.BoxGeometry(0.8, 0.1, 2.0);
     const pranchaMat = new THREE.MeshStandardMaterial({ color: 0xff007f, emissive: 0xff007f, emissiveIntensity: 0.5, roughness: 0.2 });
     const pranchaMesh = new THREE.Mesh(pranchaGeo, pranchaMat);
     pranchaMesh.position.set(-12, 0.1, 8);
-    pranchaMesh.rotation.x = -0.12; // Leve elevação nas ondas
+    pranchaMesh.rotation.x = -0.12;
     kitesurfGroup.add(pranchaMesh);
 
-    // Avatar Feminino Modelado
     const corpoFemMat = new THREE.MeshStandardMaterial({ color: 0xff007f, roughness: 0.3, metalness: 0.3 });
     const peleFemMat = new THREE.MeshStandardMaterial({ color: 0xf5d0c5, roughness: 0.5 });
     const cabeloFemMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 });
 
-    // Tronco
     const corpoFemGeo = new THREE.CylinderGeometry(0.2, 0.15, 0.9, 16);
     const corpoFemMesh = new THREE.Mesh(corpoFemGeo, corpoFemMat);
     corpoFemMesh.position.set(-12, 0.65, 8);
     kitesurfGroup.add(corpoFemMesh);
 
-    // Cabeça & Cabelo
     const cabecaFemGeo = new THREE.SphereGeometry(0.2, 16, 16);
     const cabecaFemMesh = new THREE.Mesh(cabecaFemGeo, peleFemMat);
     cabecaFemMesh.position.set(-12, 1.2, 8);
@@ -473,7 +463,6 @@ export default function MapaTerrestreEmanuel() {
     cabeloFemMesh.position.set(-12, 1.23, 7.9);
     kitesurfGroup.add(cabeloFemMesh);
 
-    // Pipa Acrobática de Kitesurf em Arco Animado
     const pipaGeo = new THREE.TorusGeometry(1.8, 0.2, 8, 24, Math.PI);
     const pipaMat = new THREE.MeshBasicMaterial({ color: 0xff007f, side: THREE.DoubleSide });
     const pipaMesh = new THREE.Mesh(pipaGeo, pipaMat);
@@ -481,7 +470,6 @@ export default function MapaTerrestreEmanuel() {
     pipaMesh.rotation.x = Math.PI / 3;
     kitesurfGroup.add(pipaMesh);
 
-    // Cabo de Tração
     const linhaMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
     const linhaEsqGeo = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(-12, 0.8, 8),
@@ -494,7 +482,6 @@ export default function MapaTerrestreEmanuel() {
     kitesurfGroup.add(new THREE.Line(linhaEsqGeo, linhaMat));
     kitesurfGroup.add(new THREE.Line(linhaDirGeo, linhaMat));
 
-    // Luz de Destaque no Avatar do Kitesurf
     const kiteSpotLight = new THREE.PointLight(0xff007f, 2, 15);
     kiteSpotLight.position.set(-12, 4, 9);
     kitesurfGroup.add(kiteSpotLight);
@@ -540,7 +527,7 @@ export default function MapaTerrestreEmanuel() {
       scene.add(copaMesh);
     }
 
-    // PONTE FUTURISTA (PISTA ELEVADA SOBRE O CANAL DAS CATARATAS)
+    // PONTE FUTURISTA
     const ponteBaseGeo = new THREE.BoxGeometry(32, 0.4, 4);
     const ponteBaseMat = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.8 });
     const ponteMesh = new THREE.Mesh(ponteBaseGeo, ponteBaseMat);
@@ -571,7 +558,7 @@ export default function MapaTerrestreEmanuel() {
     centroMesh.position.set(0, 6, 0);
     scene.add(centroMesh);
 
-    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D INTEGRADO NO MAPA
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D INTEGRADO
     const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
@@ -593,7 +580,6 @@ export default function MapaTerrestreEmanuel() {
     const plateGeo = new THREE.BoxGeometry(0.7, 0.5, 0.08);
     const plateMesh = new THREE.Mesh(plateGeo, armorMat); plateMesh.position.set(0, 1.5, 0.24); avatarGroup.add(plateMesh);
 
-    // 🚨 GIROFLEX / SIRENE DE CABEÇA PARA ROBOTOC MODO EMERGÊNCIA
     const giroflesGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.2, 16);
     const giroflesMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const giroflesMesh = new THREE.Mesh(giroflesGeo, giroflesMat);
@@ -605,7 +591,7 @@ export default function MapaTerrestreEmanuel() {
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
 
-    // 🚑 AMBULÂNCIA 3D FUTURISTA DE EMERGÊNCIA
+    // 🚑 AMBULÂNCIA 3D FUTURISTA
     const ambulanciaGroup = new THREE.Group();
     const ambChassiGeo = new THREE.BoxGeometry(1.2, 0.8, 2.2);
     const ambChassiMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.5 });
@@ -645,7 +631,8 @@ export default function MapaTerrestreEmanuel() {
     const objetosInterativos = [];
     const dadosFluxoParticulas = [];
 
-    estabelecimentos.forEach((est) => {
+    // RENDERIZAÇÃO DOS PRÉDIOS COM DADOS DO ESTADO DINÂMICO
+    estabelecimentosState.forEach((est) => {
       const geometry = new THREE.BoxGeometry(2, est.posicao.y * 2, 2);
       const material = new THREE.MeshStandardMaterial({ color: est.cor, roughness: 0.1, metalness: 0.8 });
       const mesh = new THREE.Mesh(geometry, material);
@@ -691,6 +678,7 @@ export default function MapaTerrestreEmanuel() {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
+    // 🎯 CLIQUE NO PRÉDIO 3D: ABRIR / RECOLHER HOLOGRAMA COM EDICAO EM TEMPO REAL
     const handleMouseClick = (event) => {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -711,13 +699,19 @@ export default function MapaTerrestreEmanuel() {
         setArquiteturaAberta(true);
         setMostrarOverlayRobotoc(false);
       } else if (intersectsPredios.length > 0) {
-        const local = intersectsPredios[0].object.userData;
-        setLocalSelecionado(local);
+        const localHit = intersectsPredios[0].object.userData;
 
-        // Zoom automático e Alinhamento Preciso do Óculos 3D no Local Selecionado
-        cameraTargetPosRef.current.set(local.posicao.x + 3, local.posicao.y + 4, local.posicao.z + 6);
-        cameraLookAtPosRef.current.set(local.posicao.x, local.posicao.y, local.posicao.z);
-        oculosTargetPosRef.current.set(local.posicao.x, local.posicao.y + 2.5, local.posicao.z);
+        // Alternância inteligente (Clique para abrir Holograma, Re-clique para recolher)
+        setLocalSelecionado(prev => {
+          if (prev && prev.id === localHit.id) {
+            aplicarZoomCamera('geral');
+            return null;
+          }
+          cameraTargetPosRef.current.set(localHit.posicao.x + 3, localHit.posicao.y + 4, localHit.posicao.z + 6);
+          cameraLookAtPosRef.current.set(localHit.posicao.x, localHit.posicao.y, localHit.posicao.z);
+          oculosTargetPosRef.current.set(localHit.posicao.x, localHit.posicao.y + 2.5, localHit.posicao.z);
+          return localHit;
+        });
       }
     };
 
@@ -731,7 +725,6 @@ export default function MapaTerrestreEmanuel() {
       const elapsedTime = clock.getElapsedTime();
       scene.rotation.y += 0.0008;
 
-      // Movimentação fluida da Câmera & Óculos 3D perfeitamente centralizados
       camera.position.lerp(cameraTargetPosRef.current, 0.04);
       currentCameraLookAtRef.current.lerp(cameraLookAtPosRef.current, 0.04);
       camera.lookAt(currentCameraLookAtRef.current);
@@ -742,14 +735,12 @@ export default function MapaTerrestreEmanuel() {
         oculosGroupRef.current.rotation.y = Math.sin(elapsedTime * 0.8) * 0.2;
       }
 
-      // Animação das Cataratas e do Fluxo do Canal
       cascataMesh.position.y = 2.4 + Math.sin(elapsedTime * 4) * 0.05;
       canalAguaMesh.position.z = -1 + Math.sin(elapsedTime * 2) * 0.1;
       espumaGroup.children.forEach((esp, idx) => {
         esp.scale.setScalar(1 + Math.sin(elapsedTime * 3 + idx) * 0.15);
       });
 
-      // Animação do Kitesurf Feminino
       kitesurfGroup.position.y = Math.sin(elapsedTime * 2.5) * 0.12;
       pipaMesh.rotation.z = Math.sin(elapsedTime * 1.8) * 0.15;
 
@@ -834,7 +825,7 @@ export default function MapaTerrestreEmanuel() {
         currentMount.removeChild(renderer.domElement);
       }
     };
-  }, [links3D, modoEmergencia]);
+  }, [links3D, modoEmergencia, estabelecimentosState]);
 
   const adicionarTarefa = (e) => {
     e.preventDefault();
@@ -849,22 +840,53 @@ export default function MapaTerrestreEmanuel() {
   };
 
   const selecionarLocalPesquisado = (item) => {
-    setLocalSelecionado({
+    const localBusca = {
+      id: Date.now(),
       nome: item.display_name.split(',')[0],
       categoria: `🌐 Módulo Pesquisa Gemini AI (${filtroCategoria.toUpperCase()})`,
       ipCriptografado: `LAT: ${parseFloat(item.lat).toFixed(4)} | LON: ${parseFloat(item.lon).toFixed(4)}`,
-      tipo: 'oceano'
-    });
+      tipo: 'oceano',
+      trabalho: 'Pesquisa Global Geográfica',
+      tecnologias: ['Nominatim API', 'Gemini AI'],
+      animes: ['Exploração Global'],
+      email: 'leeheroi123@gmail.com',
+      telefone: '(88) 98149-3989',
+      dispositivos: ['Terminal Global']
+    };
+
+    setLocalSelecionado(localBusca);
     setTermoBusca('');
     setSugestoesBusca([]);
     setIsBarraFluidaOpen(false);
 
-    // Zoom e Óculos alinhados no local pesquisado
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
     cameraTargetPosRef.current.set((lon % 10), 6, (lat % 10) + 5);
     cameraLookAtPosRef.current.set(lon % 10, 0, lat % 10);
     oculosTargetPosRef.current.set(lon % 10, 3.5, lat % 10);
+  };
+
+  // 📝 MANIPULADORES DE EDICAO DO HOLOGRAMA INTERATIVO DO PRÉDIO
+  const atualizarCampoHolograma = (campo, valor) => {
+    if (!localSelecionado) return;
+    const atualizado = { ...localSelecionado, [campo]: valor };
+    setLocalSelecionado(atualizado);
+    setEstabelecimentosState(prev => prev.map(p => p.id === localSelecionado.id ? atualizado : p));
+  };
+
+  const adicionarItemListaHolograma = (campo, valor, setValorState) => {
+    if (!valor.trim() || !localSelecionado) return;
+    const listaAtual = localSelecionado[campo] || [];
+    const novaLista = [...listaAtual, valor.trim()];
+    atualizarCampoHolograma(campo, novaLista);
+    setValorState('');
+  };
+
+  const removerItemListaHolograma = (campo, indexParaRemover) => {
+    if (!localSelecionado) return;
+    const listaAtual = localSelecionado[campo] || [];
+    const novaLista = listaAtual.filter((_, idx) => idx !== indexParaRemover);
+    atualizarCampoHolograma(campo, novaLista);
   };
 
   return (
@@ -883,7 +905,7 @@ export default function MapaTerrestreEmanuel() {
         </span>
       </header>
 
-      {/* 🧭 BARRA DE AÇÕES SUPERIOR (ORGANIZADA & ESTILO COPILOT COM CÂMERA ZOOM) */}
+      {/* 🧭 BARRA DE AÇÕES SUPERIOR */}
       <div style={{ position: 'absolute', top: '15px', right: '30px', zIndex: 30, display: 'flex', gap: '8px', alignItems: 'center' }}>
         
         {/* 🥽 BOTÃO ÓCULOS CAMERA ZOOM 3D */}
@@ -957,7 +979,7 @@ export default function MapaTerrestreEmanuel() {
           🚨 {modoEmergencia ? 'DESATIVAR EMERGÊNCIA' : 'ACIONAR EMERGÊNCIA'}
         </button>
 
-        {/* 🛠️ BOTÃO DE UTILITÁRIOS (MENU ESTILO COPILOT FLYOUT) */}
+        {/* 🛠️ BOTÃO DE UTILITÁRIOS */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setMenuUtilitariosAberto(!menuUtilitariosAberto)}
@@ -1335,29 +1357,156 @@ export default function MapaTerrestreEmanuel() {
         </div>
       )}
 
-      {/* CARD LATERAL DOS LOCAIS / CONTATOS */}
+      {/* 🔮 HOLOGRAMA REALISTA EDITÁVEL DO PRÉDIO SELECIONADO (INTEGRAÇÃO COMPLETA) */}
       {localSelecionado && (
-        <aside style={{ position: 'absolute', right: '30px', bottom: '30px', width: '360px', backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '1px solid rgba(0, 240, 255, 0.5)', borderRadius: '20px', padding: '20px', backdropFilter: 'blur(25px)', zIndex: 20, color: '#fff' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <h3 style={{ margin: 0, fontSize: '16px', color: '#00f0ff', fontWeight: '900' }}>{localSelecionado.nome}</h3>
-            <button onClick={() => setLocalSelecionado(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>✕</button>
+        <aside style={{
+          position: 'absolute',
+          right: '30px',
+          bottom: '30px',
+          width: '400px',
+          backgroundColor: 'rgba(7, 12, 28, 0.95)',
+          border: '2px solid #00f0ff',
+          borderRadius: '24px',
+          padding: '20px',
+          backdropFilter: 'blur(30px)',
+          zIndex: 200,
+          color: '#fff',
+          boxShadow: '0 0 50px rgba(0, 240, 255, 0.4)',
+          maxHeight: '82vh',
+          overflowY: 'auto'
+        }}>
+          {/* TOPO DO HOLOGRAMA */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid rgba(0,240,255,0.3)', paddingBottom: '8px' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '15px', color: '#00f0ff', fontWeight: '900', letterSpacing: '0.5px' }}>
+                🔮 HOLOGRAMA 3D CENTRAL
+              </h3>
+              <span style={{ fontSize: '9px', color: '#a1a1aa' }}>Nó Conectado em Tempo Real • Emanuel.OS</span>
+            </div>
+            <button
+              onClick={() => {
+                setLocalSelecionado(null);
+                aplicarZoomCamera('geral');
+              }}
+              style={{ background: 'none', border: 'none', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold', fontSize: '18px' }}
+            >
+              ✕
+            </button>
           </div>
-          <span style={{ fontSize: '10px', color: '#a1a1aa', display: 'block', marginBottom: '10px' }}>{localSelecionado.categoria}</span>
 
-          <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '12px' }}>
-            <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block' }}>🔒 NODE / COORDENADAS REGIONAIS</span>
-            <span style={{ fontSize: '10px', color: '#71717a', fontFamily: 'monospace' }}>{localSelecionado.ipCriptografado}</span>
+          {/* EDITAR NOME E CATEGORIA */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+            <label style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
+              🏛️ Nome do Prédio / Nó:
+              <input
+                type="text"
+                value={localSelecionado.nome || ''}
+                onChange={(e) => atualizarCampoHolograma('nome', e.target.value)}
+                style={{ width: '100%', padding: '6px 10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', color: '#fff', fontSize: '11px', marginTop: '3px', outline: 'none' }}
+              />
+            </label>
+
+            <label style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
+              💼 Função / Trabalho:
+              <input
+                type="text"
+                value={localSelecionado.trabalho || ''}
+                onChange={(e) => atualizarCampoHolograma('trabalho', e.target.value)}
+                style={{ width: '100%', padding: '6px 10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '8px', color: '#fff', fontSize: '11px', marginTop: '3px', outline: 'none' }}
+              />
+            </label>
           </div>
 
-          <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>🔗 CENTRAL DE CONTATOS DO EMANUEL:</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
-            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
-            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
-            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
-            <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
-            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
-            <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
-            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+          {/* CHAVE CRIPTOGRÁFICA REGIONAL */}
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.6)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.3)', marginBottom: '12px' }}>
+            <span style={{ fontSize: '9px', color: '#00ffcc', fontWeight: 'bold', display: 'block' }}>🔒 CRIPTOGRAFIA & PROTOCOLO CENTRAL</span>
+            <input
+              type="text"
+              value={localSelecionado.ipCriptografado || ''}
+              onChange={(e) => atualizarCampoHolograma('ipCriptografado', e.target.value)}
+              style={{ width: '100%', padding: '4px 6px', backgroundColor: 'transparent', border: 'none', color: '#00ffcc', fontSize: '10px', fontFamily: 'monospace', outline: 'none' }}
+            />
+          </div>
+
+          {/* CONTATOS & DISPOSITIVOS CONECTADOS */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+            <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>📱 Contatos & Dispositivos do Usuário:</span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input
+                type="text"
+                placeholder="E-mail"
+                value={localSelecionado.email || ''}
+                onChange={(e) => atualizarCampoHolograma('email', e.target.value)}
+                style={{ flex: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+              />
+              <input
+                type="text"
+                placeholder="Telefone"
+                value={localSelecionado.telefone || ''}
+                onChange={(e) => atualizarCampoHolograma('telefone', e.target.value)}
+                style={{ flex: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+              />
+            </div>
+          </div>
+
+          {/* LINGUAGENS E TECNOLOGIAS (TAGS EDITÁVEIS E EXCLUÍVEIS) */}
+          <div style={{ marginBottom: '12px' }}>
+            <span style={{ fontSize: '10px', color: '#a855f7', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>⚡ Tecnologias / Linguagens:</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+              {(localSelecionado.tecnologias || []).map((tech, idx) => (
+                <span key={idx} style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid #a855f7', color: '#fff', borderRadius: '12px', padding: '2px 8px', fontSize: '9px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {tech}
+                  <button onClick={() => removerItemListaHolograma('tecnologias', idx)} style={{ background: 'none', border: 'none', color: '#ff0055', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px' }}>✕</button>
+                </span>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <input
+                type="text"
+                placeholder="Adicionar tecnologia..."
+                value={novaTecnologia}
+                onChange={(e) => setNovaTecnologia(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') adicionarItemListaHolograma('tecnologias', novaTecnologia, setNovaTecnologia); }}
+                style={{ flex: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+              />
+              <button onClick={() => adicionarItemListaHolograma('tecnologias', novaTecnologia, setNovaTecnologia)} style={{ padding: '6px 10px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>+</button>
+            </div>
+          </div>
+
+          {/* ANIMES E STREAMINGS (TAGS EDITÁVEIS E EXCLUÍVEIS) */}
+          <div style={{ marginBottom: '14px' }}>
+            <span style={{ fontSize: '10px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>🎬 Animes & Mídias Conectadas:</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+              {(localSelecionado.animes || []).map((anime, idx) => (
+                <span key={idx} style={{ backgroundColor: 'rgba(255, 0, 127, 0.2)', border: '1px solid #ff007f', color: '#fff', borderRadius: '12px', padding: '2px 8px', fontSize: '9px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {anime}
+                  <button onClick={() => removerItemListaHolograma('animes', idx)} style={{ background: 'none', border: 'none', color: '#ff0055', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px' }}>✕</button>
+                </span>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <input
+                type="text"
+                placeholder="Adicionar anime/mídia..."
+                value={novoAnime}
+                onChange={(e) => setNovoAnime(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') adicionarItemListaHolograma('animes', novoAnime, setNovoAnime); }}
+                style={{ flex: 1, padding: '6px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff', fontSize: '10px' }}
+              />
+              <button onClick={() => adicionarItemListaHolograma('animes', novoAnime, setNovoAnime)} style={{ padding: '6px 10px', backgroundColor: '#ff007f', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>+</button>
+            </div>
+          </div>
+
+          {/* LINK CENTRAL DAS REDES SOCIAIS DO EMANUEL */}
+          <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>🔗 CENTRAL DE REDES OFICIAIS:</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+            <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
+            <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '7px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
+            <a href={`https://api.whatsapp.com/send?phone=${meusDadosReais.whatsapp}`} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(0, 255, 102, 0.1)', border: '1px solid #00ff66', color: '#00ff66', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: {meusDadosReais.whatsappFormatado}</a>
+            <a href={meusDadosReais.threads} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid #fff', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
+            <a href={meusDadosReais.github} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
           </div>
         </aside>
       )}
@@ -1409,7 +1558,7 @@ export default function MapaTerrestreEmanuel() {
           </span>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
-            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️️ Canal YouTube Oficial</a>
             <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
             <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
             <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
