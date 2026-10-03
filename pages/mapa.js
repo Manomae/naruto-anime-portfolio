@@ -32,6 +32,19 @@ export default function MapaTerrestreEmanuel() {
   const [menuUtilitariosAberto, setMenuUtilitariosAberto] = useState(false);
   const [menuZoomAberto, setMenuZoomAberto] = useState(false);
 
+  // 🚘 NOVOS ESTADOS PARA A FROTA DE VEÍCULOS E AÇÕES URBANAS 3D
+  const [painelVeiculosAberto, setPainelVeiculosAberto] = useState(false);
+  const [chamadoMotoUberAtivo, setChamadoMotoUberAtivo] = useState(false);
+  const [statusFrota, setStatusFrota] = useState({
+    ambulancias: 1,
+    onibusViagem: 1,
+    microonibusSaude: 1,
+    motoUbers: 2,
+    entregasAiFod: 1,
+    passageirosNoPonto: 3
+  });
+  const [notificacaoFrota, setNotificacaoFrota] = useState(null);
+
   // ESTADOS DE PRODUTIVIDADE E CLOUD
   const [abaAtiva, setAbaAtiva] = useState(null);
   const [novaTarefa, setNovaTarefa] = useState('');
@@ -103,7 +116,7 @@ export default function MapaTerrestreEmanuel() {
     alertaPreservacao: "⚡ MATRIZ GEMINI AI: Eólica, Solar, Nuclear, Hidrelétrica e 5G"
   };
 
-  // 🏙️ ESTADO DOS PRÉDIOS E HOLOGRAMAS LOCAIS (EDITÁVEIS EM TEMPO REAL)
+  // 🏙️ ESTADO DOS PRÉDIOS E HOLOGRAMAS LOCAIS (EDITÁVEIS EM TEMPO REAL + NOVOS LOCAIS URBANOS)
   const [estabelecimentosState, setEstabelecimentosState] = useState([
     { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, posicao: { x: -6, y: 3, z: -4 }, ipCriptografado: 'AES256-88F9-EMA', tipo: 'tech', trabalho: 'Engenharia de Software & AGI Node', tecnologias: ['Next.js', 'Three.js', 'Tailwind', 'Node.js', 'Python'], animes: ['Naruto', 'Bleach', 'Yu-Gi-Oh!'], email: 'leeheroi123@gmail.com', telefone: '(88) 98149-3989', dispositivos: ['Laptop Linux OS', 'Android HUD Terminal', 'Quantum Workstation'] },
     { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, posicao: { x: 7, y: 2, z: 6 }, ipCriptografado: 'AES256-OCEAN-BIO', tipo: 'oceano', trabalho: 'Análise de Mapeamento Fluvial', tecnologias: ['WebGL', 'ONNX Web', 'Math.js'], animes: ['Cowboy Bebop', 'Dandadan'], email: 'ocean.node@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Sonda Submarina 3D', 'Tablet Oceanográfico'] },
@@ -115,7 +128,12 @@ export default function MapaTerrestreEmanuel() {
     { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, posicao: { x: 4, y: 2.8, z: -1 }, ipCriptografado: 'AES256-LAB-FARMA', tipo: 'comercio', trabalho: 'Pesquisa Farmacêutica & Biotec', tecnologias: ['PDF-Lib', 'React Native'], animes: ['Yu-Gi-Oh! GX'], email: 'farma@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Scanner Biométrico'] },
     { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, posicao: { x: -3, y: 2.5, z: -7 }, ipCriptografado: 'AES256-COAST-GUARD', tipo: 'emergencia', trabalho: 'Patrulha e Segurança Costeira', tecnologias: ['Visão Computacional', 'ONNX'], animes: ['Naruto'], email: 'guardacosteira@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Radar Naval 3D'] },
     { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, posicao: { x: 10, y: 3, z: -10 }, ipCriptografado: 'AES256-CATARATAS-3D', tipo: 'oceano', trabalho: 'Preservação de Reservas Naturais', tecnologias: ['Three.js Shaders'], animes: ['Dragon Ball Z'], email: 'cataratas@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Estação de Monitoramento'] },
-    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, posicao: { x: -12, y: 2, z: 8 }, ipCriptografado: 'AES256-KITESURF-NEON', tipo: 'oceano', trabalho: 'Treinamento de Atletas & Hidrodinâmica', tecnologias: ['Simulação Física Canvas2D'], animes: ['Dandadan'], email: 'kitesurf@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Anemômetro Digital 6G'] }
+    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, posicao: { x: -12, y: 2, z: 8 }, ipCriptografado: 'AES256-KITESURF-NEON', tipo: 'oceano', trabalho: 'Treinamento de Atletas & Hidrodinâmica', tecnologias: ['Simulação Física Canvas2D'], animes: ['Dandadan'], email: 'kitesurf@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Anemômetro Digital 6G'] },
+    
+    // 🏥 🚌 🛵 NOVOS PRÉDIOS E LOCAIS URBANOS INTEGRADOS À CIDADE
+    { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, posicao: { x: -2, y: 2.8, z: 12 }, ipCriptografado: 'AES256-HOSPITAL-CORE', tipo: 'emergencia', trabalho: 'Recepção de Pacientes e UTIs Avançadas', tecnologias: ['Telemedicina AGI', 'BioSensores'], animes: ['Naruto (Tsunade)'], email: 'hospital@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['UTI Móvel 6G', 'Scanner Holo-Médico'] },
+    { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, posicao: { x: 3, y: 1.2, z: 11 }, ipCriptografado: 'AES256-BUS-STOP-01', tipo: 'transporte', trabalho: 'Estação de Integração de Linhas Urbanas', tecnologias: ['GPS Telemetria', 'Rotas Dinâmicas'], animes: ['Sakamoto Days'], email: 'transporte@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Painel de Horários LED'] },
+    { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, posicao: { x: -7, y: 2.2, z: 10 }, ipCriptografado: 'AES256-AIFOD-HUB', tipo: 'comercio', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', tecnologias: ['Algoritmo Roteamento AGI', 'Node.js'], animes: ['Dandadan'], email: 'aifod@emanuel-os.com', telefone: '(88) 98149-3989', dispositivos: ['Terminal de Pedidos Express'] }
   ]);
 
   // ESTADOS DO FORMULÁRIO DO HOLOGRAMA EDITÁVEL
@@ -168,7 +186,7 @@ export default function MapaTerrestreEmanuel() {
       id: Date.now(),
       titulo: novoLinkTitulo,
       url: novoLinkUrl.startsWith('http') ? novoLinkUrl : `https://${novoLinkUrl}`,
-      icone: novoLinkIcone || '🌐',
+      icone: novoLinkIcone || '🔗',
       nuvem: nuvemSelecionada
     };
     setLinks3D(prev => [...prev, novo]);
@@ -198,10 +216,42 @@ export default function MapaTerrestreEmanuel() {
         descricao: 'Incidente imprevisto detectado no setor urbano. Ambulância 3D e Robotoc acionados via Sirene AGI.',
         horario: new Date().toLocaleTimeString('pt-BR')
       });
+      exibirNotificacaoFrota("🚨 AMBULÂNCIA 3D EM EMERGÊNCIA: A caminho do resgate urbano!");
     } else {
       setModoEmergencia(false);
       setDetalhesOcorrencia(null);
     }
+  };
+
+  // 🛵 🚌 🚑 FUNÇÕES ESPECÍFICAS DE DISPARO DE VEÍCULOS E PASSAGEIROS
+  const exibirNotificacaoFrota = (msg) => {
+    setNotificacaoFrota(msg);
+    setTimeout(() => setNotificacaoFrota(null), 4000);
+  };
+
+  const acionarMotoUberPassageiro = () => {
+    setChamadoMotoUberAtivo(true);
+    setStatusFrota(p => ({ ...p, motoUbers: p.motoUbers + 1 }));
+    exibirNotificacaoFrota("🛵 MOTO UBER 3D DESPACHADA: A caminho do cliente no Ponto de Ônibus!");
+    aplicarZoomCamera('pontoOnibus');
+  };
+
+  const acionarEntregaAiFod = () => {
+    setStatusFrota(p => ({ ...p, entregasAiFod: p.entregasAiFod + 1 }));
+    exibirNotificacaoFrota("📦 AIFOD 3D: Moto de entrega saindo da Central com pedido quente!");
+    aplicarZoomCamera('aifod');
+  };
+
+  const acionarMicroonibusSaude = () => {
+    setStatusFrota(p => ({ ...p, microonibusSaude: p.microonibusSaude + 1 }));
+    exibirNotificacaoFrota("🚐 MICRO-ÔNIBUS DA SAÚDE: Transportando pacientes para o Hospital Central!");
+    aplicarZoomCamera('hospital');
+  };
+
+  const acionarOnibusViagem = () => {
+    setStatusFrota(p => ({ ...p, onibusViagem: p.onibusViagem + 1 }));
+    exibirNotificacaoFrota("🚌 ÔNIBUS DE VIAGEM 3D: Partindo para rota turística (Cataratas e Praia)!");
+    aplicarZoomCamera('pontoOnibus');
   };
 
   // 🥽 FUNÇÃO DE ZOOM DA CÂMERA ULTRA MODERNA + SINCRO DO ÓCULOS 3D
@@ -212,6 +262,21 @@ export default function MapaTerrestreEmanuel() {
         cameraTargetPosRef.current.set(-10, 4, 6);
         cameraLookAtPosRef.current.set(-10, 2, 0);
         oculosTargetPosRef.current.set(-10, 4.2, 0);
+        break;
+      case 'hospital':
+        cameraTargetPosRef.current.set(-2, 5, 17);
+        cameraLookAtPosRef.current.set(-2, 2.8, 12);
+        oculosTargetPosRef.current.set(-2, 4.5, 12);
+        break;
+      case 'pontoOnibus':
+        cameraTargetPosRef.current.set(3, 4, 16);
+        cameraLookAtPosRef.current.set(3, 1.2, 11);
+        oculosTargetPosRef.current.set(3, 3.2, 11);
+        break;
+      case 'aifod':
+        cameraTargetPosRef.current.set(-7, 5, 15);
+        cameraLookAtPosRef.current.set(-7, 2.2, 10);
+        oculosTargetPosRef.current.set(-7, 3.8, 10);
         break;
       case 'ambulancia':
         cameraTargetPosRef.current.set(0, 3, 16);
@@ -272,7 +337,7 @@ export default function MapaTerrestreEmanuel() {
     }
   };
 
-  // CENA 3D (THREE.JS) + CATARATAS REALISTAS + KITESURF FEMININO + ÓCULOS ALINHADO
+  // CENA 3D (THREE.JS) + CATARATAS REALISTAS + KITESURF FEMININO + ÓCULOS + FROTA DE VEÍCULOS URBANOS 3D
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -614,6 +679,72 @@ export default function MapaTerrestreEmanuel() {
     ambulanciaGroup.position.set(0, 0.3, 11.5);
     scene.add(ambulanciaGroup);
 
+    // 🚌 ÔNIBUS DE VIAGEM 3D (LONGO ALCANCE)
+    const onibusGroup = new THREE.Group();
+    const onibusBodyGeo = new THREE.BoxGeometry(1.5, 1.2, 4.0);
+    const onibusBodyMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, metalness: 0.8, roughness: 0.2 });
+    const onibusMesh = new THREE.Mesh(onibusBodyGeo, onibusBodyMat);
+    onibusMesh.position.y = 0.7;
+    onibusGroup.add(onibusMesh);
+
+    const vidroOnibusGeo = new THREE.BoxGeometry(1.52, 0.4, 3.5);
+    const vidroOnibusMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const vidroOnibusMesh = new THREE.Mesh(vidroOnibusGeo, vidroOnibusMat);
+    vidroOnibusMesh.position.y = 0.9;
+    onibusGroup.add(vidroOnibusMesh);
+    onibusGroup.position.set(3, 0.3, 11);
+    scene.add(onibusGroup);
+
+    // 🚐 MICRO-ÔNIBUS DA SAÚDE 3D
+    const microSaudeGroup = new THREE.Group();
+    const microGeo = new THREE.BoxGeometry(1.3, 1.0, 2.8);
+    const microMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xff3366, emissiveIntensity: 0.3 });
+    const microMesh = new THREE.Mesh(microGeo, microMat);
+    microMesh.position.y = 0.6;
+    microSaudeGroup.add(microMesh);
+
+    const cruzGeo1 = new THREE.BoxGeometry(0.4, 0.1, 0.1);
+    const cruzGeo2 = new THREE.BoxGeometry(0.1, 0.4, 0.1);
+    const cruzMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const cruz1 = new THREE.Mesh(cruzGeo1, cruzMat); cruz1.position.set(0, 1.15, 0);
+    const cruz2 = new THREE.Mesh(cruzGeo2, cruzMat); cruz2.position.set(0, 1.15, 0);
+    microSaudeGroup.add(cruz1, cruz2);
+    microSaudeGroup.position.set(-2, 0.3, 12);
+    scene.add(microSaudeGroup);
+
+    // 🛵 MOTO UBER 3D & AIFOD DELIVERIES
+    const motoGroup = new THREE.Group();
+    const motoChassiGeo = new THREE.BoxGeometry(0.4, 0.4, 1.2);
+    const motoChassiMat = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, emissiveIntensity: 0.6 });
+    const motoMesh = new THREE.Mesh(motoChassiGeo, motoChassiMat);
+    motoMesh.position.y = 0.3;
+    motoGroup.add(motoMesh);
+
+    const bauGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    const bauMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.8 });
+    const bauMesh = new THREE.Mesh(bauGeo, bauMat);
+    bauMesh.position.set(0, 0.6, -0.3);
+    motoGroup.add(bauMesh);
+    motoGroup.position.set(-7, 0.3, 10);
+    scene.add(motoGroup);
+
+    // 🧍 PASSAGEIRO 3D ESPERANDO NO PONTO DE ÔNIBUS
+    const passageiroGroup = new THREE.Group();
+    const passCorpoGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.7);
+    const passCorpoMat = new THREE.MeshStandardMaterial({ color: 0x00ff66 });
+    const passCorpoMesh = new THREE.Mesh(passCorpoGeo, passCorpoMat);
+    passCorpoMesh.position.y = 0.35;
+    passageiroGroup.add(passCorpoMesh);
+
+    const passCabecaGeo = new THREE.SphereGeometry(0.12, 12, 12);
+    const passCabecaMat = new THREE.MeshStandardMaterial({ color: 0xffcc99 });
+    const passCabecaMesh = new THREE.Mesh(passCabecaGeo, passCabecaMat);
+    passCabecaMesh.position.y = 0.8;
+    passageiroGroup.add(passCabecaMesh);
+
+    passageiroGroup.position.set(3.8, 0.2, 11);
+    scene.add(passageiroGroup);
+
     // ESFERAS DE LINKS 3D ÓRBITA DO NÚCLEO
     const linksGroup = new THREE.Group();
     esferasLinks3DRef.current = [];
@@ -660,7 +791,7 @@ export default function MapaTerrestreEmanuel() {
       });
     });
 
-    // VEÍCULOS AUTÔNOMOS
+    // VEÍCULOS AUTÔNOMOS DA PISTA
     const carGeo = new THREE.BoxGeometry(0.8, 0.4, 1.2);
     const carMat1 = new THREE.MeshStandardMaterial({ color: 0x00ffcc, emissive: 0x00ffcc, emissiveIntensity: 0.5 });
     const carMat2 = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, emissiveIntensity: 0.5 });
@@ -674,6 +805,8 @@ export default function MapaTerrestreEmanuel() {
     let anguloV1 = 0;
     let anguloV2 = Math.PI;
     let anguloAmb = Math.PI / 2;
+    let anguloOnibus = Math.PI / 4;
+    let anguloMoto = Math.PI * 1.2;
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -774,6 +907,7 @@ export default function MapaTerrestreEmanuel() {
         }
       }
 
+      // 🚑 MOVIMENTAÇÃO DA AMBULÂNCIA
       const velocidadeAmb = modoEmergencia ? 0.04 : 0.015;
       anguloAmb += velocidadeAmb;
       const raioAmb = 11.5;
@@ -781,6 +915,25 @@ export default function MapaTerrestreEmanuel() {
       ambulanciaGroup.position.z = Math.sin(anguloAmb) * raioAmb;
       ambulanciaGroup.rotation.y = -anguloAmb;
       ambGiroMat.color.setHex((Math.floor(elapsedTime * 10) % 2 === 0) ? 0xff0000 : 0x00f0ff);
+
+      // 🚌 MOVIMENTAÇÃO DO ÔNIBUS DE VIAGEM E PARADA
+      anguloOnibus += 0.01;
+      const raioOnibus = 11.2;
+      onibusGroup.position.x = Math.cos(anguloOnibus) * raioOnibus;
+      onibusGroup.position.z = Math.sin(anguloOnibus) * raioOnibus;
+      onibusGroup.rotation.y = -anguloOnibus;
+
+      // 🛵 MOVIMENTAÇÃO DA MOTO UBER / AIFOD
+      anguloMoto += 0.022;
+      const raioMoto = 11.8;
+      motoGroup.position.x = Math.cos(anguloMoto) * raioMoto;
+      motoGroup.position.z = Math.sin(anguloMoto) * raioMoto;
+      motoGroup.rotation.y = -anguloMoto;
+
+      // 🧍 ANIMAÇÃO DO PASSAGEIRO CHAMANDO MOTO UBER
+      if (passageiroGroup) {
+        passageiroGroup.position.y = 0.2 + Math.sin(elapsedTime * 4) * 0.05;
+      }
 
       dadosFluxoParticulas.forEach((p) => {
         p.progresso += 0.007;
@@ -901,7 +1054,7 @@ export default function MapaTerrestreEmanuel() {
           ✨ EMANUEL.OS <span style={{ color: '#00f0ff' }}>MAPA TERRESTRE & ECO-CIDADE</span>
         </h1>
         <span style={{ fontSize: '10px', color: '#a1a1aa', fontWeight: 'bold' }}>
-          ROBOTOC Data Center 3D, Oceanos, Universidade, Nuclear, 5G/6G, Hidrelétrica, Eólica, Painéis Solares, Cataratas Realistas & Kitesurf Feminino
+          ROBOTOC Data Center 3D, Oceanos, Hospital, Frota de Veículos, Ponto de Ônibus, AiFod & Kitesurf
         </span>
       </header>
 
@@ -945,6 +1098,9 @@ export default function MapaTerrestreEmanuel() {
                 LOCALIZADORES DE ZOOM 3D
               </span>
               <button onClick={() => aplicarZoomCamera('geral')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🌐 Visão Geral do Mapa</button>
+              <button onClick={() => aplicarZoomCamera('hospital')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,51,102,0.15)', color: '#ff3366', border: '1px solid #ff3366', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🏥 Hospital Central 3D</button>
+              <button onClick={() => aplicarZoomCamera('pontoOnibus')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,170,0,0.15)', color: '#ffaa00', border: '1px solid #ffaa00', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🚌 Ponto de Ônibus Central</button>
+              <button onClick={() => aplicarZoomCamera('aifod')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,0,85,0.15)', color: '#ff0055', border: '1px solid #ff0055', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🛵 Central AiFod & Moto Ubers</button>
               <button onClick={() => aplicarZoomCamera('robotoc')} style={{ padding: '6px 8px', backgroundColor: 'rgba(0,240,255,0.1)', color: '#00f0ff', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🤖 ROBOTOC Avatar 3D</button>
               <button onClick={() => aplicarZoomCamera('ambulancia')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,0,0,0.15)', color: '#ff4d4d', border: '1px solid #ff0000', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🚑 Ambulância 3D</button>
               <button onClick={() => aplicarZoomCamera('veiculos')} style={{ padding: '6px 8px', backgroundColor: 'rgba(255,0,170,0.1)', color: '#ff00aa', border: '1px solid #ff00aa', borderRadius: '8px', fontSize: '10px', textAlign: 'left', cursor: 'pointer' }}>🏎️ Pista & Veículos Autônomos</button>
@@ -1008,14 +1164,22 @@ export default function MapaTerrestreEmanuel() {
             <div style={{
               position: 'absolute', top: '40px', right: 0,
               backgroundColor: 'rgba(7, 12, 28, 0.98)', border: '1px solid #00f0ff',
-              borderRadius: '16px', padding: '10px', width: '210px',
+              borderRadius: '16px', padding: '10px', width: '220px',
               display: 'flex', flexDirection: 'column', gap: '6px',
               boxShadow: '0 10px 30px rgba(0, 240, 255, 0.3)', backdropFilter: 'blur(20px)',
               zIndex: 100
             }}>
               <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', padding: '0 6px', letterSpacing: '0.5px' }}>
-                FERRAMENTAS AGI
+                FERRAMENTAS AGI & FROTA
               </span>
+
+              {/* 🚘 NOVAS OPÇÕES DE VEÍCULOS NO MENU UTILITÁRIOS */}
+              <button
+                onClick={() => { setPainelVeiculosAberto(!painelVeiculosAberto); setMenuUtilitariosAberto(false); }}
+                style={{ padding: '8px 10px', backgroundColor: 'rgba(255, 0, 85, 0.15)', color: '#ff0055', border: '1px solid rgba(255, 0, 85, 0.4)', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}
+              >
+                🚘 Veículos & Frota 3D
+              </button>
 
               <button
                 onClick={() => { setMostrarOverlayRobotoc(!mostrarOverlayRobotoc); setMenuUtilitariosAberto(false); }}
@@ -1053,6 +1217,81 @@ export default function MapaTerrestreEmanuel() {
           🏠 Core
         </a>
       </div>
+
+      {/* 🚘 HUB DE CONTROLE DA FROTA 3D (ABERTO VIA UTILITÁRIOS) */}
+      {painelVeiculosAberto && (
+        <div style={{
+          position: 'absolute', top: '75px', right: '30px', zIndex: 180,
+          backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '2px solid #ff0055',
+          borderRadius: '20px', padding: '16px', width: '320px',
+          backdropFilter: 'blur(25px)', color: '#fff', boxShadow: '0 0 40px rgba(255, 0, 85, 0.3)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid rgba(255, 0, 85, 0.3)', paddingBottom: '6px' }}>
+            <h3 style={{ margin: 0, fontSize: '13px', color: '#ff0055', fontWeight: '900' }}>
+              🚘 HUB DE FROTA & VEÍCULOS 3D
+            </h3>
+            <button onClick={() => setPainelVeiculosAberto(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>✕</button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button
+              onClick={acionarMotoUberPassageiro}
+              style={{ padding: '8px', backgroundColor: 'rgba(0, 255, 102, 0.15)', color: '#00ff66', border: '1px solid #00ff66', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>🧍 Chamado Moto Uber (Pegar Pessoa)</span>
+              <span>🛵</span>
+            </button>
+
+            <button
+              onClick={acionarEntregaAiFod}
+              style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 85, 0.15)', color: '#ff0055', border: '1px solid #ff0055', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>📦 Saída AiFod (Entregas Moto)</span>
+              <span>🍕</span>
+            </button>
+
+            <button
+              onClick={acionarMicroonibusSaude}
+              style={{ padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#fff', border: '1px solid #fff', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>🚐 Micro-ônibus da Saúde (Hospital)</span>
+              <span>🏥</span>
+            </button>
+
+            <button
+              onClick={acionarOnibusViagem}
+              style={{ padding: '8px', backgroundColor: 'rgba(0, 240, 255, 0.15)', color: '#00f0ff', border: '1px solid #00f0ff', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>🚌 Ônibus de Viagem (Ponto Central)</span>
+              <span>🏞️</span>
+            </button>
+
+            <button
+              onClick={alternarModoEmergencia}
+              style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.2)', color: '#ff4d4d', border: '1px solid #ff0000', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>🚑 Resgate Emergência Ambulância 3D</span>
+              <span>🚨</span>
+            </button>
+          </div>
+
+          <div style={{ marginTop: '12px', padding: '8px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '9px', color: '#a1a1aa' }}>
+            <span>📊 Frota Ativa: {statusFrota.motoUbers} Moto Ubers | {statusFrota.microonibusSaude} Micro Saude | {statusFrota.onibusViagem} Ônibus</span>
+          </div>
+        </div>
+      )}
+
+      {/* 🔔 NOTIFICAÇÕES DE FROTA */}
+      {notificacaoFrota && (
+        <div style={{
+          position: 'absolute', bottom: '25px', left: '50%', transform: 'translateX(-50%)',
+          backgroundColor: 'rgba(7, 12, 28, 0.95)', border: '2px solid #00f0ff',
+          borderRadius: '25px', padding: '10px 22px', color: '#00f0ff', fontWeight: 'bold',
+          fontSize: '11px', backdropFilter: 'blur(15px)', zIndex: 300, boxShadow: '0 0 30px rgba(0,240,255,0.4)'
+        }}>
+          {notificacaoFrota}
+        </div>
+      )}
 
       {/* 🚨 BANNER DE OCORRÊNCIA DE EMERGÊNCIA DA CIDADE 🚨 */}
       {modoEmergencia && detalhesOcorrencia && (
@@ -1128,7 +1367,7 @@ export default function MapaTerrestreEmanuel() {
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
-                placeholder="🔍 Pesquisa Gemini AI (Mares, 5G, Nuclear, Cataratas, Kitesurf, Eólica, Solar)..."
+                placeholder="🔍 Pesquisa Gemini AI (Mares, 5G, Hospital, Ônibus, AiFod, Kitesurf)..."
                 value={termoBusca}
                 onChange={(e) => setTermoBusca(e.target.value)}
                 style={{
@@ -1500,7 +1739,7 @@ export default function MapaTerrestreEmanuel() {
           {/* LINK CENTRAL DAS REDES SOCIAIS DO EMANUEL */}
           <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>🔗 CENTRAL DE REDES OFICIAIS:</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
-            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️️ Canal YouTube Oficial</a>
             <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
             <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '7px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
             <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '7px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
@@ -1558,7 +1797,7 @@ export default function MapaTerrestreEmanuel() {
           </span>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
-            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶️️ Canal YouTube Oficial</a>
+            <a href={meusDadosReais.youtube} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>▶ Canal YouTube Oficial</a>
             <a href={meusDadosReais.tiktok} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
             <a href={meusDadosReais.instagram} target="_blank" rel="noreferrer" style={{ padding: '8px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
             <a href={`mailto:${meusDadosReais.email}`} style={{ padding: '8px', backgroundColor: 'rgba(255, 200, 0, 0.1)', border: '1px solid #ffc800', color: '#ffc800', borderRadius: '8px', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>✉️ E-mail Direto ({meusDadosReais.email})</a>
