@@ -13,6 +13,7 @@ export default function MapaOrkutSocial3D() {
   const cameraRef = useRef(null);
   const bolaHolograficaMeshRef = useRef(null);
   const avatarGroupRef = useRef(null);
+  const miniRobotocGroupRef = useRef(null);
   const esferasLinks3DRef = useRef([]);
 
   // Estados de expansão/recolhimento dos blocos centrais com as setinhas
@@ -23,6 +24,25 @@ export default function MapaOrkutSocial3D() {
   const [mostrarOverlayRobotoc, setMostrarOverlayRobotoc] = useState(false);
   const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
   const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
+
+  // NOVO: Estados para o Chat Futurista 3D do Mini-ROBOTOC
+  const [chatMiniRobotocAberto, setChatMiniRobotocAberto] = useState(false);
+  const [mensagensChat, setMensagensChat] = useState([
+    { id: 1, autor: 'Mini-ROBOTOC', texto: 'Olá! Sou o Mini-ROBOTOC do Orkut Social 3D. Como posso te auxiliar no mapa, nas funções ou sobre o Emanuel.OS?' }
+  ]);
+  const [inputChat, setInputChat] = useState('');
+
+  // NOVO: Estado da Modal / Função "Links Futurísticos Em Social 3D"
+  const [modalLinksFuturisticosAberta, setModalLinksFuturisticosAberta] = useState(false);
+  const [linksFuturisticosImportantes, setLinksFuturisticosImportantes] = useState([
+    { id: 1, titulo: 'Portfólio & Projetos GitHub', url: 'https://github.com/Manomae', categoria: 'Profissional', icone: '💻' },
+    { id: 2, titulo: 'Canal Oficial Emanuel ART', url: 'https://youtube.com/@emanuelsilva2987', categoria: 'Trabalho / Mídia', icone: '🎬' },
+    { id: 3, titulo: 'Google Workspace & Drive', url: 'https://drive.google.com', categoria: 'Uso Pessoal / Nuvem', icone: '☁️' }
+  ]);
+  const [novoLinkFutTitulo, setNovoLinkFutTitulo] = useState('');
+  const [novoLinkFutUrl, setNovoLinkFutUrl] = useState('');
+  const [novoLinkFutCategoria, setNovoLinkFutCategoria] = useState('Profissional');
+  const [novoLinkFutIcone, setNovoLinkFutIcone] = useState('🚀');
 
   // Estados de navegação e abas
   const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps'); // 'scraps', 'depoimentos', 'gerenciar'
@@ -106,10 +126,13 @@ export default function MapaOrkutSocial3D() {
       { id: 1, autor: 'Comunidade Dev', marcadoPara: 'Comunidade: @EmanuelOS_Oficial', texto: 'O ecossistema mais poderoso e inteligente de 2026!', data: '2026', status: 'Aprovado' }
     ];
 
+    const linksFutSalvos = JSON.parse(localStorage.getItem('orkut_links_futuristicos_3d')) || linksFuturisticosImportantes;
+
     setAmigos(amigosSalvos);
     setComunidades(comunidadesSalvas);
     setScraps(scrapsSalvos);
     setDepoimentos(depoimentosSalvos);
+    setLinksFuturisticosImportantes(linksFutSalvos);
   }, []);
 
   // Abrir link externo
@@ -134,7 +157,54 @@ export default function MapaOrkutSocial3D() {
     setNovoLinkUrl('');
   };
 
-  // --- CENA THREE.JS (ROBOTOC 3D + LOGO EMANUEL ART + BOLA NO MEIO + DATA CENTER) ---
+  // Função para adicionar Link Futurístico 3D
+  const adicionarLinkFuturistico = (e) => {
+    e.preventDefault();
+    if (!novoLinkFutTitulo.trim() || !novoLinkFutUrl.trim()) return alert("Preencha o Título e a URL do Link Futurístico.");
+    const novo = {
+      id: Date.now(),
+      titulo: novoLinkFutTitulo,
+      url: novoLinkFutUrl.startsWith('http') ? novoLinkFutUrl : `https://${novoLinkFutUrl}`,
+      categoria: novoLinkFutCategoria,
+      icone: novoLinkFutIcone || '🌐'
+    };
+    const listaAtualizada = [novo, ...linksFuturisticosImportantes];
+    setLinksFuturisticosImportantes(listaAtualizada);
+    localStorage.setItem('orkut_links_futuristicos_3d', JSON.stringify(listaAtualizada));
+    setNovoLinkFutTitulo('');
+    setNovoLinkFutUrl('');
+    alert("⚡ Link Futurístico salvo com sucesso!");
+  };
+
+  // Enviar pergunta ao Mini-ROBOTOC no Chat Futurista 3D
+  const enviarPerguntaMiniRobotoc = (e) => {
+    e.preventDefault();
+    if (!inputChat.trim()) return;
+
+    const textoUsuario = inputChat;
+    const userMsg = { id: Date.now(), autor: 'Você', texto: textoUsuario };
+    setMensagensChat(prev => [...prev, userMsg]);
+    setInputChat('');
+
+    setTimeout(() => {
+      let respostaRobotoc = "Entendido! Estou processando suas diretrizes no nó central do Orkut Social 3D.";
+      const query = textoUsuario.toLowerCase();
+
+      if (query.includes('quem') || query.includes('emanuel') || query.includes('criador')) {
+        respostaRobotoc = "Emanuel da Silva (Emanuel ART) é o Arquiteto & Desenvolvedor do Emanuel.OS v5.1 e deste ecossistema Orkut Social 3D!";
+      } else if (query.includes('ajuda') || query.includes('função') || query.includes('como usar') || query.includes('auxilio')) {
+        respostaRobotoc = "Posso te auxiliar! Você pode: 1. Adicionar amigos e grupos; 2. Baixar o perfil em PDF; 3. Interagir no Data Center 3D; 4. Usar a nova ferramenta de 'Links Futurísticos Em Social 3D' no perfil!";
+      } else if (query.includes('link') || query.includes('futuristico') || query.includes('trabalho')) {
+        respostaRobotoc = "A nova função 'Links Futurísticos Em Social 3D' permite salvar e organizar links vitais de trabalho e uso pessoal direto no seu painel!";
+      } else if (query.includes('scraps') || query.includes('recados') || query.includes('depoimento')) {
+        respostaRobotoc = "Você pode alternar as abas no Mural Central para enviar Recados com marcações (@amigos, @comunidades) e Depoimentos VIP!";
+      }
+
+      setMensagensChat(prev => [...prev, { id: Date.now() + 1, autor: 'Mini-ROBOTOC', texto: respostaRobotoc }]);
+    }, 600);
+  };
+
+  // --- CENA THREE.JS (ROBOTOC 3D + MINI-ROBOTOC SEGURANDO A FOTO DE PERFIL 3D + DATA CENTER) ---
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -344,8 +414,85 @@ export default function MapaOrkutSocial3D() {
 
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
-
     avatarGroup.position.set(-2.6, -1.2, 0);
+
+    // 🤖 NOVO: ESTRUTURA 3D DO MINI-ROBOTOC SEGURANDO A FOTO DE PERFIL 3D (CANTO DIREITO)
+    const miniRobotocGroup = new THREE.Group();
+    const miniMetalMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, metalness: 0.8, roughness: 0.2, emissive: 0x00f0ff, emissiveIntensity: 0.3 });
+    const miniBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1 });
+    const miniEyeMat = new THREE.MeshBasicMaterial({ color: 0xed2580 });
+
+    // Corpinho compacto e flutuante do Mini-ROBOTOC
+    const miniHeadGeo = new THREE.SphereGeometry(0.25, 24, 24);
+    const miniHeadMesh = new THREE.Mesh(miniHeadGeo, miniMetalMat);
+    miniHeadMesh.position.set(0, 0.7, 0);
+    miniRobotocGroup.add(miniHeadMesh);
+
+    const miniEyeGeo = new THREE.SphereGeometry(0.04, 12, 12);
+    const miniEyeL = new THREE.Mesh(miniEyeGeo, miniEyeMat);
+    miniEyeL.position.set(-0.08, 0.72, 0.22);
+    const miniEyeR = new THREE.Mesh(miniEyeGeo, miniEyeMat);
+    miniEyeR.position.set(0.08, 0.72, 0.22);
+    miniRobotocGroup.add(miniEyeL);
+    miniRobotocGroup.add(miniEyeR);
+
+    const miniChestGeo = new THREE.BoxGeometry(0.4, 0.45, 0.3);
+    const miniChestMesh = new THREE.Mesh(miniChestGeo, miniBodyMat);
+    miniChestMesh.position.set(0, 0.3, 0);
+    miniRobotocGroup.add(miniChestMesh);
+
+    // Braços pequeninos segurando a imagem
+    const miniArmGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.35);
+    const miniArmL = new THREE.Mesh(miniArmGeo, miniMetalMat);
+    miniArmL.position.set(-0.25, 0.28, 0.15);
+    miniArmL.rotation.x = -Math.PI / 3;
+    const miniArmR = new THREE.Mesh(miniArmGeo, miniMetalMat);
+    miniArmR.position.set(0.25, 0.28, 0.15);
+    miniArmR.rotation.x = -Math.PI / 3;
+    miniRobotocGroup.add(miniArmL);
+    miniRobotocGroup.add(miniArmR);
+
+    // Texture Canvas da Foto / Perfil Oficial do Emanuel para o Mini-ROBOTOC
+    const profilePicCanvas = document.createElement('canvas');
+    profilePicCanvas.width = 300;
+    profilePicCanvas.height = 300;
+    const ctxPic = profilePicCanvas.getContext('2d');
+    ctxPic.fillStyle = '#020617';
+    ctxPic.fillRect(0, 0, 300, 300);
+    ctxPic.strokeStyle = '#ed2580';
+    ctxPic.lineWidth = 12;
+    ctxPic.strokeRect(6, 6, 288, 288);
+
+    ctxPic.fillStyle = '#00f0ff';
+    ctxPic.font = 'bold 18px Verdana';
+    ctxPic.textAlign = 'center';
+    ctxPic.fillText('Emanuel da Silva', 150, 60);
+
+    ctxPic.fillStyle = '#ed2580';
+    ctxPic.font = 'bold 14px Verdana';
+    ctxPic.fillText('(Emanuel ART)', 150, 90);
+
+    ctxPic.fillStyle = '#ffffff';
+    ctxPic.font = '12px Verdana';
+    ctxPic.fillText('Solteiro, Aracati, Ceará', 150, 140);
+    ctxPic.fillText('🔥 Arquiteto & Criador', 150, 170);
+    ctxPic.fillText('do Emanuel.OS', 150, 190);
+
+    ctxPic.fillStyle = '#22c55e';
+    ctxPic.font = 'bold 13px Verdana';
+    ctxPic.fillText('🤖 Orkut Social 3D', 150, 240);
+
+    const picTexture = new THREE.CanvasTexture(profilePicCanvas);
+    const picGeo = new THREE.BoxGeometry(0.8, 0.8, 0.04);
+    const picMat = new THREE.MeshStandardMaterial({ map: picTexture, emissive: 0xed2580, emissiveIntensity: 0.15 });
+    const picMesh = new THREE.Mesh(picGeo, picMat);
+    picMesh.position.set(0, 0.28, 0.3); // Segurada pelo Mini-ROBOTOC
+    miniRobotocGroup.add(picMesh);
+
+    miniRobotocGroup.position.set(2.8, -1.0, 0);
+    miniRobotocGroup.userData = { tipo: 'mini_robotoc' };
+    scene.add(miniRobotocGroup);
+    miniRobotocGroupRef.current = miniRobotocGroup;
 
     let isDragging = false;
     let dragDistance = 0;
@@ -382,12 +529,16 @@ export default function MapaOrkutSocial3D() {
         
         const intersectsOrbs = raycaster.intersectObjects(esferasLinks3DRef.current);
         const intersectsAvatar = avatarGroupRef.current ? raycaster.intersectObjects(avatarGroupRef.current.children, true) : [];
+        const intersectsMiniRobotoc = miniRobotocGroupRef.current ? raycaster.intersectObjects(miniRobotocGroupRef.current.children, true) : [];
 
         if (intersectsOrbs.length > 0) {
           const hitOrb = intersectsOrbs[0].object;
           if (hitOrb.userData && hitOrb.userData.url) {
             abrirLinkExternoSeguro(hitOrb.userData.url);
           }
+        } else if (intersectsMiniRobotoc.length > 0) {
+          // Clique no Mini-ROBOTOC abre o Chat Futurista 3D
+          setChatMiniRobotocAberto(true);
         } else if (intersectsAvatar.length > 0) {
           setArquiteturaAberta(true);
           setMostrarOverlayRobotoc(false);
@@ -432,6 +583,11 @@ export default function MapaOrkutSocial3D() {
 
       if (avatarGroupRef.current && !isDragging) {
         avatarGroupRef.current.position.y = -1.2 + Math.sin(elapsedTime * 1.5) * 0.05;
+      }
+
+      if (miniRobotocGroupRef.current) {
+        miniRobotocGroupRef.current.position.y = -1.0 + Math.sin(elapsedTime * 2.2) * 0.08;
+        miniRobotocGroupRef.current.rotation.y = Math.sin(elapsedTime * 1.2) * 0.2;
       }
 
       renderer.render(scene, camera);
@@ -592,7 +748,7 @@ export default function MapaOrkutSocial3D() {
           backdropFilter: 'blur(15px)',
           padding: '10px 20px',
           display: 'flex',
-          justifyContent: 'space-between',
+          justify: 'space-between',
           alignItems: 'center',
           borderBottom: '1px solid #00f0ff',
           boxShadow: '0 0 20px rgba(0,240,255,0.2)'
@@ -605,10 +761,13 @@ export default function MapaOrkutSocial3D() {
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button onClick={() => setChatMiniRobotocAberto(!chatMiniRobotocAberto)} style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #ed2580' }}>
+              💬 CHAT MINI-ROBOTOC 3D
+            </button>
             <button onClick={() => setMostrarOverlayRobotoc(!mostrarOverlayRobotoc)} style={{ padding: '6px 12px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #00f0ff' }}>
               🤖 ROBOTOC HUD
             </button>
-            <button onClick={() => setArquiteturaAberta(!arquiteturaAberta)} style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #ed2580' }}>
+            <button onClick={() => setArquiteturaAberta(!arquiteturaAberta)} style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #10b981' }}>
               🏛️ DATA CENTER 3D
             </button>
             <nav style={{ display: 'flex', gap: '12px', fontSize: '11px', alignItems: 'center', marginLeft: '10px' }}>
@@ -729,6 +888,43 @@ export default function MapaOrkutSocial3D() {
                     <div><b style={{ color: '#00f0ff' }}>profissão:</b> {perfilUsuario.profissao}</div>
                     <div><b style={{ color: '#00f0ff' }}>quem sou eu:</b> {perfilUsuario.quemSouEu}</div>
                   </div>
+
+                  {/* ⚡ NOVO MÓDULO: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
+                  <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px dashed rgba(0, 240, 255, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ed2580', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        🌐 LINK FUTURÍSTICO EM SOCIAL 3D
+                      </span>
+                      <button
+                        onClick={() => setModalLinksFuturisticosAberta(true)}
+                        style={{ padding: '3px 8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
+                      >
+                        + Gerenciar / Adicionar
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {linksFuturisticosImportantes.slice(0, 3).map((linkFut) => (
+                        <div
+                          key={linkFut.id}
+                          onClick={() => abrirLinkExternoSeguro(linkFut.url)}
+                          style={{
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                            backgroundColor: '#020617', border: '1px solid rgba(237, 37, 128, 0.4)',
+                            padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s ease'
+                          }}
+                        >
+                          <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>{linkFut.icone}</span> {linkFut.titulo}
+                          </span>
+                          <span style={{ fontSize: '8px', color: '#00f0ff', backgroundColor: 'rgba(0,240,255,0.1)', padding: '2px 6px', borderRadius: '6px' }}>
+                            {linkFut.categoria}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
               )}
             </div>
@@ -986,6 +1182,101 @@ export default function MapaOrkutSocial3D() {
 
         </main>
 
+        {/* 🤖 JANELA CHAT FUTURISTA 3D - MINI-ROBOTOC */}
+        {chatMiniRobotocAberto && (
+          <div style={{
+            position: 'fixed', bottom: '30px', left: '30px', width: '380px', height: '420px',
+            backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #ed2580', borderRadius: '16px',
+            boxShadow: '0 0 35px rgba(237, 37, 128, 0.4)', zIndex: 1100, backdropFilter: 'blur(15px)',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden'
+          }}>
+            <div style={{ padding: '12px', backgroundColor: '#020617', borderBottom: '1px solid #ed2580', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>🤖</span>
+                <span style={{ fontSize: '12px', color: '#ed2580', fontWeight: 'bold' }}>Orkut Social em Chat Futurista 3D</span>
+              </div>
+              <button onClick={() => setChatMiniRobotocAberto(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ flexGrow: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(2, 6, 23, 0.6)' }}>
+              {mensagensChat.map((m) => (
+                <div key={m.id} style={{
+                  alignSelf: m.autor === 'Você' ? 'flex-end' : 'flex-start',
+                  backgroundColor: m.autor === 'Você' ? '#00f0ff' : '#1e293b',
+                  color: m.autor === 'Você' ? '#000' : '#fff',
+                  padding: '8px 12px', borderRadius: '10px', fontSize: '10px', maxWidth: '80%',
+                  boxShadow: m.autor === 'Você' ? '0 0 10px rgba(0,240,255,0.3)' : 'none'
+                }}>
+                  <b style={{ display: 'block', fontSize: '9px', marginBottom: '2px', color: m.autor === 'Você' ? '#000' : '#ed2580' }}>{m.autor}:</b>
+                  {m.texto}
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={enviarPerguntaMiniRobotoc} style={{ padding: '8px', backgroundColor: '#020617', borderTop: '1px solid rgba(237,37,128,0.3)', display: 'flex', gap: '6px' }}>
+              <input
+                type="text"
+                placeholder="Pergunte ao Mini-ROBOTOC sobre o Orkut 3D..."
+                value={inputChat}
+                onChange={(e) => setInputChat(e.target.value)}
+                style={{ flexGrow: 1, padding: '6px 10px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff', outline: 'none' }}
+              />
+              <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                Enviar
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* 🌐 MODAL: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
+        {modalLinksFuturisticosAberta && (
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: '420px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #ed2580',
+            borderRadius: '16px', padding: '16px', zIndex: 1200, color: '#fff', boxShadow: '0 0 40px rgba(237, 37, 128, 0.4)',
+            backdropFilter: 'blur(20px)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ed2580', paddingBottom: '8px', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '13px', color: '#ed2580', fontWeight: 'bold' }}>🌐 LINKS FUTURÍSTICOS EM SOCIAL 3D</h3>
+              <button onClick={() => setModalLinksFuturisticosAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <p style={{ fontSize: '10px', color: '#cbd5e1', marginBottom: '10px' }}>
+              Inclua e gerencie links vitais de sites profissionais ou pessoais que você mais utiliza no seu trabalho e dia a dia.
+            </p>
+
+            <form onSubmit={adicionarLinkFuturistico} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input type="text" placeholder="Ícone" value={novoLinkFutIcone} onChange={(e) => setNovoLinkFutIcone(e.target.value)} style={{ width: '45px', padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #ed2580', borderRadius: '6px', color: '#fff', textAlign: 'center' }} />
+                <input type="text" required placeholder="Título do Site / Ferramenta" value={novoLinkFutTitulo} onChange={(e) => setNovoLinkFutTitulo(e.target.value)} style={{ flexGrow: 1, padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #ed2580', borderRadius: '6px', color: '#fff' }} />
+              </div>
+
+              <input type="text" required placeholder="URL Externa (ex: https://...)" value={novoLinkFutUrl} onChange={(e) => setNovoLinkFutUrl(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #ed2580', borderRadius: '6px', color: '#fff' }} />
+
+              <select value={novoLinkFutCategoria} onChange={(e) => setNovoLinkFutCategoria(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #ed2580', borderRadius: '6px', color: '#fff' }}>
+                <option value="Profissional">Profissional</option>
+                <option value="Trabalho / Mídia">Trabalho / Mídia</option>
+                <option value="Uso Pessoal / Nuvem">Uso Pessoal / Nuvem</option>
+                <option value="Estudo / Dev">Estudo / Dev</option>
+              </select>
+
+              <button type="submit" style={{ padding: '8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '4px' }}>
+                ⚡ Adicionar Link Futurístico
+              </button>
+            </form>
+
+            <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>Links Salvos ({linksFuturisticosImportantes.length}):</span>
+            <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {linksFuturisticosImportantes.map(l => (
+                <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#020617', padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.3)', fontSize: '10px' }}>
+                  <span>{l.icone} {l.titulo}</span>
+                  <button onClick={() => abrirLinkExternoSeguro(l.url)} style={{ padding: '2px 6px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Abrir ➔</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 🤖 OVERLAY ROBOTOC DATA CENTER & NUVEM */}
         {mostrarOverlayRobotoc && (
           <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(8,15,30,0.96)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '20px', zIndex: 1000, width: '420px', color: '#fff', boxShadow: '0 0 40px rgba(0,240,255,0.4)', backdropFilter: 'blur(20px)' }}>
@@ -1019,7 +1310,7 @@ export default function MapaOrkutSocial3D() {
           </div>
         )}
 
-        {/* 🏛️ ARQUITETURA DATA CENTER 3D (FIEL ÀS IMAGENS DA TELA DA FOTO) */}
+        {/* 🏛️ ARQUITETURA DATA CENTER 3D */}
         {arquiteturaAberta && (
           <div style={{
             position: 'fixed',
@@ -1046,7 +1337,6 @@ export default function MapaOrkutSocial3D() {
               Sincronização Estrutural de Nós Orbitais no Mapa Terrestre. Dados operando via Gemini AGI.
             </p>
 
-            {/* NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS */}
             <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px', marginBottom: '10px' }}>
               <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
                 🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
@@ -1070,7 +1360,6 @@ export default function MapaOrkutSocial3D() {
               </div>
             </div>
 
-            {/* LINKS MESTRES & REDES SOCIAIS EMANUEL DA SILVA */}
             <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
               🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
             </span>
