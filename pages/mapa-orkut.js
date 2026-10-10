@@ -44,8 +44,16 @@ export default function MapaOrkutSocial3D() {
   const [novoLinkFutCategoria, setNovoLinkFutCategoria] = useState('Profissional');
   const [novoLinkFutIcone, setNovoLinkFutIcone] = useState('🚀');
 
-  // Estados de navegação e abas (Incluindo 'mascotes')
-  const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps'); // 'scraps', 'depoimentos', 'gerenciar', 'mascotes'
+  // NOVO: Estados para a Aba de Mascotes do Orkut & Criador de Mascotes
+  const [mascotes, setMascotes] = useState([]);
+  const [modalCriarMascoteAberta, setModalCriarMascoteAberta] = useState(false);
+  const [novoMascoteNome, setNovoMascoteNome] = useState('');
+  const [novoMascoteTipo, setNovoMascoteTipo] = useState('Robotoc');
+  const [novoMascoteAcessorio, setNovoMascoteAcessorio] = useState('Óculos HUD');
+  const [novoMascoteCor, setNovoMascoteCor] = useState('#00f0ff');
+
+  // Estados de navegação e abas
+  const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps'); // 'scraps', 'depoimentos', 'gerenciar'
 
   // Perfil Oficial Emanuel da Silva / Emanuel ART
   const [perfilUsuario] = useState({
@@ -82,12 +90,6 @@ export default function MapaOrkutSocial3D() {
   const [comunidades, setComunidades] = useState([]);
   const [scraps, setScraps] = useState([]);
   const [depoimentos, setDepoimentos] = useState([]);
-
-  // NOVO: Lista e formulário de Mascotes do ROBOTOC / Orkut 3D
-  const [mascotes, setMascotes] = useState([]);
-  const [novoMascoteNome, setNovoMascoteNome] = useState('');
-  const [novoMascoteTipo, setNovoMascoteTipo] = useState('ROBOTOC Cyber');
-  const [novoMascoteFrase, setNovoMascoteFrase] = useState('');
 
   // Estados de Formulários e Marcação (@amigo, @namorada, @comunidade)
   const [novoAmigoInput, setNovoAmigoInput] = useState('');
@@ -132,19 +134,20 @@ export default function MapaOrkutSocial3D() {
       { id: 1, autor: 'Comunidade Dev', marcadoPara: 'Comunidade: @EmanuelOS_Oficial', texto: 'O ecossistema mais poderoso e inteligente de 2026!', data: '2026', status: 'Aprovado' }
     ];
 
-    const mascotesSalvos = JSON.parse(localStorage.getItem('orkut_mascotes_custom')) || [
-      { id: 1, nome: 'Mini-ROBOTOC Alpha', tipo: 'ROBOTOC Cyber', frase: 'Assistente 3D do Emanuel.OS!', icone: '🤖' },
-      { id: 2, nome: 'Orkutinho Classic', tipo: 'Mascote Nostálgico', frase: 'Gerenciando comunidades 2006-2026', icone: '👾' }
-    ];
-
     const linksFutSalvos = JSON.parse(localStorage.getItem('orkut_links_futuristicos_3d')) || linksFuturisticosImportantes;
+
+    const mascotesSalvos = JSON.parse(localStorage.getItem('orkut_mascotes_reais')) || [
+      { id: 1, nome: 'Mini-ROBOTOC Alpha', tipo: 'ROBOTOC Core', icone: '🤖', cor: '#00f0ff', nivel: 'Lv. 100' },
+      { id: 2, nome: 'Buddy Cyber', tipo: 'Mascote Social', icone: '🐱‍👤', cor: '#ed2580', nivel: 'Lv. 45' },
+      { id: 3, nome: 'Orkut Bot 3D', tipo: 'Assistente', icone: '👾', cor: '#10b981', nivel: 'Lv. 88' }
+    ];
 
     setAmigos(amigosSalvos);
     setComunidades(comunidadesSalvas);
     setScraps(scrapsSalvos);
     setDepoimentos(depoimentosSalvos);
-    setMascotes(mascotesSalvos);
     setLinksFuturisticosImportantes(linksFutSalvos);
+    setMascotes(mascotesSalvos);
   }, []);
 
   // Abrir link externo
@@ -188,6 +191,30 @@ export default function MapaOrkutSocial3D() {
     alert("⚡ Link Futurístico salvo com sucesso!");
   };
 
+  // Criar e Personalizar Mascote do Orkut
+  const criarPersonalizarMascote = (e) => {
+    e.preventDefault();
+    if (!novoMascoteNome.trim()) return alert("Informe um nome para o seu Mascote!");
+
+    const iconeTipo = novoMascoteTipo === 'Robotoc' ? '🤖' : novoMascoteTipo === 'Cyber Pet' ? '🦊' : novoMascoteTipo === 'Ninja AI' ? '🐱‍👤' : '👾';
+
+    const novo = {
+      id: Date.now(),
+      nome: novoMascoteNome,
+      tipo: `${novoMascoteTipo} (${novoMascoteAcessorio})`,
+      icone: iconeTipo,
+      cor: novoMascoteCor,
+      nivel: 'Lv. 1'
+    };
+
+    const listaAtualizada = [novo, ...mascotes];
+    setMascotes(listaAtualizada);
+    localStorage.setItem('orkut_mascotes_reais', JSON.stringify(listaAtualizada));
+    setNovoMascoteNome('');
+    setModalCriarMascoteAberta(false);
+    alert(`🎉 Mascote "${novo.nome}" criado com sucesso!`);
+  };
+
   // Enviar pergunta ao Mini-ROBOTOC no Chat Futurista 3D
   const enviarPerguntaMiniRobotoc = (e) => {
     e.preventDefault();
@@ -205,11 +232,11 @@ export default function MapaOrkutSocial3D() {
       if (query.includes('quem') || query.includes('emanuel') || query.includes('criador')) {
         respostaRobotoc = "Emanuel da Silva (Emanuel ART) é o Arquiteto & Desenvolvedor do Emanuel.OS v5.1 e deste ecossistema Orkut Social 3D!";
       } else if (query.includes('ajuda') || query.includes('função') || query.includes('como usar') || query.includes('auxilio')) {
-        respostaRobotoc = "Posso te auxiliar! Você pode: 1. Adicionar amigos e grupos; 2. Baixar o perfil em PDF; 3. Criar mascotes na nova aba 'Mascotes'; 4. Usar a ferramenta 'Links Futurísticos Em Social 3D'!";
-      } else if (query.includes('mascote') || query.includes('robotoc')) {
-        respostaRobotoc = "Você pode personalizar seus próprios Mascotes do ROBOTOC na aba dedicada no Mural Central!";
+        respostaRobotoc = "Posso te auxiliar! Você pode: 1. Adicionar amigos e grupos; 2. Baixar o perfil em PDF; 3. Interagir no Data Center 3D; 4. Criar e personalizar mascotes na nova aba!";
+      } else if (query.includes('mascote') || query.includes('pet') || query.includes('robô')) {
+        respostaRobotoc = "A nova aba de 'Mascotes do Orkut' permite colecionar, criar e personalizar seus próprios robôs e companion pets no perfil!";
       } else if (query.includes('link') || query.includes('futuristico') || query.includes('trabalho')) {
-        respostaRobotoc = "A nova função 'Links Futurísticos Em Social 3D' permite salvar e organizar links vitais de trabalho e uso pessoal direto no seu painel!";
+        respostaRobotoc = "A função 'Links Futurísticos Em Social 3D' permite salvar e organizar links vitais de trabalho e uso pessoal direto no seu painel!";
       } else if (query.includes('scraps') || query.includes('recados') || query.includes('depoimento')) {
         respostaRobotoc = "Você pode alternar as abas no Mural Central para enviar Recados com marcações (@amigos, @comunidades) e Depoimentos VIP!";
       }
@@ -218,7 +245,7 @@ export default function MapaOrkutSocial3D() {
     }, 600);
   };
 
-  // --- CENA THREE.JS (ROBOTOC 3D + MINI-ROBOTOC SEGURANDO A FOTO DE PERFIL "ORKUT EM SOCIAL 3D" + DATA CENTER) ---
+  // --- CENA THREE.JS (ROBOTOC 3D + MINI-ROBOTOC SEGURANDO O CARD DE PERFIL PRINCIPAL DO ORKUT EM SOCIAL 3D) ---
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -254,7 +281,7 @@ export default function MapaOrkutSocial3D() {
     const ambientLight = new THREE.AmbientLight(0x0f172a, 2.0);
     scene.add(ambientLight);
 
-    // 🏬 ESTRUTURA 3D DO DATA CENTER GIGANTESCO DE DADOS
+    // ESTRUTURA 3D DO DATA CENTER GIGANTESCO DE DADOS
     const dataCenterGroup = new THREE.Group();
 
     // PISO TÁTIL COM GRID HOLOGRÁFICO
@@ -321,7 +348,7 @@ export default function MapaOrkutSocial3D() {
     });
     scene.add(linksGroup);
 
-    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D
+    // 🤖 AVATAR ROBOTOC HUMANOIDE 3D NO CANTO ESQUERDO
     const avatarGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.4, metalness: 0.1 });
     const hairMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
@@ -368,72 +395,17 @@ export default function MapaOrkutSocial3D() {
     plateMesh.position.set(0, 1.5, 0.24);
     avatarGroup.add(plateMesh);
 
-    // 🤲 BRAÇOS EXTENDIDOS
-    const armGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.7, 16);
-    const leftArm = new THREE.Mesh(armGeo, suitMat);
-    leftArm.position.set(-0.55, 1.3, 0.3);
-    leftArm.rotation.x = -Math.PI / 3;
-    leftArm.rotation.z = -Math.PI / 8;
-    avatarGroup.add(leftArm);
-
-    const rightArm = new THREE.Mesh(armGeo, suitMat);
-    rightArm.position.set(0.55, 1.3, 0.3);
-    rightArm.rotation.x = -Math.PI / 3;
-    rightArm.rotation.z = Math.PI / 8;
-    avatarGroup.add(rightArm);
-
-    // 🖼️ CANVAS PARA TEXTURA HOLOGRÁFICA
-    const logoCanvas = document.createElement('canvas');
-    logoCanvas.width = 512;
-    logoCanvas.height = 256;
-    const ctx = logoCanvas.getContext('2d');
-
-    ctx.fillStyle = '#020617';
-    ctx.fillRect(0, 0, 512, 256);
-    ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 10;
-    ctx.strokeRect(5, 5, 502, 246);
-
-    ctx.fillStyle = '#00f0ff';
-    ctx.font = 'bold 26px Verdana';
-    ctx.textAlign = 'center';
-    ctx.fillText('Emanuel da Silva (Emanuel ART)', 256, 55);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '18px Verdana';
-    ctx.fillText('Solteiro, Aracati, Ceará, Brasil', 256, 110);
-
-    ctx.fillStyle = '#ed2580';
-    ctx.font = 'bold 20px Verdana';
-    ctx.fillText('🔥 Arquiteto & Criador do Emanuel.OS', 256, 175);
-
-    ctx.fillStyle = '#22c55e';
-    ctx.font = 'bold 16px Verdana';
-    ctx.fillText('🤖 ROBOTOC 3D Orkut Core Active', 256, 220);
-
-    const logoTexture = new THREE.CanvasTexture(logoCanvas);
-    const logoBoardGeo = new THREE.BoxGeometry(1.8, 0.9, 0.05);
-    const logoBoardMat = new THREE.MeshStandardMaterial({
-      map: logoTexture,
-      roughness: 0.2,
-      metalness: 0.5,
-      emissive: 0x00f0ff,
-      emissiveIntensity: 0.2
-    });
-    const logoBoardMesh = new THREE.Mesh(logoBoardGeo, logoBoardMat);
-    logoBoardMesh.position.set(0, 1.05, 0.6);
-    avatarGroup.add(logoBoardMesh);
-
     scene.add(avatarGroup);
     avatarGroupRef.current = avatarGroup;
     avatarGroup.position.set(-2.6, -1.2, 0);
 
-    // 🤖 ESTRUTURA 3D DO MINI-ROBOTOC SEGURANDO O CARD PRINCIPAL "ORKUT EM SOCIAL 3D" (ESPECIFICADO NO VÍDEO 2)
+    // 🤖 ESTRUTURA 3D DO MINI-ROBOTOC SEGURANDO O CARD PRINCIPAL "ORKUT EM SOCIAL 3D" (CANTO DIREITO)
     const miniRobotocGroup = new THREE.Group();
     const miniMetalMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, metalness: 0.8, roughness: 0.2, emissive: 0x00f0ff, emissiveIntensity: 0.3 });
     const miniBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1 });
     const miniEyeMat = new THREE.MeshBasicMaterial({ color: 0xed2580 });
 
+    // Corpinho compacto e flutuante do Mini-ROBOTOC
     const miniHeadGeo = new THREE.SphereGeometry(0.25, 24, 24);
     const miniHeadMesh = new THREE.Mesh(miniHeadGeo, miniMetalMat);
     miniHeadMesh.position.set(0, 0.7, 0);
@@ -452,6 +424,7 @@ export default function MapaOrkutSocial3D() {
     miniChestMesh.position.set(0, 0.3, 0);
     miniRobotocGroup.add(miniChestMesh);
 
+    // Braços do Mini-ROBOTOC estendidos para segurar o Card do Perfil Esquerdo
     const miniArmGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.35);
     const miniArmL = new THREE.Mesh(miniArmGeo, miniMetalMat);
     miniArmL.position.set(-0.25, 0.28, 0.15);
@@ -462,52 +435,71 @@ export default function MapaOrkutSocial3D() {
     miniRobotocGroup.add(miniArmL);
     miniRobotocGroup.add(miniArmR);
 
-    // Canvas da Moldura Principal do Orkut "ORKUT EM SOCIAL 3D"
+    // 🎨 CANVAS EXCLUSIVO: CARD PRINCIPAL DO PERFIL "ORKUT EM SOCIAL 3D" (Solenemente exato com o vídeo)
     const profilePicCanvas = document.createElement('canvas');
-    profilePicCanvas.width = 300;
-    profilePicCanvas.height = 300;
+    profilePicCanvas.width = 380;
+    profilePicCanvas.height = 380;
     const ctxPic = profilePicCanvas.getContext('2d');
-    ctxPic.fillStyle = '#020617';
-    ctxPic.fillRect(0, 0, 300, 300);
-    ctxPic.strokeStyle = '#ed2580';
-    ctxPic.lineWidth = 12;
-    ctxPic.strokeRect(6, 6, 288, 288);
 
-    // Título "ORKUT EM SOCIAL 3D" exatamente como apontado no vídeo 2
-    ctxPic.fillStyle = '#ed2580';
-    ctxPic.font = 'bold 16px Verdana';
-    ctxPic.textAlign = 'center';
-    ctxPic.fillText('ORKUT', 150, 45);
+    // Fundo Gradiente Neon Rosa/Azul igual ao Card Oficial Esquerdo do Vídeo
+    const grad = ctxPic.createLinearGradient(0, 0, 380, 380);
+    grad.addColorStop(0, '#0f172a');
+    grad.addColorStop(0.5, '#ed2580');
+    grad.addColorStop(1, '#020617');
+    ctxPic.fillStyle = grad;
+    ctxPic.fillRect(0, 0, 380, 380);
+
+    // Borda Neon
+    ctxPic.strokeStyle = '#ed2580';
+    ctxPic.lineWidth = 10;
+    ctxPic.strokeRect(5, 5, 370, 370);
+
+    // Badge Neon Central "ORKUT EM SOCIAL 3D"
+    ctxPic.fillStyle = 'rgba(2, 6, 23, 0.85)';
+    ctxPic.fillRect(40, 30, 300, 110);
+    ctxPic.strokeStyle = '#00f0ff';
+    ctxPic.lineWidth = 4;
+    ctxPic.strokeRect(40, 30, 300, 110);
 
     ctxPic.fillStyle = '#00f0ff';
-    ctxPic.font = 'bold 24px Verdana';
-    ctxPic.fillText('EM', 150, 80);
-
-    ctxPic.fillStyle = '#38bdf8';
-    ctxPic.font = 'bold 14px Verdana';
-    ctxPic.fillText('SOCIAL 3D', 150, 110);
+    ctxPic.font = 'bold 16px Verdana';
+    ctxPic.textAlign = 'center';
+    ctxPic.fillText('ORKUT', 190, 60);
 
     ctxPic.fillStyle = '#ffffff';
-    ctxPic.font = 'bold 13px Verdana';
-    ctxPic.fillText('Emanuel da Silva', 150, 155);
-
-    ctxPic.fillStyle = '#94a3b8';
-    ctxPic.font = '11px Verdana';
-    ctxPic.fillText('Solteiro, Aracati, Ceará', 150, 185);
+    ctxPic.font = 'bold 28px Verdana';
+    ctxPic.fillText('EM', 190, 95);
 
     ctxPic.fillStyle = '#ed2580';
-    ctxPic.font = 'bold 11px Verdana';
-    ctxPic.fillText('🔥 Criador do Emanuel.OS', 150, 220);
+    ctxPic.font = 'bold 16px Verdana';
+    ctxPic.fillText('SOCIAL 3D', 190, 125);
+
+    // Texto de Perfil Oficial Emanuel da Silva
+    ctxPic.fillStyle = '#00f0ff';
+    ctxPic.font = 'bold 18px Verdana';
+    ctxPic.fillText('Emanuel da Silva', 190, 180);
+
+    ctxPic.fillStyle = '#ffffff';
+    ctxPic.font = 'bold 16px Verdana';
+    ctxPic.fillText('(Emanuel ART)', 190, 205);
+
+    ctxPic.fillStyle = '#cbd5e1';
+    ctxPic.font = '13px Verdana';
+    ctxPic.fillText('Solteiro, Aracati, Ceará, Brasil', 190, 245);
+
+    ctxPic.fillStyle = '#ed2580';
+    ctxPic.font = 'bold 14px Verdana';
+    ctxPic.fillText('🔥 Arquiteto & Criador do Emanuel.OS', 190, 285);
 
     ctxPic.fillStyle = '#22c55e';
-    ctxPic.font = 'bold 11px Verdana';
-    ctxPic.fillText('🤖 ROBOTOC Data Center', 150, 250);
+    ctxPic.font = 'bold 13px Verdana';
+    ctxPic.fillText('🤖 ROBOTOC Data Center Core', 190, 325);
 
     const picTexture = new THREE.CanvasTexture(profilePicCanvas);
-    const picGeo = new THREE.BoxGeometry(0.85, 0.85, 0.04);
-    const picMat = new THREE.MeshStandardMaterial({ map: picTexture, emissive: 0xed2580, emissiveIntensity: 0.15 });
+    const picGeo = new THREE.BoxGeometry(1.0, 1.0, 0.04);
+    const picMat = new THREE.MeshStandardMaterial({ map: picTexture, emissive: 0xed2580, emissiveIntensity: 0.2 });
     const picMesh = new THREE.Mesh(picGeo, picMat);
-    picMesh.position.set(0, 0.28, 0.3);
+    picMesh.position.set(0, 0.28, 0.32); // Segurado perfeitamente pelo Mini-ROBOTOC
     miniRobotocGroup.add(picMesh);
 
     miniRobotocGroup.position.set(2.8, -1.0, 0);
@@ -558,6 +550,7 @@ export default function MapaOrkutSocial3D() {
             abrirLinkExternoSeguro(hitOrb.userData.url);
           }
         } else if (intersectsMiniRobotoc.length > 0) {
+          // Clique no Mini-ROBOTOC abre o Chat Futurista 3D
           setChatMiniRobotocAberto(true);
         } else if (intersectsAvatar.length > 0) {
           setArquiteturaAberta(true);
@@ -591,6 +584,7 @@ export default function MapaOrkutSocial3D() {
         bolaHolograficaMeshRef.current.rotation.x += 0.004;
         bolaHolograficaMeshRef.current.position.y = 0.2 + Math.sin(elapsedTime * 2) * 0.15;
 
+        // Órbita fluida das esferas ao redor da bola centralizada
         esferasLinks3DRef.current.forEach((mesh, index) => {
           const angle = elapsedTime * 0.8 + (index * (Math.PI * 2 / esferasLinks3DRef.current.length));
           const radius = 2.5;
@@ -673,27 +667,6 @@ export default function MapaOrkutSocial3D() {
     localStorage.setItem('orkut_comunidades_reais', JSON.stringify(atualizadas));
     alert(`Grupo/Comunidade "${nova.nome}" conectado via ${novaComunidadeRede}!`);
     setBuscaGrupoInput('');
-  };
-
-  // NOVO: Adicionar Novo Mascote Customizado (Atendendo ao Vídeo 1)
-  const adicionarMascote = (e) => {
-    e.preventDefault();
-    if (!novoMascoteNome.trim()) return;
-
-    const novo = {
-      id: Date.now(),
-      nome: novoMascoteNome,
-      tipo: novoMascoteTipo,
-      frase: novoMascoteFrase || 'Mascote do ROBOTOC 3D pronto para ação!',
-      icone: novoMascoteTipo.includes('ROBOTOC') ? '🤖' : novoMascoteTipo.includes('Anime') ? '🦊' : '👾'
-    };
-
-    const atualizados = [novo, ...mascotes];
-    setMascotes(atualizados);
-    localStorage.setItem('orkut_mascotes_custom', JSON.stringify(atualizados));
-    setNovoMascoteNome('');
-    setNovoMascoteFrase('');
-    alert(`🐾 Mascote "${novo.nome}" adicionado com sucesso ao seu Orkut 3D!`);
   };
 
   // Enviar Scrap com Marcação
@@ -877,9 +850,6 @@ export default function MapaOrkutSocial3D() {
               <div onClick={() => setAbaMuralAtiva('depoimentos')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ed2580', cursor: 'pointer', padding: '3px 0' }}>
                 <span>💬</span> <b>depoimentos ({depoimentos.length})</b>
               </div>
-              <div onClick={() => setAbaMuralAtiva('mascotes')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a855f7', cursor: 'pointer', padding: '3px 0' }}>
-                <span>🐾</span> <b>mascotes robotoc ({mascotes.length})</b>
-              </div>
               <div onClick={() => setAbaMuralAtiva('gerenciar')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ade80', cursor: 'pointer', padding: '3px 0' }}>
                 <span>⚙️</span> <b>conectar @ links & grupos</b>
               </div>
@@ -932,7 +902,7 @@ export default function MapaOrkutSocial3D() {
                     <div><b style={{ color: '#00f0ff' }}>quem sou eu:</b> {perfilUsuario.quemSouEu}</div>
                   </div>
 
-                  {/* ⚡ MÓDULO: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
+                  {/* ⚡ NOVO MÓDULO: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
                   <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px dashed rgba(0, 240, 255, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ed2580', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -972,22 +942,18 @@ export default function MapaOrkutSocial3D() {
               )}
             </div>
 
-            {/* 🌟 2º QUADRADINHO: MURAL, CONEXÕES, SCRAPS, DEPOIMENTOS E MASCOTES */}
+            {/* 🌟 2º QUADRADINHO: MURAL, CONEXÕES, SCRAPS E DEPOIMENTOS */}
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '14px', transition: 'all 0.3s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: blocoMuralExpandido ? '1px solid rgba(0,240,255,0.2)' : 'none', paddingBottom: blocoMuralExpandido ? '8px' : '0', marginBottom: blocoMuralExpandido ? '10px' : '0' }}>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  <button onClick={() => setAbaMuralAtiva('scraps')} style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'scraps' ? '#00f0ff' : '#020617', color: abaMuralAtiva === 'scraps' ? '#000' : '#00f0ff', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setAbaMuralAtiva('scraps')} style={{ padding: '6px 12px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'scraps' ? '#00f0ff' : '#020617', color: abaMuralAtiva === 'scraps' ? '#000' : '#00f0ff', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
                     📝 Scraps ({scraps.length})
                   </button>
-                  <button onClick={() => setAbaMuralAtiva('depoimentos')} style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'depoimentos' ? '#ed2580' : '#020617', color: abaMuralAtiva === 'depoimentos' ? '#fff' : '#ed2580', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  <button onClick={() => setAbaMuralAtiva('depoimentos')} style={{ padding: '6px 12px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'depoimentos' ? '#ed2580' : '#020617', color: abaMuralAtiva === 'depoimentos' ? '#fff' : '#ed2580', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
                     💖 Depoimentos ({depoimentos.length})
                   </button>
-                  {/* NOVO: BOTÃO DA ABA MASCOTES */}
-                  <button onClick={() => setAbaMuralAtiva('mascotes')} style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'mascotes' ? '#a855f7' : '#020617', color: abaMuralAtiva === 'mascotes' ? '#fff' : '#c084fc', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    🐾 Mascotes ROBOTOC ({mascotes.length})
-                  </button>
-                  <button onClick={() => setAbaMuralAtiva('gerenciar')} style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'gerenciar' ? '#10b981' : '#020617', color: abaMuralAtiva === 'gerenciar' ? '#fff' : '#34d399', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    ⚙️ Links & Grupos
+                  <button onClick={() => setAbaMuralAtiva('gerenciar')} style={{ padding: '6px 12px', border: 'none', borderRadius: '6px', backgroundColor: abaMuralAtiva === 'gerenciar' ? '#10b981' : '#020617', color: abaMuralAtiva === 'gerenciar' ? '#fff' : '#34d399', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    ⚙️ Conectar Links & Grupos
                   </button>
                 </div>
 
@@ -1100,63 +1066,6 @@ export default function MapaOrkutSocial3D() {
                               <span style={{ fontSize: '9px', color: '#94a3b8' }}>{d.data}</span>
                             </div>
                             <p style={{ margin: '4px 0 0 0', color: '#e2e8f0', fontStyle: 'italic' }}>"{d.texto}"</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* NOVO: ABA MASCOTES DO ROBOTOC & ORKUT 3D (SOLICITADO NO VÍDEO 1) */}
-                  {abaMuralAtiva === 'mascotes' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <form onSubmit={adicionarMascote} style={{ backgroundColor: '#020617', border: '1px solid #a855f7', padding: '10px', borderRadius: '8px' }}>
-                        <strong style={{ fontSize: '11px', color: '#c084fc', display: 'block', marginBottom: '6px' }}>
-                          🐾 Personalizar & Adicionar Mascote do ROBOTOC / Orkut
-                        </strong>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
-                          <input
-                            type="text"
-                            required
-                            placeholder="Nome do Mascote..."
-                            value={novoMascoteNome}
-                            onChange={(e) => setNovoMascoteNome(e.target.value)}
-                            style={{ padding: '6px', fontSize: '10px', border: '1px solid #9333ea', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }}
-                          />
-                          <select
-                            value={novoMascoteTipo}
-                            onChange={(e) => setNovoMascoteTipo(e.target.value)}
-                            style={{ padding: '6px', fontSize: '10px', border: '1px solid #9333ea', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }}
-                          >
-                            <option value="ROBOTOC Cyber">ROBOTOC Cyber 3D</option>
-                            <option value="Mini Robotoc">Mini-ROBOTOC Companion</option>
-                            <option value="Mascote Nostálgico">Mascote Nostálgico Orkut</option>
-                            <option value="Anime / Custom">Anime / Custom Cyber</option>
-                          </select>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <input
-                            type="text"
-                            placeholder="Frase ou Função do Mascote..."
-                            value={novoMascoteFrase}
-                            onChange={(e) => setNovoMascoteFrase(e.target.value)}
-                            style={{ flexGrow: 1, padding: '6px', fontSize: '10px', border: '1px solid #9333ea', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }}
-                          />
-                          <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            Criar Mascote
-                          </button>
-                        </div>
-                      </form>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                        {mascotes.map((m) => (
-                          <div key={m.id} style={{ backgroundColor: '#020617', border: '1px solid rgba(168, 85, 247, 0.4)', padding: '8px 10px', borderRadius: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span style={{ fontSize: '24px' }}>{m.icone || '🤖'}</span>
-                            <div style={{ overflow: 'hidden' }}>
-                              <strong style={{ fontSize: '11px', color: '#c084fc', display: 'block' }}>{m.nome}</strong>
-                              <span style={{ fontSize: '8px', color: '#00f0ff', display: 'block' }}>{m.tipo}</span>
-                              <p style={{ fontSize: '9px', color: '#cbd5e1', margin: '2px 0 0 0', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>"{m.frase}"</p>
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -1282,9 +1191,105 @@ export default function MapaOrkutSocial3D() {
                 ))}
               </div>
             </div>
+
+            {/* 🤖 NOVO QUADRADINHO / ABA: MASCOTES DO ORKUT & ROBOTOC */}
+            <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid #ed2580', borderRadius: '12px', padding: '12px', boxShadow: '0 0 15px rgba(237,37,128,0.2)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(237,37,128,0.3)', paddingBottom: '6px', marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '12px', color: '#ed2580', margin: 0, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  👾 mascotes ({mascotes.length})
+                </h3>
+                <span onClick={() => setModalCriarMascoteAberta(true)} style={{ fontSize: '10px', color: '#00f0ff', cursor: 'pointer', fontWeight: 'bold' }}>
+                  + criar / personalizar
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {mascotes.slice(0, 4).map(m => (
+                  <div key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#020617', padding: '6px 8px', borderRadius: '8px', border: `1px solid ${m.cor || '#00f0ff'}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '18px' }}>{m.icone}</span>
+                      <div>
+                        <strong style={{ fontSize: '10px', color: '#fff', display: 'block' }}>{m.nome}</strong>
+                        <span style={{ fontSize: '8px', color: '#94a3b8' }}>{m.tipo}</span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '9px', color: m.cor || '#00f0ff', fontWeight: 'bold', backgroundColor: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '6px' }}>
+                      {m.nivel}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
         </main>
+
+        {/* 👾 MODAL: CRIAR & PERSONALIZAR NOVO MASCOTE DO ORKUT */}
+        {modalCriarMascoteAberta && (
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: '400px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #00f0ff',
+            borderRadius: '16px', padding: '16px', zIndex: 1250, color: '#fff', boxShadow: '0 0 40px rgba(0, 240, 255, 0.4)',
+            backdropFilter: 'blur(20px)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold' }}>👾 CRIAR & PERSONALIZAR MASCOTE DO ORKUT</h3>
+              <button onClick={() => setModalCriarMascoteAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <p style={{ fontSize: '10px', color: '#cbd5e1', marginBottom: '12px' }}>
+              Monte seu próprio robô, companion pet ou assistente digital para acompanhar seu perfil no Orkut Social 3D.
+            </p>
+
+            <form onSubmit={criarPersonalizarMascote} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div>
+                <label style={{ fontSize: '9px', color: '#00f0ff', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>NOME DO MASCOTE:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: ROBOTOC V2, CyberFox, Ninja Bot..."
+                  value={novoMascoteNome}
+                  onChange={(e) => setNovoMascoteNome(e.target.value)}
+                  style={{ width: '100%', padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                <div>
+                  <label style={{ fontSize: '9px', color: '#00f0ff', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>TIPO / ESPÉCIE:</label>
+                  <select value={novoMascoteTipo} onChange={(e) => setNovoMascoteTipo(e.target.value)} style={{ width: '100%', padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff' }}>
+                    <option value="Robotoc">ROBOTOC Android</option>
+                    <option value="Cyber Pet">Cyber Pet (Raposa/Gato)</option>
+                    <option value="Ninja AI">Ninja AI Cyberpunk</option>
+                    <option value="Alien Bot">Alien Bot 3D</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '9px', color: '#00f0ff', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>ACESSÓRIO:</label>
+                  <select value={novoMascoteAcessorio} onChange={(e) => setNovoMascoteAcessorio(e.target.value)} style={{ width: '100%', padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff' }}>
+                    <option value="Óculos HUD">Óculos HUD Neon</option>
+                    <option value="Fone Gamer">Fone Gamer RGB</option>
+                    <option value="Armadura Core">Armadura ROBOTOC Core</option>
+                    <option value="Aura Mística">Aura Mística 3D</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '9px', color: '#00f0ff', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>COR DA AURA / NEON:</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input type="color" value={novoMascoteCor} onChange={(e) => setNovoMascoteCor(e.target.value)} style={{ width: '40px', height: '28px', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'transparent' }} />
+                  <span style={{ fontSize: '10px', color: novoMascoteCor, fontWeight: 'bold' }}>{novoMascoteCor}</span>
+                </div>
+              </div>
+
+              <button type="submit" style={{ padding: '8px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px' }}>
+                🚀 Salvar & Ativar Mascote
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* 🤖 JANELA CHAT FUTURISTA 3D - MINI-ROBOTOC */}
         {chatMiniRobotocAberto && (
