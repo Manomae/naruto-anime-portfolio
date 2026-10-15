@@ -901,13 +901,19 @@ export default function MapaOrkutSocial3D() {
             <button onClick={() => setArquiteturaAberta(!arquiteturaAberta)} style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #10b981' }}>
               🏛️ DATA CENTER 3D
             </button>
-            <nav style={{ display: 'flex', gap: '12px', fontSize: '11px', alignItems: 'center', marginLeft: '10px' }}>
-              <Link '#fff', 'bold' 'none', color: fontWeight: href="/" style="{{" textDecoration: }}>início</Link>
-              <span style={{ color: '#00f0ff' }}>|</span>
-              <span style={{ color: '#fff', cursor: 'pointer' }} onClick={() => setAbaMuralAtiva('scraps')}>recados</span>
-              <span style={{ color: '#00f0ff' }}>|</span>
-              <Link '#00f0ff', 'bold' 'none', color: fontWeight: href="/" style="{{" textDecoration: }}>Emanuel.OS ➔</Link>
-            </nav>
+           <nav style={{ display: 'flex', gap: '12px', fontSize: '11px', alignItems: 'center', marginLeft: '10px' }}>
+  <Link href="/" style={{ color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}>
+    início
+  </Link>
+  <span style={{ color: '#00f0ff' }}>|</span>
+  <span style={{ color: '#fff', cursor: 'pointer' }} onClick={() => setAbaMuralAtiva('scraps')}>
+    recados
+  </span>
+  <span style={{ color: '#00f0ff' }}>|</span>
+  <Link href="/" style={{ color: '#00f0ff', textDecoration: 'none', fontWeight: 'bold' }}>
+    Emanuel.OS ➔
+  </Link>
+</nav>
           </div>
         </header>
 
