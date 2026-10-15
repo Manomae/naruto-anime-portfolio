@@ -3,9 +3,15 @@ import Head from 'next/head';
 import Link from 'next/link';
 import * as THREE from 'three';
 import { jsPDF } from "jspdf";
+import { createClient } from '@supabase/supabase-js';
 
 // Importação do Gerenciador de Janelas Futuristas
 import FuturisticWindowManager from '../components/FuturisticWindowManager';
+
+// --- INICIALIZAÇÃO DO SUPABASE ---
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '[https://sua-url.supabase.co](https://sua-url.supabase.co)';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sua-chave-anonima';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Componente Interno do Mini-ROBOTOC 3D Realista Segurando a Placa no Perfil
 function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
@@ -13,7 +19,6 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
   const miniRobotMeshRef = useRef(null);
   const leftArmRef = useRef(null);
   const rightArmRef = useRef(null);
-  const speechBubbleRef = useRef(null);
 
   const cumprimentos = [
     "👋 Olá, Emanuel! Bem-vindo ao Orkut Social 3D!",
@@ -62,7 +67,6 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     const bodyMat = new THREE.MeshStandardMaterial({ color: 0xebf8ff, roughness: 0.15, metalness: 0.8 });
     const blueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.7 });
     const eyeMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const jointsMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.1 });
 
     // Cabeça Arredondada
     const headGeo = new THREE.SphereGeometry(0.5, 32, 32);
@@ -89,7 +93,7 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     robotGroup.add(eyeL);
     robotGroup.add(eyeR);
 
-    // Orelhinhas / Antenas
+    // Antenas
     const earGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.25);
     const earL = new THREE.Mesh(earGeo, blueMat);
     earL.position.set(-1.65, 0.65, 0);
@@ -129,7 +133,7 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     robotGroup.add(armRightMesh);
     rightArmRef.current = armRightMesh;
 
-    // Pernas Pessoas
+    // Pernas
     const legGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.35);
     const legL = new THREE.Mesh(legGeo, blueMat);
     legL.position.set(-1.25, -0.9, 0);
@@ -144,7 +148,6 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     placaCanvas.height = 320;
     const ctx = placaCanvas.getContext('2d');
 
-    // Fundo Gradiente Magenta / Neon
     const grad = ctx.createLinearGradient(0, 0, 512, 320);
     grad.addColorStop(0, 'rgba(237, 37, 128, 0.9)');
     grad.addColorStop(0.5, 'rgba(15, 23, 42, 0.95)');
@@ -152,12 +155,10 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 512, 320);
 
-    // Borda Neon Dobrada
     ctx.strokeStyle = '#00f0ff';
     ctx.lineWidth = 12;
     ctx.strokeRect(10, 10, 492, 300);
 
-    // Conteúdo da Placa
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 24px Verdana';
     ctx.textAlign = 'center';
@@ -171,7 +172,6 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     ctx.font = 'bold 26px Verdana';
     ctx.fillText('SOCIAL 3D', 310, 180);
 
-    // Selos Clássicos na Placa
     ctx.textAlign = 'left';
     ctx.font = '16px Verdana';
     ctx.fillStyle = '#ffcc00';
@@ -199,7 +199,6 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
     scene.add(robotGroup);
     miniRobotMeshRef.current = robotGroup;
 
-    // Raycaster para detectar cliques no Robô
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let isWaving = false;
@@ -214,15 +213,11 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
       const intersects = raycaster.intersectObjects(robotGroup.children, true);
 
       if (intersects.length > 0) {
-        // Disparar Animação de Aceno em 3D
         isWaving = true;
         waveStartTime = Date.now();
-
-        // Mudar Cumprimento de forma rotativa
         const novoIdx = Math.floor(Math.random() * cumprimentos.length);
         setCumprimentoAtual(cumprimentos[novoIdx]);
         setFalaVisivel(true);
-
         setTimeout(() => setFalaVisivel(false), 4500);
       }
     };
@@ -237,12 +232,10 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Flutuação suave 3D
       if (miniRobotMeshRef.current) {
         miniRobotMeshRef.current.position.y = Math.sin(elapsedTime * 2.5) * 0.06;
       }
 
-      // Animação de Acenar do Braço Esquerdo
       if (leftArmRef.current) {
         if (isWaving) {
           const waveProgress = (Date.now() - waveStartTime) / 1000;
@@ -277,20 +270,10 @@ function MiniRobotocProfileCard3D({ confiavel, legal, sexy }) {
 
       {falaVisivel && (
         <div style={{
-          position: 'absolute',
-          top: '12px',
-          left: '12px',
-          right: '12px',
-          backgroundColor: 'rgba(8, 15, 30, 0.95)',
-          border: '1px solid #00f0ff',
-          borderRadius: '8px',
-          padding: '8px 12px',
-          color: '#fff',
-          fontSize: '11px',
-          fontWeight: 'bold',
-          boxShadow: '0 0 15px rgba(0,240,255,0.4)',
-          zIndex: 20,
-          animation: 'fadeIn 0.3s ease-in-out'
+          position: 'absolute', top: '12px', left: '12px', right: '12px',
+          backgroundColor: 'rgba(8, 15, 30, 0.95)', border: '1px solid #00f0ff',
+          borderRadius: '8px', padding: '8px 12px', color: '#fff', fontSize: '11px',
+          fontWeight: 'bold', boxShadow: '0 0 15px rgba(0,240,255,0.4)', zIndex: 20
         }}>
           {cumprimentoAtual}
         </div>
@@ -310,7 +293,28 @@ export default function MapaOrkutSocial3D() {
   const bolaHolograficaMeshRef = useRef(null);
   const esferasLinks3DRef = useRef([]);
 
-  // Estados de expansão/recolhimento dos blocos centrais com as setinhas
+  // --- NOVOS ESTADOS SUPABASE & AUTENTICAÇÃO ---
+  const [sessaoUsuario, setSessaoUsuario] = useState(null);
+  const [modalAuthAberta, setModalAuthAberta] = useState(false);
+  const [modoAuth, setModoAuth] = useState('login'); // 'login' ou 'cadastro'
+  const [emailAuth, setEmailAuth] = useState('');
+  const [senhaAuth, setSenhaAuth] = useState('');
+
+  // Form de Cadastro Completo
+  const [formNome, setFormNome] = useState('');
+  const [formApelido, setFormApelido] = useState('');
+  const [formCodNome, setFormCodNome] = useState('');
+  const [formAniversario, setFormAniversario] = useState('');
+
+  // Modais de Avatar & Mascote 3D IA
+  const [modalAvatarAberta, setModalAvatarAberta] = useState(false);
+  const [modalMascote3DAberta, setModalMascote3DAberta] = useState(false);
+  const [urlAvatarCustom, setUrlAvatarCustom] = useState('');
+  const [promptIAAvatar, setPromptIAAvatar] = useState('');
+  const [promptIAMascote, setPromptIAMascote] = useState('');
+  const [carregandoIA, setCarregandoIA] = useState(false);
+
+  // Estados de expansão/recolhimento dos blocos
   const [blocoPerfilExpandido, setBlocoPerfilExpandido] = useState(true);
   const [blocoMuralExpandido, setBlocoMuralExpandido] = useState(true);
 
@@ -319,72 +323,70 @@ export default function MapaOrkutSocial3D() {
   const [arquiteturaAberta, setArquiteturaAberta] = useState(false);
   const [nuvemSelecionada, setNuvemSelecionada] = useState('google');
 
-  // NOVO: Estados para o Chat Futurista 3D do Mini-ROBOTOC
+  // Chat Mini-ROBOTOC
   const [chatMiniRobotocAberto, setChatMiniRobotocAberto] = useState(false);
   const [mensagensChat, setMensagensChat] = useState([
     { id: 1, autor: 'Mini-ROBOTOC', texto: 'Olá! Sou o Mini-ROBOTOC do Orkut Social 3D. Como posso te auxiliar no mapa, nas funções ou sobre o Emanuel.OS?' }
   ]);
   const [inputChat, setInputChat] = useState('');
 
-  // NOVO: Estado da Modal / Função "Links Futurísticos Em Social 3D"
+  // Links Futurísticos
   const [modalLinksFuturisticosAberta, setModalLinksFuturisticosAberta] = useState(false);
   const [linksFuturisticosImportantes, setLinksFuturisticosImportantes] = useState([
-    { id: 1, titulo: 'Portfólio & Projetos GitHub', url: 'https://github.com/Manomae', categoria: 'Profissional', icone: '💻' },
-    { id: 2, titulo: 'Canal Oficial Emanuel ART', url: 'https://youtube.com/@emanuelsilva2987', categoria: 'Trabalho / Mídia', icone: '🎬' },
-    { id: 3, titulo: 'Google Workspace & Drive', url: 'https://drive.google.com', categoria: 'Uso Pessoal / Nuvem', icone: '☁️' }
+    { id: 1, titulo: 'Portfólio & Projetos GitHub', url: '[https://github.com/Manomae](https://github.com/Manomae)', categoria: 'Profissional', icone: '💻' },
+    { id: 2, titulo: 'Canal Oficial Emanuel ART', url: '[https://youtube.com/@emanuelsilva2987](https://youtube.com/@emanuelsilva2987)', categoria: 'Trabalho / Mídia', icone: '🎬' },
+    { id: 3, titulo: 'Google Workspace & Drive', url: '[https://drive.google.com](https://drive.google.com)', categoria: 'Uso Pessoal / Nuvem', icone: '☁️' }
   ]);
   const [novoLinkFutTitulo, setNovoLinkFutTitulo] = useState('');
   const [novoLinkFutUrl, setNovoLinkFutUrl] = useState('');
   const [novoLinkFutCategoria, setNovoLinkFutCategoria] = useState('Profissional');
   const [novoLinkFutIcone, setNovoLinkFutIcone] = useState('🚀');
 
-  // Estados de navegação e abas
-  const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps'); // 'scraps', 'depoimentos', 'gerenciar'
+  const [abaMuralAtiva, setAbaMuralAtiva] = useState('scraps');
 
-  // Perfil Oficial Emanuel da Silva / Emanuel ART
-  const [perfilUsuario] = useState({
+  // Perfil do Usuário Ativo
+  const [perfilUsuario, setPerfilUsuario] = useState({
     nome: "Emanuel da Silva (Emanuel ART)",
+    apelido: "Arquiteto Emanuel.OS",
+    codNome: "EMANUEL_CORE_01",
     statusBio: "Arquiteto do Emanuel.OS v5.1 | Hub Integrado de Redes Sociais & ROBOTOC Data Center 3D 🚀",
     relacionamento: "Solteiro",
     aniversario: "24 de Janeiro",
     localizacao: "Aracati, Ceará, Brasil",
     profissao: "Desenvolvedor & Artista Digital 3D",
     quemSouEu: "Construindo a nova geração das redes sociais unificadas. Conecte-se comigo pelo Orkut 3D ou pelas minhas redes oficiais!",
+    avatarUrl: "",
     confiavel: 100,
     legal: 100,
     sexy: 98
   });
 
-  // Redes Sociais Conectadas com links reais de Emanuel
   const [links3D, setLinks3D] = useState([
-    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: 'https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg', icone: '▶️', nuvem: 'google' },
-    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: 'https://www.tiktok.com/@emanueldasilva26', icone: '🎵', nuvem: 'custom' },
-    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: 'https://www.instagram.com/emanuelsilva432', icone: '📸', nuvem: 'apple' },
-    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: 'https://github.com/Manomae', icone: '🐙', nuvem: 'microsoft' },
-    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: 'https://api.whatsapp.com/send?phone=5588981493989', icone: '💬', nuvem: 'google' },
-    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: 'https://www.facebook.com/leeheroi.heroi', icone: '📘', nuvem: 'microsoft' },
-    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: 'https://www.threads.net/@emanuelsilva432', icone: '🧵', nuvem: 'apple' },
-    { id: 8, tipo: 'kwai', titulo: 'Kwai Oficial', url: 'https://k.kwai.com/u/@ewnop969ok', icone: '🟠', nuvem: 'custom' }
+    { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: '[https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg](https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg)', icone: '▶️', nuvem: 'google' },
+    { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: '[https://www.tiktok.com/@emanueldasilva26](https://www.tiktok.com/@emanueldasilva26)', icone: '🎵', nuvem: 'custom' },
+    { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: '[https://www.instagram.com/emanuelsilva432](https://www.instagram.com/emanuelsilva432)', icone: '📸', nuvem: 'apple' },
+    { id: 4, tipo: 'github', titulo: 'Repositório GitHub', url: '[https://github.com/Manomae](https://github.com/Manomae)', icone: '🐙', nuvem: 'microsoft' },
+    { id: 5, tipo: 'whatsapp', titulo: 'Contato WhatsApp Direct', url: '[https://api.whatsapp.com/send?phone=5588981493989](https://api.whatsapp.com/send?phone=5588981493989)', icone: '💬', nuvem: 'google' },
+    { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: '[https://www.facebook.com/leeheroi.heroi](https://www.facebook.com/leeheroi.heroi)', icone: '📘', nuvem: 'microsoft' },
+    { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: '[https://www.threads.net/@emanuelsilva432](https://www.threads.net/@emanuelsilva432)', icone: '🧵', nuvem: 'apple' },
+    { id: 8, tipo: 'kwai', titulo: 'Kwai Oficial', url: '[https://k.kwai.com/u/@ewnop969ok](https://k.kwai.com/u/@ewnop969ok)', icone: '🟠', nuvem: 'custom' }
   ]);
 
   const [novoLinkTitulo, setNovoLinkTitulo] = useState('');
   const [novoLinkUrl, setNovoLinkUrl] = useState('');
   const [novoLinkIcone, setNovoLinkIcone] = useState('🔗');
 
-  // Listas Dinâmicas
   const [amigos, setAmigos] = useState([]);
   const [comunidades, setComunidades] = useState([]);
   const [scraps, setScraps] = useState([]);
   const [depoimentos, setDepoimentos] = useState([]);
 
-  // NOVO: Mascotes do Orkut
   const [mascotes, setMascotes] = useState([
     { id: 1, nome: 'Mini-ROBOTOC 3D', tipo: 'Oficial Emanuel.OS', icone: '🤖', ativo: true },
     { id: 2, nome: 'Cyber Doge 3D', tipo: 'Mascote Tech', icone: '🐕', ativo: false },
     { id: 3, nome: 'Orkut Classic Buddy', tipo: 'Retrô 2004', icone: '👾', ativo: false }
   ]);
 
-  // Estados de Formulários e Marcação (@amigo, @namorada, @comunidade)
   const [novoAmigoInput, setNovoAmigoInput] = useState('');
   const [novoAmigoTipoAcao, setNovoAmigoTipoAcao] = useState('link');
   const [novoAmigoRede, setNovoAmigoRede] = useState('Instagram');
@@ -393,17 +395,125 @@ export default function MapaOrkutSocial3D() {
   const [novaComunidadeRede, setNovaComunidadeRede] = useState('Instagram');
   const [novaComunidadeTipo, setNovaComunidadeTipo] = useState('Geral');
 
-  // Scrap com Marcação
   const [novoScrapInput, setNovoScrapInput] = useState('');
   const [marcacaoScrapTipo, setMarcacaoScrapTipo] = useState('Amigo(a)');
   const [marcacaoScrapAlvo, setMarcacaoScrapAlvo] = useState('');
 
-  // Depoimento com Marcação
   const [novoDepoimentoInput, setNovoDepoimentoInput] = useState('');
   const [marcacaoDepoimentoTipo, setMarcacaoDepoimentoTipo] = useState('Amigo(a)');
   const [marcacaoDepoimentoAlvo, setMarcacaoDepoimentoAlvo] = useState('');
 
-  // Carregar dados salvos do navegador
+  // VERIFICAR SESSÃO NO SUPABASE AO CARREGAR
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSessaoUsuario(session);
+      if (session?.user) carregarPerfilSupabase(session.user.id);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSessaoUsuario(session);
+      if (session?.user) carregarPerfilSupabase(session.user.id);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const carregarPerfilSupabase = async (userId) => {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (data && !error) {
+      setPerfilUsuario(prev => ({
+        ...prev,
+        nome: data.nome || prev.nome,
+        apelido: data.apelido || prev.apelido,
+        codNome: data.cod_nome || prev.codNome,
+        aniversario: data.aniversario || prev.aniversario,
+        avatarUrl: data.avatar_url || prev.avatarUrl,
+        confiavel: data.confiavel || prev.confiavel,
+        legal: data.legal || prev.legal,
+        sexy: data.sexy || prev.sexy
+      }));
+    }
+  };
+
+  // HANDLERS DE AUTENTICAÇÃO SUPABASE
+  const handleAuthSocial = async (provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({ provider });
+    if (error) alert(`Erro no login via ${provider}: ${error.message}`);
+  };
+
+  const handleAuthEmail = async (e) => {
+    e.preventDefault();
+    if (modoAuth === 'login') {
+      const { error } = await supabase.auth.signInWithPassword({ email: emailAuth, password: senhaAuth });
+      if (error) alert(`Erro no login: ${error.message}`);
+      else setModalAuthAberta(false);
+    } else {
+      const { data, error } = await supabase.auth.signUp({ email: emailAuth, password: senhaAuth });
+      if (error) {
+        alert(`Erro no cadastro: ${error.message}`);
+      } else if (data?.user) {
+        await supabase.from('profiles').insert([{
+          id: data.user.id,
+          nome: formNome,
+          apelido: formApelido,
+          cod_nome: formCodNome,
+          aniversario: formAniversario
+        }]);
+        alert("🎉 Conta criada com sucesso e armazenada no Supabase!");
+        setModalAuthAberta(false);
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSessaoUsuario(null);
+  };
+
+  // GERAR IMAGEM DE PERFIL / AVATAR VIA IA
+  const handleGerarAvatarIA = () => {
+    if (!promptIAAvatar.trim()) return alert("Digite uma descrição para a IA gerar seu avatar!");
+    setCarregandoIA(true);
+    setTimeout(() => {
+      const urlGerada = `[https://image.pollinations.ai/prompt/$](https://image.pollinations.ai/prompt/$){encodeURIComponent(promptIAAvatar)}?width=400&height=400&nologo=true`;
+      setPerfilUsuario(prev => ({ ...prev, avatarUrl: urlGerada }));
+      setCarregandoIA(false);
+      setModalAvatarAberta(false);
+    }, 1200);
+  };
+
+  // GERAR MASCOTE 3D VIA IA
+  const handleGerarMascote3DIA = () => {
+    if (!promptIAMascote.trim()) return alert("Digite o estilo do seu mascote 3D!");
+    setCarregandoIA(true);
+    setTimeout(() => {
+      const novoMascote = {
+        id: Date.now(),
+        nome: `Mascote IA 3D (${promptIAMascote.slice(0, 10)})`,
+        tipo: 'Gerado via IA',
+        icone: '👾',
+        ativo: true
+      };
+      setMascotes(prev => prev.map(m => ({ ...m, ativo: false })).concat(novoMascote));
+      setCarregandoIA(false);
+      setModalMascote3DAberta(false);
+      alert("🤖 Seu novo Mascote 3D foi gerado e ativado com sucesso!");
+    }, 1500);
+  };
+
+  // Upload local de avatar
+  const handleUploadAvatarLocal = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPerfilUsuario(prev => ({ ...prev, avatarUrl: event.target.result }));
+        setModalAvatarAberta(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -436,7 +546,6 @@ export default function MapaOrkutSocial3D() {
     setLinksFuturisticosImportantes(linksFutSalvos);
   }, []);
 
-  // Abrir link externo
   const abrirLinkExternoSeguro = (url) => {
     if (!url) return;
     if (typeof window !== 'undefined') {
@@ -458,7 +567,6 @@ export default function MapaOrkutSocial3D() {
     setNovoLinkUrl('');
   };
 
-  // Função para adicionar Link Futurístico 3D
   const adicionarLinkFuturistico = (e) => {
     e.preventDefault();
     if (!novoLinkFutTitulo.trim() || !novoLinkFutUrl.trim()) return alert("Preencha o Título e a URL do Link Futurístico.");
@@ -477,7 +585,6 @@ export default function MapaOrkutSocial3D() {
     alert("⚡ Link Futurístico salvo com sucesso!");
   };
 
-  // Enviar pergunta ao Mini-ROBOTOC no Chat Futurista 3D
   const enviarPerguntaMiniRobotoc = (e) => {
     e.preventDefault();
     if (!inputChat.trim()) return;
@@ -494,7 +601,7 @@ export default function MapaOrkutSocial3D() {
       if (query.includes('quem') || query.includes('emanuel') || query.includes('criador')) {
         respostaRobotoc = "Emanuel da Silva (Emanuel ART) é o Arquiteto & Desenvolvedor do Emanuel.OS v5.1 e deste ecossistema Orkut Social 3D!";
       } else if (query.includes('ajuda') || query.includes('função') || query.includes('como usar') || query.includes('auxilio')) {
-        respostaRobotoc = "Posso te auxiliar! Você pode: 1. Adicionar amigos e grupos; 2. Baixar o perfil em PDF; 3. Interagir no Data Center 3D; 4. Usar a nova ferramenta de 'Links Futurísticos Em Social 3D' no perfil!";
+        respostaRobotoc = "Posso te auxiliar! Você pode: 1. Criar sua conta e logar via Google/Social/Supabase; 2. Modificar avatar ou Gerar com IA; 3. Gerar Mascote 3D com IA; 4. Baixar o perfil em PDF!";
       } else if (query.includes('link') || query.includes('futuristico') || query.includes('trabalho')) {
         respostaRobotoc = "A nova função 'Links Futurísticos Em Social 3D' permite salvar e organizar links vitais de trabalho e uso pessoal direto no seu painel!";
       } else if (query.includes('scraps') || query.includes('recados') || query.includes('depoimento')) {
@@ -505,7 +612,7 @@ export default function MapaOrkutSocial3D() {
     }, 600);
   };
 
-  // --- CENA THREE.JS DE FUNDO (BOLA HOLOGRÁFICA + DATA CENTER) ---
+  // --- CENA THREE.JS DE FUNDO ---
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -525,7 +632,6 @@ export default function MapaOrkutSocial3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // ILUMINAÇÃO CYBERPUNK / DATA CENTER
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(-5, 8, 5);
     scene.add(keyLight);
@@ -541,14 +647,11 @@ export default function MapaOrkutSocial3D() {
     const ambientLight = new THREE.AmbientLight(0x0f172a, 2.0);
     scene.add(ambientLight);
 
-    // ESTRUTURA 3D DO DATA CENTER
     const dataCenterGroup = new THREE.Group();
-
     const floorGrid = new THREE.GridHelper(30, 30, 0x00f0ff, 0x1e293b);
     floorGrid.position.y = -2.5;
     dataCenterGroup.add(floorGrid);
 
-    // TORRES DE SERVIDORES
     const rackGeo = new THREE.BoxGeometry(0.8, 4.5, 1.2);
     const rackMat = new THREE.MeshStandardMaterial({ color: 0x09090b, metalness: 0.9, roughness: 0.2 });
     const ledCyanMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
@@ -571,7 +674,6 @@ export default function MapaOrkutSocial3D() {
     }
     scene.add(dataCenterGroup);
 
-    // 🌟 BOLA HOLOGRÁFICA PRINCIPAL DO CORE
     const bolaGeometry = new THREE.IcosahedronGeometry(1.2, 4);
     const bolaMaterial = new THREE.MeshStandardMaterial({
       color: 0xed2580,
@@ -586,7 +688,6 @@ export default function MapaOrkutSocial3D() {
     scene.add(bolaMesh);
     bolaHolograficaMeshRef.current = bolaMesh;
 
-    // ESFERAS DE LINKS 3D / REDES SOCIAIS ÓRBITA DO DATA CENTER
     const linksGroup = new THREE.Group();
     esferasLinks3DRef.current = [];
     links3D.forEach((linkItem) => {
@@ -595,11 +696,7 @@ export default function MapaOrkutSocial3D() {
                        linkItem.nuvem === 'apple' ? 0xffffff : 
                        linkItem.nuvem === 'microsoft' ? 0x00a4ef : 0xff007f;
       
-      const orbMat = new THREE.MeshStandardMaterial({
-        color: colorHex,
-        emissive: colorHex,
-        emissiveIntensity: 0.85
-      });
+      const orbMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.85 });
       const orbMesh = new THREE.Mesh(orbGeo, orbMat);
       orbMesh.userData = { url: linkItem.url, titulo: linkItem.titulo };
       linksGroup.add(orbMesh);
@@ -651,7 +748,6 @@ export default function MapaOrkutSocial3D() {
     };
   }, [links3D]);
 
-  // Adicionar Amigo via Link / @ / Solicitação
   const adicionarAmigo = (e) => {
     e.preventDefault();
     if (!novoAmigoInput.trim()) return;
@@ -671,7 +767,6 @@ export default function MapaOrkutSocial3D() {
     setNovoAmigoInput('');
   };
 
-  // Buscar e Conectar Grupo ou Comunidade
   const conectarGrupoOuComunidade = (e) => {
     e.preventDefault();
     if (!buscaGrupoInput.trim()) return;
@@ -691,7 +786,6 @@ export default function MapaOrkutSocial3D() {
     setBuscaGrupoInput('');
   };
 
-  // Enviar Scrap com Marcação
   const enviarScrap = (e) => {
     e.preventDefault();
     if (!novoScrapInput.trim()) return;
@@ -700,7 +794,7 @@ export default function MapaOrkutSocial3D() {
 
     const novo = {
       id: Date.now(),
-      autor: "Você",
+      autor: perfilUsuario.nome,
       marcadoPara: alvoTexto,
       texto: novoScrapInput,
       horario: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -713,7 +807,6 @@ export default function MapaOrkutSocial3D() {
     setMarcacaoScrapAlvo('');
   };
 
-  // Enviar Depoimento com Marcação
   const enviarDepoimento = (e) => {
     e.preventDefault();
     if (!novoDepoimentoInput.trim()) return;
@@ -722,7 +815,7 @@ export default function MapaOrkutSocial3D() {
 
     const novo = {
       id: Date.now(),
-      autor: "Você (Depoimento VIP)",
+      autor: `${perfilUsuario.nome} (Depoimento VIP)`,
       marcadoPara: alvoTexto,
       texto: novoDepoimentoInput,
       data: new Date().toLocaleDateString('pt-BR'),
@@ -744,32 +837,29 @@ export default function MapaOrkutSocial3D() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
-    doc.text("ORKUT 2026 - PERFIL OFICIAL EMANUEL DA SILVA", 14, 18);
+    doc.text("ORKUT 2026 - PERFIL OFICIAL", 14, 18);
     doc.setFontSize(9);
     doc.text("HUB DE REDES SOCIAIS & ROBOTOC DATA CENTER 3D | EMANUEL.OS", 14, 25);
 
     doc.setTextColor(30, 41, 59);
     doc.setFontSize(11);
     doc.text(`Nome: ${perfilUsuario.nome}`, 14, 40);
-    doc.text(`Bio: ${perfilUsuario.statusBio}`, 14, 46);
-    doc.text(`Amigos Conectados: ${amigos.length} | Comunidades Ativas: ${comunidades.length}`, 14, 52);
+    doc.text(`Apelido: ${perfilUsuario.apelido} | Cód Nome: ${perfilUsuario.codNome}`, 14, 46);
+    doc.text(`Bio: ${perfilUsuario.statusBio}`, 14, 52);
+    doc.text(`Amigos Conectados: ${amigos.length} | Comunidades Ativas: ${comunidades.length}`, 14, 58);
 
-    doc.save("Perfil_Orkut_Emanuel_da_Silva.pdf");
+    doc.save(`Perfil_Orkut_${perfilUsuario.nome.replace(/\s+/g, '_')}.pdf`);
   };
 
   return (
     <div style={{
-      width: '100vw',
-      height: '100vh',
-      backgroundColor: '#020617',
+      width: '100vw', height: '100vh', backgroundColor: '#020617',
       backgroundImage: 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)',
-      color: '#fff',
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
-      position: 'relative',
-      overflow: 'hidden'
+      color: '#fff', fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
+      position: 'relative', overflow: 'hidden'
     }}>
       <Head>
-        <title>orkut - Emanuel da Silva | ROBOTOC Data Center 3D & Redes Sociais</title>
+        <title>orkut - {perfilUsuario.nome} | ROBOTOC Data Center 3D & Supabase</title>
       </Head>
 
       {/* CENA THREE.JS DATA CENTER 3D */}
@@ -777,25 +867,31 @@ export default function MapaOrkutSocial3D() {
 
       <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         
-        {/* HEADER CLÁSSICO AZUL ORKUT + BOTÕES ROBOTOC */}
+        {/* HEADER CLÁSSICO AZUL ORKUT + LOGIN SUPABASE */}
         <header style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-          backdropFilter: 'blur(15px)',
-          padding: '10px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid #00f0ff',
-          boxShadow: '0 0 20px rgba(0,240,255,0.2)'
+          backgroundColor: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(15px)',
+          padding: '10px 20px', display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', borderBottom: '1px solid #00f0ff', boxShadow: '0 0 20px rgba(0,240,255,0.2)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <span style={{ fontSize: '26px', fontWeight: 'bold', color: '#ed2580', letterSpacing: '-1px' }}>orkut</span>
             <span style={{ fontSize: '10px', color: '#00f0ff', backgroundColor: 'rgba(0,240,255,0.1)', padding: '3px 8px', borderRadius: '12px', border: '1px solid #00f0ff' }}>
-              🤖 ROBOTOC Data Center Active
+              🤖 ROBOTOC Data Center & Supabase Active
             </span>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* BOTÃO AUTENTICAÇÃO / PERFIL */}
+            {sessaoUsuario ? (
+              <button onClick={handleLogout} style={{ padding: '6px 12px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                🚪 Sair ({sessaoUsuario.user.email})
+              </button>
+            ) : (
+              <button onClick={() => setModalAuthAberta(true)} style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #10b981' }}>
+                🔑 Entrar / Criar Conta
+              </button>
+            )}
+
             <button onClick={() => setChatMiniRobotocAberto(!chatMiniRobotocAberto)} style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #ed2580' }}>
               💬 CHAT MINI-ROBOTOC 3D
             </button>
@@ -806,60 +902,50 @@ export default function MapaOrkutSocial3D() {
               🏛️ DATA CENTER 3D
             </button>
             <nav style={{ display: 'flex', gap: '12px', fontSize: '11px', alignItems: 'center', marginLeft: '10px' }}>
-              <Link href="/" style={{ color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}>início</Link>
+              <Link '#fff', 'bold' 'none', color: fontWeight: href="/" style="{{" textDecoration: }}>início</Link>
               <span style={{ color: '#00f0ff' }}>|</span>
               <span style={{ color: '#fff', cursor: 'pointer' }} onClick={() => setAbaMuralAtiva('scraps')}>recados</span>
               <span style={{ color: '#00f0ff' }}>|</span>
-              <Link href="/" style={{ color: '#00f0ff', textDecoration: 'none', fontWeight: 'bold' }}>Emanuel.OS ➔</Link>
+              <Link '#00f0ff', 'bold' 'none', color: fontWeight: href="/" style="{{" textDecoration: }}>Emanuel.OS ➔</Link>
             </nav>
           </div>
         </header>
 
         {/* HUB DE REDES SOCIAIS OFICIAIS */}
         <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.85)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(0,240,255,0.2)', padding: '8px 20px', display: 'flex', gap: '10px', overflowX: 'auto', alignItems: 'center' }}>
-          <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#00f0ff', whiteSpace: 'nowrap' }}>Canais Integrados (Emanuel da Silva):</span>
+          <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#00f0ff', whiteSpace: 'nowrap' }}>Canais Integrados ({perfilUsuario.nome}):</span>
           {links3D.map(rede => (
-            <a
-              key={rede.id}
-              href={rede.url}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                fontSize: '10px', textDecoration: 'none', color: '#fff', backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                border: '1px solid #00f0ff', padding: '4px 10px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px',
-                fontWeight: 'bold', whiteSpace: 'nowrap'
-              }}
-            >
+            <a key={rede.id} href={rede.url} target="_blank" rel="noreferrer" style={{ fontSize: '10px', textDecoration: 'none', color: '#fff', backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid #00f0ff', padding: '4px 10px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
               <span>{rede.icone}</span> {rede.titulo}
             </a>
           ))}
         </div>
 
         {/* CORPO DO PERFIL */}
-        <main style={{
-          maxWidth: '1100px',
-          width: '95%',
-          margin: '15px auto 40px auto',
-          display: 'grid',
-          gridTemplateColumns: '290px 1fr 300px',
-          gap: '15px',
-          boxSizing: 'border-box'
-        }}>
+        <main style={{ maxWidth: '1100px', width: '95%', margin: '15px auto 40px auto', display: 'grid', gridTemplateColumns: '290px 1fr 300px', gap: '15px', boxSizing: 'border-box' }}>
 
-          {/* COLUNA ESQUERDA: FOTO E MENU */}
+          {/* COLUNA ESQUERDA: FOTO, AVATAR E MENU */}
           <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '12px', textAlign: 'center', boxShadow: '0 0 20px rgba(0,240,255,0.15)' }}>
               
-              {/* 🤖 NOVO MINI-ROBOTOC 3D REALISTA SEGURANDO A PLACA NEON */}
-              <MiniRobotocProfileCard3D 
-                confiavel={perfilUsuario.confiavel}
-                legal={perfilUsuario.legal}
-                sexy={perfilUsuario.sexy}
-              />
+              {/* IMAGEM DE PERFIL / AVATAR */}
+              {perfilUsuario.avatarUrl ? (
+                <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #00f0ff', marginBottom: '10px' }}>
+                  <img src={perfilUsuario.avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button onClick={() => setModalAvatarAberta(true)} style={{ position: 'absolute', bottom: '5px', right: '5px', padding: '4px 8px', backgroundColor: 'rgba(0,0,0,0.8)', color: '#00f0ff', border: '1px solid #00f0ff', borderRadius: '6px', fontSize: '9px', cursor: 'pointer' }}>✏️ Trocar Avatar</button>
+                </div>
+              ) : (
+                <MiniRobotocProfileCard3D confiavel="{perfilUsuario.confiavel}" legal="{perfilUsuario.legal}" sexy="{perfilUsuario.sexy}"/>
+              )}
+
+              <div style={{ marginTop: '8px', display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                <button onClick={() => setModalAvatarAberta(true)} style={{ padding: '4px 8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🎨 Foto / IA Avatar</button>
+                <button onClick={() => setModalMascote3DAberta(true)} style={{ padding: '4px 8px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🤖 Gerar Mascote 3D</button>
+              </div>
 
               <h2 style={{ fontSize: '15px', color: '#00f0ff', margin: '10px 0 2px 0', fontWeight: 'bold' }}>{perfilUsuario.nome}</h2>
               <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>{perfilUsuario.relacionamento}, {perfilUsuario.localizacao}</span>
-              <span style={{ fontSize: '9px', color: '#ed2580', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>🔥 Arquiteto & Criador do Emanuel.OS</span>
+              <span style={{ fontSize: '9px', color: '#ed2580', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>🔥 Apelido: {perfilUsuario.apelido} | Cód: {perfilUsuario.codNome}</span>
             </div>
 
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '10px', fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -877,32 +963,19 @@ export default function MapaOrkutSocial3D() {
               </div>
             </div>
 
-            <button
-              onClick={exportarPerfilOrkutPDF}
-              style={{
-                padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none',
-                borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #00f0ff'
-              }}
-            >
+            <button onClick={exportarPerfilOrkutPDF} style={{ padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 10px #00f0ff' }}>
               📄 Baixar Perfil Orkut (.PDF)
             </button>
           </section>
 
-          {/* COLUNA CENTRAL: BIO, SELOS, MURAIS COM SETINHAS RETRÁTEIS */}
+          {/* COLUNA CENTRAL: BIO, SELOS, MURAIS */}
           <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             
-            {/* 🌟 1º QUADRADINHO: PERFIL, BIO, SELOS */}
+            {/* 1º QUADRADINHO: PERFIL, BIO, SELOS */}
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '14px', transition: 'all 0.3s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: blocoPerfilExpandido ? '8px' : '0' }}>
                 <h1 style={{ fontSize: '18px', color: '#00f0ff', margin: 0, fontWeight: 'bold' }}>{perfilUsuario.nome}</h1>
-                <button
-                  onClick={() => setBlocoPerfilExpandido(!blocoPerfilExpandido)}
-                  style={{
-                    background: 'none', border: 'none', color: '#00f0ff', fontSize: '13px',
-                    cursor: 'pointer', fontWeight: 'bold', padding: '2px 6px', lineHeight: 1
-                  }}
-                  title={blocoPerfilExpandido ? "Recolher Informações do Perfil" : "Expandir Informações do Perfil"}
-                >
+                <button onClick={() => setBlocoPerfilExpandido(!blocoPerfilExpandido)} style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '13px', cursor: 'pointer', fontWeight: 'bold', padding: '2px 6px', lineHeight: 1 }}>
                   {blocoPerfilExpandido ? '▲' : '▼'}
                 </button>
               </div>
@@ -911,7 +984,6 @@ export default function MapaOrkutSocial3D() {
                 <div>
                   <p style={{ fontSize: '11px', color: '#cbd5e1', margin: '0 0 12px 0', fontStyle: 'italic' }}>"{perfilUsuario.statusBio}"</p>
 
-                  {/* SELOS CLÁSSICOS */}
                   <div style={{ display: 'flex', gap: '18px', padding: '8px 12px', backgroundColor: '#020617', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.2)', fontSize: '11px' }}>
                     <div><span style={{ color: '#94a3b8', display: 'block', fontSize: '10px' }}>confiável:</span><span style={{ color: '#22c55e' }}>😊😊😊</span> <b>{perfilUsuario.confiavel}%</b></div>
                     <div><span style={{ color: '#94a3b8', display: 'block', fontSize: '10px' }}>legal:</span><span style={{ color: '#38bdf8' }}>🧊🧊🧊</span> <b>{perfilUsuario.legal}%</b></div>
@@ -924,31 +996,20 @@ export default function MapaOrkutSocial3D() {
                     <div><b style={{ color: '#00f0ff' }}>quem sou eu:</b> {perfilUsuario.quemSouEu}</div>
                   </div>
 
-                  {/* ⚡ MÓDULO: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
+                  {/* LINKS FUTURÍSTICOS */}
                   <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px dashed rgba(0, 240, 255, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#ed2580', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         🌐 LINK FUTURÍSTICO EM SOCIAL 3D
                       </span>
-                      <button
-                        onClick={() => setModalLinksFuturisticosAberta(true)}
-                        style={{ padding: '3px 8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}
-                      >
+                      <button onClick={() => setModalLinksFuturisticosAberta(true)} style={{ padding: '3px 8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>
                         + Gerenciar / Adicionar
                       </button>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {linksFuturisticosImportantes.slice(0, 3).map((linkFut) => (
-                        <div
-                          key={linkFut.id}
-                          onClick={() => abrirLinkExternoSeguro(linkFut.url)}
-                          style={{
-                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            backgroundColor: '#020617', border: '1px solid rgba(237, 37, 128, 0.4)',
-                            padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s ease'
-                          }}
-                        >
+                        <div key={linkFut.id} onClick={() => abrirLinkExternoSeguro(linkFut.url)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#020617', border: '1px solid rgba(237, 37, 128, 0.4)', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s ease' }}>
                           <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span>{linkFut.icone}</span> {linkFut.titulo}
                           </span>
@@ -964,7 +1025,7 @@ export default function MapaOrkutSocial3D() {
               )}
             </div>
 
-            {/* 🌟 2º QUADRADINHO: MURAL, CONEXÕES, SCRAPS E DEPOIMENTOS */}
+            {/* 2º QUADRADINHO: MURAL, CONEXÕES, SCRAPS E DEPOIMENTOS */}
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '14px', transition: 'all 0.3s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: blocoMuralExpandido ? '1px solid rgba(0,240,255,0.2)' : 'none', paddingBottom: blocoMuralExpandido ? '8px' : '0', marginBottom: blocoMuralExpandido ? '10px' : '0' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -979,14 +1040,7 @@ export default function MapaOrkutSocial3D() {
                   </button>
                 </div>
 
-                <button
-                  onClick={() => setBlocoMuralExpandido(!blocoMuralExpandido)}
-                  style={{
-                    background: 'none', border: 'none', color: '#00f0ff', fontSize: '13px',
-                    cursor: 'pointer', fontWeight: 'bold', padding: '2px 6px', lineHeight: 1
-                  }}
-                  title={blocoMuralExpandido ? "Recolher Mural e Conexões" : "Expandir Mural e Conexões"}
-                >
+                <button onClick={() => setBlocoMuralExpandido(!blocoMuralExpandido)} style={{ background: 'none', border: 'none', color: '#00f0ff', fontSize: '13px', cursor: 'pointer', fontWeight: 'bold', padding: '2px 6px', lineHeight: 1 }}>
                   {blocoMuralExpandido ? '▲' : '▼'}
                 </button>
               </div>
@@ -998,36 +1052,17 @@ export default function MapaOrkutSocial3D() {
                     <div>
                       <form onSubmit={enviarScrap} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <select 
-                            value={marcacaoScrapTipo} 
-                            onChange={(e) => setMarcacaoScrapTipo(e.target.value)} 
-                            style={{ padding: '6px', fontSize: '10px', border: '1px solid #00f0ff', borderRadius: '6px', backgroundColor: '#020617', fontWeight: 'bold', color: '#00f0ff' }}
-                          >
+                          <select value={marcacaoScrapTipo} onChange={(e) => setMarcacaoScrapTipo(e.target.value)} style={{ padding: '6px', fontSize: '10px', border: '1px solid #00f0ff', borderRadius: '6px', backgroundColor: '#020617', fontWeight: 'bold', color: '#00f0ff' }}>
                             <option value="Amigo(a)">👤 Marcar Amigo / Amiga</option>
                             <option value="Namorado(a)">❤️ Marcar Namorado / Namorada</option>
                             <option value="Grupo / Comunidade">🌐 Jogar no Grupo / Comunidade</option>
                           </select>
-                          <input 
-                            type="text" 
-                            placeholder="Nome, @usuario ou nome do grupo..." 
-                            value={marcacaoScrapAlvo} 
-                            onChange={(e) => setMarcacaoScrapAlvo(e.target.value)} 
-                            style={{ flexGrow: 1, padding: '6px 8px', fontSize: '10px', border: '1px solid #334155', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} 
-                          />
+                          <input type="text" placeholder="Nome, @usuario ou nome do grupo..." value={marcacaoScrapAlvo} onChange={(e) => setMarcacaoScrapAlvo(e.target.value)} style={{ flexGrow: 1, padding: '6px 8px', fontSize: '10px', border: '1px solid #334155', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} />
                         </div>
 
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <input 
-                            type="text" 
-                            required
-                            placeholder="Escreva o Scrap (Recado)..." 
-                            value={novoScrapInput} 
-                            onChange={(e) => setNovoScrapInput(e.target.value)} 
-                            style={{ flexGrow: 1, padding: '7px 10px', fontSize: '11px', border: '1px solid #334155', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} 
-                          />
-                          <button type="submit" style={{ padding: '7px 14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            Postar Scrap
-                          </button>
+                          <input type="text" required placeholder="Escreva o Scrap (Recado)..." value={novoScrapInput} onChange={(e) => setNovoScrapInput(e.target.value)} style={{ flexGrow: 1, padding: '7px 10px', fontSize: '11px', border: '1px solid #334155', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} />
+                          <button type="submit" style={{ padding: '7px 14px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Postar Scrap</button>
                         </div>
                       </form>
 
@@ -1050,34 +1085,16 @@ export default function MapaOrkutSocial3D() {
                     <div>
                       <form onSubmit={enviarDepoimento} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <select 
-                            value={marcacaoDepoimentoTipo} 
-                            onChange={(e) => setMarcacaoDepoimentoTipo(e.target.value)} 
-                            style={{ padding: '6px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', fontWeight: 'bold', color: '#ed2580' }}
-                          >
+                          <select value={marcacaoDepoimentoTipo} onChange={(e) => setMarcacaoDepoimentoTipo(e.target.value)} style={{ padding: '6px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', fontWeight: 'bold', color: '#ed2580' }}>
                             <option value="Amigo(a)">👤 Depoimento para Amigo(a)</option>
                             <option value="Namorado(a)">❤️ Declaração para Namorado(a)</option>
                             <option value="Grupo / Comunidade">🌐 Jogar no Grupo / Comunidade</option>
                           </select>
-                          <input 
-                            type="text" 
-                            placeholder="Nome, @usuario ou comunidade..." 
-                            value={marcacaoDepoimentoAlvo} 
-                            onChange={(e) => setMarcacaoDepoimentoAlvo(e.target.value)} 
-                            style={{ flexGrow: 1, padding: '6px 8px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} 
-                          />
+                          <input type="text" placeholder="Nome, @usuario ou comunidade..." value={marcacaoDepoimentoAlvo} onChange={(e) => setMarcacaoDepoimentoAlvo(e.target.value)} style={{ flexGrow: 1, padding: '6px 8px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none' }} />
                         </div>
 
-                        <textarea 
-                          required
-                          placeholder="Escreva um depoimento especial de coração..." 
-                          value={novoDepoimentoInput} 
-                          onChange={(e) => setNovoDepoimentoInput(e.target.value)} 
-                          style={{ width: '100%', height: '50px', padding: '6px 10px', fontSize: '11px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none', resize: 'none', boxSizing: 'border-box' }} 
-                        />
-                        <button type="submit" style={{ padding: '6px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
-                          💖 Enviar Depoimento com Marcação
-                        </button>
+                        <textarea required placeholder="Escreva um depoimento especial de coração..." value={novoDepoimentoInput} onChange={(e) => setNovoDepoimentoInput(e.target.value)} style={{ width: '100%', height: '50px', padding: '6px 10px', fontSize: '11px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#020617', color: '#fff', outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
+                        <button type="submit" style={{ padding: '6px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>💖 Enviar Depoimento com Marcação</button>
                       </form>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1119,17 +1136,8 @@ export default function MapaOrkutSocial3D() {
                         </div>
 
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <input 
-                            type="text" 
-                            required 
-                            placeholder="Digite o @usuario ou link do perfil..." 
-                            value={novoAmigoInput} 
-                            onChange={(e) => setNovoAmigoInput(e.target.value)} 
-                            style={{ flexGrow: 1, padding: '6px', fontSize: '10px', border: '1px solid #059669', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} 
-                          />
-                          <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#000', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            Conectar
-                          </button>
+                          <input type="text" required placeholder="Digite o @usuario ou link do perfil..." value={novoAmigoInput} onChange={(e) => setNovoAmigoInput(e.target.value)} style={{ flexGrow: 1, padding: '6px', fontSize: '10px', border: '1px solid #059669', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} />
+                          <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#000', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Conectar</button>
                         </div>
                       </form>
 
@@ -1145,27 +1153,12 @@ export default function MapaOrkutSocial3D() {
                             <option value="Threads">Threads</option>
                           </select>
 
-                          <input 
-                            type="text" 
-                            placeholder="Categoria..." 
-                            value={novaComunidadeTipo} 
-                            onChange={(e) => setNovaComunidadeTipo(e.target.value)} 
-                            style={{ padding: '6px', fontSize: '10px', border: '1px solid #2563eb', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} 
-                          />
+                          <input type="text" placeholder="Categoria..." value={novaComunidadeTipo} onChange={(e) => setNovaComunidadeTipo(e.target.value)} style={{ padding: '6px', fontSize: '10px', border: '1px solid #2563eb', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} />
                         </div>
 
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <input 
-                            type="text" 
-                            required 
-                            placeholder="Nome do grupo, @comunidade..." 
-                            value={buscaGrupoInput} 
-                            onChange={(e) => setBuscaGrupoInput(e.target.value)} 
-                            style={{ flexGrow: 1, padding: '6px', fontSize: '10px', border: '1px solid #2563eb', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} 
-                          />
-                          <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            Conectar Grupo
-                          </button>
+                          <input type="text" required placeholder="Nome do grupo, @comunidade..." value={buscaGrupoInput} onChange={(e) => setBuscaGrupoInput(e.target.value)} style={{ flexGrow: 1, padding: '6px', fontSize: '10px', border: '1px solid #2563eb', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff' }} />
+                          <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Conectar Grupo</button>
                         </div>
                       </form>
                     </div>
@@ -1214,7 +1207,7 @@ export default function MapaOrkutSocial3D() {
               </div>
             </div>
 
-            {/* 🤖 NOVO MÓDULO PEDIDO NO VÍDEO: MASCOTES DO ORKUT */}
+            {/* MASCOTES DO ORKUT */}
             <div style={{ backgroundColor: 'rgba(8, 15, 30, 0.9)', border: '1px solid #ed2580', borderRadius: '12px', padding: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(237,37,128,0.3)', paddingBottom: '6px', marginBottom: '8px' }}>
                 <h3 style={{ fontSize: '12px', color: '#ed2580', margin: 0, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1235,7 +1228,7 @@ export default function MapaOrkutSocial3D() {
                     {m.ativo ? (
                       <span style={{ fontSize: '8px', color: '#00f0ff', backgroundColor: 'rgba(0,240,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>Em Uso</span>
                     ) : (
-                      <button onClick={() => alert(`Mascote ${m.nome} selecionado!`)} style={{ fontSize: '8px', backgroundColor: '#1e293b', color: '#fff', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer' }}>Usar</button>
+                      <button onClick={() => setMascotes(prev => prev.map(item => ({ ...item, ativo: item.id === m.id })))} style={{ fontSize: '8px', backgroundColor: '#1e293b', color: '#fff', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer' }}>Usar</button>
                     )}
                   </div>
                 ))}
@@ -1245,14 +1238,101 @@ export default function MapaOrkutSocial3D() {
 
         </main>
 
-        {/* 🤖 JANELA CHAT FUTURISTA 3D - MINI-ROBOTOC */}
+        {/* 🔑 MODAL DE AUTENTICAÇÃO SUPABASE / CRIAR CONTA */}
+        {modalAuthAberta && (
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '380px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '18px', zIndex: 1300, color: '#fff', boxShadow: '0 0 40px rgba(0, 240, 255, 0.4)', backdropFilter: 'blur(20px)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold' }}>
+                {modoAuth === 'login' ? '🔑 ACESSAR ORKUT SOCIAL 3D' : '📝 CRIAR NOVA CONTA NO SUPABASE'}
+              </h3>
+              <button onClick={() => setModalAuthAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            {/* LOGIN RÁPIDO SOCIAL */}
+            <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>Logar com Redes Sociais Rápidas:</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '12px' }}>
+              <button onClick={() => handleAuthSocial('google')} style={{ padding: '6px', backgroundColor: '#4285f4', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>🌐 Google</button>
+              <button onClick={() => handleAuthSocial('facebook')} style={{ padding: '6px', backgroundColor: '#1877f2', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>📘 Facebook</button>
+            </div>
+
+            <form onSubmit={handleAuthEmail} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {modoAuth === 'cadastro' && (
+                <>
+                  <input type="text" required placeholder="Nome Completo" value={formNome} onChange={(e) => setFormNome(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+                  <input type="text" required placeholder="Apelido no Orkut" value={formApelido} onChange={(e) => setFormApelido(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+                  <input type="text" required placeholder="Código/Nome Único (@seu_cod)" value={formCodNome} onChange={(e) => setFormCodNome(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+                  <input type="text" required placeholder="Data de Aniversário (ex: 24/01)" value={formAniversario} onChange={(e) => setFormAniversario(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+                </>
+              )}
+
+              <input type="email" required placeholder="E-mail de Acesso" value={emailAuth} onChange={(e) => setEmailAuth(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+              <input type="password" required placeholder="Sua Senha" value={senhaAuth} onChange={(e) => setSenhaAuth(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+
+              <button type="submit" style={{ padding: '8px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '4px' }}>
+                {modoAuth === 'login' ? 'Entrar na Conta' : 'Concluir Cadastro & Salvar no Supabase'}
+              </button>
+            </form>
+
+            <button onClick={() => setModoAuth(modoAuth === 'login' ? 'cadastro' : 'login')} style={{ background: 'none', border: 'none', color: '#ed2580', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px', width: '100%', textAlign: 'center' }}>
+              {modoAuth === 'login' ? 'Ainda não tem conta? Clique aqui para Criar!' : 'Já tem conta? Clique aqui para Logar!'}
+            </button>
+          </div>
+        )}
+
+        {/* 🎨 MODAL DE SELEÇÃO E GERAÇÃO DE AVATAR */}
+        {modalAvatarAberta && (
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '380px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #ed2580', borderRadius: '16px', padding: '16px', zIndex: 1300, color: '#fff', boxShadow: '0 0 40px rgba(237,37,128,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ed2580', paddingBottom: '8px', marginBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '12px', color: '#ed2580', fontWeight: 'bold' }}>🎨 ESCOLHER OU GERAR IMAGEM DE PERFIL</h3>
+              <button onClick={() => setModalAvatarAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '10px', color: '#00f0ff' }}>📁 Escolher Foto do Celular/PC:</label>
+              <input type="file" accept="image/*" onChange={handleUploadAvatarLocal} style={{ fontSize: '9px', color: '#fff' }} />
+
+              <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', display: 'block' }}>--- OU ---</span>
+
+              <label style={{ fontSize: '10px', color: '#00f0ff' }}>🌐 Cole URL de Imagem da Internet:</label>
+              <input type="text" placeholder="https://..." value={urlAvatarCustom} onChange={(e) => setUrlAvatarCustom(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '6px', color: '#fff' }} />
+              <button onClick={() => { if (urlAvatarCustom) setPerfilUsuario(p => ({ ...p, avatarUrl: urlAvatarCustom })); setModalAvatarAberta(false); }} style={{ padding: '6px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>Usar URL Direct</button>
+
+              <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', display: 'block' }}>--- OU ---</span>
+
+              <label style={{ fontSize: '10px', color: '#ed2580' }}>⚡ Gerar Avatar com Inteligência Artificial:</label>
+              <input type="text" placeholder="ex: Anime ninja cyberpunk neon, 4k..." value={promptIAAvatar} onChange={(e) => setPromptIAAvatar(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #ed2580', borderRadius: '6px', color: '#fff' }} />
+              <button onClick={handleGerarAvatarIA} disabled={carregandoIA} style={{ padding: '8px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                {carregandoIA ? '⏳ Gerando Avatar via IA...' : '🎨 Gerar Avatar IA'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 🤖 MODAL DE GERAÇÃO DE MASCOTE 3D VIA IA */}
+        {modalMascote3DAberta && (
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '380px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '16px', zIndex: 1300, color: '#fff', boxShadow: '0 0 40px rgba(0,240,255,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '12px', color: '#00f0ff', fontWeight: 'bold' }}>🤖 CRIAR SEU PRÓPRIO MASCOTE 3D (IA)</h3>
+              <button onClick={() => setModalMascote3DAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <p style={{ fontSize: '10px', color: '#cbd5e1', marginBottom: '10px' }}>
+              Como no antigo Orkut, agora você pode personalizar e criar seu próprio mascote virtual exclusivo em estilo 3D e renderização futurista.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '10px', color: '#00f0ff' }}>Descreva seu Mascote 3D:</label>
+              <input type="text" placeholder="ex: Dragão Robótico Neon, Gato Cyberpunk 3D..." value={promptIAMascote} onChange={(e) => setPromptIAMascote(e.target.value)} style={{ padding: '6px', fontSize: '10px', backgroundColor: '#020617', border: '1px solid #00f0ff', borderRadius: '6px', color: '#fff' }} />
+              <button onClick={handleGerarMascote3DIA} disabled={carregandoIA} style={{ padding: '8px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                {carregandoIA ? '⏳ Forjando Mascote 3D...' : '🤖 Gerar Mascote 3D'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* CHAT MINI-ROBOTOC */}
         {chatMiniRobotocAberto && (
-          <div style={{
-            position: 'fixed', bottom: '30px', left: '30px', width: '380px', height: '420px',
-            backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #ed2580', borderRadius: '16px',
-            boxShadow: '0 0 35px rgba(237, 37, 128, 0.4)', zIndex: 1100, backdropFilter: 'blur(15px)',
-            display: 'flex', flexDirection: 'column', overflow: 'hidden'
-          }}>
+          <div style={{ position: 'fixed', bottom: '30px', left: '30px', width: '380px', height: '420px', backgroundColor: 'rgba(8, 15, 30, 0.96)', border: '2px solid #ed2580', borderRadius: '16px', boxShadow: '0 0 35px rgba(237, 37, 128, 0.4)', zIndex: 1100, backdropFilter: 'blur(15px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div style={{ padding: '12px', backgroundColor: '#020617', borderBottom: '1px solid #ed2580', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '18px' }}>🤖</span>
@@ -1263,13 +1343,7 @@ export default function MapaOrkutSocial3D() {
 
             <div style={{ flexGrow: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(2, 6, 23, 0.6)' }}>
               {mensagensChat.map((m) => (
-                <div key={m.id} style={{
-                  alignSelf: m.autor === 'Você' ? 'flex-end' : 'flex-start',
-                  backgroundColor: m.autor === 'Você' ? '#00f0ff' : '#1e293b',
-                  color: m.autor === 'Você' ? '#000' : '#fff',
-                  padding: '8px 12px', borderRadius: '10px', fontSize: '10px', maxWidth: '80%',
-                  boxShadow: m.autor === 'Você' ? '0 0 10px rgba(0,240,255,0.3)' : 'none'
-                }}>
+                <div key={m.id} style={{ alignSelf: m.autor === 'Você' ? 'flex-end' : 'flex-start', backgroundColor: m.autor === 'Você' ? '#00f0ff' : '#1e293b', color: m.autor === 'Você' ? '#000' : '#fff', padding: '8px 12px', borderRadius: '10px', fontSize: '10px', maxWidth: '80%', boxShadow: m.autor === 'Você' ? '0 0 10px rgba(0,240,255,0.3)' : 'none' }}>
                   <b style={{ display: 'block', fontSize: '9px', marginBottom: '2px', color: m.autor === 'Você' ? '#000' : '#ed2580' }}>{m.autor}:</b>
                   {m.texto}
                 </div>
@@ -1277,36 +1351,19 @@ export default function MapaOrkutSocial3D() {
             </div>
 
             <form onSubmit={enviarPerguntaMiniRobotoc} style={{ padding: '8px', backgroundColor: '#020617', borderTop: '1px solid rgba(237,37,128,0.3)', display: 'flex', gap: '6px' }}>
-              <input
-                type="text"
-                placeholder="Pergunte ao Mini-ROBOTOC sobre o Orkut 3D..."
-                value={inputChat}
-                onChange={(e) => setInputChat(e.target.value)}
-                style={{ flexGrow: 1, padding: '6px 10px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff', outline: 'none' }}
-              />
-              <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                Enviar
-              </button>
+              <input type="text" placeholder="Pergunte ao Mini-ROBOTOC..." value={inputChat} onChange={(e) => setInputChat(e.target.value)} style={{ flexGrow: 1, padding: '6px 10px', fontSize: '10px', border: '1px solid #ed2580', borderRadius: '6px', backgroundColor: '#09090b', color: '#fff', outline: 'none' }} />
+              <button type="submit" style={{ padding: '6px 12px', backgroundColor: '#ed2580', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Enviar</button>
             </form>
           </div>
         )}
 
-        {/* 🌐 MODAL: LINKS FUTURÍSTICOS EM SOCIAL 3D */}
+        {/* MODAL LINKS FUTURÍSTICOS */}
         {modalLinksFuturisticosAberta && (
-          <div style={{
-            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: '420px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #ed2580',
-            borderRadius: '16px', padding: '16px', zIndex: 1200, color: '#fff', boxShadow: '0 0 40px rgba(237, 37, 128, 0.4)',
-            backdropFilter: 'blur(20px)'
-          }}>
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '420px', backgroundColor: 'rgba(8, 15, 30, 0.98)', border: '2px solid #ed2580', borderRadius: '16px', padding: '16px', zIndex: 1200, color: '#fff', boxShadow: '0 0 40px rgba(237, 37, 128, 0.4)', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ed2580', paddingBottom: '8px', marginBottom: '12px' }}>
               <h3 style={{ margin: 0, fontSize: '13px', color: '#ed2580', fontWeight: 'bold' }}>🌐 LINKS FUTURÍSTICOS EM SOCIAL 3D</h3>
               <button onClick={() => setModalLinksFuturisticosAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
             </div>
-
-            <p style={{ fontSize: '10px', color: '#cbd5e1', marginBottom: '10px' }}>
-              Inclua e gerencie links vitais de sites profissionais ou pessoais que você mais utiliza no seu trabalho e dia a dia.
-            </p>
 
             <form onSubmit={adicionarLinkFuturistico} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
@@ -1340,7 +1397,7 @@ export default function MapaOrkutSocial3D() {
           </div>
         )}
 
-        {/* 🤖 OVERLAY ROBOTOC DATA CENTER & NUVEM */}
+        {/* OVERLAY ROBOTOC DATA CENTER */}
         {mostrarOverlayRobotoc && (
           <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(8,15,30,0.96)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '20px', zIndex: 1000, width: '420px', color: '#fff', boxShadow: '0 0 40px rgba(0,240,255,0.4)', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00f0ff', paddingBottom: '8px', marginBottom: '12px' }}>
@@ -1373,75 +1430,25 @@ export default function MapaOrkutSocial3D() {
           </div>
         )}
 
-        {/* 🏛️ ARQUITETURA DATA CENTER 3D */}
+        {/* ARQUITETURA DATA CENTER 3D */}
         {arquiteturaAberta && (
-          <div style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            backgroundColor: 'rgba(7, 12, 28, 0.96)',
-            border: '2px solid #00f0ff',
-            borderRadius: '16px',
-            padding: '16px',
-            zIndex: 1000,
-            width: '360px',
-            color: '#fff',
-            boxShadow: '0 0 30px rgba(0, 240, 255, 0.4)',
-            backdropFilter: 'blur(20px)'
-          }}>
+          <div style={{ position: 'fixed', bottom: '20px', right: '20px', backgroundColor: 'rgba(7, 12, 28, 0.96)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '16px', zIndex: 1000, width: '360px', color: '#fff', boxShadow: '0 0 30px rgba(0, 240, 255, 0.4)', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🏛️ ARQUITETURA DATA CENTER 3D
-              </h3>
+              <h3 style={{ margin: 0, fontSize: '13px', color: '#00f0ff', fontWeight: 'bold' }}>🏛️ ARQUITETURA DATA CENTER 3D</h3>
               <button onClick={() => setArquiteturaAberta(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
             </div>
 
-            <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 10px 0', lineHeight: '1.3' }}>
-              Sincronização Estrutural de Nós Orbitais no Mapa Terrestre. Dados operando via Gemini AGI.
-            </p>
-
-            <div style={{ backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '10px', padding: '10px', marginBottom: '10px' }}>
-              <span style={{ fontSize: '9px', color: '#00f0ff', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
-                🌐 NÓS ORBITAIS DE ARMAZENAMENTO ATIVOS
-              </span>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #4285f4' }}>
-                  <span style={{ fontSize: '10px', color: '#4285f4', fontWeight: 'bold' }}>☁️ Google Drive & Gmail</span>
-                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>15 GB / 2 TB (Stable)</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '10px', color: '#fff', fontWeight: 'bold' }}>🍋 Apple iCloud</span>
-                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>Nó Orbital / Backups</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#09090b', padding: '6px 8px', borderRadius: '6px', border: '1px solid #00a4ef' }}>
-                  <span style={{ fontSize: '10px', color: '#00a4ef', fontWeight: 'bold' }}>💻 Microsoft OneDrive</span>
-                  <span style={{ fontSize: '9px', color: '#94a3b8' }}>Vault Empresarial</span>
-                </div>
-              </div>
-            </div>
-
-            <span style={{ fontSize: '9px', color: '#ff007f', fontWeight: 'bold', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
-              🔗 LINKS MESTRES & REDES SOCIAIS (EMANUEL):
-            </span>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
-              <a href="https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
-              <a href="https://www.tiktok.com/@emanueldasilva26" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
-              <a href="https://www.instagram.com/emanuelsilva432" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 150, 0.1)', border: '1px solid #ff0099', color: '#ff0099', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>📸 Instagram Oficial</a>
-              <a href="mailto:leeheroi123@gmail.com" style={{ padding: '7px 10px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid #eab308', color: '#fde047', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>✉️ E-mail Direto (leeheroi123@gmail.com)</a>
-              <a href="https://api.whatsapp.com/send?phone=5588981493989" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 255, 102, 0.15)', border: '1px solid #00ff66', color: '#4ade80', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>💬 WhatsApp: (88) 98149-3989</a>
-              <a href="https://www.threads.net/@emanuelsilva432" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#c084fc', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🧵 Threads Oficial</a>
-              <a href="https://github.com/Manomae" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
+              <a href="[https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg](https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg)" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(255, 0, 0, 0.15)', border: '1px solid #ff0000', color: '#ff4d4d', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>▶️ Canal YouTube Oficial</a>
+              <a href="[https://www.tiktok.com/@emanueldasilva26](https://www.tiktok.com/@emanueldasilva26)" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid #00f0ff', color: '#00f0ff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🎵 TikTok Oficial</a>
+              <a href="[https://github.com/Manomae](https://github.com/Manomae)" target="_blank" rel="noreferrer" style={{ padding: '7px 10px', backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '10px', fontWeight: 'bold' }}>🐙 GitHub Principal</a>
             </div>
           </div>
         )}
 
       </div>
 
-      <FuturisticWindowManager />
+      <FuturisticWindowManager/>
     </div>
   );
 }
