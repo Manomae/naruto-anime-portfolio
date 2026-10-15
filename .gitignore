@@ -1,4 +1,7 @@
-node_modules/ 
-.next/ 
-node_modules/ 
-.next/ 
+node_modules/
+.next/
+
+# Ficheiros de variáveis de ambiente (Proteção de chaves e senhas)
+.env
+.env.local
+.env.*
