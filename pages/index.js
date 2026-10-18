@@ -705,7 +705,7 @@ function PainelDevSplitScreen({ onClose }) {
         "  ai-optimize-core  -> Otimiza rotinas WebGL e sintaxe de baixo nível",
         "  ai-generate-code  -> Gera boilerplate automático na linguagem exótica selecionada",
         "  ai-scan-security  -> Executa varredura profunda de segurança de 7 camadas",
-        "  sys-info-em       -> Exibe o estado em tempo real dos 11 mapas e periféricos"
+        "  sys-info-em        -> Exibe o estado em tempo real dos 12 mapas e periféricos"
       ];
     } else if (cmd === 'ai-optimize-core') {
       res = ["⚡ IA EM Power Shell: Código compilado, vetores paralelizados e otimização concluída."];
@@ -714,7 +714,7 @@ function PainelDevSplitScreen({ onClose }) {
     } else if (cmd === 'ai-scan-security') {
       res = ["🛡️ IA EM Power Shell: Varredura de 7 Camadas concluída. 0 vulnerabilidades no Kernel!"];
     } else if (cmd === 'sys-info-em') {
-      res = ["🌐 STATUS DA REDE: 11 Mapas Sincronizados | Android 16 Neural OS EM: Ativo | Periféricos: OK"];
+      res = ["🌐 STATUS DA REDE: 12 Mapas Sincronizados | Android 16 Neural OS EM: Ativo | Periféricos: OK"];
     } else {
       res = [`PS C:\\EmanuelOS\\Kernel> ${cmd} : O comando não foi reconhecido. Tente 'help-em'.`];
     }
@@ -1336,6 +1336,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
       if (modoAtual === 'mapa_aeroespacial') mapColor = 0x8b5cf6;
       if (modoAtual === 'mapa_eleicoes2026') mapColor = 0x00ffcc;
       if (modoAtual === 'mapa_geometric3d') mapColor = 0xff00ff;
+      if (modoAtual === 'mapa_agroflorestal') mapColor = 0x15803d;
 
       const mapMesh = new THREE.Mesh(mapGeo, new THREE.MeshStandardMaterial({ color: mapColor, wireframe: true }));
       mapMesh.position.y = 0.8;
@@ -1416,7 +1417,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento Completo dos 11 Mapas
+  // Mapeamento Completo dos 12 Mapas
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/mapa-orkut' },
@@ -1428,7 +1429,8 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
     { id: 'mapa_quantico', nome: '⚛️ Quântico', rota: '/mapa-quantico' },
     { id: 'mapa_aeroespacial', nome: '🛸 Aeroespacial', rota: '/mapaaeroespacial' },
     { id: 'mapa_eleicoes2026', nome: '🗳️ Eleições 2026 3D', rota: '/MapaEleicoesBrasil20263D' },
-    { id: 'mapa_geometric3d', nome: '📐 PG Matemático 3D', rota: '/geometricMap3D' }
+    { id: 'mapa_geometric3d', nome: '📐 PG Matemático 3D', rota: '/geometricMap3D' },
+    { id: 'mapa_agroflorestal', nome: '🌲 Agroflorestal', rota: '/mapaagroflorestal' }
   ];
 
   const handleMouseDownHeader = (e) => {
@@ -2080,7 +2082,7 @@ export default function EmanuelOSCore() {
             ))}
           </div>
 
-          {/* SIDEBAR ESQUERDA (CENTRAL DOS 11 MAPAS INTEGRADOS) */}
+          {/* SIDEBAR ESQUERDA (CENTRAL DOS 12 MAPAS INTEGRADOS) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
@@ -2096,9 +2098,9 @@ export default function EmanuelOSCore() {
 
                 <UnixTerminalCanvas />
 
-                {/* PAINEL COMPLETO COM OS 11 MAPAS */}
+                {/* PAINEL COMPLETO COM OS 12 MAPAS */}
                 <div style={{ padding: '12px', backgroundColor: 'rgba(240, 249, 255, 0.8)', borderRadius: '12px', border: '1px solid #bae6fd' }}>
-                  <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 11 Mapas Integrados</h3>
+                  <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 12 Mapas Integrados</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     <Link href="/mapa" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #16a34a', color: '#16a34a', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌍 Terrestre</Link>
                     <Link href="/mapa-orkut" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ea580c', color: '#ea580c', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🧡 Orkut</Link>
@@ -2110,7 +2112,8 @@ export default function EmanuelOSCore() {
                     <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #8b5cf6', color: '#8b5cf6', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚛️ Quântico</Link>
                     <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #9333ea', color: '#9333ea', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🛸 Aeroespacial</Link>
                     <Link href="/MapaEleicoesBrasil20263D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #00ffcc', color: '#00cc99', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🗳️ Eleições 2026 3D</Link>
-                    <Link href="/geometricMap3D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ff00ff', color: '#d946ef', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold', gridColumn: 'span 2' }}>📐 Progressão Geométrica 3D</Link>
+                    <Link href="/geometricMap3D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ff00ff', color: '#d946ef', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>📐 Progressão Geométrica 3D</Link>
+                    <Link href="/mapaagroflorestal" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #15803d', color: '#15803d', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌲 Agroflorestal</Link>
                   </div>
                 </div>
 
