@@ -1567,28 +1567,88 @@ export default function EmanuelOSCore() {
     custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
   });
 
-  // 🌍 LOCAIS INTEGRADOS À TERRA 3D
-  const [locaisEmanuelOS] = useState([
-    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node' },
-    { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial' },
-    { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, lat: -23.0062, lng: -44.3182, ipCriptografado: 'AES256-NUK-POWER', trabalho: 'Monitoramento de Matriz Energética' },
-    { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, lat: -9.3833, lng: -40.5000, ipCriptografado: 'AES256-SOLAR-PWR', trabalho: 'Gestão de Energia Fotovoltaica' },
-    { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, lat: -5.0892, lng: -42.8019, ipCriptografado: 'AES256-5G-EOLICA', trabalho: 'Sincronização de Banda Ultralarga' },
-    { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, lat: -25.4284, lng: -54.5868, ipCriptografado: 'AES256-HIDRO-POWER', trabalho: 'Controle de Escoamento de Água' },
-    { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, lat: -23.5505, lng: -46.6333, ipCriptografado: 'AES256-UNIV-RECRUIT', trabalho: 'Desenvolvimento Acadêmico & IA' },
-    { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, lat: -22.9068, lng: -43.1729, ipCriptografado: 'AES256-LAB-FARMA', trabalho: 'Pesquisa Farmacêutica & Biotec' },
-    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, lat: -23.9608, lng: -46.3339, ipCriptografado: 'AES256-COAST-GUARD', trabalho: 'Patrulha e Segurança Costeira' },
-    { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, lat: -25.6953, lng: -54.4367, ipCriptografado: 'AES256-CATARATAS-3D', trabalho: 'Preservação de Reservas Naturais' },
-    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, lat: -2.8856, lng: -40.5050, ipCriptografado: 'AES256-KITESURF-NEON', trabalho: 'Treinamento de Atletas & Hidrodinâmica' },
-    { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas' },
-    { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas' },
-    { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber' }
-  ]);
+  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS
+const [locaisEmanuelOS] = useState([
+  { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node', urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
+  { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial', urlExterna: 'https://maps.google.com/?q=-12.9714,-38.5014' },
+  { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, lat: -23.0062, lng: -44.3182, ipCriptografado: 'AES256-NUK-POWER', trabalho: 'Monitoramento de Matriz Energética', urlExterna: 'https://maps.google.com/?q=-23.0062,-44.3182' },
+  { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, lat: -9.3833, lng: -40.5000, ipCriptografado: 'AES256-SOLAR-PWR', trabalho: 'Gestão de Energia Fotovoltaica', urlExterna: 'https://maps.google.com/?q=-9.3833,-40.5000' },
+  { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, lat: -5.0892, lng: -42.8019, ipCriptografado: 'AES256-5G-EOLICA', trabalho: 'Sincronização de Banda Ultralarga', urlExterna: 'https://maps.google.com/?q=-5.0892,-42.8019' },
+  { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, lat: -25.4284, lng: -54.5868, ipCriptografado: 'AES256-HIDRO-POWER', trabalho: 'Controle de Escoamento de Água', urlExterna: 'https://maps.google.com/?q=-25.4284,-54.5868' },
+  { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, lat: -23.5505, lng: -46.6333, ipCriptografado: 'AES256-UNIV-RECRUIT', trabalho: 'Desenvolvimento Acadêmico & IA', urlExterna: 'https://maps.google.com/?q=-23.5505,-46.6333' },
+  { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, lat: -22.9068, lng: -43.1729, ipCriptografado: 'AES256-LAB-FARMA', trabalho: 'Pesquisa Farmacêutica & Biotec', urlExterna: 'https://maps.google.com/?q=-22.9068,-43.1729' },
+  { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, lat: -23.9608, lng: -46.3339, ipCriptografado: 'AES256-COAST-GUARD', trabalho: 'Patrulha e Segurança Costeira', urlExterna: 'https://maps.google.com/?q=-23.9608,-46.3339' },
+  { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, lat: -25.6953, lng: -54.4367, ipCriptografado: 'AES256-CATARATAS-3D', trabalho: 'Preservação de Reservas Naturais', urlExterna: 'https://maps.google.com/?q=-25.6953,-54.4367' },
+  { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, lat: -2.8856, lng: -40.5050, ipCriptografado: 'AES256-KITESURF-NEON', trabalho: 'Treinamento de Atletas & Hidrodinâmica', urlExterna: 'https://maps.google.com/?q=-2.8856,-40.5050' },
+  { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas', urlExterna: 'https://maps.google.com/?q=-15.7801,-47.9292' },
+  { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas', urlExterna: 'https://maps.google.com/?q=-19.9167,-43.9345' },
+  { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' }
+]);
 
-  // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D
-  const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
-  const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
-  const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
+// 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D
+const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
+const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
+const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
+
+// 🔎 FUNÇÃO DA BARRA DE PESQUISA INTELIGENTE COM LUPA E ATUALIZAÇÃO EM TEMPO REAL
+const handleBuscaGlobo = (e) => {
+  const val = e.target.value;
+  setTermoBuscaGlobo(val);
+  if (val.trim().length >= 1) {
+    const filtrados = locaisEmanuelOS.filter(item =>
+      item.nome.toLowerCase().includes(val.toLowerCase()) ||
+      item.categoria.toLowerCase().includes(val.toLowerCase()) ||
+      item.trabalho.toLowerCase().includes(val.toLowerCase())
+    );
+    setResultadosBuscaGlobo(filtrados);
+  } else {
+    setResultadosBuscaGlobo([]);
+  }
+};
+
+{/* 🔍 BARRA DE PESQUISA INTELIGENTE COM LUPAS & LINKS FUTURÍSTICOS */}
+<div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '480px' }}>
+  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
+    <span style={{ fontSize: '14px', color: '#0284c7' }}>🔍</span>
+    <input
+      type="text"
+      value={termoBuscaGlobo}
+      onChange={handleBuscaGlobo}
+      placeholder="🔍 Pesquisar locais com links no Globo 3D..."
+      style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: '11px', fontWeight: 'bold' }}
+    />
+    {termoBuscaGlobo && (
+      <button onClick={() => { setTermoBuscaGlobo(''); setResultadosBuscaGlobo([]); setLocalSelecionadoGlobo(null); }} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
+    )}
+  </div>
+
+  {/* 📋 SUGESTÕES DIGITADAS COM LUPAS INDIVIDUAIS E LINKS EXTERNOS */}
+  {resultadosBuscaGlobo.length > 0 && (
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '14px', marginTop: '6px', maxHeight: '220px', overflowY: 'auto', padding: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', backdropFilter: 'blur(15px)' }}>
+      {resultadosBuscaGlobo.map(loc => (
+        <div
+          key={loc.id}
+          style={{ padding: '8px 10px', borderRadius: '8px', borderBottom: '1px solid #f0f9ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.2s ease' }}
+        >
+          <div onClick={() => focarLocalNoGlobo(loc)} style={{ cursor: 'pointer', flexGrow: 1 }}>
+            <strong style={{ fontSize: '11px', color: '#0284c7', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              🔍 {loc.nome}
+            </strong>
+            <span style={{ fontSize: '9px', color: '#64748b' }}>{loc.categoria} • {loc.trabalho}</span>
+          </div>
+          <a
+            href={loc.urlExterna}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: '9px', backgroundColor: '#0284c7', color: '#fff', padding: '4px 8px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '8px' }}
+          >
+            🌐 Abrir Link ➔
+          </a>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
   const [validandoServidores, setValidandoServidores] = useState(false);
