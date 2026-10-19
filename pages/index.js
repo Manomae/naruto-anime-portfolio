@@ -1534,17 +1534,22 @@ export default function EmanuelOSCore() {
   const [miniAssistantAberto, setMiniAssistantAberto] = useState(false);
   const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
 
+  // 🌟 SEUS DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
-    youtube: 'https://youtube.com',
-    tiktok: 'https://tiktok.com',
-    instagram: 'https://instagram.com',
-    github: 'https://github.com/Manomae/naruto-anime-portfolio',
-    whatsapp: '5588981493989',
-    facebook: 'https://facebook.com',
-    threads: 'https://threads.net'
+    nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
+    whatsapp: "5588981493989",
+    whatsappFormatado: "(88) 98149-3989",
+    email: "leeheroi123@gmail.com",
+    tiktok: "https://www.tiktok.com/@emanueldasilva26",
+    instagram: "https://www.instagram.com/emanuelsilva432",
+    threads: "https://www.threads.net/@emanuelsilva432",
+    github: "https://github.com/Manomae",
+    facebook: "https://www.facebook.com/leeheroi.heroi",
+    youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
-  const [linksSociais3D] = useState([
+  // ESTADO DE LINKS 3D DINÂMICOS
+  const [links3D, setLinks3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
     { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
     { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
@@ -1553,6 +1558,14 @@ export default function EmanuelOSCore() {
     { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
     { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
   ]);
+
+  // ☁️ SERVIÇOS DE E-MAIL E NUVEM CONECTADOS
+  const [servicosNuvemEmail] = useState({
+    google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
+    apple: { conectado: true, conta: 'emanuel@icloud.com', espaco: '5 GB / 200 GB' },
+    microsoft: { conectado: true, conta: 'emanuel@outlook.com', espaco: '1 TB OneDrive / Azure' },
+    custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
+  });
 
   // 🌍 LOCAIS INTEGRADOS À TERRA 3D
   const [locaisEmanuelOS] = useState([
@@ -1630,6 +1643,7 @@ export default function EmanuelOSCore() {
   const cameraRef = useRef(null);
   const globeGroupRef = useRef(null);
   const markersGroupRef = useRef(null);
+  const mainRobotRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
@@ -1752,7 +1766,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D COM MODELAGEM REALISTA & NÓDULOS DE CIDADES/INSTALAÇÕES
+  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL (BRANCO & AZUL)
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1866,7 +1880,72 @@ export default function EmanuelOSCore() {
     globeGroup.add(markersGroup);
     scene.add(globeGroup);
 
-    // CONTROLE DE ARRASTE/ROTÇÃO DO GLOBO
+    // 🤖 ROBOTOC 3D PRINCIPAL (MODELAGEM COMPLETA EM BRANCO E AZUL) FLUTUANDO AO LADO DA TERRA
+    const mainRobotGroup = new THREE.Group();
+
+    const whiteMatMain = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.2, clearcoat: 1.0 });
+    const blueMatMain = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
+    const cyanGlowMain = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.0 });
+
+    // Cabeça do Robotoc
+    const robotHead = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), whiteMatMain);
+    robotHead.scale.set(1, 1.1, 1);
+    robotHead.position.y = 1.0;
+
+    // Visor Cyan Neon
+    const robotVisor = new THREE.Mesh(new THREE.SphereGeometry(0.48, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), cyanGlowMain);
+    robotVisor.rotation.x = -Math.PI / 10;
+    robotVisor.position.set(0, 0.05, 0.02);
+    robotHead.add(robotVisor);
+
+    // Orelhas / Antenas
+    const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2, 16), blueMatMain);
+    earL.rotation.z = Math.PI / 2;
+    earL.position.set(-0.52, 0, 0);
+    const earR = earL.clone();
+    earR.position.set(0.52, 0, 0);
+    robotHead.add(earL);
+    robotHead.add(earR);
+
+    mainRobotGroup.add(robotHead);
+
+    // Corpo
+    const robotBody = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 1.0, 32), whiteMatMain);
+    robotBody.position.y = 0.1;
+
+    // Peitoral Azul
+    const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.15), blueMatMain);
+    chest.position.set(0, 0.05, 0.35);
+    robotBody.add(chest);
+
+    // Núcleo Quântico Cyan
+    const robotCore = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 32), cyanGlowMain);
+    robotCore.rotation.x = Math.PI / 2;
+    robotCore.position.set(0, 0.08, 0.43);
+    robotBody.add(robotCore);
+
+    mainRobotGroup.add(robotBody);
+
+    // Braços
+    const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.7, 16);
+    const armL = new THREE.Mesh(armGeo, blueMatMain);
+    armL.position.set(-0.55, 0.1, 0);
+    armL.rotation.z = Math.PI / 8;
+
+    const armR = new THREE.Mesh(armGeo, blueMatMain);
+    armR.position.set(0.55, 0.1, 0);
+    armR.rotation.z = -Math.PI / 8;
+
+    mainRobotGroup.add(armL);
+    mainRobotGroup.add(armR);
+
+    // Posicionar o Robotoc Principal à direita do Globo 3D
+    mainRobotGroup.position.set(3.2, 0.2, 1.0);
+    mainRobotGroup.scale.set(1.2, 1.2, 1.2);
+    scene.add(mainRobotGroup);
+    mainRobotRef.current = mainRobotGroup;
+
+    // CONTROLE DE ARRASTE/ROTAÇÃO DO GLOBO
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
@@ -1903,6 +1982,12 @@ export default function EmanuelOSCore() {
 
       if (gridMesh) {
         gridMesh.rotation.y = -time * 0.05;
+      }
+
+      // Animação flutuante e interativa do Robotoc Principal
+      if (mainRobotRef.current) {
+        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
+        mainRobotRef.current.rotation.y = Math.sin(time * 1.0) * 0.25 - 0.3;
       }
 
       renderer.render(scene, camera);
@@ -2021,10 +2106,10 @@ export default function EmanuelOSCore() {
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D */}
+          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL */}
           <div 
             ref={mountRef} 
-            title="Arraste para girar a Terra 3D! Clique nos marcadores ou pesquise na barra superior."
+            title="Arraste para girar a Terra 3D! Veja o Robotoc 3D Flutuando ao Lado."
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
@@ -2108,12 +2193,12 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* 🌐 REDES SOCIAIS EM MODELAGEM 3D AO LADO DO GLOBO */}
-          <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '240px' }}>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
-              🌐 LINKS SOCIAIS 3D DINÂMICOS
+          {/* 🌐 REDES SOCIAIS & SERVIÇOS DE NUVEM/EMAIL EM MODELAGEM FUTURÍSTICA 3D */}
+          <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '250px' }}>
+            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.92)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
+              🌐 LINKS SOCIAIS & NUVENS EMANUEL.OS
             </span>
-            {linksSociais3D.map((item) => (
+            {links3D.map((item) => (
               <a
                 key={item.id}
                 href={item.url}
@@ -2124,7 +2209,7 @@ export default function EmanuelOSCore() {
                   alignItems: 'center',
                   gap: '8px',
                   padding: '6px 10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.88)',
                   border: '1px solid #00f0ff',
                   borderRadius: '8px',
                   color: '#0f172a',
@@ -2141,6 +2226,16 @@ export default function EmanuelOSCore() {
                 <span style={{ fontSize: '8px', color: '#0284c7', textTransform: 'uppercase' }}>[{item.nuvem}]</span>
               </a>
             ))}
+
+            {/* Painel de Capacidade e Conexão das Nuvens/Emails */}
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '1px solid #0284c7', borderRadius: '10px', padding: '8px', backdropFilter: 'blur(10px)', marginTop: '4px' }}>
+              <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>☁️ NUVENS & TRIPLE E-MAIL STATUS:</span>
+              <div style={{ fontSize: '8px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div>📧 Google: <strong style={{ color: '#16a34a' }}>{servicosNuvemEmail.google.conta}</strong></div>
+                <div>🍎 Apple: <strong style={{ color: '#a855f7' }}>{servicosNuvemEmail.apple.conta}</strong></div>
+                <div>☁️ Azure: <strong style={{ color: '#ea580c' }}>{servicosNuvemEmail.microsoft.conta}</strong></div>
+              </div>
+            </div>
           </div>
 
           {/* SIDEBAR ESQUERDA (CENTRAL DOS 12 MAPAS INTEGRADOS) */}
