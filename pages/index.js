@@ -1585,10 +1585,11 @@ export default function EmanuelOSCore() {
     { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' }
   ]);
 
-  // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D
+  // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D & CONTROLE DE FONTE
   const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
   const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
+  const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11); // Tamanho em px (padrão: 11px)
 
   // 🔎 DECLARAÇÃO ÚNICA DA FUNÇÃO DE BUSCA
   const handleBuscaGlobo = (e) => {
@@ -2112,16 +2113,40 @@ export default function EmanuelOSCore() {
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
-          {/* 🔍 BARRA DE PESQUISA INTELIGENTE COM LUPA PRINCIPAL & INTERFACE FUTURÍSTICA */}
-          <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '480px' }}>
+          {/* 🔍 BARRA DE PESQUISA INTELIGENTE COM LUPA PRINCIPAL, CONTROLE + / - & INTERFACE FUTURÍSTICA */}
+          <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '520px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
-              <span style={{ fontSize: '14px', color: '#0284c7' }}>🔍</span>
+              <span style={{ fontSize: `${tamanhoFonteBusca + 3}px`, color: '#0284c7' }}>🔍</span>
+              
+              {/* ➕ ➖ CONTROLE DE TAMANHO DE FONTE PARA NOTURNO / LEITURA AUMENTADA */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', backgroundColor: 'rgba(2, 132, 199, 0.1)', padding: '2px 6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.5)' }}>
+                <button
+                  type="button"
+                  onClick={() => setTamanhoFonteBusca(prev => Math.max(8, prev - 1))}
+                  title="Diminuir Fonte (Noturno)"
+                  style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', padding: '0 3px', lineHeight: '1' }}
+                >
+                  −
+                </button>
+                <span style={{ fontSize: '9px', color: '#0284c7', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
+                  {tamanhoFonteBusca}px
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTamanhoFonteBusca(prev => Math.min(24, prev + 1))}
+                  title="Aumentar Fonte (Facilita Leitura)"
+                  style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', padding: '0 3px', lineHeight: '1' }}
+                >
+                  +
+                </button>
+              </div>
+
               <input
                 type="text"
                 value={termoBuscaGlobo}
                 onChange={handleBuscaGlobo}
-                placeholder="🔍 Pesquisar locais com links no Globo 3D..."
-                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: '11px', fontWeight: 'bold' }}
+                placeholder="Pesquisar locais no Globo 3D..."
+                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: `${tamanhoFonteBusca}px`, fontWeight: 'bold' }}
               />
               {termoBuscaGlobo && (
                 <button onClick={() => { setTermoBuscaGlobo(''); setResultadosBuscaGlobo([]); setLocalSelecionadoGlobo(null); }} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
@@ -2137,16 +2162,16 @@ export default function EmanuelOSCore() {
                     style={{ padding: '8px 10px', borderRadius: '8px', borderBottom: '1px solid #f0f9ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.2s ease' }}
                   >
                     <div onClick={() => focarLocalNoGlobo(loc)} style={{ cursor: 'pointer', flexGrow: 1 }}>
-                      <strong style={{ fontSize: '11px', color: '#0284c7', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <strong style={{ fontSize: `${tamanhoFonteBusca}px`, color: '#0284c7', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         🔍 {loc.nome}
                       </strong>
-                      <span style={{ fontSize: '9px', color: '#64748b' }}>{loc.categoria} • {loc.trabalho}</span>
+                      <span style={{ fontSize: `${Math.max(8, tamanhoFonteBusca - 2)}px`, color: '#64748b' }}>{loc.categoria} • {loc.trabalho}</span>
                     </div>
                     <a
                       href={loc.urlExterna}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ fontSize: '9px', backgroundColor: '#0284c7', color: '#fff', padding: '4px 8px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '8px' }}
+                      style={{ fontSize: `${Math.max(8, tamanhoFonteBusca - 2)}px`, backgroundColor: '#0284c7', color: '#fff', padding: '4px 8px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '8px' }}
                     >
                       🌐 Abrir Link ➔
                     </a>
