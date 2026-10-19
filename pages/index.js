@@ -16,26 +16,22 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
-// 🤖 --- NOVO COMPONENTE: MINI ROBOTOC 3D ASSISTANT (AUTO-COMPLEMENTO REAL COM TAB/➔) ---
+// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const miniRobotRef = useRef(null);
   const pointerArmRef = useRef(null);
-  const targetRingRef = useRef(null);
 
   const [duvidaInput, setDuvidaInput] = useState('');
-  const [sugestoes, setSugestoes] = useState([]); // Lista de palavras sugeridas
+  const [sugestoes, setSugestoes] = useState([]);
   const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Digite algo e aperte TAB ou Seta Direita para autocompletar!');
-  const [indicadorAtivo, setIndicadorAtivo] = useState(false);
 
-  // Escuta a digitação e busca sugestões instantâneas no motor palavrasAutoComplemento.js
   const handleInputChange = (e) => {
     const valor = e.target.value;
     setDuvidaInput(valor);
 
-    // Extrai a última palavra sendo digitada no campo
     const ultimasPalavras = valor.split(' ');
     const ultimaPalavra = ultimasPalavras[ultimasPalavras.length - 1];
 
@@ -47,7 +43,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     }
   };
 
-  // Aplica a palavra auto-completada no campo de texto
   const aplicarSugestao = (palavraSugerida) => {
     if (!palavraSugerida) return;
     const palavras = duvidaInput.split(' ');
@@ -57,11 +52,10 @@ function MiniRobotocAssistant3D({ onClose }) {
     setSugestoes([]);
   };
 
-  // Captura as teclas TAB e Seta Direita para autocompletar
   const handleKeyDown = (e) => {
     if ((e.key === 'Tab' || e.key === 'ArrowRight') && sugestoes.length > 0) {
-      e.preventDefault(); // Impede a perda de foco ao pressionar Tab
-      aplicarSugestao(sugestoes[0]); // Aceita automaticamente a primeira sugestão
+      e.preventDefault();
+      aplicarSugestao(sugestoes[0]);
     }
   };
 
@@ -74,7 +68,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     }
   };
 
-  // Renderização WebGL do Mini Robotoc em Three.js
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -174,7 +167,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     e.preventDefault();
     if (!duvidaInput.trim()) return;
 
-    // Adiciona palavra nova ao banco de dados dinamicamente caso seja uma palavra nova
     autoCompleterEngine.adicionarNovaPalavra(duvidaInput.trim());
 
     const q = duvidaInput.toLowerCase().trim();
@@ -182,7 +174,6 @@ function MiniRobotocAssistant3D({ onClose }) {
 
     if (q.includes('onde fica') || q.includes('onde esta') || q.includes('mapa') || q.includes('workstation')) {
       resp = `Localizando '${duvidaInput}' no sistema... O Mini Robotoc encontrou os módulos correspondentes!`;
-      setIndicadorAtivo(true);
     } else {
       resp = `Entendido! Analisando: "${duvidaInput}". O Mini Robotoc processou seu comando no Emanuel.OS!`;
     }
@@ -216,7 +207,6 @@ function MiniRobotocAssistant3D({ onClose }) {
         </div>
       </div>
 
-      {/* BALÃO DE SUGESTÕES COM DESTAQUE PARA ATALHO DE TECLADO (TAB / SETA DIREITA) */}
       {sugestoes.length > 0 && (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px', backgroundColor: '#f0f9ff', padding: '6px', borderRadius: '8px', border: '1px solid #00f0ff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
@@ -258,9 +248,9 @@ function MiniRobotocAssistant3D({ onClose }) {
 }
 
 // =========================================================================================
-// 📸 --- COMPONENTE: RASTREAMENTO E TREINAMENTO VISUAL IA (CAMERA HUD) ---
+// 📸 --- COMPONENTE: MOTION TRACKER ---
 // =========================================================================================
-function MotionTracker({ onFrameCapture }) {
+function MotionTracker() {
   const videoRef = useRef(null);
   const [active, setActive] = useState(false);
   const [status, setStatus] = useState("Desconectado");
@@ -305,7 +295,7 @@ function MotionTracker({ onFrameCapture }) {
 }
 
 // =========================================================================================
-// ⚙️ --- COMPONENTE: GERENCIADOR DE PERIFÉRICOS BLUETOOTH / GEAR ---
+// ⚙️ --- COMPONENTE: ROBOTOC GEAR ---
 // =========================================================================================
 function RobotocGear({ onConnectGear, highlightGear }) {
   const [gears, setGears] = useState({ headset: false, mouse: false, keyboard: true });
@@ -337,7 +327,7 @@ function RobotocGear({ onConnectGear, highlightGear }) {
 }
 
 // =========================================================================================
-// ⌨️ --- COMPONENTE: TECLADO HOLOGRÁFICO GLASS 3D COM FEEDBACK VISUAL EM TEMPO REAL ---
+// ⌨️ --- COMPONENTE: TECLADO GLASS 3D ---
 // =========================================================================================
 function GlassKeyboard3D({ onKeyPress }) {
   const [lastKey, setLastKey] = useState(null);
@@ -393,7 +383,7 @@ function GlassKeyboard3D({ onKeyPress }) {
 }
 
 // =========================================================================================
-// 📲 --- COMPONENTE: MENSAGERIA REAL VIA NÚMERO (WHATSAPP, TELEGRAM, GOOGLE MENSAGENS) ---
+// 📲 --- COMPONENTE: DISPATCHER MENSAGENS ---
 // =========================================================================================
 function DispatcherMensagensNumeros({ addLog }) {
   const [plataforma, setPlataforma] = useState('whatsapp');
@@ -458,7 +448,7 @@ function DispatcherMensagensNumeros({ addLog }) {
 }
 
 // =========================================================================================
-// 🧠 --- COMPONENTE: PENSAMENTO FUTURISTA DO ROBOTOC 3D (COM CONEXÃO TRIPLE E-MAIL) ---
+// 🧠 --- COMPONENTE: ROBOTOC NEURAL THOUGHT PANEL ---
 // =========================================================================================
 function RobotocNeuralThoughtPanel({ addLog }) {
   const [contaGoogle, setContaGoogle] = useState('leeheroi123@gmail.com');
@@ -510,7 +500,7 @@ function RobotocNeuralThoughtPanel({ addLog }) {
 }
 
 // =========================================================================================
-// 📱 --- PAINEL ANDROID HUD LATERAL (GAVETA EXPANSÍVEL) ---
+// 📱 --- PAINEL ANDROID HUD ---
 // =========================================================================================
 function AndroidHUDPanel({ open, onClose, children }) {
   return (
@@ -653,7 +643,7 @@ function EMCreatorStudio({ onClose }) {
 }
 
 // =========================================================================================
-// 💻 --- PAINEL DE DESENVOLVEDOR WORKSTATION v6.0 COM LINGUAGENS EXÓTICAS E POWER SHELL EM ---
+// 💻 --- PAINEL DEV SPLIT SCREEN ---
 // =========================================================================================
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('mojo');
@@ -662,14 +652,14 @@ function PainelDevSplitScreen({ onClose }) {
     mojo: `// Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
     zig: `// Zig System Language\nconst std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("🧠 Núcleo de Baixo Nível do Android 16 Neural OS EM Ativo!\\n", .{});\n}`,
     nim: `# Nim Metaprogramming Language\ntype\n  NeuralCore = object\n    status: string\n    potencia: float\n\nlet core = NeuralCore(status: "ONLINE", potencia: 99.8)\necho "🚀 Sistema Emanuel.OS executando em Nim. Status: ", core.status`,
-    crystal: `# Crystal Language (Fast as C, Slick as Ruby)\nclass QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
-    elixir: `# Elixir Distributed Functional System\ndefmodule EmanuelOS.Core do\n  def sync_nodes(node_id) do\n    IO.puts("🔮 Sincronizando Nó Funcional Exótico: #{node_id}")\n  end\nend\n\nEmanuelOS.Core.sync_nodes("Node-BRS7")`,
-    qsharp: `// Q# (Quantum Computing Core)\nnamespace EmanuelOS.Quantum {\n    open Microsoft.Quantum.Canon;\n    open Microsoft.Quantum.Intrinsic;\n\n    operation MeasureQubit() : Result {\n        use q = Qubit();\n        H(q);\n        return M(q);\n    }\n}`,
-    gleam: `// Gleam (Type-Safe Erlang VM Language)\nimport gleam/io\n\npub fn main() {\n  io.print_line("✨ Executando Gleam no Motor Distribuído do Emanuel.OS!")\n}`
+    crystal: `# Crystal Language\nclass QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
+    elixir: `# Elixir Distributed System\ndefmodule EmanuelOS.Core do\n  def sync_nodes(node_id) do\n    IO.puts("🔮 Sincronizando Nó Funcional Exótico: #{node_id}")\n  end\nend\n\nEmanuelOS.Core.sync_nodes("Node-BRS7")`,
+    qsharp: `// Q# Quantum System\nnamespace EmanuelOS.Quantum {\n    open Microsoft.Quantum.Canon;\n    open Microsoft.Quantum.Intrinsic;\n\n    operation MeasureQubit() : Result {\n        use q = Qubit();\n        H(q);\n        return M(q);\n    }\n}`,
+    gleam: `// Gleam Language\nimport gleam/io\n\npub fn main() {\n  io.print_line("✨ Executando Gleam no Motor Distribuído do Emanuel.OS!")\n}`
   };
 
   const [codigoFonte, setCodigoFonte] = useState(templatesExoticos['mojo']);
-  const [blocoRascunho, setBlocoRascunho] = useState("Notas do Dev Núcleo: Explorando Mojo e Zig para otimização extrema no Android 16 Neural OS EM.");
+  const [blocoRascunho, setBlocoRascunho] = useState("Notas do Dev Núcleo: Explorando Mojo e Zig no Android 16 Neural OS EM.");
   const [analisandoIA, setAnalisandoIA] = useState(false);
   const [relatorioErros, setRelatorioErros] = useState([]);
 
@@ -932,7 +922,7 @@ function PainelDevSplitScreen({ onClose }) {
 }
 
 // =========================================================================================
-// ✉️ --- COMPONENTE DE CAPTURA COM ENVIO AUTOMÁTICO DE E-MAIL (EMAILJS) ---
+// ✉️ --- FORMULÁRIO CAPTURA EMAILJS ---
 // =========================================================================================
 function FormularioCapturaEmanuelOS() {
   const [email, setEmail] = useState('');
@@ -958,7 +948,6 @@ function FormularioCapturaEmanuelOS() {
     .catch((error) => {
       setCarregando(false);
       alert('Erro ao enviar e-mail de confirmação. Tente novamente!');
-      console.error('Erro EmailJS:', error);
     });
   };
 
@@ -992,7 +981,7 @@ function FormularioCapturaEmanuelOS() {
 }
 
 // =========================================================================================
-// 🎥 --- MÓDULO DE INTEGRAÇÃO GOOGLE MEET REAL + AVATARES DE IA 3D ---
+// 🎥 --- GOOGLE MEET AVATAR MANAGER ---
 // =========================================================================================
 function GoogleMeetAvatarManager({ addLog }) {
   const [temaReuniao, setTemaReuniao] = useState('Imersão Mapas, Index & AGI 2030');
@@ -1067,7 +1056,7 @@ function GoogleMeetAvatarManager({ addLog }) {
 }
 
 // =========================================================================================
-// 🖥️ --- COMPONENTE: TERMINAL NATIVO UNIX-LIKE EM CANVAS ---
+// 🖥️ --- UNIX TERMINAL CANVAS ---
 // =========================================================================================
 const UnixTerminalCanvas = () => {
   const canvasRef = useRef(null);
@@ -1185,7 +1174,7 @@ const UnixTerminalCanvas = () => {
 };
 
 // =========================================================================================
-// ₿ --- COMPONENTE: PAINEL DE ANÁLISE E PREVISÃO DE BITCOIN (HOLOGRÁFICO) ---
+// ₿ --- BITCOIN ANALYSIS PANEL ---
 // =========================================================================================
 const BitcoinAnalysisPanel = () => {
   const [data] = useState({ price: '$89,450.00', change24h: '+3.4%', prediction: 'Alta (G-AGI Target $105k)', ai_confidence: '98.5%' });
@@ -1210,7 +1199,7 @@ const BitcoinAnalysisPanel = () => {
 };
 
 // =========================================================================================
-// ☁️ --- COMPONENTE: MÓDULO DE PUBLICAÇÃO CLOUDFLARE WORKER ---
+// ☁️ --- CLOUDFLARE WORKER DEPLOYER ---
 // =========================================================================================
 const CloudflareWorkerDeployer = ({ addLog }) => {
   const [workerName, setWorkerName] = useState('emanuel-agi-edge-v6');
@@ -1238,7 +1227,7 @@ const CloudflareWorkerDeployer = ({ addLog }) => {
 };
 
 // =========================================================================================
-// 🏛️ --- COMPONENTE: VITRINE VIRTUAL 3D DE VIDRO GIRATÓRIA (DUOS AVATARES & MAPAS) ---
+// 🏛️ --- VITRINE VIRTUAL 3D DE VIDRO ---
 // =========================================================================================
 function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnection }) {
   const container3dRef = useRef(null);
@@ -1407,7 +1396,7 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
 }
 
 // =========================================================================================
-// 🪟 --- COMPONENTE: PAINEL FUTURISTA REDIMENSIONÁVEL E ARRASTÁVEL (EMGEMINI DEV) ---
+// 🪟 --- WINDOW DEV PANEL ROBOTOC ---
 // =========================================================================================
 function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [size, setSize] = useState({ width: 520, height: 580 });
@@ -1417,7 +1406,6 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [modoVitrine, setModoVitrine] = useState('avatares');
 
-  // Mapeamento Completo dos 12 Mapas
   const mapasDisponiveis = [
     { id: 'mapa_terrestre', nome: '🌍 Terrestre', rota: '/mapa' },
     { id: 'mapa_orkut', nome: '🧡 Orkut', rota: '/mapa-orkut' },
@@ -1543,10 +1531,7 @@ export default function EmanuelOSCore() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [chaveDigitada, setChaveDigitada] = useState('');
 
-  // Estado do Mini Assistant 3D sem simulação
   const [miniAssistantAberto, setMiniAssistantAberto] = useState(false);
-
-  // Estado para controlar a visibilidade do Minijogo Yu-Gi-Oh! 3D
   const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
 
   const meusDadosReais = {
@@ -1559,7 +1544,7 @@ export default function EmanuelOSCore() {
     threads: 'https://threads.net'
   };
 
-  const [linksSociais3D, setLinksSociais3D] = useState([
+  const [linksSociais3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
     { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
     { id: 3, tipo: 'instagram', titulo: 'Instagram Oficial', url: meusDadosReais.instagram, icone: '📸', nuvem: 'apple' },
@@ -1568,6 +1553,29 @@ export default function EmanuelOSCore() {
     { id: 6, tipo: 'facebook', titulo: 'Facebook Oficial', url: meusDadosReais.facebook, icone: '📘', nuvem: 'microsoft' },
     { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
   ]);
+
+  // 🌍 LOCAIS INTEGRADOS À TERRA 3D
+  const [locaisEmanuelOS] = useState([
+    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node' },
+    { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial' },
+    { id: 3, nome: 'Usina Nuclear Central & Reator Limpo', categoria: '⚛️ Geração Nuclear, Fusão & Energia Limpa', cor: 0x00ffcc, lat: -23.0062, lng: -44.3182, ipCriptografado: 'AES256-NUK-POWER', trabalho: 'Monitoramento de Matriz Energética' },
+    { id: 4, nome: 'Usina Solar Neon & Painéis Fotovoltaicos', categoria: '☀️ Painéis Solares Neon & Sustentabilidade', cor: 0xffaa00, lat: -9.3833, lng: -40.5000, ipCriptografado: 'AES256-SOLAR-PWR', trabalho: 'Gestão de Energia Fotovoltaica' },
+    { id: 5, nome: 'Torre 5G/6G & Parque Eólico Futurista', categoria: '📡 Antenas 5G/6G & Turbinas Eólicas', cor: 0xaa00ff, lat: -5.0892, lng: -42.8019, ipCriptografado: 'AES256-5G-EOLICA', trabalho: 'Sincronização de Banda Ultralarga' },
+    { id: 6, nome: 'Usina Hidrelétrica & Barragem 3D', categoria: '💧 Geração Fluvial, Hidrelétrica & Barragem', cor: 0x0066ff, lat: -25.4284, lng: -54.5868, ipCriptografado: 'AES256-HIDRO-POWER', trabalho: 'Controle de Escoamento de Água' },
+    { id: 7, nome: 'Centro de Pesquisa Universitário & Vagas', categoria: '🎓 Parcerias Acadêmicas & Formação', cor: 0x88ff00, lat: -23.5505, lng: -46.6333, ipCriptografado: 'AES256-UNIV-RECRUIT', trabalho: 'Desenvolvimento Acadêmico & IA' },
+    { id: 8, nome: 'Centro Comercial Cyber & Laboratório', categoria: '💊 Farmacêutica Natural & Tecnologia', cor: 0xff00aa, lat: -22.9068, lng: -43.1729, ipCriptografado: 'AES256-LAB-FARMA', trabalho: 'Pesquisa Farmacêutica & Biotec' },
+    { id: 9, nome: 'Batalhão Marítimo & Guarda Costeira', categoria: '👮 Proteção de Rios, Mares e Fauna', cor: 0x0066ff, lat: -23.9608, lng: -46.3339, ipCriptografado: 'AES256-COAST-GUARD', trabalho: 'Patrulha e Segurança Costeira' },
+    { id: 10, nome: 'Cataratas do Iguaçu Realistas 3D', categoria: '🌊 Módulo Ecológico & Reserva Fluvial 3D', cor: 0x00e5ff, lat: -25.6953, lng: -54.4367, ipCriptografado: 'AES256-CATARATAS-3D', trabalho: 'Preservação de Reservas Naturais' },
+    { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, lat: -2.8856, lng: -40.5050, ipCriptografado: 'AES256-KITESURF-NEON', trabalho: 'Treinamento de Atletas & Hidrodinâmica' },
+    { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas' },
+    { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas' },
+    { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber' }
+  ]);
+
+  // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D
+  const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
+  const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
+  const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
 
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
   const [validandoServidores, setValidandoServidores] = useState(false);
@@ -1608,20 +1616,20 @@ export default function EmanuelOSCore() {
   const [cmdLogs, setCmdLogs] = useState([
     "[ROBOTOC: LOG] Emanuel.OS Workstation v6.0 operational.",
     "[ROBOTOC: STATUS] Android 16 Neural OS EM: ONLINE em Azul Neon & Branco.",
-    "[ROBOTOC: DATA CENTER] Servidores Quânticos em 3D Conectados ao Vault."
+    "[ROBOTOC: DATA CENTER] Globo Terrestre 3D Ativo com Mapeamento de Cidades e Nódulos AGI."
   ]);
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | DESIGN BRANCO & AZUL FUTURISTA! Clique no Robô para abrir o Painel ou no botão Workstation para o Notepad Dev Núcleo.', tipo: 'sys' }
+    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | MODELAGEM DA TERRA 3D ATIVA! Pesquise por locais na Barra Inteligente ou interaja com o globo.', tipo: 'sys' }
   ]);
 
   const [horaAtual, setHoraAtual] = useState('');
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
-  const avatarGroupRef = useRef(null);
-  const orbMeshRef = useRef(null);
+  const globeGroupRef = useRef(null);
+  const markersGroupRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
@@ -1632,6 +1640,41 @@ export default function EmanuelOSCore() {
       const utterance = new SpeechSynthesisUtterance("Deseja se conectar ao sistema Robotoc com teclado, mouse ou fone bluetooth?");
       utterance.lang = 'pt-BR';
       window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // 🔍 BUSCA INTELIGENTE NO GLOBO 3D
+  const handleBuscaGlobo = (e) => {
+    const val = e.target.value;
+    setTermoBuscaGlobo(val);
+    if (val.trim().length >= 2) {
+      const filtrados = locaisEmanuelOS.filter(item =>
+        item.nome.toLowerCase().includes(val.toLowerCase()) ||
+        item.categoria.toLowerCase().includes(val.toLowerCase()) ||
+        item.trabalho.toLowerCase().includes(val.toLowerCase())
+      );
+      setResultadosBuscaGlobo(filtrados);
+    } else {
+      setResultadosBuscaGlobo([]);
+    }
+  };
+
+  // 🎯 FOCAR CÂMERA/GLOBO NO LOCAL PESQUISADO
+  const focarLocalNoGlobo = (local) => {
+    setLocalSelecionadoGlobo(local);
+    setResultadosBuscaGlobo([]);
+    setTermoBuscaGlobo(local.nome);
+
+    if (globeGroupRef.current) {
+      const radius = 2.5;
+      const phi = (90 - local.lat) * (Math.PI / 180);
+      const theta = (local.lng + 180) * (Math.PI / 180);
+
+      const targetRotY = -theta + Math.PI / 2;
+      const targetRotX = phi - Math.PI / 2;
+
+      globeGroupRef.current.rotation.y = targetRotY;
+      globeGroupRef.current.rotation.x = targetRotX;
     }
   };
 
@@ -1709,6 +1752,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
+  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D COM MODELAGEM REALISTA & NÓDULOS DE CIDADES/INSTALAÇÕES
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1718,165 +1762,133 @@ export default function EmanuelOSCore() {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    scene.background = new THREE.Color(0xf0f9ff);
-    scene.fog = new THREE.FogExp2(0xe0f2fe, 0.025);
+    scene.background = new THREE.Color(0x030712);
+    scene.fog = new THREE.FogExp2(0x030712, 0.015);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 8.5);
+    camera.position.set(0, 0, 7.5);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.3;
     mountRef.current.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.8);
-    keyLight.position.set(5, 12, 8);
-    scene.add(keyLight);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 3.2);
+    sunLight.position.set(5, 8, 5);
+    scene.add(sunLight);
 
-    const cyanRimLight = new THREE.PointLight(0x00f0ff, 14, 50);
-    cyanRimLight.position.set(-6, 4, -2);
-    scene.add(cyanRimLight);
+    const cyanRim = new THREE.PointLight(0x00f0ff, 8, 30);
+    cyanRim.position.set(-6, 2, -4);
+    scene.add(cyanRim);
 
-    const blueFillLight = new THREE.PointLight(0x0284c7, 12, 40);
-    blueFillLight.position.set(6, -2, 5);
-    scene.add(blueFillLight);
+    // GRUPO PRINCIPAL DO GLOBO
+    const globeGroup = new THREE.Group();
+    globeGroupRef.current = globeGroup;
 
-    const grid = new THREE.GridHelper(40, 40, 0x00f0ff, 0xbae6fd);
-    grid.position.y = -3.2;
-    scene.add(grid);
+    // ESFERA DA TERRA COM TEXTURA/SHADER HOLOGRÁFICO
+    const radius = 2.5;
+    const earthGeo = new THREE.SphereGeometry(radius, 64, 64);
 
-    const whiteCeramicMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      roughness: 0.1,
-      metalness: 0.1,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
-      reflectivity: 0.9
+    const textureLoader = new THREE.TextureLoader();
+    const earthMat = new THREE.MeshStandardMaterial({
+      color: 0x1d4ed8,
+      roughness: 0.4,
+      metalness: 0.3,
+      wireframe: false
     });
 
-    const blueMetallicMat = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      roughness: 0.2,
-      metalness: 0.85
-    });
+    // Tentar carregar textura da terra NASA ou fallback procedural
+    textureLoader.load(
+      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg',
+      (tex) => {
+        earthMat.map = tex;
+        earthMat.color.setHex(0xffffff);
+        earthMat.needsUpdate = true;
+      }
+    );
 
-    const cyanGlowMat = new THREE.MeshStandardMaterial({
-      color: 0x00f0ff,
-      emissive: 0x00f0ff,
-      emissiveIntensity: 2.8,
-      roughness: 0.1
-    });
+    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+    globeGroup.add(earthMesh);
 
-    const glassHoloMat = new THREE.MeshPhysicalMaterial({
+    // ATMOSFERA BRILHANTE (GLOW NEON)
+    const atmosGeo = new THREE.SphereGeometry(radius * 1.03, 64, 64);
+    const atmosMat = new THREE.MeshPhysicalMaterial({
       color: 0x00f0ff,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.22,
       transmission: 0.8,
       roughness: 0.1,
-      ior: 1.2
+      side: THREE.BackSide
+    });
+    const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
+    globeGroup.add(atmosMesh);
+
+    // REDE DE GRID QUANTICO EM VOLTA DA TERRA
+    const gridGeo = new THREE.IcosahedronGeometry(radius * 1.08, 3);
+    const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
+    const gridMesh = new THREE.Mesh(gridGeo, gridMat);
+    globeGroup.add(gridMesh);
+
+    // MARCADORES 3D DOS LOCAIS NAS COORDENADAS (LAT, LNG) DA TERRA
+    const markersGroup = new THREE.Group();
+    markersGroupRef.current = markersGroup;
+
+    locaisEmanuelOS.forEach(loc => {
+      const phi = (90 - loc.lat) * (Math.PI / 180);
+      const theta = (loc.lng + 180) * (Math.PI / 180);
+
+      const r = radius * 1.02;
+      const x = -(r * Math.sin(phi) * Math.cos(theta));
+      const z = (r * Math.sin(phi) * Math.sin(theta));
+      const y = (r * Math.cos(phi));
+
+      const pinGeo = new THREE.SphereGeometry(0.06, 16, 16);
+      const pinMat = new THREE.MeshBasicMaterial({ color: loc.cor });
+      const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+      pinMesh.position.set(x, y, z);
+
+      const ringGeo = new THREE.RingGeometry(0.08, 0.12, 32);
+      const ringMat = new THREE.MeshBasicMaterial({ color: loc.cor, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.position.set(x, y, z);
+      ringMesh.lookAt(0, 0, 0);
+
+      markersGroup.add(pinMesh);
+      markersGroup.add(ringMesh);
     });
 
-    const humanoidRobot = new THREE.Group();
+    globeGroup.add(markersGroup);
+    scene.add(globeGroup);
 
-    const headGroup = new THREE.Group();
-    const skull = new THREE.Mesh(new THREE.SphereGeometry(0.72, 32, 32), whiteCeramicMat);
-    skull.scale.set(0.9, 1.15, 0.95);
-    headGroup.add(skull);
+    // CONTROLE DE ARRASTE/ROTÇÃO DO GLOBO
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
 
-    const visorGeo = new THREE.SphereGeometry(0.70, 32, 16, 0, Math.PI, 0, Math.PI * 0.42);
-    const visorMesh = new THREE.Mesh(visorGeo, cyanGlowMat);
-    visorMesh.rotation.x = -Math.PI / 10;
-    visorMesh.position.set(0, 0.08, 0.04);
-    headGroup.add(visorMesh);
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
 
-    const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.38, 0.52), blueMetallicMat);
-    jaw.position.set(0, -0.52, 0.12);
-    headGroup.add(jaw);
+    const handleMouseMove = (e) => {
+      if (!isDragging || !globeGroupRef.current) return;
+      const deltaMove = { x: e.clientX - previousMousePosition.x, y: e.clientY - previousMousePosition.y };
+      globeGroupRef.current.rotation.y += deltaMove.x * 0.005;
+      globeGroupRef.current.rotation.x += deltaMove.y * 0.005;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
 
-    const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.35, 16), blueMetallicMat);
-    earL.rotation.z = Math.PI / 2;
-    earL.position.set(-0.66, 0.1, 0);
-    const earR = earL.clone();
-    earR.position.set(0.66, 0.1, 0);
-    headGroup.add(earL, earR);
+    const handleMouseUp = () => { isDragging = false; };
 
-    headGroup.position.y = 2.05;
-    humanoidRobot.add(headGroup);
-
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.3, 0.42, 16), blueMetallicMat);
-    neck.position.y = 1.38;
-    humanoidRobot.add(neck);
-
-    const chestGroup = new THREE.Group();
-    const mainChest = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.58, 1.45, 16), whiteCeramicMat);
-    chestGroup.add(mainChest);
-
-    const plateL = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.72, 0.2), blueMetallicMat);
-    plateL.position.set(-0.4, 0.1, 0.4);
-    plateL.rotation.y = -Math.PI / 12;
-    const plateR = plateL.clone();
-    plateR.position.set(0.4, 0.1, 0.4);
-    plateR.rotation.y = Math.PI / 12;
-    chestGroup.add(plateL, plateR);
-
-    const arcReactor = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.1, 32), cyanGlowMat);
-    arcReactor.rotation.x = Math.PI / 2;
-    arcReactor.position.set(0, 0.2, 0.44);
-    chestGroup.add(arcReactor);
-
-    chestGroup.position.y = 0.45;
-    humanoidRobot.add(chestGroup);
-
-    const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 24), whiteCeramicMat);
-    shoulderL.position.set(-1.08, 0.92, 0);
-    const shoulderR = shoulderL.clone();
-    shoulderR.position.set(1.08, 0.92, 0);
-    humanoidRobot.add(shoulderL, shoulderR);
-
-    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.16, 1.05, 16), blueMetallicMat);
-    armL.position.set(-1.12, 0.2, 0);
-    armL.rotation.z = Math.PI / 18;
-    const armR = armL.clone();
-    armR.position.set(1.12, 0.2, 0);
-    armR.rotation.z = -Math.PI / 18;
-    humanoidRobot.add(armL, armR);
-
-    const holoOrbGroup = new THREE.Group();
-
-    const orbCore = new THREE.Mesh(
-      new THREE.SphereGeometry(0.4, 32, 32),
-      cyanGlowMat
-    );
-
-    const orbGlass = new THREE.Mesh(
-      new THREE.SphereGeometry(0.58, 32, 32),
-      glassHoloMat
-    );
-
-    const orbWire1 = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(0.75, 2),
-      new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true })
-    );
-
-    const orbRing2 = new THREE.Mesh(
-      new THREE.TorusGeometry(0.9, 0.02, 16, 100),
-      new THREE.MeshBasicMaterial({ color: 0x0284c7 })
-    );
-    orbRing2.rotation.x = Math.PI / 3;
-
-    holoOrbGroup.add(orbCore, orbGlass, orbWire1, orbRing2);
-    holoOrbGroup.position.set(2.0, 1.2, 1.0);
-    humanoidRobot.add(holoOrbGroup);
-    orbMeshRef.current = holoOrbGroup;
-
-    scene.add(humanoidRobot);
-    avatarGroupRef.current = humanoidRobot;
+    const domEl = mountRef.current;
+    domEl.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
 
     let animationFrameId;
     let clock = new THREE.Clock();
@@ -1885,15 +1897,12 @@ export default function EmanuelOSCore() {
       animationFrameId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
-      if (avatarGroupRef.current) {
-        avatarGroupRef.current.position.y = Math.sin(time * 1.8) * 0.12;
-        avatarGroupRef.current.rotation.y = Math.sin(time * 0.6) * 0.15;
+      if (globeGroupRef.current && !isDragging) {
+        globeGroupRef.current.rotation.y += 0.0012;
       }
 
-      if (orbMeshRef.current) {
-        orbMeshRef.current.rotation.x = time * 0.8;
-        orbMeshRef.current.rotation.y = time * 1.2;
-        orbMeshRef.current.position.y = 1.2 + Math.cos(time * 2.2) * 0.15;
+      if (gridMesh) {
+        gridMesh.rotation.y = -time * 0.05;
       }
 
       renderer.render(scene, camera);
@@ -1902,9 +1911,12 @@ export default function EmanuelOSCore() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
+      if (domEl) {
+        domEl.removeEventListener('mousedown', handleMouseDown);
+        if (renderer.domElement) domEl.removeChild(renderer.domElement);
       }
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [bloqueado]);
 
@@ -2002,20 +2014,70 @@ export default function EmanuelOSCore() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', color: '#0f172a', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
-      <Head><title>Emanuel.OS Workstation v6.0 | ROBOTOC 3D & Android 16 Neural</title></Head>
+    <div style={{ width: '100vw', height: '100vh', backgroundColor: '#030712', color: '#0f172a', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
+      <Head><title>Emanuel.OS Workstation v6.0 | Globo Terrestre 3D & CIVITAS ATLAS</title></Head>
 
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
+          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D */}
           <div 
             ref={mountRef} 
-            onClick={() => setJanelaRobotocDevAberta(true)}
-            title="Clique no Robotoc 3D para abrir o Painel Futurista ROBOTOC EMgemini!"
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'pointer' }} 
+            title="Arraste para girar a Terra 3D! Clique nos marcadores ou pesquise na barra superior."
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
+          {/* 🔍 BARRA DE PESQUISA INTELIGENTE INTEGRADA AO GLOBO TERRESTRE 3D */}
+          <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '460px' }}>
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
+              <span>🔍</span>
+              <input
+                type="text"
+                value={termoBuscaGlobo}
+                onChange={handleBuscaGlobo}
+                placeholder="Pesquisar cidades, usinas, hospitais no Globo 3D..."
+                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: '11px', fontWeight: 'bold' }}
+              />
+              {termoBuscaGlobo && (
+                <button onClick={() => { setTermoBuscaGlobo(''); setResultadosBuscaGlobo([]); setLocalSelecionadoGlobo(null); }} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
+              )}
+            </div>
+
+            {resultadosBuscaGlobo.length > 0 && (
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '14px', marginTop: '6px', maxHeight: '200px', overflowY: 'auto', padding: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', backdropFilter: 'blur(15px)' }}>
+                {resultadosBuscaGlobo.map(loc => (
+                  <div
+                    key={loc.id}
+                    onClick={() => focarLocalNoGlobo(loc)}
+                    style={{ padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', borderBottom: '1px solid #f0f9ff', transition: 'background 0.2s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <strong style={{ fontSize: '11px', color: '#0284c7', display: 'block' }}>{loc.nome}</strong>
+                    <span style={{ fontSize: '9px', color: '#64748b' }}>{loc.categoria} • {loc.trabalho}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 📍 CARD FLUTUANTE DE DETALHES DO LOCAL SELECIONADO NA TERRA 3D */}
+          {localSelecionadoGlobo && (
+            <div style={{ position: 'absolute', bottom: '110px', left: '20px', zIndex: 140, backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '14px', width: '280px', boxShadow: '0 0 30px rgba(0,240,255,0.3)', backdropFilter: 'blur(20px)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <strong style={{ fontSize: '12px', color: '#0284c7' }}>{localSelecionadoGlobo.nome}</strong>
+                <button onClick={() => setLocalSelecionadoGlobo(null)} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', cursor: 'pointer' }}>✕</button>
+              </div>
+              <span style={{ fontSize: '9px', backgroundColor: '#f0f9ff', color: '#0284c7', border: '1px solid #bae6fd', padding: '2px 6px', borderRadius: '6px', fontWeight: 'bold', display: 'inline-block', marginBottom: '8px' }}>
+                {localSelecionadoGlobo.categoria}
+              </span>
+              <p style={{ fontSize: '10px', color: '#334155', margin: '0 0 6px 0' }}><strong>Atuação:</strong> {localSelecionadoGlobo.trabalho}</p>
+              <p style={{ fontSize: '9px', color: '#64748b', margin: 0, fontFamily: 'monospace' }}>🔐 Hash: {localSelecionadoGlobo.ipCriptografado}</p>
+            </div>
+          )}
+
+          {/* BOTÕES DE NAVEGAÇÃO E RECURSOS */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#ffffff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               {sidebarAberta ? '✕' : '☰'}
@@ -2037,17 +2099,16 @@ export default function EmanuelOSCore() {
               🤖 Painel EMgemini Dev 3D
             </button>
 
-            {/* BOTÃO DO MINI ROBOTOC ASSISTANT 3D */}
             <button onClick={() => setMiniAssistantAberto(!miniAssistantAberto)} style={{ backgroundColor: miniAssistantAberto ? '#00f0ff' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', color: miniAssistantAberto ? '#000' : '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
               🤖 {miniAssistantAberto ? 'Fechar Mini Assistant' : 'Mini Robotoc 3D'}
             </button>
 
-            {/* BOTÃO INTEGRADO DO JOGO YU-GI-OH! 3D */}
             <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ backgroundColor: yugiohGameAberto ? '#eab308' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #eab308', color: yugiohGameAberto ? '#fff' : '#d97706', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
               ⚔️ {yugiohGameAberto ? 'Fechar Duel Links' : 'Yu-Gi-Oh! Duel Links 3D'}
             </button>
           </div>
 
+          {/* 🌐 REDES SOCIAIS EM MODELAGEM 3D AO LADO DO GLOBO */}
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '240px' }}>
             <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               🌐 LINKS SOCIAIS 3D DINÂMICOS
@@ -2087,7 +2148,7 @@ export default function EmanuelOSCore() {
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
             borderRight: '1px solid rgba(0, 240, 255, 0.4)', padding: sidebarAberta ? '20px' : '0px',
-            display: 'flex', flexDirection: 'column', gap: '15px', height: '100vh', overflowY: 'auto', zIndex: 90,
+            display: 'flex', flexDirection: 'column', gap: '15px', height: '100vh', overflowY: 'auto', zIndex: 190,
             transition: 'all 0.3s ease', boxSizing: 'border-box'
           }}>
             {sidebarAberta && (
@@ -2098,7 +2159,6 @@ export default function EmanuelOSCore() {
 
                 <UnixTerminalCanvas />
 
-                {/* PAINEL COMPLETO COM OS 12 MAPAS */}
                 <div style={{ padding: '12px', backgroundColor: 'rgba(240, 249, 255, 0.8)', borderRadius: '12px', border: '1px solid #bae6fd' }}>
                   <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 8px 0' }}>🌐 Central dos 12 Mapas Integrados</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
@@ -2112,7 +2172,7 @@ export default function EmanuelOSCore() {
                     <Link href="/mapa-quantico" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #8b5cf6', color: '#8b5cf6', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>⚛️ Quântico</Link>
                     <Link href="/mapaaeroespacial" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #9333ea', color: '#9333ea', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🛸 Aeroespacial</Link>
                     <Link href="/MapaEleicoesBrasil20263D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #00ffcc', color: '#00cc99', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🗳️ Eleições 2026 3D</Link>
-                    <Link href="/geometricMap3D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ff00ff', color: '#d946ef', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>📐 Progressão Geométrica 3D</Link>
+                    <Link href="/geometricMap3D" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #ff00ff', color: '#d946ef', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>📐 PG Matemático 3D</Link>
                     <Link href="/mapaagroflorestal" style={{ padding: '8px', backgroundColor: '#ffffff', border: '1px solid #15803d', color: '#15803d', borderRadius: '6px', textDecoration: 'none', fontSize: '10px', textAlign: 'center', fontWeight: 'bold' }}>🌲 Agroflorestal</Link>
                   </div>
                 </div>
@@ -2125,6 +2185,7 @@ export default function EmanuelOSCore() {
             )}
           </aside>
 
+          {/* CHAT/LOGS INFERIORES */}
           <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
               {mensagens.map((item, index) => (
@@ -2156,12 +2217,10 @@ export default function EmanuelOSCore() {
         />
       )}
 
-      {/* RENDERIZAÇÃO OVERLAY DO MINI ROBOTOC ASSISTANT 3D SEM SIMULAÇÃO */}
       {miniAssistantAberto && (
         <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
       )}
 
-      {/* RENDERIZAÇÃO OVERLAY DO MINIJOGO YU-GI-OH! 3D */}
       {yugiohGameAberto && (
         <div style={{
           position: 'fixed',
