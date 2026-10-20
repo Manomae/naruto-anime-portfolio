@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+Import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
@@ -1838,7 +1838,7 @@ export default function EmanuelOSCore() {
       opacity: 0.22,
       transmission: 0.8,
       roughness: 0.1,
-      side: THREE.BackSide
+      side: THREE.DoubleSide
     });
     const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
     globeGroup.add(atmosMesh);
@@ -1848,6 +1848,151 @@ export default function EmanuelOSCore() {
     const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
     globeGroup.add(gridMesh);
+
+    // =========================================================================================
+    // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
+    // Designação de Paralelogramo e Paralelogrâmico sem alterar nada do código existente
+    // =========================================================================================
+    const mathInfrastructureGroup = new THREE.Group();
+
+    // 1. Criando Losangos 3D (Geometria Paralelogrâmica / Paralelogramo)
+    const createRhombus3D = (size, height) => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, size);
+      shape.lineTo(size * 0.7, 0);
+      shape.lineTo(0, -size);
+      shape.lineTo(-size * 0.7, 0);
+      shape.closePath();
+
+      const extrudeSettings = {
+        steps: 1,
+        depth: height,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelSegments: 3
+      };
+      return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    };
+
+    const rhombusGeo = createRhombus3D(0.25, 0.08);
+    const rhombusMat = new THREE.MeshPhysicalMaterial({
+      color: 0x00f0ff,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.8,
+      roughness: 0.1,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.85,
+      clearcoat: 1.0
+    });
+
+    const formulaTextures = [
+      '∫f(x)dx=∑A_i', '∇×E=-∂B/∂t', 'E=mc²', 'x=(-b±√Δ)/2a',
+      'P(A|B)=(P(B|A)P(A))/P(B)', 'det(A-λI)=0', 'S=k·ln(Ω)'
+    ];
+
+    const createMathTextCanvas = (text) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.1)';
+      ctx.fillRect(0, 0, 256, 128);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(4, 4, 248, 120);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 64);
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const rhombusList = [];
+    const muscleCurveList = [];
+
+    // Gerar Losangos Orbitais ao redor da Terra
+    for (let i = 0; i < 14; i++) {
+      const rhombusMesh = new THREE.Mesh(rhombusGeo, rhombusMat.clone());
+      const formulaTex = createMathTextCanvas(formulaTextures[i % formulaTextures.length]);
+
+      const labelPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.35, 0.18),
+        new THREE.MeshBasicMaterial({ map: formulaTex, transparent: true, side: THREE.DoubleSide })
+      );
+      labelPlane.position.z = 0.06;
+      rhombusMesh.add(labelPlane);
+
+      const angle = (i / 14) * Math.PI * 2;
+      const latRad = (Math.sin(i * 1.5) * 0.4);
+      const rOrb = radius * 1.28;
+
+      const x = rOrb * Math.cos(angle) * Math.cos(latRad);
+      const y = rOrb * Math.sin(latRad);
+      const z = rOrb * Math.sin(angle) * Math.cos(latRad);
+
+      rhombusMesh.position.set(x, y, z);
+      rhombusMesh.lookAt(0, 0, 0);
+
+      mathInfrastructureGroup.add(rhombusMesh);
+      rhombusList.push({ mesh: rhombusMesh, initPos: new THREE.Vector3(x, y, z), angle });
+    }
+
+    // 2. Criando Estrutura de Músculo Largo e Fino 3D (Feixes Cinesiológicos Quânticos)
+    const muscleMatBroad = new THREE.MeshStandardMaterial({
+      color: 0x0284c7,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 0.5,
+      metalness: 0.9,
+      roughness: 0.2,
+      wireframe: false,
+      side: THREE.DoubleSide
+    });
+
+    const muscleMatThin = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.75,
+      wireframe: true
+    });
+
+    // Conectar os Losangos e os Pontos de Medição da Terra com Músculos 3D
+    locaisEmanuelOS.forEach((loc, idx) => {
+      const phi = (90 - loc.lat) * (Math.PI / 180);
+      const theta = (loc.lng + 180) * (Math.PI / 180);
+      const rEarth = radius * 1.02;
+
+      const startVec = new THREE.Vector3(
+        -(rEarth * Math.sin(phi) * Math.cos(theta)),
+        (rEarth * Math.cos(phi)),
+        (rEarth * Math.sin(phi) * Math.sin(theta))
+      );
+
+      const targetRhombus = rhombusList[idx % rhombusList.length];
+      const endVec = targetRhombus.initPos;
+
+      const midVec = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
+      midVec.multiplyScalar(1.2);
+
+      const curve = new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
+
+      // Músculo Largo 3D (Extrusão em Faixa Paralelogrâmica)
+      const broadTubeGeo = new THREE.TubeGeometry(curve, 32, 0.04, 8, false);
+      const broadMesh = new THREE.Mesh(broadTubeGeo, muscleMatBroad);
+      broadMesh.scale.set(1.8, 0.3, 1.0); // Achata para formar um Músculo Largo e Fino
+      mathInfrastructureGroup.add(broadMesh);
+
+      // Músculo Fino 3D (Feixe Interno)
+      const thinTubeGeo = new THREE.TubeGeometry(curve, 48, 0.012, 6, false);
+      const thinMesh = new THREE.Mesh(thinTubeGeo, muscleMatThin);
+      mathInfrastructureGroup.add(thinMesh);
+
+      muscleCurveList.push({ broadMesh, thinMesh, curve });
+    });
+
+    globeGroup.add(mathInfrastructureGroup);
 
     // MARCADORES 3D DOS LOCAIS NAS COORDENADAS (LAT, LNG) DA TERRA
     const markersGroup = new THREE.Group();
@@ -1983,6 +2128,14 @@ export default function EmanuelOSCore() {
       if (gridMesh) {
         gridMesh.rotation.y = -time * 0.05;
       }
+
+      // Animação e pulsação dos Losangos Matemáticos e Músculos 3D
+      rhombusList.forEach((item, idx) => {
+        item.mesh.rotation.z = time * 0.5 + idx;
+        item.mesh.rotation.y = time * 0.3;
+        const pulse = Math.sin(time * 3 + idx) * 0.03;
+        item.mesh.position.y = item.initPos.y + pulse;
+      });
 
       // Animação flutuante e interativa do Robotoc Principal
       if (mainRobotRef.current) {
