@@ -1582,7 +1582,9 @@ export default function EmanuelOSCore() {
     { id: 11, nome: 'Ponto de Kitesurf & Avatar Feminino 3D', categoria: '🏄 Praia Neon & Esportes Aquáticos', cor: 0xff007f, lat: -2.8856, lng: -40.5050, ipCriptografado: 'AES256-KITESURF-NEON', trabalho: 'Treinamento de Atletas & Hidrodinâmica', urlExterna: 'https://maps.google.com/?q=-2.8856,-40.5050' },
     { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas', urlExterna: 'https://maps.google.com/?q=-15.7801,-47.9292' },
     { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas', urlExterna: 'https://maps.google.com/?q=-19.9167,-43.9345' },
-    { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' }
+    { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' },
+    // ⚡ SUBESTAÇÃO ADICIONADA CONFORME SOLICITADO
+    { id: 15, nome: 'Subestação Elétrica Central 3D', categoria: '⚡ Transformação, Conversão & Distribuição de Corrente Elétrica Real', cor: 0xffd700, lat: -20.3155, lng: -40.3128, ipCriptografado: 'AES256-SUBSTATION-MAIN-REAL', trabalho: 'Transformação de alta tensão em média/baixa tensão e distribuição de rede para a malha central', urlExterna: 'https://maps.google.com/?q=-20.3155,-40.3128' }
   ]);
 
   // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D & CONTROLE DE FONTE
