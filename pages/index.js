@@ -1567,7 +1567,7 @@ export default function EmanuelOSCore() {
     custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
   });
 
-  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS (INCLUINDO A NOVA SUBESTAÇÃO ELÉTRICA 3D REAL)
+  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS (INCLUINDO A SUBESTAÇÃO ELÉTRICA REAL)
   const [locaisEmanuelOS] = useState([
     { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node', urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
     { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial', urlExterna: 'https://maps.google.com/?q=-12.9714,-38.5014' },
@@ -1583,7 +1583,7 @@ export default function EmanuelOSCore() {
     { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas', urlExterna: 'https://maps.google.com/?q=-15.7801,-47.9292' },
     { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas', urlExterna: 'https://maps.google.com/?q=-19.9167,-43.9345' },
     { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' },
-    { id: 15, nome: 'Subestação Elétrica Central 3D Real', categoria: '⚡ Transformação & Distribuição de Corrente', cor: 0xffd700, lat: -1.4558, lng: -48.4902, ipCriptografado: 'AES256-SUBSTATION-POWER', trabalho: 'Rebaixamento de Voltagem e Distribuição Real para Rede Central', urlExterna: 'https://maps.google.com/?q=-1.4558,-48.4902' }
+    { id: 15, nome: 'Subestação Elétrica 3D Central', categoria: '⚡ Transformação, Redução de Tensão & Distribuição de Energia', cor: 0xffe600, lat: -22.9083, lng: -47.0608, ipCriptografado: 'AES256-SUBSTATION-POWER', trabalho: 'Transformação de Tensão e Distribuição da Rede Elétrica Central', urlExterna: 'https://maps.google.com/?q=-22.9083,-47.0608' }
   ]);
 
   // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D & CONTROLE DE FONTE
@@ -1648,12 +1648,12 @@ export default function EmanuelOSCore() {
     "[ROBOTOC: LOG] Emanuel.OS Workstation v6.0 operational.",
     "[ROBOTOC: STATUS] Android 16 Neural OS EM: ONLINE em Azul Neon & Branco.",
     "[ROBOTOC: DATA CENTER] Globo Terrestre 3D Ativo com Mapeamento de Cidades e Nódulos AGI.",
-    "[SUBESTAÇÃO ELÉTRICA 3D] Módulo de Distribuição e Transformação Energética ONLINE."
+    "[SUBESTAÇÃO 3D] Subestação Elétrica Conectada: Transformação e Distribuição em Tempo Real Ativadas."
   ]);
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | MODELAGEM DA TERRA 3D ATIVA! Subestação Elétrica Ativa com Distribuição Direta para a Rede Central.', tipo: 'sys' }
+    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | MODELAGEM DA TERRA 3D ATIVA! Subestação Elétrica 3D integrada ao grid elétrico principal.', tipo: 'sys' }
   ]);
 
   const [horaAtual, setHoraAtual] = useState('');
@@ -1663,6 +1663,7 @@ export default function EmanuelOSCore() {
   const globeGroupRef = useRef(null);
   const markersGroupRef = useRef(null);
   const mainRobotRef = useRef(null);
+  const substationAnimRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
@@ -1769,7 +1770,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + SUBESTAÇÃO ELÉTRICA 3D REAL
+  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + SUBESTAÇÃO ELÉTRICA 3D REAL + ROBOTOC 3D PRINCIPAL
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1852,95 +1853,104 @@ export default function EmanuelOSCore() {
     globeGroup.add(gridMesh);
 
     // =========================================================================================
-    // ⚡⚡⚡ --- SUBESTAÇÃO ELÉTRICA 3D REAL (TRANSFORMAÇÃO E DISTRIBUIÇÃO DA REDE CENTRAL) --- ⚡⚡⚡
+    // ⚡ MODELAGEM 3D COMPLETA DA SUBESTAÇÃO ELÉTRICA REAL (TRANSFORMAÇÃO & DISTRIBUIÇÃO DA REDE)
     // =========================================================================================
-    const substation3DGroup = new THREE.Group();
+    const substationGroup = new THREE.Group();
 
-    // Materiais Metálicos e Dourados da Subestação Real
-    const metalDarkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 });
-    const metalCopperMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.3 });
-    const insulatorMat = new THREE.MeshStandardMaterial({ color: 0xfde047, roughness: 0.1, metalness: 0.9 });
-    const powerGlowMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
-    const highVoltageLineMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-
-    // 1. Base / Plataforma de Sustentação do Transformador
-    const subBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.04, 0.35), metalDarkMat);
-    substation3DGroup.add(subBase);
-
-    // 2. Núcleo do Transformador Principal de Alta Tensão
-    const transformerCore = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 16), metalDarkMat);
-    transformerCore.position.y = 0.1;
-    substation3DGroup.add(transformerCore);
-
-    // RadiadoresLaterais de Resfriamento a Óleo do Transformador
-    for (let r = 0; r < 4; r++) {
-      const rad = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.05), metalCopperMat);
-      const angleR = (r / 4) * Math.PI * 2;
-      rad.position.set(Math.cos(angleR) * 0.09, 0.1, Math.sin(angleR) * 0.09);
-      substation3DGroup.add(rad);
-    }
-
-    // 3. Colunas de Isoladores Cerâmicos de Alta Voltagem (Bushing Towers)
-    for (let b = -1; b <= 1; b += 2) {
-      for (let b2 = -1; b2 <= 1; b2 += 2) {
-        const insulatorColumn = new THREE.Group();
-        for (let ring = 0; ring < 4; ring++) {
-          const ringMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.012, 0.015, 12), insulatorMat);
-          ringMesh.position.y = ring * 0.018;
-          insulatorColumn.add(ringMesh);
-        }
-        insulatorColumn.position.set(b * 0.05, 0.18, b2 * 0.05);
-        substation3DGroup.add(insulatorColumn);
-      }
-    }
-
-    // 4. Barramentos e Torres de Saída para Distribuição de Corrente Elétrica
-    for (let p = 0; p < 4; p++) {
-      const angleP = (p / 4) * Math.PI * 2;
-      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.22, 8), metalDarkMat);
-      const px = Math.cos(angleP) * 0.18;
-      const pz = Math.sin(angleP) * 0.18;
-      pole.position.set(px, 0.11, pz);
-
-      const crossArm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.005, 0.008), metalDarkMat);
-      crossArm.position.y = 0.09;
-      pole.add(crossArm);
-
-      substation3DGroup.add(pole);
-
-      // Linhas / Cabos de Distribuição Real de Energia para o Núcleo
-      const wireCurve = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(0, 0.22, 0),
-          new THREE.Vector3(px, 0.20, pz)
-        ]),
-        highVoltageLineMat
-      );
-      substation3DGroup.add(wireCurve);
-    }
-
-    // Posicionar a Subestação em Coordenadas Reais no Globo (Belém/PA)
-    const latSub = -1.4558;
-    const lngSub = -48.4902;
-    const phiSub = (90 - latSub) * (Math.PI / 180);
-    const thetaSub = (lngSub + 180) * (Math.PI / 180);
+    // Posição geográfica exata da Subestação na Terra 3D
+    const subLat = -22.9083;
+    const subLng = -47.0608;
+    const phiSub = (90 - subLat) * (Math.PI / 180);
+    const thetaSub = (subLng + 180) * (Math.PI / 180);
     const rSub = radius * 1.025;
 
-    substation3DGroup.position.set(
-      -(rSub * Math.sin(phiSub) * Math.cos(thetaSub)),
-      (rSub * Math.cos(phiSub)),
-      (rSub * Math.sin(phiSub) * Math.sin(thetaSub))
-    );
+    const subX = -(rSub * Math.sin(phiSub) * Math.cos(thetaSub));
+    const subY = (rSub * Math.cos(phiSub));
+    const subZ = (rSub * Math.sin(phiSub) * Math.sin(thetaSub));
 
-    // Orientar a Subestação perpendicularmente à superfície da Terra 3D
-    const normalSub = substation3DGroup.position.clone().normalize();
-    substation3DGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normalSub);
+    substationGroup.position.set(subX, subY, subZ);
+    substationGroup.lookAt(0, 0, 0);
 
-    globeGroup.add(substation3DGroup);
+    // Materiais da Subestação
+    const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+    const goldCoilMat = new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.8, roughness: 0.3 });
+    const electricNeonMat = new THREE.MeshStandardMaterial({ color: 0xffe600, emissive: 0xffe600, emissiveIntensity: 3.5 });
+    const insulatorMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 });
+
+    // Base de Concreto da Subestação
+    const subBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.04, 0.35), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 }));
+    substationGroup.add(subBase);
+
+    // Transformadores de Alta Tensão (Cilindros e Bobinas)
+    for (let t = -0.1; t <= 0.1; t += 0.2) {
+      const transBody = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.12, 16), steelMat);
+      transBody.position.set(t, 0.08, -0.05);
+
+      const transCoil = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 12, 24), goldCoilMat);
+      transCoil.rotation.x = Math.PI / 2;
+      transCoil.position.set(t, 0.08, -0.05);
+
+      const insulator = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.015, 0.06, 8), insulatorMat);
+      insulator.position.set(t, 0.16, -0.05);
+
+      substationGroup.add(transBody);
+      substationGroup.add(transCoil);
+      substationGroup.add(insulator);
+    }
+
+    // Torres de Transmissão em Grid
+    const towerGeo = new THREE.CylinderGeometry(0.005, 0.015, 0.25, 4);
+    const towerL = new THREE.Mesh(towerGeo, steelMat);
+    towerL.position.set(-0.12, 0.14, 0.08);
+
+    const towerR = new THREE.Mesh(towerGeo, steelMat);
+    towerR.position.set(0.12, 0.14, 0.08);
+
+    // Travessas das Torres
+    const crossBar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.008, 0.008), steelMat);
+    crossBar.position.set(0, 0.22, 0.08);
+
+    // Núcleo do Disjuntor Central Energizado
+    const coreGlow = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 16), electricNeonMat);
+    coreGlow.position.set(0, 0.1, 0);
+
+    substationGroup.add(towerL, towerR, crossBar, coreGlow);
+    globeGroup.add(substationGroup);
+
+    // =========================================================================================
+    // ⚡ CONEXÃO REAL DA REDE ELÉTRICA DA SUBESTAÇÃO COM AS USINAS (NUCLEAR, SOLAR, HIDRELÉTRICA E EÓLICA)
+    // =========================================================================================
+    const powerGridLines = [];
+    const powerPlantIds = [3, 4, 5, 6]; // Usina Nuclear, Solar, Eólica e Hidrelétrica
+
+    locaisEmanuelOS.forEach(loc => {
+      if (powerPlantIds.includes(loc.id)) {
+        const phiP = (90 - loc.lat) * (Math.PI / 180);
+        const thetaP = (loc.lng + 180) * (Math.PI / 180);
+        const rP = radius * 1.025;
+
+        const plantVec = new THREE.Vector3(
+          -(rP * Math.sin(phiP) * Math.cos(thetaP)),
+          (rP * Math.cos(phiP)),
+          (rP * Math.sin(phiP) * Math.sin(thetaP))
+        );
+
+        const subVec = new THREE.Vector3(subX, subY, subZ);
+        const midPoint = new THREE.Vector3().addVectors(plantVec, subVec).multiplyScalar(0.5);
+        midPoint.multiplyScalar(1.15); // Elevação em Arco da Linha de Transmissão
+
+        const curve = new THREE.QuadraticBezierCurve3(plantVec, midPoint, subVec);
+        const tubeGeo = new THREE.TubeGeometry(curve, 32, 0.008, 8, false);
+        const tubeMat = new THREE.MeshBasicMaterial({ color: 0xffe600, transparent: true, opacity: 0.85 });
+        const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
+
+        globeGroup.add(tubeMesh);
+        powerGridLines.push(tubeMesh);
+      }
+    });
 
     // =========================================================================================
     // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
-    // Designação de Paralelogramo e Paralelogrâmico sem alterar nada do código existente
     // =========================================================================================
     const mathInfrastructureGroup = new THREE.Group();
 
@@ -2067,13 +2077,13 @@ export default function EmanuelOSCore() {
 
       const curve = new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
 
-      // Músculo Largo 3D (Extrusão em Faixa Paralelogrâmica)
+      // Músculo Largo 3D
       const broadTubeGeo = new THREE.TubeGeometry(curve, 32, 0.04, 8, false);
       const broadMesh = new THREE.Mesh(broadTubeGeo, muscleMatBroad);
-      broadMesh.scale.set(1.8, 0.3, 1.0); // Achata para formar um Músculo Largo e Fino
+      broadMesh.scale.set(1.8, 0.3, 1.0);
       mathInfrastructureGroup.add(broadMesh);
 
-      // Músculo Fino 3D (Feixe Interno)
+      // Músculo Fino 3D
       const thinTubeGeo = new THREE.TubeGeometry(curve, 48, 0.012, 6, false);
       const thinMesh = new THREE.Mesh(thinTubeGeo, muscleMatThin);
       mathInfrastructureGroup.add(thinMesh);
@@ -2114,25 +2124,22 @@ export default function EmanuelOSCore() {
     globeGroup.add(markersGroup);
     scene.add(globeGroup);
 
-    // 🤖 ROBOTOC 3D PRINCIPAL (MODELAGEM COMPLETA EM BRANCO E AZUL) FLUTUANDO AO LADO DA TERRA
+    // 🤖 ROBOTOC 3D PRINCIPAL FLUTUANDO AO LADO DA TERRA
     const mainRobotGroup = new THREE.Group();
 
     const whiteMatMain = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.2, clearcoat: 1.0 });
     const blueMatMain = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
     const cyanGlowMain = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.0 });
 
-    // Cabeça do Robotoc
     const robotHead = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), whiteMatMain);
     robotHead.scale.set(1, 1.1, 1);
     robotHead.position.y = 1.0;
 
-    // Visor Cyan Neon
     const robotVisor = new THREE.Mesh(new THREE.SphereGeometry(0.48, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), cyanGlowMain);
     robotVisor.rotation.x = -Math.PI / 10;
     robotVisor.position.set(0, 0.05, 0.02);
     robotHead.add(robotVisor);
 
-    // Orelhas / Antenas
     const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2, 16), blueMatMain);
     earL.rotation.z = Math.PI / 2;
     earL.position.set(-0.52, 0, 0);
@@ -2143,16 +2150,13 @@ export default function EmanuelOSCore() {
 
     mainRobotGroup.add(robotHead);
 
-    // Corpo
     const robotBody = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 1.0, 32), whiteMatMain);
     robotBody.position.y = 0.1;
 
-    // Peitoral Azul
     const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.15), blueMatMain);
     chest.position.set(0, 0.05, 0.35);
     robotBody.add(chest);
 
-    // Núcleo Quântico Cyan
     const robotCore = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 32), cyanGlowMain);
     robotCore.rotation.x = Math.PI / 2;
     robotCore.position.set(0, 0.08, 0.43);
@@ -2160,7 +2164,6 @@ export default function EmanuelOSCore() {
 
     mainRobotGroup.add(robotBody);
 
-    // Braços
     const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.7, 16);
     const armL = new THREE.Mesh(armGeo, blueMatMain);
     armL.position.set(-0.55, 0.1, 0);
@@ -2173,7 +2176,6 @@ export default function EmanuelOSCore() {
     mainRobotGroup.add(armL);
     mainRobotGroup.add(armR);
 
-    // Posicionar o Robotoc Principal à direita do Globo 3D
     mainRobotGroup.position.set(3.2, 0.2, 1.0);
     mainRobotGroup.scale.set(1.2, 1.2, 1.2);
     scene.add(mainRobotGroup);
@@ -2218,7 +2220,17 @@ export default function EmanuelOSCore() {
         gridMesh.rotation.y = -time * 0.05;
       }
 
-      // Animação e pulsação dos Losangos Matemáticos e Músculos 3D
+      // Animação de Pulsação de Alta Tensão da Subestação Elétrica 3D
+      if (coreGlow) {
+        const pulseEnergy = 2.0 + Math.sin(time * 8.0) * 1.5;
+        coreGlow.material.emissiveIntensity = pulseEnergy;
+      }
+
+      // Animação das Linhas da Rede Elétrica Central
+      powerGridLines.forEach((lineMesh, idx) => {
+        lineMesh.material.opacity = 0.5 + Math.sin(time * 6.0 + idx) * 0.4;
+      });
+
       rhombusList.forEach((item, idx) => {
         item.mesh.rotation.z = time * 0.5 + idx;
         item.mesh.rotation.y = time * 0.3;
@@ -2226,7 +2238,6 @@ export default function EmanuelOSCore() {
         item.mesh.position.y = item.initPos.y + pulse;
       });
 
-      // Animação flutuante e interativa do Robotoc Principal
       if (mainRobotRef.current) {
         mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
         mainRobotRef.current.rotation.y = Math.sin(time * 1.0) * 0.25 - 0.3;
@@ -2348,10 +2359,10 @@ export default function EmanuelOSCore() {
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL */}
+          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + SUBESTAÇÃO ELÉTRICA 3D + ROBOTOC 3D */}
           <div 
             ref={mountRef} 
-            title="Arraste para girar a Terra 3D! Veja o Robotoc 3D Flutuando ao Lado."
+            title="Arraste para girar a Terra 3D! Veja a Subestação Elétrica e o Robotoc 3D Flutuando."
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
@@ -2360,7 +2371,7 @@ export default function EmanuelOSCore() {
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
               <span style={{ fontSize: `${tamanhoFonteBusca + 3}px`, color: '#0284c7' }}>🔍</span>
               
-              {/* ➕ ➖ CONTROLE DE TAMANHO DE FONTE PARA NOTURNO / LEITURA AUMENTADA */}
+              {/* ➕ ➖ CONTROLE DE TAMANHO DE FONTE */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', backgroundColor: 'rgba(2, 132, 199, 0.1)', padding: '2px 6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.5)' }}>
                 <button
                   type="button"
@@ -2387,7 +2398,7 @@ export default function EmanuelOSCore() {
                 type="text"
                 value={termoBuscaGlobo}
                 onChange={handleBuscaGlobo}
-                placeholder="Pesquisar locais no Globo 3D..."
+                placeholder="Pesquisar locais (ex: Subestação Elétrica)..."
                 style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: `${tamanhoFonteBusca}px`, fontWeight: 'bold' }}
               />
               {termoBuscaGlobo && (
@@ -2395,7 +2406,7 @@ export default function EmanuelOSCore() {
               )}
             </div>
 
-            {/* 📋 LISTA DE RESULTADOS COM LUPA EM CADA ITEM DIGITADO E ATALHO DE LINK EXTERNO */}
+            {/* 📋 LISTA DE RESULTADOS DA BUSCA */}
             {resultadosBuscaGlobo.length > 0 && (
               <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '14px', marginTop: '6px', maxHeight: '220px', overflowY: 'auto', padding: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', backdropFilter: 'blur(15px)' }}>
                 {resultadosBuscaGlobo.map(loc => (
@@ -2477,7 +2488,7 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* 🌐 REDES SOCIAIS & SERVIÇOS DE NUVEM/EMAIL EM MODELAGEM FUTURÍSTICA 3D */}
+          {/* 🌐 REDES SOCIAIS & SERVIÇOS DE NUVEM/EMAIL */}
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '250px' }}>
             <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.92)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               🌐 LINKS SOCIAIS & NUVENS EMANUEL.OS
