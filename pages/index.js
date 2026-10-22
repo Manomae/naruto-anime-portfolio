@@ -1567,7 +1567,7 @@ export default function EmanuelOSCore() {
     custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
   });
 
-  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS
+  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS (INCLUINDO A NOVA SUBESTAÇÃO ELÉTRICA 3D REAL)
   const [locaisEmanuelOS] = useState([
     { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node', urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
     { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial', urlExterna: 'https://maps.google.com/?q=-12.9714,-38.5014' },
@@ -1583,8 +1583,7 @@ export default function EmanuelOSCore() {
     { id: 12, nome: 'Hospital Central & Pronto Socorro 3D', categoria: '🏥 Atendimento Médico & UTIs Futuristas', cor: 0xff3366, lat: -15.7801, lng: -47.9292, ipCriptografado: 'AES256-HOSPITAL-CORE', trabalho: 'Recepção de Pacientes e UTIs Avançadas', urlExterna: 'https://maps.google.com/?q=-15.7801,-47.9292' },
     { id: 13, nome: 'Ponto de Ônibus Central & Marquise Neon', categoria: '🚌 Parada Urbana & Embarque de Passageiros', cor: 0xffaa00, lat: -19.9167, lng: -43.9345, ipCriptografado: 'AES256-BUS-STOP-01', trabalho: 'Estação de Integração de Linhas Urbanas', urlExterna: 'https://maps.google.com/?q=-19.9167,-43.9345' },
     { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' },
-    // ⚡ SUBESTAÇÃO ADICIONADA CONFORME SOLICITADO
-    { id: 15, nome: 'Subestação Elétrica Central 3D', categoria: '⚡ Transformação, Conversão & Distribuição de Corrente Elétrica Real', cor: 0xffd700, lat: -20.3155, lng: -40.3128, ipCriptografado: 'AES256-SUBSTATION-MAIN-REAL', trabalho: 'Transformação de alta tensão em média/baixa tensão e distribuição de rede para a malha central', urlExterna: 'https://maps.google.com/?q=-20.3155,-40.3128' }
+    { id: 15, nome: 'Subestação Elétrica Central 3D Real', categoria: '⚡ Transformação & Distribuição de Corrente', cor: 0xffd700, lat: -1.4558, lng: -48.4902, ipCriptografado: 'AES256-SUBSTATION-POWER', trabalho: 'Rebaixamento de Voltagem e Distribuição Real para Rede Central', urlExterna: 'https://maps.google.com/?q=-1.4558,-48.4902' }
   ]);
 
   // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D & CONTROLE DE FONTE
@@ -1648,12 +1647,13 @@ export default function EmanuelOSCore() {
   const [cmdLogs, setCmdLogs] = useState([
     "[ROBOTOC: LOG] Emanuel.OS Workstation v6.0 operational.",
     "[ROBOTOC: STATUS] Android 16 Neural OS EM: ONLINE em Azul Neon & Branco.",
-    "[ROBOTOC: DATA CENTER] Globo Terrestre 3D Ativo com Mapeamento de Cidades e Nódulos AGI."
+    "[ROBOTOC: DATA CENTER] Globo Terrestre 3D Ativo com Mapeamento de Cidades e Nódulos AGI.",
+    "[SUBESTAÇÃO ELÉTRICA 3D] Módulo de Distribuição e Transformação Energética ONLINE."
   ]);
 
   const [chatInput, setChatInput] = useState('');
   const [mensagens, setMensagens] = useState([
-    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | MODELAGEM DA TERRA 3D ATIVA! Pesquise por locais na Barra Inteligente ou interaja com o globo.', tipo: 'sys' }
+    { autor: 'ROBOTOC 3D (IA CORE v6.0)', texto: 'Emanuel.OS Workstation v6.0 | MODELAGEM DA TERRA 3D ATIVA! Subestação Elétrica Ativa com Distribuição Direta para a Rede Central.', tipo: 'sys' }
   ]);
 
   const [horaAtual, setHoraAtual] = useState('');
@@ -1769,7 +1769,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL (BRANCO & AZUL)
+  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + SUBESTAÇÃO ELÉTRICA 3D REAL
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1850,6 +1850,93 @@ export default function EmanuelOSCore() {
     const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
     globeGroup.add(gridMesh);
+
+    // =========================================================================================
+    // ⚡⚡⚡ --- SUBESTAÇÃO ELÉTRICA 3D REAL (TRANSFORMAÇÃO E DISTRIBUIÇÃO DA REDE CENTRAL) --- ⚡⚡⚡
+    // =========================================================================================
+    const substation3DGroup = new THREE.Group();
+
+    // Materiais Metálicos e Dourados da Subestação Real
+    const metalDarkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 });
+    const metalCopperMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.3 });
+    const insulatorMat = new THREE.MeshStandardMaterial({ color: 0xfde047, roughness: 0.1, metalness: 0.9 });
+    const powerGlowMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+    const highVoltageLineMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+
+    // 1. Base / Plataforma de Sustentação do Transformador
+    const subBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.04, 0.35), metalDarkMat);
+    substation3DGroup.add(subBase);
+
+    // 2. Núcleo do Transformador Principal de Alta Tensão
+    const transformerCore = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 16), metalDarkMat);
+    transformerCore.position.y = 0.1;
+    substation3DGroup.add(transformerCore);
+
+    // RadiadoresLaterais de Resfriamento a Óleo do Transformador
+    for (let r = 0; r < 4; r++) {
+      const rad = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.05), metalCopperMat);
+      const angleR = (r / 4) * Math.PI * 2;
+      rad.position.set(Math.cos(angleR) * 0.09, 0.1, Math.sin(angleR) * 0.09);
+      substation3DGroup.add(rad);
+    }
+
+    // 3. Colunas de Isoladores Cerâmicos de Alta Voltagem (Bushing Towers)
+    for (let b = -1; b <= 1; b += 2) {
+      for (let b2 = -1; b2 <= 1; b2 += 2) {
+        const insulatorColumn = new THREE.Group();
+        for (let ring = 0; ring < 4; ring++) {
+          const ringMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.012, 0.015, 12), insulatorMat);
+          ringMesh.position.y = ring * 0.018;
+          insulatorColumn.add(ringMesh);
+        }
+        insulatorColumn.position.set(b * 0.05, 0.18, b2 * 0.05);
+        substation3DGroup.add(insulatorColumn);
+      }
+    }
+
+    // 4. Barramentos e Torres de Saída para Distribuição de Corrente Elétrica
+    for (let p = 0; p < 4; p++) {
+      const angleP = (p / 4) * Math.PI * 2;
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.22, 8), metalDarkMat);
+      const px = Math.cos(angleP) * 0.18;
+      const pz = Math.sin(angleP) * 0.18;
+      pole.position.set(px, 0.11, pz);
+
+      const crossArm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.005, 0.008), metalDarkMat);
+      crossArm.position.y = 0.09;
+      pole.add(crossArm);
+
+      substation3DGroup.add(pole);
+
+      // Linhas / Cabos de Distribuição Real de Energia para o Núcleo
+      const wireCurve = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(0, 0.22, 0),
+          new THREE.Vector3(px, 0.20, pz)
+        ]),
+        highVoltageLineMat
+      );
+      substation3DGroup.add(wireCurve);
+    }
+
+    // Posicionar a Subestação em Coordenadas Reais no Globo (Belém/PA)
+    const latSub = -1.4558;
+    const lngSub = -48.4902;
+    const phiSub = (90 - latSub) * (Math.PI / 180);
+    const thetaSub = (lngSub + 180) * (Math.PI / 180);
+    const rSub = radius * 1.025;
+
+    substation3DGroup.position.set(
+      -(rSub * Math.sin(phiSub) * Math.cos(thetaSub)),
+      (rSub * Math.cos(phiSub)),
+      (rSub * Math.sin(phiSub) * Math.sin(thetaSub))
+    );
+
+    // Orientar a Subestação perpendicularmente à superfície da Terra 3D
+    const normalSub = substation3DGroup.position.clone().normalize();
+    substation3DGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normalSub);
+
+    globeGroup.add(substation3DGroup);
 
     // =========================================================================================
     // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
