@@ -1,0 +1,25 @@
+{
+  "name": "em-agent",
+  "version": "1.0.0",
+  "description": "EM Agent - Agente de IA de código aberto para desktop",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "em-agent": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.1",
+    "@types/node": "^26.6.6",
+    "chalk": "^6.0.1",
+    "commander": "^15.0.0",
+    "dotenv": "^18.0.9",
+    "ora": "^10.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
