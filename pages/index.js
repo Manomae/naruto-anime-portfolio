@@ -16,6 +16,102 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
+// ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL (INTEGRADO AO NÚCLEO) ---
+// =========================================================================================
+function AgentPanelModule() {
+  const [task, setTask] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState('');
+
+  const handleRunAgent = async (e) => {
+    e.preventDefault();
+    if (!task.trim()) return;
+
+    setLoading(true);
+    setResponse('⚙️ Executando tarefa no agente...');
+
+    try {
+      const res = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task: task.trim(), provider: 'cloud' }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setResponse(`✅ ${data.message || 'Sucesso!'}`);
+      } else {
+        setResponse(`❌ Erro: ${data.error || 'Erro desconhecido'}`);
+      }
+    } catch (err) {
+      setResponse(`❌ Erro de conexão: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      border: '2px solid #00f0ff',
+      borderRadius: '16px',
+      padding: '16px',
+      margin: '10px 0',
+      color: '#0f172a',
+      fontFamily: 'sans-serif',
+      boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)',
+      backdropFilter: 'blur(10px)'
+    }}>
+      <h2 style={{ color: '#0284c7', fontSize: '14px', margin: '0 0 10px 0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        ⚙️ PAINEL WEB DO EM AGENT
+      </h2>
+      
+      <form onSubmit={handleRunAgent} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          placeholder="Digite o comando para o agente..."
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: '200px',
+            padding: '10px',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #cbd5e1',
+            borderRadius: '8px',
+            fontSize: '11px',
+            outline: 'none',
+            color: '#0f172a'
+          }}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: '10px 16px',
+            backgroundColor: '#0284c7',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            fontSize: '11px',
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {loading ? 'Executando...' : 'Enviar para o Agente'}
+        </button>
+      </form>
+
+      {response && (
+        <div style={{ marginTop: '10px', padding: '10px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', fontSize: '10.5px' }}>
+          <p style={{ margin: 0, color: '#0284c7', fontWeight: 'bold' }}>{response}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =========================================================================================
 // 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
@@ -1589,7 +1685,7 @@ export default function EmanuelOSCore() {
   const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
   const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
-  const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11); // Tamanho em px (padrão: 11px)
+  const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
   // 🔎 DECLARAÇÃO ÚNICA DA FUNÇÃO DE BUSCA
   const handleBuscaGlobo = (e) => {
@@ -1981,7 +2077,7 @@ export default function EmanuelOSCore() {
       // Músculo Largo 3D (Extrusão em Faixa Paralelogrâmica)
       const broadTubeGeo = new THREE.TubeGeometry(curve, 32, 0.04, 8, false);
       const broadMesh = new THREE.Mesh(broadTubeGeo, muscleMatBroad);
-      broadMesh.scale.set(1.8, 0.3, 1.0); // Achata para formar um Músculo Largo e Fino
+      broadMesh.scale.set(1.8, 0.3, 1.0);
       mathInfrastructureGroup.add(broadMesh);
 
       // Músculo Fino 3D (Feixe Interno)
@@ -2129,7 +2225,6 @@ export default function EmanuelOSCore() {
         gridMesh.rotation.y = -time * 0.05;
       }
 
-      // Animação e pulsação dos Losangos Matemáticos e Músculos 3D
       rhombusList.forEach((item, idx) => {
         item.mesh.rotation.z = time * 0.5 + idx;
         item.mesh.rotation.y = time * 0.3;
@@ -2137,7 +2232,6 @@ export default function EmanuelOSCore() {
         item.mesh.position.y = item.initPos.y + pulse;
       });
 
-      // Animação flutuante e interativa do Robotoc Principal
       if (mainRobotRef.current) {
         mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
         mainRobotRef.current.rotation.y = Math.sin(time * 1.0) * 0.25 - 0.3;
@@ -2271,7 +2365,6 @@ export default function EmanuelOSCore() {
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
               <span style={{ fontSize: `${tamanhoFonteBusca + 3}px`, color: '#0284c7' }}>🔍</span>
               
-              {/* ➕ ➖ CONTROLE DE TAMANHO DE FONTE PARA NOTURNO / LEITURA AUMENTADA */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', backgroundColor: 'rgba(2, 132, 199, 0.1)', padding: '2px 6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.5)' }}>
                 <button
                   type="button"
@@ -2306,7 +2399,6 @@ export default function EmanuelOSCore() {
               )}
             </div>
 
-            {/* 📋 LISTA DE RESULTADOS COM LUPA EM CADA ITEM DIGITADO E ATALHO DE LINK EXTERNO */}
             {resultadosBuscaGlobo.length > 0 && (
               <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '14px', marginTop: '6px', maxHeight: '220px', overflowY: 'auto', padding: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', backdropFilter: 'blur(15px)' }}>
                 {resultadosBuscaGlobo.map(loc => (
@@ -2422,7 +2514,6 @@ export default function EmanuelOSCore() {
               </a>
             ))}
 
-            {/* Painel de Capacidade e Conexão das Nuvens/Emails */}
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '1px solid #0284c7', borderRadius: '10px', padding: '8px', backdropFilter: 'blur(10px)', marginTop: '4px' }}>
               <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>☁️ NUVENS & TRIPLE E-MAIL STATUS:</span>
               <div style={{ fontSize: '8px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -2433,7 +2524,7 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* SIDEBAR ESQUERDA (CENTRAL DOS 12 MAPAS INTEGRADOS) */}
+          {/* SIDEBAR ESQUERDA (CENTRAL DOS 12 MAPAS INTEGRADOS + MÓDULO DO AGENTE) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
@@ -2446,6 +2537,9 @@ export default function EmanuelOSCore() {
                 <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', margin: 0 }}>
                   Contexto: EMANUEL<span style={{ color: '#0284c7' }}>.OS Workstation v6.0</span>
                 </h1>
+
+                {/* ⚙️ INTEGRAÇÃO DIRETA DO MÓDULO EM AGENT NO SIDEBAR */}
+                <AgentPanelModule />
 
                 <UnixTerminalCanvas />
 
