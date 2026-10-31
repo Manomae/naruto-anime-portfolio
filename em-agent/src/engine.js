@@ -1,10 +1,9 @@
 import 'dotenv/config';
 import { GoogleGenAI } from '@google/genai';
-import ora from 'ora';
-import chalk from 'chalk';
 import { toolsDefinition, executeTool } from './tools.js';
-export async function runEMAgent({ task, workspaceDir, provider, modelName }) {
-    console.log(chalk.bold.cyan(`\n🤖 EM Agent ativado`));
+
+// ...
+console.log('\n🤖 EM Agent ativado');
     console.log(chalk.gray(`Pasta ativa: ${workspaceDir}`));
     console.log(chalk.gray(`Provedor: ${provider} (${modelName})\n`));
     // --- EXECUÇÃO VIA NUVEM (GEMINI) ---
@@ -108,4 +107,4 @@ Seja direto, execute ações reais usando as ferramentas disponíveis e confirme
             break;
         }
     }
-}
+
