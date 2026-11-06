@@ -1757,6 +1757,7 @@ export default function EmanuelOSCore() {
   const globeGroupRef = useRef(null);
   const markersGroupRef = useRef(null);
   const mainRobotRef = useRef(null);
+  const spaceElementsGroupRef = useRef(null);
 
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
@@ -1778,7 +1779,7 @@ export default function EmanuelOSCore() {
 
     if (globeGroupRef.current) {
       const radius = 2.5;
-      const phi = (90 - local.lat) * (Math.PI / 180);
+      const phi = (90 - loc.lat) * (Math.PI / 180);
       const theta = (local.lng + 180) * (Math.PI / 180);
 
       const targetRotY = -theta + Math.PI / 2;
@@ -1863,7 +1864,7 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL (BRANCO & AZUL)
+  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + ELEMENTOS ESPACIAIS DA IMAGEM
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -1877,7 +1878,7 @@ export default function EmanuelOSCore() {
     scene.fog = new THREE.FogExp2(0x030712, 0.015);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 7.5);
+    camera.position.set(0, 0, 8.5);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
@@ -1944,6 +1945,111 @@ export default function EmanuelOSCore() {
     const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
     globeGroup.add(gridMesh);
+
+    // =========================================================================================
+    // ☀️🪐🚀 INFRAESTRUTURA ASTRONÔMICA 3D COMPLETA (ELEMENTOS DA IMAGEM ADICIONADOS AO CENA)
+    // =========================================================================================
+    const spaceElementsGroup = new THREE.Group();
+    spaceElementsGroupRef.current = spaceElementsGroup;
+
+    // 1. SOL FLAMANTE E INCANDESCENTE 3D
+    const sunGeo = new THREE.SphereGeometry(1.8, 32, 32);
+    const sunMat = new THREE.MeshStandardMaterial({
+      color: 0xffaa00,
+      emissive: 0xff5500,
+      emissiveIntensity: 3.5,
+      roughness: 0.2
+    });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunMesh.position.set(-5.5, 3.2, -4);
+    spaceElementsGroup.add(sunMesh);
+
+    const sunGlowMat = new THREE.MeshBasicMaterial({
+      color: 0xffcc00,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.BackSide
+    });
+    const sunGlowMesh = new THREE.Mesh(new THREE.SphereGeometry(2.3, 32, 32), sunGlowMat);
+    sunMesh.add(sunGlowMesh);
+
+    // 2. SATURNO 3D COM ANÉIS DETALHADOS
+    const saturnGroup = new THREE.Group();
+    const saturnMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1.2, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xe2c17b, roughness: 0.5 })
+    );
+    saturnGroup.add(saturnMesh);
+
+    const ringGeoSaturn = new THREE.RingGeometry(1.5, 2.4, 64);
+    const ringMatSaturn = new THREE.MeshStandardMaterial({ color: 0xc8ab68, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+    const saturnRing = new THREE.Mesh(ringGeoSaturn, ringMatSaturn);
+    saturnRing.rotation.x = Math.PI / 2.3;
+    saturnGroup.add(saturnRing);
+
+    saturnGroup.position.set(5.8, 2.0, -3.5);
+    spaceElementsGroup.add(saturnGroup);
+
+    // 3. JÚPITER, MARTE E LUAS VIZINHAS
+    const jupiterMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.8, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xb08f68, roughness: 0.6 })
+    );
+    jupiterMesh.position.set(1.8, 4.0, -4.5);
+    spaceElementsGroup.add(jupiterMesh);
+
+    const marsMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.4, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xc1440e, roughness: 0.7 })
+    );
+    marsMesh.position.set(-4.5, -2.5, -3.0);
+    spaceElementsGroup.add(marsMesh);
+
+    // 4. ESTAÇÃO ESPACIAL INTERNACIONAL (ISS) 3D FUTURÍSTICA
+    const issGroup = new THREE.Group();
+    const issCore = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9 }));
+    issCore.rotation.z = Math.PI / 2;
+    issGroup.add(issCore);
+
+    const issRing = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.05, 16, 32), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8 }));
+    issGroup.add(issRing);
+
+    for (let p = -1; p <= 1; p += 2) {
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(0.02, 1.4, 0.4), new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x005577 }));
+      panel.position.set(p * 0.8, 0, 0);
+      issGroup.add(panel);
+    }
+    issGroup.position.set(1.2, 1.8, 2.2);
+    issGroup.scale.set(0.6, 0.6, 0.6);
+    spaceElementsGroup.add(issGroup);
+
+    // 5. FOGUETES ESPACIAIS EM PROPULSÃO E RASTROS DE FOGO 3D
+    const rocketList = [];
+    const createRocket = (pos, rot) => {
+      const rGroup = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.7, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.5 }));
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.25, 16), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+      cone.position.y = 0.45;
+      rGroup.add(body, cone);
+
+      const fire = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.4, 16), new THREE.MeshBasicMaterial({ color: 0xff3300 }));
+      fire.rotation.x = Math.PI;
+      fire.position.y = -0.45;
+      rGroup.add(fire);
+
+      rGroup.position.copy(pos);
+      rGroup.rotation.set(rot.x, rot.y, rot.z);
+      return rGroup;
+    };
+
+    const rocket1 = createRocket(new THREE.Vector3(-4.0, -3.5, 1.0), { x: 0, y: 0, z: -Math.PI / 4 });
+    const rocket2 = createRocket(new THREE.Vector3(4.5, 3.5, -1.0), { x: 0, y: 0, z: Math.PI / 3 });
+    const shuttle = createRocket(new THREE.Vector3(0.5, -2.8, 1.8), { x: Math.PI / 6, y: 0, z: -Math.PI / 6 });
+
+    spaceElementsGroup.add(rocket1, rocket2, shuttle);
+    rocketList.push(rocket1, rocket2, shuttle);
+
+    scene.add(spaceElementsGroup);
 
     // =========================================================================================
     // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
@@ -2225,6 +2331,19 @@ export default function EmanuelOSCore() {
         gridMesh.rotation.y = -time * 0.05;
       }
 
+      // Animações dos Planetas e Estação Espacial
+      if (sunMesh) sunMesh.rotation.y = time * 0.05;
+      if (saturnGroup) saturnGroup.rotation.y = time * 0.08;
+      if (issGroup) {
+        issGroup.rotation.y = time * 0.2;
+        issGroup.position.x = 1.2 + Math.sin(time * 0.5) * 0.3;
+      }
+
+      // Animação de impulso dos Foguetes Espaciais
+      rocketList.forEach((rkt, idx) => {
+        rkt.position.y += Math.sin(time * 2 + idx) * 0.003;
+      });
+
       rhombusList.forEach((item, idx) => {
         item.mesh.rotation.z = time * 0.5 + idx;
         item.mesh.rotation.y = time * 0.3;
@@ -2353,7 +2472,7 @@ export default function EmanuelOSCore() {
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL */}
+          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + SISTEMA SOLAR 3D */}
           <div 
             ref={mountRef} 
             title="Arraste para girar a Terra 3D! Veja o Robotoc 3D Flutuando ao Lado."
