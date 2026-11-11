@@ -344,6 +344,394 @@ function MiniRobotocAssistant3D({ onClose }) {
 }
 
 // =========================================================================================
+// 🚀 --- NOVO COMPONENTE: MINI ROBOTOC 3D LATERAL & BLOCO DE NOTAS FUTURISTA COM LIXEIRA ---
+// =========================================================================================
+function MiniRobotocSidebarNotes({ addLogTerminal }) {
+  const [expandido, setExpandido] = useState(false);
+  const [abaAtiva, setAbaAtiva] = useState('notas'); // 'notas' ou 'lixeira'
+  
+  // Estado de Notas Ativas e Lixeira
+  const [notas, setNotas] = useState([
+    { id: 1, titulo: 'Anotações Mestre Kernel', conteudo: 'Mapeamento quântico de 12 Nós AGI ativo no Emanuel.OS.', data: new Date().toLocaleTimeString('pt-BR') }
+  ]);
+  const [lixeira, setLixeira] = useState([]);
+  
+  const [tituloInput, setTituloInput] = useState('');
+  const [conteudoInput, setConteudoInput] = useState('');
+
+  const robotMountRef = useRef(null);
+  const trashMountRef = useRef(null);
+  const touchStartXRef = useRef(0);
+
+  // Criar Nova Nota
+  const handleCriarNota = (e) => {
+    e.preventDefault();
+    if (!conteudoInput.trim()) return;
+    const nova = {
+      id: Date.now(),
+      titulo: tituloInput.trim() || `Rascunho ${notas.length + 1}`,
+      conteudo: conteudoInput,
+      data: new Date().toLocaleTimeString('pt-BR')
+    };
+    setNotas(prev => [nova, ...prev]);
+    setTituloInput('');
+    setConteudoInput('');
+    if (addLogTerminal) addLogTerminal(`[ROBOTOC 3D] Nova nota criada: "${nova.titulo}"`);
+  };
+
+  // Mover para Lixeira
+  const handleMoverParaLixeira = (id) => {
+    const item = notas.find(n => n.id === id);
+    if (!item) return;
+    setNotas(prev => prev.filter(n => n.id !== id));
+    setLixeira(prev => [item, ...prev]);
+    if (addLogTerminal) addLogTerminal(`[LIXEIRA 3D] Rascunho descartado: "${item.titulo}"`);
+  };
+
+  // Restaurar da Lixeira
+  const handleRestaurarNota = (id) => {
+    const item = lixeira.find(n => n.id === id);
+    if (!item) return;
+    setLixeira(prev => prev.filter(n => n.id !== id));
+    setNotas(prev => [item, ...prev]);
+  };
+
+  // Excluir Definitivamente
+  const handleExcluirDefinitivo = (id) => {
+    setLixeira(prev => prev.filter(n => n.id !== id));
+  };
+
+  // Download REAL em TXT sem simulação
+  const handleDownloadTXT = (nota) => {
+    const blob = new Blob([`TÍTULO: ${nota.titulo}\nDATA: ${nota.data}\n\n${nota.conteudo}`], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${nota.titulo.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Download REAL em PDF via jsPDF sem simulação
+  const handleDownloadPDF = (nota) => {
+    const doc = new jsPDF();
+    doc.setFillColor(240, 249, 255);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(2, 132, 199);
+    doc.setFontSize(16);
+    doc.text("EMANUEL.OS - BLOCO DE NOTAS FUTURISTA ROBOTOC 3D", 15, 18);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    doc.text(`TÍTULO: ${nota.titulo} | DATA: ${nota.data}`, 15, 25);
+
+    doc.setFont("courier", "normal");
+    doc.setFontSize(11);
+    doc.setTextColor(30, 41, 59);
+    const linhas = doc.splitTextToSize(nota.conteudo, 180);
+    doc.text(linhas, 15, 40);
+
+    doc.save(`${nota.titulo.replace(/\s+/g, '_')}.pdf`);
+  };
+
+  // Suporte a Gesto de Arraste (Puxar para o lado para abrir/fechar)
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    if (deltaX < -50) setExpandido(true);
+    if (deltaX > 50) setExpandido(false);
+  };
+
+  // Renderização Three.js do Robotoc 3D Flutuante na Aba Lateral
+  useEffect(() => {
+    if (!robotMountRef.current) return;
+    const width = 60;
+    const height = 60;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 3.8);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    robotMountRef.current.appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0x00f0ff, 3.5);
+    dirLight.position.set(2, 3, 4);
+    scene.add(dirLight);
+
+    const robotGroup = new THREE.Group();
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0 }));
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 2.5 }));
+    visor.position.set(0, 0.05, 0.02);
+    visor.rotation.x = -Math.PI / 10;
+    head.add(visor);
+    robotGroup.add(head);
+
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8 }));
+    body.position.y = -0.55;
+    robotGroup.add(body);
+
+    scene.add(robotGroup);
+
+    let animId;
+    let clock = new THREE.Clock();
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      robotGroup.position.y = Math.sin(t * 3.0) * 0.08;
+      robotGroup.rotation.y = Math.sin(t * 1.5) * 0.3;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      if (robotMountRef.current && renderer.domElement) robotMountRef.current.removeChild(renderer.domElement);
+    };
+  }, []);
+
+  // Renderização Three.js da Lixeira Holográfica 3D
+  useEffect(() => {
+    if (!trashMountRef.current || abaAtiva !== 'lixeira') return;
+    const width = 80;
+    const height = 80;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 4);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    trashMountRef.current.appendChild(renderer.domElement);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 2);
+    scene.add(ambient);
+
+    const trashGeo = new THREE.CylinderGeometry(0.5, 0.4, 0.8, 16, 1, true);
+    const trashMat = new THREE.MeshStandardMaterial({ color: 0xef4444, wireframe: true, emissive: 0xef4444, emissiveIntensity: 0.8 });
+    const trashMesh = new THREE.Mesh(trashGeo, trashMat);
+    scene.add(trashMesh);
+
+    let animId;
+    let clock = new THREE.Clock();
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      trashMesh.rotation.y = clock.getElapsedTime() * 1.2;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      if (trashMountRef.current && renderer.domElement) trashMountRef.current.removeChild(renderer.domElement);
+    };
+  }, [abaAtiva]);
+
+  return (
+    <div 
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position: 'fixed',
+        top: '50%',
+        right: 0,
+        transform: 'translateY(-50%)',
+        zIndex: 450,
+        display: 'flex',
+        alignItems: 'center',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        fontFamily: 'sans-serif'
+      }}
+    >
+      {/* GATILHO LATERAL FLUTUANTE DE DESLIZAMENTO (PUXAR PARA O LADO) */}
+      <div 
+        onClick={() => setExpandido(!expandido)}
+        title="Puxe para o lado ou clique para abrir o Bloco de Notas Futurista Robotoc 3D"
+        style={{
+          width: '54px',
+          height: '110px',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          border: '2px solid #00f0ff',
+          borderRight: 'none',
+          borderRadius: '20px 0 0 20px',
+          boxShadow: '-8px 0 25px rgba(0, 240, 255, 0.4)',
+          backdropFilter: 'blur(15px)',
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justify: 'center',
+          gap: '4px',
+          padding: '4px'
+        }}
+      >
+        <div ref={robotMountRef} style={{ width: '45px', height: '45px', pointerEvents: 'none' }} />
+        <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: '900', textAlign: 'center', lineHeight: '1.1' }}>
+          {expandido ? 'FECHAR' : 'NOTAS 3D'}
+        </span>
+        <span style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 'bold' }}>
+          {expandido ? '➔' : '◀'}
+        </span>
+      </div>
+
+      {/* PAINEL DO BLOCO DE NOTAS FUTURISTA EXPANSÍVEL */}
+      <div style={{
+        width: expandido ? '360px' : '0px',
+        height: '520px',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        border: expandido ? '2px solid #00f0ff' : 'none',
+        borderRight: 'none',
+        borderRadius: '20px 0 0 20px',
+        backdropFilter: 'blur(30px)',
+        boxShadow: expandido ? '-10px 0 40px rgba(0, 240, 255, 0.3)' : 'none',
+        overflow: 'hidden',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        display: 'flex',
+        flexDirection: 'column',
+        color: '#0f172a'
+      }}>
+        {/* CABEÇALHO FUTURISTA */}
+        <div style={{ padding: '12px', borderBottom: '1px solid #bae6fd', backgroundColor: 'rgba(240, 249, 255, 0.9)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '14px' }}>📝</span>
+            <strong style={{ fontSize: '11px', color: '#0284c7', letterSpacing: '0.5px' }}>
+              BLOCO DE NOTAS FUTURISTA ROBOTOC 3D
+            </strong>
+          </div>
+          <button onClick={() => setExpandido(false)} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
+        </div>
+
+        {/* NAVEGAÇÃO ENTRE ANOTAÇÕES E LIXEIRA 3D */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #bae6fd', backgroundColor: '#f8fafc' }}>
+          <button 
+            onClick={() => setAbaAtiva('notas')}
+            style={{
+              flex: 1, padding: '8px', border: 'none',
+              backgroundColor: abaAtiva === 'notas' ? '#0284c7' : 'transparent',
+              color: abaAtiva === 'notas' ? '#fff' : '#0284c7',
+              fontSize: '10px', fontWeight: 'bold', cursor: 'pointer'
+            }}
+          >
+            📋 Notas Ativas ({notas.length})
+          </button>
+          <button 
+            onClick={() => setAbaAtiva('lixeira')}
+            style={{
+              flex: 1, padding: '8px', border: 'none',
+              backgroundColor: abaAtiva === 'lixeira' ? '#ef4444' : 'transparent',
+              color: abaAtiva === 'lixeira' ? '#fff' : '#ef4444',
+              fontSize: '10px', fontWeight: 'bold', cursor: 'pointer'
+            }}
+          >
+            🗑️ Lixeira Robotoc 3D ({lixeira.length})
+          </button>
+        </div>
+
+        {/* CONTEÚDO DA ABA DE NOTAS */}
+        {abaAtiva === 'notas' && (
+          <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
+            {/* FORMULÁRIO DE NOVA ANOTAÇÃO */}
+            <form onSubmit={handleCriarNota} style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
+              <input 
+                type="text" 
+                placeholder="Título do Rascunho..." 
+                value={tituloInput} 
+                onChange={(e) => setTituloInput(e.target.value)}
+                style={{ padding: '6px 10px', backgroundColor: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
+              />
+              <textarea 
+                rows={3}
+                placeholder="Escreva suas ideias ou anotações importantes..." 
+                value={conteudoInput}
+                onChange={(e) => setConteudoInput(e.target.value)}
+                style={{ padding: '6px 10px', backgroundColor: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '10px', outline: 'none', resize: 'none', color: '#0f172a' }}
+              />
+              <button type="submit" style={{ padding: '7px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                ✨ Salvar Rascunho no Sistema
+              </button>
+            </form>
+
+            {/* LISTAGEM DE NOTAS SALVAS */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+              {notas.length === 0 ? (
+                <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', margin: '20px 0' }}>Nenhuma anotação salva.</span>
+              ) : (
+                notas.map(nota => (
+                  <div key={nota.id} style={{ backgroundColor: '#ffffff', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px', boxShadow: '0 2px 10px rgba(0,240,255,0.08)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <strong style={{ fontSize: '11px', color: '#0284c7' }}>{nota.titulo}</strong>
+                      <span style={{ fontSize: '8px', color: '#94a3b8' }}>{nota.data}</span>
+                    </div>
+                    <p style={{ fontSize: '10px', color: '#334155', margin: '0 0 8px 0', whiteSpace: 'pre-wrap', lineHeight: '1.3' }}>{nota.conteudo}</p>
+                    
+                    {/* BOTÕES DE AÇÃO: EXPORTAÇÃO REAL E DESCARTE */}
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                      <button onClick={() => handleDownloadTXT(nota)} style={{ padding: '4px 8px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer' }}>
+                        💾 Baixar TXT
+                      </button>
+                      <button onClick={() => handleDownloadPDF(nota)} style={{ padding: '4px 8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer' }}>
+                        📄 Exportar PDF Real
+                      </button>
+                      <button onClick={() => handleMoverParaLixeira(nota.id)} style={{ padding: '4px 8px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer', marginLeft: 'auto' }}>
+                        🗑️ Lixeira 3D
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* CONTEÚDO DA LIXEIRA 3D */}
+        {abaAtiva === 'lixeira' && (
+          <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '8px', borderRadius: '8px' }}>
+              <div ref={trashMountRef} style={{ width: '40px', height: '40px' }} />
+              <div>
+                <strong style={{ fontSize: '10px', color: '#b91c1c', display: 'block' }}>Lixeira Holográfica Robotoc 3D</strong>
+                <span style={{ fontSize: '8px', color: '#ef4444' }}>Rascunhos descartados podem ser restaurados ou excluídos.</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {lixeira.length === 0 ? (
+                <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', margin: '20px 0' }}>Lixeira vazia.</span>
+              ) : (
+                lixeira.map(item => (
+                  <div key={item.id} style={{ backgroundColor: '#ffffff', border: '1px solid #fca5a5', borderRadius: '8px', padding: '8px' }}>
+                    <strong style={{ fontSize: '10px', color: '#b91c1c', display: 'block' }}>{item.titulo}</strong>
+                    <p style={{ fontSize: '9px', color: '#64748b', margin: '2px 0 6px 0' }}>{item.conteudo.slice(0, 60)}...</p>
+                    <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                      <button onClick={() => handleRestaurarNota(item.id)} style={{ padding: '3px 6px', backgroundColor: '#22c55e', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                        🔄 Restaurar
+                      </button>
+                      <button onClick={() => handleExcluirDefinitivo(item.id)} style={{ padding: '3px 6px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                        ❌ Excluir Definitivo
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================================
 // 📸 --- COMPONENTE: MOTION TRACKER ---
 // =========================================================================================
 function MotionTracker() {
@@ -1779,7 +2167,7 @@ export default function EmanuelOSCore() {
 
     if (globeGroupRef.current) {
       const radius = 2.5;
-      const phi = (90 - loc.lat) * (Math.PI / 180);
+      const phi = (90 - local.lat) * (Math.PI / 180);
       const theta = (local.lng + 180) * (Math.PI / 180);
 
       const targetRotY = -theta + Math.PI / 2;
@@ -2723,6 +3111,9 @@ export default function EmanuelOSCore() {
       {miniAssistantAberto && (
         <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
       )}
+
+      {/* 🚀 NOVO MÓDULO LATERAL EXPANSÍVEL: MINI ROBOTOC 3D + BLOCO DE NOTAS FUTURISTA + LIXEIRA HOLOGRÁFICA */}
+      <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
 
       {yugiohGameAberto && (
         <div style={{
