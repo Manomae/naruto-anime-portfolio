@@ -1179,7 +1179,7 @@ function PainelDevSplitScreen({ onClose }) {
         "  ai-optimize-core  -> Otimiza rotinas WebGL e sintaxe de baixo nível",
         "  ai-generate-code  -> Gera boilerplate automático na linguagem exótica selecionada",
         "  ai-scan-security  -> Executa varredura profunda de segurança de 7 camadas",
-        "  sys-info-em        -> Exibe o estado em tempo real dos 12 mapas e periféricos"
+        "  sys-info-em       -> Exibe o estado em tempo real dos 12 mapas e periféricos"
       ];
     } else if (cmd === 'ai-optimize-core') {
       res = ["⚡ IA EM Power Shell: Código compilado, vetores paralelizados e otimização concluída."];
@@ -2147,6 +2147,52 @@ export default function EmanuelOSCore() {
   const mainRobotRef = useRef(null);
   const spaceElementsGroupRef = useRef(null);
 
+  // 🤖 ATUALIZAÇÃO ROBOTOC 3D: ESTADOS E REFS DE VOZ, MOVIMENTOS SUTIS E LEGENDAS FUTURISTAS
+  const [legendaRobotoc, setLegendaRobotoc] = useState('');
+  const [robotocFalando, setRobotocFalando] = useState(false);
+  const robotHeadRef = useRef(null);
+  const robotVisorRef = useRef(null);
+  const robotArmLRef = useRef(null);
+  const robotArmRRef = useRef(null);
+
+  const frasesRobotoc = [
+    "Núcleo Emanuel ponto O S sincronizado. Todos os doze mapas operacionais.",
+    "Monitorando rede quântica, telemetria orbital e servidores G-AGI em tempo real.",
+    "Integridade de sete camadas verificada. Navegação segura ativada.",
+    "Pronto para executar seus comandos na Workstation versão seis ponto zero.",
+    "Sensores espaciais e conexões neurais operando em máxima eficiência."
+  ];
+
+  const dispararFalaRobotoc = (texto) => {
+    setLegendaRobotoc(texto);
+    setRobotocFalando(true);
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.05;
+      utterance.pitch = 1.08;
+
+      utterance.onend = () => {
+        setRobotocFalando(false);
+        setTimeout(() => setLegendaRobotoc(''), 3200);
+      };
+
+      utterance.onerror = () => {
+        setRobotocFalando(false);
+        setTimeout(() => setLegendaRobotoc(''), 3200);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      setTimeout(() => {
+        setRobotocFalando(false);
+        setLegendaRobotoc('');
+      }, 4500);
+    }
+  };
+
   const addLogTerminal = (novoLog) => setCmdLogs(prev => [...prev, novoLog]);
 
   const acionarSolicitacaoBluetooth = () => {
@@ -2680,6 +2726,12 @@ export default function EmanuelOSCore() {
     scene.add(mainRobotGroup);
     mainRobotRef.current = mainRobotGroup;
 
+    // Vincular partes articuladas para movimentos sutis
+    robotHeadRef.current = robotHead;
+    robotVisorRef.current = robotVisor;
+    robotArmLRef.current = armL;
+    robotArmRRef.current = armR;
+
     // CONTROLE DE ARRASTE/ROTAÇÃO DO GLOBO
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
@@ -2740,8 +2792,27 @@ export default function EmanuelOSCore() {
       });
 
       if (mainRobotRef.current) {
+        // Levitação orgânica suave
         mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
-        mainRobotRef.current.rotation.y = Math.sin(time * 1.0) * 0.25 - 0.3;
+        mainRobotRef.current.rotation.y = Math.sin(time * 0.8) * 0.2 - 0.3;
+
+        // Movimentos sutis de cabeça (observando o globo e o operador)
+        if (robotHeadRef.current) {
+          robotHeadRef.current.rotation.y = Math.sin(time * 1.3) * 0.18;
+          robotHeadRef.current.rotation.z = Math.cos(time * 1.1) * 0.06;
+        }
+
+        // Gesticulação sutil dos braços
+        if (robotArmLRef.current && robotArmRRef.current) {
+          robotArmLRef.current.rotation.x = Math.sin(time * 1.8) * 0.14;
+          robotArmRRef.current.rotation.x = -Math.sin(time * 1.8) * 0.14;
+          robotArmRRef.current.rotation.z = -Math.PI / 8 + Math.cos(time * 2.2) * 0.08;
+        }
+
+        // Pulso luminoso no visor cyan
+        if (robotVisorRef.current && robotVisorRef.current.material) {
+          robotVisorRef.current.material.emissiveIntensity = 2.5 + Math.sin(time * 10) * 1.1;
+        }
       }
 
       renderer.render(scene, camera);
@@ -2765,6 +2836,25 @@ export default function EmanuelOSCore() {
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // 🤖 ATUALIZAÇÃO ROBOTOC 3D: FALAS AUTOMÁTICAS AO DESBLOQUEAR E PERIÓDICAS
+  useEffect(() => {
+    if (bloqueado) return;
+
+    const timerBoasVindas = setTimeout(() => {
+      dispararFalaRobotoc("Bem-vindo de volta, Emanuel. Núcleo Robotoc 3D online e sincronizado.");
+    }, 1500);
+
+    const intervaloFalas = setInterval(() => {
+      const fraseAleatoria = frasesRobotoc[Math.floor(Math.random() * frasesRobotoc.length)];
+      dispararFalaRobotoc(fraseAleatoria);
+    }, 45000);
+
+    return () => {
+      clearTimeout(timerBoasVindas);
+      clearInterval(intervaloFalas);
+    };
+  }, [bloqueado]);
 
   if (bloqueado) {
     return (
@@ -2866,6 +2956,66 @@ export default function EmanuelOSCore() {
             title="Arraste para girar a Terra 3D! Veja o Robotoc 3D Flutuando ao Lado."
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
+
+          {/* 💬 HUD DE LEGENDAS FUTURISTAS DO ROBOTOC 3D */}
+          {legendaRobotoc && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '135px',
+                right: '30px',
+                zIndex: 145,
+                maxWidth: '340px',
+                backgroundColor: 'rgba(3, 7, 18, 0.85)',
+                border: '1.5px solid #00f0ff',
+                borderLeft: '5px solid #00f0ff',
+                borderRadius: '14px',
+                padding: '12px 16px',
+                color: '#f0f9ff',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 0 30px rgba(0, 240, 255, 0.35), inset 0 0 12px rgba(0, 240, 255, 0.15)',
+                fontFamily: 'Consolas, monospace',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', borderBottom: '1px solid rgba(0, 240, 255, 0.25)', paddingBottom: '4px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#00f0ff', letterSpacing: '1px' }}>
+                  🎙️ ROBOTOC 3D // TRANSMISSÃO NEURAL
+                </span>
+                <span style={{ fontSize: '8px', backgroundColor: robotocFalando ? '#00f0ff' : '#0284c7', color: robotocFalando ? '#000' : '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                  {robotocFalando ? 'AUDIO ON' : 'STANDBY'}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '11.5px', lineHeight: '1.45', color: '#e0f2fe', textShadow: '0 0 8px rgba(0, 240, 255, 0.4)' }}>
+                "{legendaRobotoc}"
+              </p>
+            </div>
+          )}
+
+          {/* 🔊 BOTÃO FLUTUANTE PARA OUVIR DIAGNÓSTICO DO ROBOTOC 3D */}
+          <button
+            onClick={() => dispararFalaRobotoc(frasesRobotoc[Math.floor(Math.random() * frasesRobotoc.length)])}
+            title="Ouvir Diagnóstico do Robotoc 3D"
+            style={{
+              position: 'absolute',
+              bottom: '135px',
+              right: legendaRobotoc ? '385px' : '30px',
+              zIndex: 145,
+              backgroundColor: 'rgba(255, 255, 255, 0.92)',
+              border: '1.5px solid #00f0ff',
+              color: '#0284c7',
+              padding: '8px 12px',
+              borderRadius: '20px',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            🗣️ Falar Status
+          </button>
 
           {/* 🔍 BARRA DE PESQUISA INTELIGENTE COM LUPA PRINCIPAL, CONTROLE + / - & INTERFACE FUTURÍSTICA */}
           <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '520px' }}>
@@ -3087,7 +3237,23 @@ export default function EmanuelOSCore() {
               ))}
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); if (chatInput.trim()) { setMensagens(prev => [...prev, { autor: 'VOCÊ', texto: chatInput, tipo: 'user' }]); setChatInput(''); } }} style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(0,240,255,0.2)' }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (chatInput.trim()) {
+                  const cmdUser = chatInput.trim();
+                  const respostaRobotoc = `Comando "${cmdUser}" recebido e processado pelo núcleo Robotoc 3D.`;
+                  setMensagens((prev) => [
+                    ...prev,
+                    { autor: 'VOCÊ', texto: cmdUser, tipo: 'user' },
+                    { autor: 'ROBOTOC 3D', texto: respostaRobotoc, tipo: 'sys' }
+                  ]);
+                  dispararFalaRobotoc(respostaRobotoc);
+                  setChatInput('');
+                }
+              }}
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(0,240,255,0.2)' }}
+            >
               <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC 3D ou envie comandos neurais..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: '10px', flexGrow: 1 }} />
               <button type="submit" style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
             </form>
