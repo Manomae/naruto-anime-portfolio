@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { runEMAgent } from './engine.js';
-const program = new Command();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const commander_1 = require("commander");
+const engine_js_1 = require("./engine.js");
+const program = new commander_1.Command();
 program
     .name('em-agent')
     .description('EM Agent - Agente de IA de código aberto para desktop')
@@ -11,7 +13,7 @@ program
     .option('-p, --provider <tipo>', 'Provedor (local ou cloud)', 'cloud')
     .action(async (task, options) => {
     const workspaceDir = process.cwd();
-    await runEMAgent({
+    await (0, engine_js_1.runEMAgent)({
         task,
         workspaceDir,
         provider: options.provider,

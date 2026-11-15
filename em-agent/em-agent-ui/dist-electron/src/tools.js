@@ -1,16 +1,23 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-const execAsync = promisify(exec);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.toolsDefinition = void 0;
+exports.executeTool = executeTool;
+const promises_1 = __importDefault(require("fs/promises"));
+const path_1 = __importDefault(require("path"));
+const child_process_1 = require("child_process");
+const util_1 = require("util");
+const execAsync = (0, util_1.promisify)(child_process_1.exec);
 function validatePath(targetPath, workspaceDir) {
-    const absolutePath = path.resolve(workspaceDir, targetPath);
+    const absolutePath = path_1.default.resolve(workspaceDir, targetPath);
     if (!absolutePath.startsWith(workspaceDir)) {
         throw new Error(`Acesso negado: O caminho "${targetPath}" está fora da pasta ativa.`);
     }
     return absolutePath;
 }
-export const toolsDefinition = [
+exports.toolsDefinition = [
     {
         name: 'read_file',
         description: 'Lê o conteúdo textual de um ficheiro na pasta de trabalho.',
@@ -46,17 +53,17 @@ export const toolsDefinition = [
         }
     }
 ];
-export async function executeTool(name, args, workspaceDir) {
+async function executeTool(name, args, workspaceDir) {
     try {
         switch (name) {
             case 'read_file': {
                 const fullPath = validatePath(args.filePath, workspaceDir);
-                return await fs.readFile(fullPath, 'utf-8');
+                return await promises_1.default.readFile(fullPath, 'utf-8');
             }
             case 'write_file': {
                 const fullPath = validatePath(args.filePath, workspaceDir);
-                await fs.mkdir(path.dirname(fullPath), { recursive: true });
-                await fs.writeFile(fullPath, args.content, 'utf-8');
+                await promises_1.default.mkdir(path_1.default.dirname(fullPath), { recursive: true });
+                await promises_1.default.writeFile(fullPath, args.content, 'utf-8');
                 return `[OK] Ficheiro "${args.filePath}" gravado com sucesso.`;
             }
             case 'run_command': {

@@ -1,22 +1,28 @@
-import 'dotenv/config';
-import { GoogleGenAI } from '@google/genai';
-import ora from 'ora';
-import chalk from 'chalk';
-import { toolsDefinition, executeTool } from './tools.js';
-export async function runEMAgent({ task, workspaceDir, provider, modelName }) {
-    console.log(chalk.bold.cyan(`\n🤖 EM Agent ativado`));
-    console.log(chalk.gray(`Pasta ativa: ${workspaceDir}`));
-    console.log(chalk.gray(`Provedor: ${provider} (${modelName})\n`));
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.runEMAgent = runEMAgent;
+require("dotenv/config");
+const genai_1 = require("@google/genai");
+const ora_1 = __importDefault(require("ora"));
+const chalk_1 = __importDefault(require("chalk"));
+const tools_js_1 = require("./tools.js");
+async function runEMAgent({ task, workspaceDir, provider, modelName }) {
+    console.log(chalk_1.default.bold.cyan(`\n🤖 EM Agent ativado`));
+    console.log(chalk_1.default.gray(`Pasta ativa: ${workspaceDir}`));
+    console.log(chalk_1.default.gray(`Provedor: ${provider} (${modelName})\n`));
     // --- EXECUÇÃO VIA NUVEM (GEMINI) ---
     if (provider === 'cloud') {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            console.error(chalk.red('Erro: Variável GEMINI_API_KEY não configurada no ambiente ou no arquivo .env.'));
+            console.error(chalk_1.default.red('Erro: Variável GEMINI_API_KEY não configurada no ambiente ou no arquivo .env.'));
             return;
         }
-        const ai = new GoogleGenAI({ apiKey });
+        const ai = new genai_1.GoogleGenAI({ apiKey });
         const targetModel = modelName && modelName !== 'qwen2.5-coder:7b' ? modelName : 'gemini-3.8-flash';
-        const spinner = ora('Processando tarefa na nuvem...').start();
+        const spinner = (0, ora_1.default)('Processando tarefa na nuvem...').start();
         try {
             const response = await ai.models.generateContent({
                 model: targetModel,
@@ -28,7 +34,7 @@ export async function runEMAgent({ task, workspaceDir, provider, modelName }) {
                 ],
                 config: {
                     systemInstruction: 'Você é o EM Agent, um agente de IA de código aberto para desktop. Execute tarefas lendo e editando arquivos locais.',
-                    tools: [{ functionDeclarations: toolsDefinition }]
+                    tools: [{ functionDeclarations: tools_js_1.toolsDefinition }]
                 }
             });
             spinner.stop();
@@ -36,20 +42,20 @@ export async function runEMAgent({ task, workspaceDir, provider, modelName }) {
             if (functionCalls && functionCalls.length > 0) {
                 for (const call of functionCalls) {
                     if (call.name) {
-                        console.log(chalk.yellow(`🛠️ Executando: ${call.name}(${JSON.stringify(call.args)})`));
-                        const toolResult = await executeTool(call.name, call.args, workspaceDir);
-                        console.log(chalk.green(`\n💬 ${toolResult}`));
+                        console.log(chalk_1.default.yellow(`🛠️ Executando: ${call.name}(${JSON.stringify(call.args)})`));
+                        const toolResult = await (0, tools_js_1.executeTool)(call.name, call.args, workspaceDir);
+                        console.log(chalk_1.default.green(`\n💬 ${toolResult}`));
                     }
                 }
             }
             else {
-                console.log(chalk.green(`\n💬 Resposta do EM Agent:`));
+                console.log(chalk_1.default.green(`\n💬 Resposta do EM Agent:`));
                 console.log(response.text);
             }
         }
         catch (error) {
             spinner.fail('Erro durante a execução na nuvem.');
-            console.error(chalk.red(error.message));
+            console.error(chalk_1.default.red(error.message));
         }
         return;
     }
@@ -67,7 +73,7 @@ Seja direto, execute ações reais usando as ferramentas disponíveis e confirme
     const maxSteps = 15;
     while (stepCount < maxSteps) {
         stepCount++;
-        const spinner = ora(`Pensando no próximo passo (${stepCount}/${maxSteps})...`).start();
+        const spinner = (0, ora_1.default)(`Pensando no próximo passo (${stepCount}/${maxSteps})...`).start();
         try {
             const response = await fetch('http://localhost:11434/api/chat', {
                 method: 'POST',
@@ -75,7 +81,7 @@ Seja direto, execute ações reais usando as ferramentas disponíveis e confirme
                 body: JSON.stringify({
                     model: modelName,
                     messages,
-                    tools: toolsDefinition,
+                    tools: tools_js_1.toolsDefinition,
                     stream: false
                 })
             });
@@ -90,21 +96,21 @@ Seja direto, execute ações reais usando as ferramentas disponíveis e confirme
                 for (const call of assistantMessage.tool_calls) {
                     const fnName = call.function.name;
                     const fnArgs = call.function.arguments;
-                    console.log(chalk.yellow(`🛠️ Executando: ${fnName}(${JSON.stringify(fnArgs)})`));
-                    const toolResult = await executeTool(fnName, fnArgs, workspaceDir);
-                    console.log(chalk.dim(`↳ Resultado: ${toolResult}`));
+                    console.log(chalk_1.default.yellow(`🛠️ Executando: ${fnName}(${JSON.stringify(fnArgs)})`));
+                    const toolResult = await (0, tools_js_1.executeTool)(fnName, fnArgs, workspaceDir);
+                    console.log(chalk_1.default.dim(`↳ Resultado: ${toolResult}`));
                     messages.push({ role: 'tool', content: toolResult });
                 }
             }
             else {
-                console.log(chalk.green(`\n💬 Resposta do EM Agent:`));
+                console.log(chalk_1.default.green(`\n💬 Resposta do EM Agent:`));
                 console.log(assistantMessage.content);
                 break;
             }
         }
         catch (error) {
             spinner.fail('Erro durante a execução do agente.');
-            console.error(chalk.red(error.message));
+            console.error(chalk_1.default.red(error.message));
             break;
         }
     }
