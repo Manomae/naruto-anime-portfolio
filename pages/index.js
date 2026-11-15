@@ -2321,6 +2321,33 @@ export default function EmanuelOSCore() {
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
+  // 🔎 INTEGRAÇÃO COM robotocNAV.js (SINCRONIZAÇÃO DE PESQUISA NO GLOBO TERRA 3D)
+  useEffect(() => {
+    if (bloqueado || typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const navLocalId = params.get('navLocalId');
+    const salvoRaw = localStorage.getItem('robotocNAV_filtro_ativo');
+
+    if (navLocalId) {
+      const encontrado = locaisEmanuelOS.find((l) => String(l.id) === String(navLocalId));
+      if (encontrado) {
+        focarLocalNoGlobo(encontrado);
+        dispararFalaRobotoc(`Sincronizado com robotocNAV: exibindo ${encontrado.nome} no Mapa Terra 3D.`);
+        localStorage.removeItem('robotocNAV_filtro_ativo');
+      }
+    } else if (salvoRaw) {
+      try {
+        const parsed = JSON.parse(salvoRaw);
+        const encontrado = locaisEmanuelOS.find((l) => l.id === parsed.id);
+        if (encontrado) {
+          focarLocalNoGlobo(encontrado);
+          localStorage.removeItem('robotocNAV_filtro_ativo');
+        }
+      } catch (e) {}
+    }
+  }, [bloqueado]);
+
   // 🔎 DECLARAÇÃO ÚNICA DA FUNÇÃO DE BUSCA
   const handleBuscaGlobo = (e) => {
     const val = e.target.value;
@@ -3356,6 +3383,28 @@ export default function EmanuelOSCore() {
             <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#ffffff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               {sidebarAberta ? '✕' : '☰'}
             </button>
+
+            <Link
+              href="/robotocNAV"
+              style={{
+                backgroundColor: '#00f0ff',
+                border: '1px solid #0284c7',
+                color: '#020617',
+                padding: '0 14px',
+                height: '40px',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontWeight: '900',
+                fontSize: '11px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                textDecoration: 'none',
+                boxShadow: '0 0 18px rgba(0, 240, 255, 0.5)'
+              }}
+            >
+              🌐 robotocNAV
+            </Link>
 
             <button onClick={() => setModoDevSplit(!modoDevSplit)} style={{ backgroundColor: modoDevSplit ? '#0284c7' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #0284c7', color: modoDevSplit ? '#fff' : '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
               🖥️ {modoDevSplit ? 'Fechar Workstation' : 'Dev Workstation Split'}
