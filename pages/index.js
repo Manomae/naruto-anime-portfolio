@@ -16,6 +16,268 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
+// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (BASEADO NA IMAGEM DE REFERÊNCIA) ---
+// =========================================================================================
+function criarModeloRobotocEspetacular3D() {
+  const robotGroup = new THREE.Group();
+
+  // Materiais PBR de Alta Fidelidade (Branco Cerâmica, Prata Cromado, Azul Metálico e LED Ciano Neon)
+  const whiteArmorMat = new THREE.MeshPhysicalMaterial({
+    color: 0xf8fafc,
+    roughness: 0.15,
+    metalness: 0.1,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1
+  });
+
+  const chromeSilverMat = new THREE.MeshStandardMaterial({
+    color: 0xd1d5db,
+    roughness: 0.2,
+    metalness: 0.92
+  });
+
+  const metallicBlueMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.25,
+    metalness: 0.75
+  });
+
+  const darkScreenMat = new THREE.MeshPhysicalMaterial({
+    color: 0x020617,
+    roughness: 0.08,
+    metalness: 0.3,
+    clearcoat: 1.0
+  });
+
+  const cyanLedMat = new THREE.MeshStandardMaterial({
+    color: 0x00f0ff,
+    emissive: 0x00f0ff,
+    emissiveIntensity: 3.2,
+    roughness: 0.1
+  });
+
+  // 1. CABEÇA ARREDONDADA FUTURISTA COM VISEIRA PRETA, OLHOS PIXEL LED E CRISTA SUPERIOR
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 1.05, 0);
+
+  // Capacete principal branco/prata
+  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.52, 36, 36), whiteArmorMat);
+  headBase.scale.set(1.12, 0.94, 0.98);
+  headGroup.add(headBase);
+
+  // Faixa lateral metálica prata do capacete
+  const helmetBand = new THREE.Mesh(new THREE.CylinderGeometry(0.54, 0.54, 0.28, 32), chromeSilverMat);
+  helmetBand.rotation.z = Math.PI / 2;
+  helmetBand.scale.set(0.95, 1.08, 0.95);
+  headGroup.add(helmetBand);
+
+  // Crista superior com LED ciano
+  const crestBase = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.14, 0.26), whiteArmorMat);
+  crestBase.position.set(0, 0.50, 0.02);
+  const crestLed = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.08, 0.06), cyanLedMat);
+  crestLed.position.set(0, 0.51, 0.14);
+  headGroup.add(crestBase, crestLed);
+
+  // Moldura azul da viseira frontal
+  const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.36, 0.18), metallicBlueMat);
+  visorFrame.position.set(0, -0.02, 0.43);
+  headGroup.add(visorFrame);
+
+  // Tela preta brilhante da viseira
+  const visorScreen = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.30, 0.19), darkScreenMat);
+  visorScreen.position.set(0, -0.02, 0.435);
+  headGroup.add(visorScreen);
+
+  // Olhos digitais ciano brilhantes (com textura pixelada sutil)
+  const eyeGeo = new THREE.SphereGeometry(0.085, 24, 24);
+  const eyeL = new THREE.Mesh(eyeGeo, cyanLedMat);
+  eyeL.scale.set(1.15, 0.95, 0.35);
+  eyeL.position.set(-0.17, -0.02, 0.52);
+
+  const eyeR = new THREE.Mesh(eyeGeo, cyanLedMat);
+  eyeR.scale.set(1.15, 0.95, 0.35);
+  eyeR.position.set(0.17, -0.02, 0.52);
+  headGroup.add(eyeL, eyeR);
+
+  // Fones / Orelhas laterais prata com anel azul
+  [-1, 1].forEach((side) => {
+    const earGroup = new THREE.Group();
+    const earOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.10, 24), chromeSilverMat);
+    earOuter.rotation.z = Math.PI / 2;
+    const earRing = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.025, 16, 32), metallicBlueMat);
+    earRing.rotation.y = Math.PI / 2;
+    earRing.position.x = side * 0.03;
+    earGroup.add(earOuter, earRing);
+    earGroup.position.set(side * 0.57, -0.02, 0);
+    headGroup.add(earGroup);
+  });
+
+  robotGroup.add(headGroup);
+
+  // Pescoço articulado metálico com anel azul
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.22, 20), chromeSilverMat);
+  neck.position.set(0, 0.54, 0);
+  const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 16, 32), metallicBlueMat);
+  neckCollar.rotation.x = Math.PI / 2;
+  neckCollar.position.set(0, 0.46, 0);
+  robotGroup.add(neck, neckCollar);
+
+  // 2. TRONCO ARMADURADO COM NÚCLEO VERTICAL CIANO E ABDÔMEN ARTICULADO
+  const torsoGroup = new THREE.Group();
+  torsoGroup.position.set(0, 0.05, 0);
+
+  // Peitoral branco esculpido
+  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.28, 0.55, 32), whiteArmorMat);
+  chestArmor.scale.set(1.15, 1, 0.85);
+  chestArmor.position.set(0, 0.18, 0);
+  torsoGroup.add(chestArmor);
+
+  // Detalhe frontal azul em Y / T no peito
+  const chestBlueTrim = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.44, 0.34), metallicBlueMat);
+  chestBlueTrim.position.set(0, 0.16, 0.06);
+  torsoGroup.add(chestBlueTrim);
+
+  // Barra vertical luminosa LED Ciano no centro do peito
+  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.26, 0.05), cyanLedMat);
+  chestCoreLed.position.set(0, 0.20, 0.26);
+  torsoGroup.add(chestCoreLed);
+
+  // Segmentos abdominais metálicos prata com linhas de energia ciano
+  for (let i = 0; i < 3; i++) {
+    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.25 - i * 0.015, 0.24 - i * 0.015, 0.08, 24), chromeSilverMat);
+    abSeg.scale.set(1.1, 1, 0.85);
+    abSeg.position.set(0, -0.14 - i * 0.10, 0);
+    torsoGroup.add(abSeg);
+
+    if (i < 2) {
+      const abLed = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, 0.24), cyanLedMat);
+      abLed.position.set(0, -0.19 - i * 0.10, 0.04);
+      torsoGroup.add(abLed);
+    }
+  }
+
+  // Cintura / Pélvis branca com acabamento azul
+  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.20, 0.22, 24), whiteArmorMat);
+  pelvis.scale.set(1.15, 1, 0.88);
+  pelvis.position.set(0, -0.45, 0);
+  const pelvisTrim = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.028, 12, 28), metallicBlueMat);
+  pelvisTrim.rotation.x = Math.PI / 2;
+  pelvisTrim.scale.set(1.12, 0.88, 1);
+  pelvisTrim.position.set(0, -0.36, 0);
+  torsoGroup.add(pelvis, pelvisTrim);
+
+  robotGroup.add(torsoGroup);
+
+  // 3. BRAÇOS ARTICULADOS COM OMBROS ESFÉRICOS, ANTEBRAÇOS PRATA E MÃOS COM 5 DEDOS
+  const criarBracoRobotoc = (lado) => {
+    const armPivot = new THREE.Group();
+    armPivot.position.set(lado * 0.46, 0.34, 0);
+
+    // Ombro esférico prata + anel azul
+    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), chromeSilverMat);
+    const shoulderRing = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.022, 12, 24), metallicBlueMat);
+    shoulderRing.rotation.y = Math.PI / 2;
+    armPivot.add(shoulder, shoulderRing);
+
+    // Braço superior
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.28, 20), chromeSilverMat);
+    upperArm.position.set(lado * 0.04, -0.18, 0);
+    upperArm.rotation.z = lado * 0.15;
+    armPivot.add(upperArm);
+
+    // Articulação do cotovelo
+    const elbowGroup = new THREE.Group();
+    elbowGroup.position.set(lado * 0.07, -0.34, 0);
+
+    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), metallicBlueMat);
+    elbowGroup.add(elbowJoint);
+
+    // Antebraço robusto prata com punho azul
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.125, 0.32, 24), chromeSilverMat);
+    forearm.position.set(0, -0.18, 0);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.028, 12, 24), metallicBlueMat);
+    cuff.rotation.x = Math.PI / 2;
+    cuff.position.set(0, -0.33, 0);
+    elbowGroup.add(forearm, cuff);
+
+    // Mão branca articulada com 5 dedos metálicos
+    const handGroup = new THREE.Group();
+    handGroup.position.set(0, -0.42, 0);
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.12, 0.07), whiteArmorMat);
+    handGroup.add(palm);
+
+    for (let f = -1.5; f <= 1.5; f += 1) {
+      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.013, 0.09, 10), chromeSilverMat);
+      finger.position.set(f * 0.032, -0.09, 0);
+      finger.rotation.z = f * 0.08 * lado;
+      handGroup.add(finger);
+    }
+    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.015, 0.08, 10), chromeSilverMat);
+    thumb.position.set(-lado * 0.08, -0.03, 0.02);
+    thumb.rotation.z = -lado * 0.6;
+    handGroup.add(thumb);
+
+    elbowGroup.add(handGroup);
+    armPivot.add(elbowGroup);
+
+    return { armPivot, elbowGroup };
+  };
+
+  // Braço Direito (do robô, à esquerda na tela - abaixado)
+  const rightArmObj = criarBracoRobotoc(-1);
+  rightArmObj.armPivot.rotation.z = -0.18;
+  robotGroup.add(rightArmObj.armPivot);
+
+  // Braço Esquerdo (do robô, à direita na tela - levantado acenando como na imagem!)
+  const leftArmObj = criarBracoRobotoc(1);
+  leftArmObj.armPivot.rotation.z = 0.65;
+  leftArmObj.elbowGroup.rotation.z = 1.65;
+  leftArmObj.elbowGroup.rotation.x = -0.2;
+  robotGroup.add(leftArmObj.armPivot);
+
+  // 4. PERNAS ROBÓTICAS COM JOELHEIRAS E BOTAS FUTURISTAS AZUL E BRANCO
+  [-1, 1].forEach((side) => {
+    const legGroup = new THREE.Group();
+    legGroup.position.set(side * 0.17, -0.52, 0);
+
+    const hipJoint = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), chromeSilverMat);
+    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.08, 0.26, 20), chromeSilverMat);
+    thigh.position.set(0, -0.15, 0);
+
+    const kneeJoint = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), metallicBlueMat);
+    kneeJoint.position.set(0, -0.30, 0.02);
+
+    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.135, 0.30, 24), chromeSilverMat);
+    shin.position.set(0, -0.46, 0);
+
+    const bootCollar = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.025, 12, 24), metallicBlueMat);
+    bootCollar.rotation.x = Math.PI / 2;
+    bootCollar.position.set(0, -0.60, 0);
+
+    const footBase = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.34), whiteArmorMat);
+    footBase.position.set(0, -0.66, 0.05);
+
+    const sole = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.04, 0.35), metallicBlueMat);
+    sole.position.set(0, -0.71, 0.05);
+
+    legGroup.add(hipJoint, thigh, kneeJoint, shin, bootCollar, footBase, sole);
+    robotGroup.add(legGroup);
+  });
+
+  return {
+    robotGroup,
+    headGroup,
+    eyeL,
+    eyeR,
+    crestLed,
+    chestCoreLed,
+    rightArmPivot: rightArmObj.armPivot,
+    leftArmPivot: leftArmObj.armPivot,
+    leftElbowGroup: leftArmObj.elbowGroup
+  };
+}
+
+// =========================================================================================
 // ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL (INTEGRADO AO NÚCLEO) ---
 // =========================================================================================
 function AgentPanelModule() {
@@ -119,10 +381,11 @@ function MiniRobotocAssistant3D({ onClose }) {
   const sceneRef = useRef(null);
   const miniRobotRef = useRef(null);
   const pointerArmRef = useRef(null);
+  const clickBoostRef = useRef(0);
 
   const [duvidaInput, setDuvidaInput] = useState('');
   const [sugestoes, setSugestoes] = useState([]);
-  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Digite algo e aperte TAB ou Seta Direita para autocompletar!');
+  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Clique em mim ou digite algo e aperte TAB ou Seta Direita!');
 
   const handleInputChange = (e) => {
     const valor = e.target.value;
@@ -174,7 +437,7 @@ function MiniRobotocAssistant3D({ onClose }) {
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 5);
+    camera.position.set(0, 0.15, 3.6);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
@@ -188,52 +451,19 @@ function MiniRobotocAssistant3D({ onClose }) {
     lightCyan.position.set(3, 5, 4);
     scene.add(lightCyan);
 
-    const whiteMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0 });
-    const blueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
-    const cyanGlowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 2.5 });
+    const lightFront = new THREE.DirectionalLight(0xffffff, 2.0);
+    lightFront.position.set(-2, 3, 5);
+    scene.add(lightFront);
 
-    const miniRobot = new THREE.Group();
-
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), whiteMat);
-    head.scale.set(1, 1.1, 1);
-
-    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), cyanGlowMat);
-    visor.rotation.x = -Math.PI / 10;
-    visor.position.set(0, 0.05, 0.02);
-    head.add(visor);
-
-    head.position.y = 0.6;
-    miniRobot.add(head);
-
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.7, 16), whiteMat);
-    const chestPlate = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), blueMat);
-    chestPlate.position.set(0, 0, 0.22);
-    body.add(chestPlate);
-
-    const core = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 16), cyanGlowMat);
-    core.rotation.x = Math.PI / 2;
-    core.position.set(0, 0.05, 0.28);
-    body.add(core);
-
-    miniRobot.add(body);
-
-    const armGroup = new THREE.Group();
-    const armMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.5, 16), blueMat);
-    armMesh.position.y = -0.25;
-    armGroup.add(armMesh);
-
-    const pointerLaser = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.3, 16), cyanGlowMat);
-    pointerLaser.rotation.x = Math.PI;
-    pointerLaser.position.y = -0.6;
-    armGroup.add(pointerLaser);
-
-    armGroup.position.set(0.45, 0.2, 0);
-    miniRobot.add(armGroup);
-    pointerArmRef.current = armGroup;
-
-    miniRobot.position.set(0, -0.2, 0);
+    // Usando o novo modelo espetacular do Robotoc 3D
+    const robotParts = criarModeloRobotocEspetacular3D();
+    const miniRobot = robotParts.robotGroup;
+    miniRobot.position.set(0, -0.1, 0);
+    miniRobot.scale.set(0.85, 0.85, 0.85);
     scene.add(miniRobot);
+
     miniRobotRef.current = miniRobot;
+    pointerArmRef.current = robotParts.leftElbowGroup;
 
     let clock = new THREE.Clock();
     let animationId;
@@ -242,9 +472,22 @@ function MiniRobotocAssistant3D({ onClose }) {
       animationId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
+      if (clickBoostRef.current > 0) {
+        clickBoostRef.current = Math.max(0, clickBoostRef.current - 0.03);
+      }
+      const boost = clickBoostRef.current;
+
       if (miniRobotRef.current) {
-        miniRobotRef.current.position.y = -0.2 + Math.sin(time * 2.5) * 0.08;
-        miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2;
+        miniRobotRef.current.position.y = -0.1 + Math.sin(time * 2.5) * 0.06 + Math.sin(boost * Math.PI) * 0.18;
+        miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2 + Math.sin(boost * Math.PI * 2) * 0.45;
+      }
+
+      if (robotParts.headGroup) {
+        robotParts.headGroup.rotation.z = Math.sin(time * 1.5) * 0.05 + Math.sin(boost * Math.PI * 2) * 0.18;
+      }
+
+      if (pointerArmRef.current) {
+        pointerArmRef.current.rotation.z = 1.65 + Math.sin(time * 3.0) * 0.12 + Math.sin(boost * Math.PI * 4) * 0.45;
       }
 
       renderer.render(scene, camera);
@@ -258,6 +501,13 @@ function MiniRobotocAssistant3D({ onClose }) {
       }
     };
   }, []);
+
+  const handleCliqueMiniRobotoc = () => {
+    clickBoostRef.current = 1.0;
+    const msg = "Olá! Robotoc 3D ativado e pronto para ajudar!";
+    setRespostaIA(msg);
+    falarResposta(msg);
+  };
 
   const processarDuvidaAssistente = (e) => {
     e.preventDefault();
@@ -274,6 +524,7 @@ function MiniRobotocAssistant3D({ onClose }) {
       resp = `Entendido! Analisando: "${duvidaInput}". O Mini Robotoc processou seu comando no Emanuel.OS!`;
     }
 
+    clickBoostRef.current = 0.8;
     setRespostaIA(resp);
     falarResposta(resp);
     setSugestoes([]);
@@ -296,7 +547,12 @@ function MiniRobotocAssistant3D({ onClose }) {
       </div>
 
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', height: '100px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
-        <div ref={mountRef} style={{ width: '90px', height: '100%', cursor: 'grab' }} />
+        <div
+          ref={mountRef}
+          onClick={handleCliqueMiniRobotoc}
+          title="Clique no Mini Robotoc 3D!"
+          style={{ width: '90px', height: '100%', cursor: 'pointer' }}
+        />
         <div style={{ flex: 1, height: '100%', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
           <strong>💡 Status Robotoc:</strong>
           <p style={{ margin: '4px 0 0 0', color: '#0f172a' }}>{respostaIA}</p>
@@ -455,7 +711,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0, 3.8);
+    camera.position.set(0, 0.15, 3.6);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
@@ -467,19 +723,14 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     const dirLight = new THREE.DirectionalLight(0x00f0ff, 3.5);
     dirLight.position.set(2, 3, 4);
     scene.add(dirLight);
+    const frontLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    frontLight.position.set(-2, 2, 5);
+    scene.add(frontLight);
 
-    const robotGroup = new THREE.Group();
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0 }));
-    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 2.5 }));
-    visor.position.set(0, 0.05, 0.02);
-    visor.rotation.x = -Math.PI / 10;
-    head.add(visor);
-    robotGroup.add(head);
-
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8 }));
-    body.position.y = -0.55;
-    robotGroup.add(body);
-
+    // Usando o novo modelo espetacular do Robotoc 3D na aba lateral
+    const robotParts = criarModeloRobotocEspetacular3D();
+    const robotGroup = robotParts.robotGroup;
+    robotGroup.scale.set(0.85, 0.85, 0.85);
     scene.add(robotGroup);
 
     let animId;
@@ -489,6 +740,9 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
       const t = clock.getElapsedTime();
       robotGroup.position.y = Math.sin(t * 3.0) * 0.08;
       robotGroup.rotation.y = Math.sin(t * 1.5) * 0.3;
+      if (robotParts.leftElbowGroup) {
+        robotParts.leftElbowGroup.rotation.z = 1.65 + Math.sin(t * 4.0) * 0.18;
+      }
       renderer.render(scene, camera);
     };
     animate();
@@ -570,7 +824,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justify: 'center',
+          justifyContent: 'center',
           gap: '4px',
           padding: '4px'
         }}
@@ -1775,23 +2029,15 @@ function VitrineVirtual3D({ modoAtual, onSelectModo, onRequestBluetoothConnectio
     const contentGroup = new THREE.Group();
 
     if (modoAtual === 'avatares' || modoAtual === 'bluetooth') {
-      const robot1 = new THREE.Group();
-      const body1 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8, roughness: 0.2 }));
-      const head1 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-      const visor1 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.62), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
-      head1.position.y = 0.95;
-      visor1.position.y = 0.95;
-      robot1.add(body1, head1, visor1);
-      robot1.position.set(-1.4, 0.2, 0);
+      const robot1Parts = criarModeloRobotocEspetacular3D();
+      const robot1 = robot1Parts.robotGroup;
+      robot1.position.set(-1.3, 0.2, 0);
+      robot1.scale.set(0.95, 0.95, 0.95);
 
-      const robot2 = new THREE.Group();
-      const body2 = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 }));
-      const head2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.6), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-      const visor2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.62), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
-      head2.position.y = 0.95;
-      visor2.position.y = 0.95;
-      robot2.add(body2, head2, visor2);
-      robot2.position.set(1.4, 0.2, 0);
+      const robot2Parts = criarModeloRobotocEspetacular3D();
+      const robot2 = robot2Parts.robotGroup;
+      robot2.position.set(1.3, 0.2, 0);
+      robot2.scale.set(0.95, 0.95, 0.95);
 
       contentGroup.add(robot1);
       contentGroup.add(robot2);
@@ -2154,6 +2400,8 @@ export default function EmanuelOSCore() {
   const robotVisorRef = useRef(null);
   const robotArmLRef = useRef(null);
   const robotArmRRef = useRef(null);
+  const robotLeftElbowRef = useRef(null);
+  const robotClickAnimRef = useRef(0);
 
   const frasesRobotoc = [
     "Núcleo Emanuel ponto O S sincronizado. Todos os doze mapas operacionais.",
@@ -2661,84 +2909,36 @@ export default function EmanuelOSCore() {
     globeGroup.add(markersGroup);
     scene.add(globeGroup);
 
-    // 🤖 ROBOTOC 3D PRINCIPAL (MODELAGEM COMPLETA EM BRANCO E AZUL) FLUTUANDO AO LADO DA TERRA
-    const mainRobotGroup = new THREE.Group();
-
-    const whiteMatMain = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.2, clearcoat: 1.0 });
-    const blueMatMain = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.8 });
-    const cyanGlowMain = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.0 });
-
-    // Cabeça do Robotoc
-    const robotHead = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), whiteMatMain);
-    robotHead.scale.set(1, 1.1, 1);
-    robotHead.position.y = 1.0;
-
-    // Visor Cyan Neon
-    const robotVisor = new THREE.Mesh(new THREE.SphereGeometry(0.48, 32, 16, 0, Math.PI, 0, Math.PI * 0.4), cyanGlowMain);
-    robotVisor.rotation.x = -Math.PI / 10;
-    robotVisor.position.set(0, 0.05, 0.02);
-    robotHead.add(robotVisor);
-
-    // Orelhas / Antenas
-    const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2, 16), blueMatMain);
-    earL.rotation.z = Math.PI / 2;
-    earL.position.set(-0.52, 0, 0);
-    const earR = earL.clone();
-    earR.position.set(0.52, 0, 0);
-    robotHead.add(earL);
-    robotHead.add(earR);
-
-    mainRobotGroup.add(robotHead);
-
-    // Corpo
-    const robotBody = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 1.0, 32), whiteMatMain);
-    robotBody.position.y = 0.1;
-
-    // Peitoral Azul
-    const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.15), blueMatMain);
-    chest.position.set(0, 0.05, 0.35);
-    robotBody.add(chest);
-
-    // Núcleo Quântico Cyan
-    const robotCore = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 32), cyanGlowMain);
-    robotCore.rotation.x = Math.PI / 2;
-    robotCore.position.set(0, 0.08, 0.43);
-    robotBody.add(robotCore);
-
-    mainRobotGroup.add(robotBody);
-
-    // Braços
-    const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.7, 16);
-    const armL = new THREE.Mesh(armGeo, blueMatMain);
-    armL.position.set(-0.55, 0.1, 0);
-    armL.rotation.z = Math.PI / 8;
-
-    const armR = new THREE.Mesh(armGeo, blueMatMain);
-    armR.position.set(0.55, 0.1, 0);
-    armR.rotation.z = -Math.PI / 8;
-
-    mainRobotGroup.add(armL);
-    mainRobotGroup.add(armR);
+    // 🤖 ROBOTOC 3D PRINCIPAL (DESIGN ESPETACULAR BASEADO NA IMAGEM) FLUTUANDO AO LADO DA TERRA
+    const robotPartsMain = criarModeloRobotocEspetacular3D();
+    const mainRobotGroup = robotPartsMain.robotGroup;
 
     // Posicionar o Robotoc Principal à direita do Globo 3D
     mainRobotGroup.position.set(3.2, 0.2, 1.0);
-    mainRobotGroup.scale.set(1.2, 1.2, 1.2);
+    mainRobotGroup.scale.set(1.25, 1.25, 1.25);
     scene.add(mainRobotGroup);
     mainRobotRef.current = mainRobotGroup;
 
-    // Vincular partes articuladas para movimentos sutis
-    robotHeadRef.current = robotHead;
-    robotVisorRef.current = robotVisor;
-    robotArmLRef.current = armL;
-    robotArmRRef.current = armR;
+    // Vincular partes articuladas para movimentos sutis e clique interativo
+    robotHeadRef.current = robotPartsMain.headGroup;
+    robotVisorRef.current = robotPartsMain.eyeL;
+    robotArmLRef.current = robotPartsMain.rightArmPivot;
+    robotArmRRef.current = robotPartsMain.leftArmPivot;
+    robotLeftElbowRef.current = robotPartsMain.leftElbowGroup;
 
-    // CONTROLE DE ARRASTE/ROTAÇÃO DO GLOBO
+    // RAYCASTER PARA DETECTAR CLIQUE DIRETO NO ROBOTOC 3D
+    const raycaster = new THREE.Raycaster();
+    const mouseVec = new THREE.Vector2();
+    let pointerDownPos = { x: 0, y: 0 };
+
+    // CONTROLE DE ARRASTE/ROTAÇÃO DO GLOBO E CLIQUE NO ROBOTOC 3D
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
     const handleMouseDown = (e) => {
       isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
+      pointerDownPos = { x: e.clientX, y: e.clientY };
     };
 
     const handleMouseMove = (e) => {
@@ -2749,7 +2949,30 @@ export default function EmanuelOSCore() {
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseUp = () => { isDragging = false; };
+    const handleMouseUp = (e) => {
+      isDragging = false;
+
+      // Verifica se foi um clique rápido (sem arrastar) sobre o Robotoc 3D
+      const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (moveDist < 6 && mountRef.current && mainRobotRef.current && cameraRef.current) {
+        const rect = mountRef.current.getBoundingClientRect();
+        mouseVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouseVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouseVec, cameraRef.current);
+        const hits = raycaster.intersectObjects(mainRobotRef.current.children, true);
+        if (hits.length > 0) {
+          robotClickAnimRef.current = 1.0;
+          const saudacoesClique = [
+            "Olá Emanuel! Robotoc 3D ativo e pronto para seus comandos!",
+            "Sistemas neurais respondendo ao seu toque! Como posso ajudar?",
+            "Telemetria 3D sincronizada! Todos os módulos operando perfeitamente."
+          ];
+          const frase = saudacoesClique[Math.floor(Math.random() * saudacoesClique.length)];
+          dispararFalaRobotoc(frase);
+        }
+      }
+    };
 
     const domEl = mountRef.current;
     domEl.addEventListener('mousedown', handleMouseDown);
@@ -2792,26 +3015,45 @@ export default function EmanuelOSCore() {
       });
 
       if (mainRobotRef.current) {
-        // Levitação orgânica suave
-        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
-        mainRobotRef.current.rotation.y = Math.sin(time * 0.8) * 0.2 - 0.3;
+        // Decaimento suave da animação ao clicar no Robotoc 3D
+        if (robotClickAnimRef.current > 0) {
+          robotClickAnimRef.current = Math.max(0, robotClickAnimRef.current - 0.022);
+        }
+        const clickPulse = robotClickAnimRef.current;
+        const jumpOffset = Math.sin(clickPulse * Math.PI) * 0.32;
+        const spinOffset = Math.sin(clickPulse * Math.PI * 2) * 0.42;
 
-        // Movimentos sutis de cabeça (observando o globo e o operador)
+        // Levitação orgânica suave + salto interativo ao clicar
+        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12 + jumpOffset;
+        mainRobotRef.current.rotation.y = Math.sin(time * 0.8) * 0.2 - 0.3 + spinOffset;
+
+        // Movimentos sutis de cabeça (observando o globo e reagindo ao clique)
         if (robotHeadRef.current) {
           robotHeadRef.current.rotation.y = Math.sin(time * 1.3) * 0.18;
-          robotHeadRef.current.rotation.z = Math.cos(time * 1.1) * 0.06;
+          robotHeadRef.current.rotation.z = Math.cos(time * 1.1) * 0.06 + Math.sin(clickPulse * Math.PI * 2) * 0.16;
+          robotHeadRef.current.rotation.x = Math.sin(clickPulse * Math.PI) * -0.15;
         }
 
-        // Gesticulação sutil dos braços
+        // Gesticulação sutil dos braços + aceno rápido no clique
         if (robotArmLRef.current && robotArmRRef.current) {
-          robotArmLRef.current.rotation.x = Math.sin(time * 1.8) * 0.14;
-          robotArmRRef.current.rotation.x = -Math.sin(time * 1.8) * 0.14;
-          robotArmRRef.current.rotation.z = -Math.PI / 8 + Math.cos(time * 2.2) * 0.08;
+          robotArmLRef.current.rotation.z = -0.18 + Math.sin(time * 1.8) * 0.08 - Math.sin(clickPulse * Math.PI) * 0.25;
+          robotArmRRef.current.rotation.z = 0.65 + Math.cos(time * 2.2) * 0.08 + Math.sin(clickPulse * Math.PI) * 0.25;
         }
 
-        // Pulso luminoso no visor cyan
-        if (robotVisorRef.current && robotVisorRef.current.material) {
-          robotVisorRef.current.material.emissiveIntensity = 2.5 + Math.sin(time * 10) * 1.1;
+        if (robotLeftElbowRef.current) {
+          robotLeftElbowRef.current.rotation.z = 1.65 + Math.sin(time * 3.0) * 0.14 + Math.sin(clickPulse * Math.PI * 4) * 0.45;
+        }
+
+        // Pulso luminoso nos LEDs ciano do Robotoc
+        const ledIntensity = 2.6 + Math.sin(time * 8) * 0.9 + clickPulse * 3.0;
+        if (robotPartsMain.eyeL && robotPartsMain.eyeL.material) {
+          robotPartsMain.eyeL.material.emissiveIntensity = ledIntensity;
+        }
+        if (robotPartsMain.eyeR && robotPartsMain.eyeR.material) {
+          robotPartsMain.eyeR.material.emissiveIntensity = ledIntensity;
+        }
+        if (robotPartsMain.chestCoreLed && robotPartsMain.chestCoreLed.material) {
+          robotPartsMain.chestCoreLed.material.emissiveIntensity = ledIntensity;
         }
       }
 
@@ -2953,7 +3195,7 @@ export default function EmanuelOSCore() {
           {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + SISTEMA SOLAR 3D */}
           <div 
             ref={mountRef} 
-            title="Arraste para girar a Terra 3D! Veja o Robotoc 3D Flutuando ao Lado."
+            title="Arraste para girar a Terra 3D! Clique no Robotoc 3D ao lado para interagir."
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
@@ -2994,7 +3236,10 @@ export default function EmanuelOSCore() {
 
           {/* 🔊 BOTÃO FLUTUANTE PARA OUVIR DIAGNÓSTICO DO ROBOTOC 3D */}
           <button
-            onClick={() => dispararFalaRobotoc(frasesRobotoc[Math.floor(Math.random() * frasesRobotoc.length)])}
+            onClick={() => {
+              robotClickAnimRef.current = 1.0;
+              dispararFalaRobotoc(frasesRobotoc[Math.floor(Math.random() * frasesRobotoc.length)]);
+            }}
             title="Ouvir Diagnóstico do Robotoc 3D"
             style={{
               position: 'absolute',
@@ -3243,6 +3488,7 @@ export default function EmanuelOSCore() {
                 if (chatInput.trim()) {
                   const cmdUser = chatInput.trim();
                   const respostaRobotoc = `Comando "${cmdUser}" recebido e processado pelo núcleo Robotoc 3D.`;
+                  robotClickAnimRef.current = 0.8;
                   setMensagens((prev) => [
                     ...prev,
                     { autor: 'VOCÊ', texto: cmdUser, tipo: 'user' },
