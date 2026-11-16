@@ -8,7 +8,7 @@ import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
-import { InteligenciaRobotoc } from './inteligencia-robotoc';
+import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
 
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
