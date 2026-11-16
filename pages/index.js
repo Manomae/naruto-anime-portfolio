@@ -7,6 +7,9 @@ import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
 
+// Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
+import { InteligenciaRobotoc } from './inteligencia-robotoc';
+
 // Bibliotecas para geração de documentos
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
@@ -383,7 +386,7 @@ function AgentPanelModule() {
 }
 
 // =========================================================================================
-// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT ---
+// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT (ATUALIZADO COM MICROFONE & BUSCA NA INTERNET) ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
   const mountRef = useRef(null);
@@ -392,9 +395,35 @@ function MiniRobotocAssistant3D({ onClose }) {
   const pointerArmRef = useRef(null);
   const clickBoostRef = useRef(0);
 
+  // Instância da nova inteligência Robotoc
+  const [robotoc] = useState(() => new InteligenciaRobotoc());
   const [duvidaInput, setDuvidaInput] = useState('');
   const [sugestoes, setSugestoes] = useState([]);
-  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D. Clique em mim ou digite algo e aperte TAB ou Seta Direita!');
+  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D com microfone futurístico e busca na internet. Fale ou digite qualquer assunto!');
+  const [ouvindo, setOuvindo] = useState(false);
+  const [carregando, setCarregando] = useState(false);
+  const [imagemBusca, setImagemBusca] = useState(null);
+  const [fontesWeb, setFontesWeb] = useState([]);
+
+  // Ativar Microfone Futurístico
+  const iniciarOuvirMicrofone = () => {
+    robotoc.ouvirMicrofoneFuturistico(
+      async (textoTranscrito) => {
+        setOuvindo(false);
+        setDuvidaInput(textoTranscrito);
+        await processarPerguntaRobotoc(textoTranscrito);
+      },
+      (erro) => {
+        setOuvindo(false);
+        console.error("Erro no microfone:", erro);
+        setRespostaIA("Erro ao acessar o microfone.");
+      },
+      () => {
+        setOuvindo(true);
+        setRespostaIA("🎙️ Ouvindo sua voz com tecnologia futurística...");
+      }
+    );
+  };
 
   const handleInputChange = (e) => {
     const valor = e.target.value;
@@ -436,6 +465,37 @@ function MiniRobotocAssistant3D({ onClose }) {
     }
   };
 
+  const processarPerguntaRobotoc = async (textoInput) => {
+    const texto = textoInput || duvidaInput;
+    if (!texto.trim()) return;
+
+    autoCompleterEngine.adicionarNovaPalavra(texto.trim());
+    setCarregando(true);
+    setImagemBusca(null);
+    setFontesWeb([]);
+    clickBoostRef.current = 1.0;
+
+    let resultadoTexto = "";
+
+    // Verifica se é uma solicitação de busca ou assunto geral (futebol, estudos, dia a dia, lugares, etc.)
+    if (texto.toLowerCase().includes('buscar') || texto.toLowerCase().includes('pesquisar') || texto.toLowerCase().includes('internet')) {
+      const termo = texto.replace(/buscar|pesquisar|na internet|sobre/gi, '').trim();
+      const resBusca = await robotoc.buscarobotoc(termo || texto);
+      resultadoTexto = resBusca.explicacao;
+      setImagemBusca(resBusca.imagemSugerida);
+      setFontesWeb(resBusca.fontes || []);
+    } else {
+      const resGeral = await robotoc.processarMensagemRobotoc(texto);
+      resultadoTexto = resGeral.resposta;
+    }
+
+    setRespostaIA(resultadoTexto);
+    falarResposta(resultadoTexto);
+    setCarregando(false);
+    setDuvidaInput('');
+    setSugestoes([]);
+  };
+
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -464,7 +524,6 @@ function MiniRobotocAssistant3D({ onClose }) {
     lightFront.position.set(-2, 3, 5);
     scene.add(lightFront);
 
-    // Usando o novo modelo espetacular do Robotoc 3D
     const robotParts = criarModeloRobotocEspetacular3D();
     const miniRobot = robotParts.robotGroup;
     miniRobot.position.set(0, -0.1, 0);
@@ -511,68 +570,53 @@ function MiniRobotocAssistant3D({ onClose }) {
     };
   }, []);
 
-  const handleCliqueMiniRobotoc = () => {
-    clickBoostRef.current = 1.0;
-    const msg = "Olá! Robotoc 3D ativado e pronto para ajudar!";
-    setRespostaIA(msg);
-    falarResposta(msg);
-  };
-
-  const processarDuvidaAssistente = (e) => {
-    e.preventDefault();
-    if (!duvidaInput.trim()) return;
-
-    autoCompleterEngine.adicionarNovaPalavra(duvidaInput.trim());
-
-    const q = duvidaInput.toLowerCase().trim();
-    let resp = '';
-
-    if (q.includes('onde fica') || q.includes('onde esta') || q.includes('mapa') || q.includes('workstation')) {
-      resp = `Localizando '${duvidaInput}' no sistema... O Mini Robotoc encontrou os módulos correspondentes!`;
-    } else {
-      resp = `Entendido! Analisando: "${duvidaInput}". O Mini Robotoc processou seu comando no Emanuel.OS!`;
-    }
-
-    clickBoostRef.current = 0.8;
-    setRespostaIA(resp);
-    falarResposta(resp);
-    setSugestoes([]);
-    setDuvidaInput('');
-  };
-
   return (
     <div style={{
-      position: 'fixed', bottom: '20px', right: '20px', width: '370px',
+      position: 'fixed', bottom: '20px', right: '20px', width: '380px',
       backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff',
       borderRadius: '20px', padding: '14px', boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
-      zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif'
+      zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif', maxHeight: '520px', overflowY: 'auto'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bae6fd', paddingBottom: '6px', marginBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '14px' }}>🤖</span>
-          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D AUTO-COMPLETE</strong>
+          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D + MICROFONE FUTURÍSTICO</strong>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', height: '100px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minHeight: '110px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
         <div
           ref={mountRef}
-          onClick={handleCliqueMiniRobotoc}
+          onClick={() => processarPerguntaRobotoc("Olá Robotoc")}
           title="Clique no Mini Robotoc 3D!"
-          style={{ width: '90px', height: '100%', cursor: 'pointer' }}
+          style={{ width: '90px', height: '100px', cursor: 'pointer', flexShrink: 0 }}
         />
-        <div style={{ flex: 1, height: '100%', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
-          <strong>💡 Status Robotoc:</strong>
-          <p style={{ margin: '4px 0 0 0', color: '#0f172a' }}>{respostaIA}</p>
+        <div style={{ flex: 1, maxHeight: '140px', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
+          <strong>💡 Resposta Robotoc:</strong>
+          <p style={{ margin: '4px 0 0 0', color: '#0f172a', whiteSpace: 'pre-wrap' }}>{carregando ? '⚡ Processando dados e buscando na internet...' : respostaIA}</p>
+          
+          {imagemBusca && (
+            <div style={{ marginTop: '6px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #00f0ff' }}>
+              <img src={imagemBusca} alt="Ilustração Robotoc" style={{ width: '100%', height: '80px', objectFit: 'cover' }} />
+            </div>
+          )}
+
+          {fontesWeb.length > 0 && (
+            <div style={{ marginTop: '4px', fontSize: '8px', color: '#0284c7' }}>
+              <span>Fontes: </span>
+              {fontesWeb.map((f, i) => (
+                <a key={i} href={f.url} target="_blank" rel="noreferrer" style={{ color: '#00f0ff', marginRight: '6px', textDecoration: 'underline' }}>{f.titulo}</a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {sugestoes.length > 0 && (
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '6px', backgroundColor: '#f0f9ff', padding: '6px', borderRadius: '8px', border: '1px solid #00f0ff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: 'bold' }}>⚡ COMPLEMENTOS SUGERIDOS:</span>
-            <span style={{ fontSize: '7.5px', backgroundColor: '#0284c7', color: '#fff', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold' }}>Pressione TAB ou ➔</span>
+            <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: 'bold' }}>⚡ AUTO-COMPLETE:</span>
           </div>
           {sugestoes.map((sug, i) => (
             <button
@@ -591,19 +635,38 @@ function MiniRobotocAssistant3D({ onClose }) {
         </div>
       )}
 
-      <form onSubmit={processarDuvidaAssistente} style={{ display: 'flex', gap: '4px' }}>
+      {/* Painel de Entrada com Microfone Futurístico */}
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <button
+          onClick={iniciarOuvirMicrofone}
+          title="Microfone Futurístico (Falar com o Robotoc)"
+          style={{
+            padding: '8px 10px',
+            borderRadius: '8px',
+            border: '1px solid #00f0ff',
+            backgroundColor: ouvindo ? 'rgba(239,68,68,0.2)' : 'rgba(2,132,199,0.1)',
+            color: ouvindo ? '#ef4444' : '#0284c7',
+            cursor: 'pointer',
+            fontSize: '14px',
+            animation: ouvindo ? 'pulse 1s infinite' : 'none'
+          }}
+        >
+          🎙️
+        </button>
+
         <input
           type="text"
           value={duvidaInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Digite 1 ou 2 letras (Aperte TAB ou ➔ pra aceitar)..."
+          placeholder="Futebol, faculdade, comida, 'buscar [assunto]'..."
           style={{ flex: 1, padding: '8px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
         />
-        <button type="submit" style={{ padding: '8px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
+        
+        <button onClick={() => processarPerguntaRobotoc(duvidaInput)} style={{ padding: '8px 12px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
           Enviar
         </button>
-      </form>
+      </div>
     </div>
   );
 }
@@ -615,7 +678,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
   const [expandido, setExpandido] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('notas'); // 'notas' ou 'lixeira'
 
-  // Estado de Notas Ativas e Lixeira
   const [notas, setNotas] = useState([
     { id: 1, titulo: 'Anotações Mestre Kernel', conteudo: 'Mapeamento quântico de 12 Nós AGI ativo no Emanuel.OS.', data: new Date().toLocaleTimeString('pt-BR') }
   ]);
@@ -628,7 +690,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
   const trashMountRef = useRef(null);
   const touchStartXRef = useRef(0);
 
-  // Criar Nova Nota
   const handleCriarNota = (e) => {
     e.preventDefault();
     if (!conteudoInput.trim()) return;
@@ -644,7 +705,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     if (addLogTerminal) addLogTerminal(`[ROBOTOC 3D] Nova nota criada: "${nova.titulo}"`);
   };
 
-  // Mover para Lixeira
   const handleMoverParaLixeira = (id) => {
     const item = notas.find(n => n.id === id);
     if (!item) return;
@@ -653,7 +713,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     if (addLogTerminal) addLogTerminal(`[LIXEIRA 3D] Rascunho descartado: "${item.titulo}"`);
   };
 
-  // Restaurar da Lixeira
   const handleRestaurarNota = (id) => {
     const item = lixeira.find(n => n.id === id);
     if (!item) return;
@@ -661,12 +720,10 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     setNotas(prev => [item, ...prev]);
   };
 
-  // Excluir Definitivamente
   const handleExcluirDefinitivo = (id) => {
     setLixeira(prev => prev.filter(n => n.id !== id));
   };
 
-  // Download REAL em TXT sem simulação
   const handleDownloadTXT = (nota) => {
     const blob = new Blob([`TÍTULO: ${nota.titulo}\nDATA: ${nota.data}\n\n${nota.conteudo}`], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -679,7 +736,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     URL.revokeObjectURL(url);
   };
 
-  // Download REAL em PDF via jsPDF sem simulação
   const handleDownloadPDF = (nota) => {
     const doc = new jsPDF();
     doc.setFillColor(240, 249, 255);
@@ -701,7 +757,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     doc.save(`${nota.titulo.replace(/\s+/g, '_')}.pdf`);
   };
 
-  // Suporte a Gesto de Arraste (Puxar para o lado para abrir/fechar)
   const handleTouchStart = (e) => {
     touchStartXRef.current = e.touches[0].clientX;
   };
@@ -712,7 +767,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     if (deltaX > 50) setExpandido(false);
   };
 
-  // Renderização Three.js do Robotoc 3D Flutuante na Aba Lateral
   useEffect(() => {
     if (!robotMountRef.current) return;
     const width = 60;
@@ -736,7 +790,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     frontLight.position.set(-2, 2, 5);
     scene.add(frontLight);
 
-    // Usando o novo modelo espetacular do Robotoc 3D na aba lateral
     const robotParts = criarModeloRobotocEspetacular3D();
     const robotGroup = robotParts.robotGroup;
     robotGroup.scale.set(0.85, 0.85, 0.85);
@@ -762,7 +815,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     };
   }, []);
 
-  // Renderização Three.js da Lixeira Holográfica 3D
   useEffect(() => {
     if (!trashMountRef.current || abaAtiva !== 'lixeira') return;
     const width = 80;
@@ -816,7 +868,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
         fontFamily: 'sans-serif'
       }}
     >
-      {/* GATILHO LATERAL FLUTUANTE DE DESLIZAMENTO (PUXAR PARA O LADO) */}
       <div
         onClick={() => setExpandido(!expandido)}
         title="Puxe para o lado ou clique para abrir o Bloco de Notas Futurista Robotoc 3D"
@@ -847,7 +898,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
         </span>
       </div>
 
-      {/* PAINEL DO BLOCO DE NOTAS FUTURISTA EXPANSÍVEL */}
       <div style={{
         width: expandido ? '360px' : '0px',
         height: '520px',
@@ -863,7 +913,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
         flexDirection: 'column',
         color: '#0f172a'
       }}>
-        {/* CABEÇALHO FUTURISTA */}
         <div style={{ padding: '12px', borderBottom: '1px solid #bae6fd', backgroundColor: 'rgba(240, 249, 255, 0.9)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '14px' }}>📝</span>
@@ -874,7 +923,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
           <button onClick={() => setExpandido(false)} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
         </div>
 
-        {/* NAVEGAÇÃO ENTRE ANOTAÇÕES E LIXEIRA 3D */}
         <div style={{ display: 'flex', borderBottom: '1px solid #bae6fd', backgroundColor: '#f8fafc' }}>
           <button 
             onClick={() => setAbaAtiva('notas')}
@@ -900,10 +948,8 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
           </button>
         </div>
 
-        {/* CONTEÚDO DA ABA DE NOTAS */}
         {abaAtiva === 'notas' && (
           <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
-            {/* FORMULÁRIO DE NOVA ANOTAÇÃO */}
             <form onSubmit={handleCriarNota} style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
               <input 
                 type="text" 
@@ -924,7 +970,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
               </button>
             </form>
 
-            {/* LISTAGEM DE NOTAS SALVAS */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
               {notas.length === 0 ? (
                 <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', margin: '20px 0' }}>Nenhuma anotação salva.</span>
@@ -937,7 +982,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
                     </div>
                     <p style={{ fontSize: '10px', color: '#334155', margin: '0 0 8px 0', whiteSpace: 'pre-wrap', lineHeight: '1.3' }}>{nota.conteudo}</p>
                     
-                    {/* BOTÕES DE AÇÃO: EXPORTAÇÃO REAL E DESCARTE */}
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                       <button onClick={() => handleDownloadTXT(nota)} style={{ padding: '4px 8px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer' }}>
                         💾 Baixar TXT
@@ -956,7 +1000,6 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
           </div>
         )}
 
-        {/* CONTEÚDO DA LIXEIRA 3D */}
         {abaAtiva === 'lixeira' && (
           <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '8px', borderRadius: '8px' }}>
@@ -2276,7 +2319,6 @@ export default function EmanuelOSCore() {
   const [miniAssistantAberto, setMiniAssistantAberto] = useState(false);
   const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
 
-  // 🌟 DADOS E REDES SOCIAIS REAIS CENTRALIZADOS
   const meusDadosReais = {
     nome: "Emanuel da Silva (Comando Central Emanuel.OS)",
     whatsapp: "5588981493989",
@@ -2290,7 +2332,6 @@ export default function EmanuelOSCore() {
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
 
-  // ESTADO DE LINKS 3D DINÂMICOS
   const [links3D, setLinks3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
     { id: 2, tipo: 'tiktok', titulo: 'TikTok Emanuel', url: meusDadosReais.tiktok, icone: '🎵', nuvem: 'custom' },
@@ -2301,7 +2342,6 @@ export default function EmanuelOSCore() {
     { id: 7, tipo: 'threads', titulo: 'Threads Oficial', url: meusDadosReais.threads, icone: '🧵', nuvem: 'apple' }
   ]);
 
-  // ☁️ SERVIÇOS DE E-MAIL E NUVEM CONECTADOS
   const [servicosNuvemEmail] = useState({
     google: { conectado: true, conta: 'leeheroi123@gmail.com', espaco: '15 GB / 2 TB' },
     apple: { conectado: true, conta: 'emanuel@icloud.com', espaco: '5 GB / 200 GB' },
@@ -2309,7 +2349,6 @@ export default function EmanuelOSCore() {
     custom: { conectado: true, conta: 'nuvem.emanuel-os.com', espaco: 'Ilimitado (G-AGI Vault)' }
   });
 
-  // 🌍 LOCAIS INTEGRADOS À TERRA 3D COM LINKS FUTURÍSTICOS
   const [locaisEmanuelOS] = useState([
     { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados & Nuvem Gemini AGI', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, ipCriptografado: 'AES256-88F9-EMA', trabalho: 'Engenharia de Software & AGI Node', urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
     { id: 2, nome: 'Estação Oceanográfica & Biologia Marinha', categoria: '🌊 Pesquisa de Espécies & Biofarmacêutica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, ipCriptografado: 'AES256-OCEAN-BIO', trabalho: 'Análise de Mapeamento Fluvial', urlExterna: 'https://maps.google.com/?q=-12.9714,-38.5014' },
@@ -2327,13 +2366,11 @@ export default function EmanuelOSCore() {
     { id: 14, nome: 'Central AiFod & Moto Ubers Direct', categoria: '🛵 Hub de Entregas Rápida & Moto Taxis', cor: 0xff0055, lat: -8.0476, lng: -34.8770, ipCriptografado: 'AES256-AIFOD-HUB', trabalho: 'Despacho de Pedidos e Corridas Moto Uber', urlExterna: 'https://maps.google.com/?q=-8.0476,-34.8770' }
   ]);
 
-  // 🔍 ESTADOS DA BARRA DE PESQUISA INTELIGENTE NO GLOBO 3D & CONTROLE DE FONTE
   const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
   const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
-  // 🔎 INTEGRAÇÃO COM robotocNAV.js (SINCRONIZAÇÃO DE PESQUISA NO GLOBO TERRA 3D)
   useEffect(() => {
     if (bloqueado || typeof window === 'undefined') return;
 
@@ -2360,7 +2397,6 @@ export default function EmanuelOSCore() {
     }
   }, [bloqueado]);
 
-  // 🔎 DECLARAÇÃO ÚNICA DA FUNÇÃO DE BUSCA
   const handleBuscaGlobo = (e) => {
     const val = e.target.value;
     setTermoBuscaGlobo(val);
@@ -2432,7 +2468,6 @@ export default function EmanuelOSCore() {
   const mainRobotRef = useRef(null);
   const spaceElementsGroupRef = useRef(null);
 
-  // 🤖 ATUALIZAÇÃO ROBOTOC 3D: ESTADOS E REFS DE VOZ, MOVIMENTOS SUTIS E LEGENDAS FUTURISTAS
   const [legendaRobotoc, setLegendaRobotoc] = useState('');
   const [robotocFalando, setRobotocFalando] = useState(false);
   const robotHeadRef = useRef(null);
@@ -2442,7 +2477,6 @@ export default function EmanuelOSCore() {
   const robotLeftElbowRef = useRef(null);
   const robotClickAnimRef = useRef(0);
 
-  // 🚶 NOVOS ESTADOS E REFS PARA COMANDOS DE PASSEIO E EXPLORAÇÃO INTERNA NA TERRA 3D
   const [modoExploracaoTerra, setModoExploracaoTerra] = useState(false);
   const robotWalkAnimRef = useRef(0);
   const robotCoreGroupRef = useRef(null);
@@ -2498,7 +2532,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // 🚶 NOVOS COMANDOS INTERATIVOS DO ROBOTOC 3D (PASSEAR, BUSCAR LOCAIS, EXPLORAR POR DENTRO DA TERRA)
   const executarComandoRobotocTerra = (tipo) => {
     robotClickAnimRef.current = 1.0;
     if (tipo === 'passear') {
@@ -2518,7 +2551,6 @@ export default function EmanuelOSCore() {
     }
   };
 
-  // 🎯 FOCAR CÂMERA/GLOBO NO LOCAL PESQUISADO
   const focarLocalNoGlobo = (local) => {
     setLocalSelecionadoGlobo(local);
     setResultadosBuscaGlobo([]);
@@ -2611,7 +2643,6 @@ export default function EmanuelOSCore() {
     }, 1200);
   };
 
-  // 🌎 RENDERIZAÇÃO THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + ELEMENTOS ESPACIAIS DA IMAGEM
   useEffect(() => {
     if (bloqueado || !mountRef.current) return;
 
@@ -2646,11 +2677,9 @@ export default function EmanuelOSCore() {
     cyanRim.position.set(-6, 2, -4);
     scene.add(cyanRim);
 
-    // GRUPO PRINCIPAL DO GLOBO
     const globeGroup = new THREE.Group();
     globeGroupRef.current = globeGroup;
 
-    // ESFERA DA TERRA COM TEXTURA/SHADER HOLOGRÁFICO
     const radius = 2.5;
     const earthGeo = new THREE.SphereGeometry(radius, 64, 64);
 
@@ -2674,20 +2703,15 @@ export default function EmanuelOSCore() {
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     globeGroup.add(earthMesh);
 
-    // =========================================================================================
-    // 🌋 --- NOVO GRUPO: EXPLORAÇÃO DO INTERIOR DA TERRA 3D (MAGMA, NÚCLEO E MANTOS) ---
-    // =========================================================================================
     const earthInteriorGroup = new THREE.Group();
     earthInteriorGroup.visible = false;
 
-    // Manto interno incandescente
     const mantleMesh = new THREE.Mesh(
       new THREE.SphereGeometry(radius * 0.85, 32, 32),
       new THREE.MeshStandardMaterial({ color: 0xff5500, emissive: 0xff2200, emissiveIntensity: 1.2, wireframe: true })
     );
     earthInteriorGroup.add(mantleMesh);
 
-    // Núcleo Quântico Central
     const coreMesh = new THREE.Mesh(
       new THREE.SphereGeometry(radius * 0.4, 32, 32),
       new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00f0ff, emissiveIntensity: 3.5, roughness: 0.1 })
@@ -2697,7 +2721,6 @@ export default function EmanuelOSCore() {
     globeGroup.add(earthInteriorGroup);
     earthInteriorGroupRef.current = earthInteriorGroup;
 
-    // ATMOSFERA BRILHANTE (GLOW NEON)
     const atmosGeo = new THREE.SphereGeometry(radius * 1.03, 64, 64);
     const atmosMat = new THREE.MeshPhysicalMaterial({
       color: 0x00f0ff,
@@ -2710,19 +2733,14 @@ export default function EmanuelOSCore() {
     const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
     globeGroup.add(atmosMesh);
 
-    // REDE DE GRID QUANTICO EM VOLTA DA TERRA
     const gridGeo = new THREE.IcosahedronGeometry(radius * 1.08, 3);
     const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
     globeGroup.add(gridMesh);
 
-    // =========================================================================================
-    // ☀️🪐🚀 INFRAESTRUTURA ASTRONÔMICA 3D COMPLETA (ELEMENTOS DA IMAGEM ADICIONADOS AO CENA)
-    // =========================================================================================
     const spaceElementsGroup = new THREE.Group();
     spaceElementsGroupRef.current = spaceElementsGroup;
 
-    // 1. SOL FLAMANTE E INCANDESCENTE 3D
     const sunGeo = new THREE.SphereGeometry(1.8, 32, 32);
     const sunMat = new THREE.MeshStandardMaterial({
       color: 0xffaa00,
@@ -2743,7 +2761,6 @@ export default function EmanuelOSCore() {
     const sunGlowMesh = new THREE.Mesh(new THREE.SphereGeometry(2.3, 32, 32), sunGlowMat);
     sunMesh.add(sunGlowMesh);
 
-    // 2. SATURNO 3D COM ANÉIS DETALHADOS
     const saturnGroup = new THREE.Group();
     const saturnMesh = new THREE.Mesh(
       new THREE.SphereGeometry(1.2, 32, 32),
@@ -2760,7 +2777,6 @@ export default function EmanuelOSCore() {
     saturnGroup.position.set(5.8, 2.0, -3.5);
     spaceElementsGroup.add(saturnGroup);
 
-    // 3. JÚPITER, MARTE E LUAS VIZINHAS
     const jupiterMesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.8, 32, 32),
       new THREE.MeshStandardMaterial({ color: 0xb08f68, roughness: 0.6 })
@@ -2775,7 +2791,6 @@ export default function EmanuelOSCore() {
     marsMesh.position.set(-4.5, -2.5, -3.0);
     spaceElementsGroup.add(marsMesh);
 
-    // 4. ESTAÇÃO ESPACIAL INTERNACIONAL (ISS) 3D FUTURÍSTICA
     const issGroup = new THREE.Group();
     const issCore = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9 }));
     issCore.rotation.z = Math.PI / 2;
@@ -2793,7 +2808,6 @@ export default function EmanuelOSCore() {
     issGroup.scale.set(0.6, 0.6, 0.6);
     spaceElementsGroup.add(issGroup);
 
-    // 5. FOGUETES ESPACIAIS EM PROPULSÃO E RASTROS DE FOGO 3D
     const rocketList = [];
     const createRocket = (pos, rot) => {
       const rGroup = new THREE.Group();
@@ -2821,9 +2835,6 @@ export default function EmanuelOSCore() {
 
     scene.add(spaceElementsGroup);
 
-    // =========================================================================================
-    // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
-    // =========================================================================================
     const mathInfrastructureGroup = new THREE.Group();
 
     const createRhombus3D = (size, height) => {
@@ -2959,7 +2970,6 @@ export default function EmanuelOSCore() {
 
     globeGroup.add(mathInfrastructureGroup);
 
-    // MARCADORES 3D DOS LOCAIS NAS COORDENADAS (LAT, LNG) DA TERRA
     const markersGroup = new THREE.Group();
     markersGroupRef.current = markersGroup;
 
@@ -2990,7 +3000,6 @@ export default function EmanuelOSCore() {
     globeGroup.add(markersGroup);
     scene.add(globeGroup);
 
-    // 🤖 ROBOTOC 3D PRINCIPAL FLUTUANDO / ANDANDO NA TERRA 3D
     const robotPartsMain = criarModeloRobotocEspetacular3D();
     const mainRobotGroup = robotPartsMain.robotGroup;
 
@@ -3271,14 +3280,12 @@ export default function EmanuelOSCore() {
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          {/* 🌎 RENDERIZADOR THREE.JS DO GLOBO TERRESTRE 3D + ROBOTOC 3D PRINCIPAL + SISTEMA SOLAR 3D */}
           <div 
             ref={mountRef} 
             title="Arraste para girar a Terra 3D! Clique no Robotoc 3D ao lado para interagir."
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
           />
 
-          {/* 💬 HUD DE LEGENDAS FUTURISTAS DO ROBOTOC 3D */}
           {legendaRobotoc && (
             <div
               style={{
@@ -3313,7 +3320,6 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* 🎮 PAINEL DE COMANDOS DO ROBOTOC (PASSEAR, BUSCAR LOCAIS, EXPLORAR POR DENTRO DA TERRA) */}
           <div style={{ position: 'absolute', bottom: '15px', right: '20px', zIndex: 155, display: 'flex', gap: '6px', backgroundColor: 'rgba(255, 255, 255, 0.92)', padding: '8px 12px', borderRadius: '16px', border: '2px solid #00f0ff', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
             <button onClick={() => executarComandoRobotocTerra('passear')} style={{ padding: '6px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '9.5px', fontWeight: 'bold', cursor: 'pointer' }}>
               🚶 Robotoc Passear na Terra 3D
@@ -3326,7 +3332,6 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* 🔊 BOTÃO FLUTUANTE PARA OUVIR DIAGNÓSTICO DO ROBOTOC 3D */}
           <button
             onClick={() => {
               robotClickAnimRef.current = 1.0;
@@ -3354,7 +3359,6 @@ export default function EmanuelOSCore() {
             🗣️ Falar Status
           </button>
 
-          {/* 🔍 BARRA DE PESQUISA INTELIGENTE COM LUPA PRINCIPAL, CONTROLE + / - & INTERFACE FUTURÍSTICA */}
           <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '520px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
               <span style={{ fontSize: `${tamanhoFonteBusca + 3}px`, color: '#0284c7' }}>🔍</span>
@@ -3363,7 +3367,7 @@ export default function EmanuelOSCore() {
                 <button
                   type="button"
                   onClick={() => setTamanhoFonteBusca(prev => Math.max(8, prev - 1))}
-                  title="Diminuir Fonte (Noturno)"
+                  title="Diminuir Fonte"
                   style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', padding: '0 3px', lineHeight: '1' }}
                 >
                   −
@@ -3374,7 +3378,7 @@ export default function EmanuelOSCore() {
                 <button
                   type="button"
                   onClick={() => setTamanhoFonteBusca(prev => Math.min(24, prev + 1))}
-                  title="Aumentar Fonte (Facilita Leitura)"
+                  title="Aumentar Fonte"
                   style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', padding: '0 3px', lineHeight: '1' }}
                 >
                   +
@@ -3420,7 +3424,6 @@ export default function EmanuelOSCore() {
             )}
           </div>
 
-          {/* 📍 CARD FLUTUANTE DE DETALHES DO LOCAL SELECIONADO NA TERRA 3D */}
           {localSelecionadoGlobo && (
             <div style={{ position: 'absolute', bottom: '110px', left: '20px', zIndex: 140, backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '14px', width: '280px', boxShadow: '0 0 30px rgba(0,240,255,0.3)', backdropFilter: 'blur(20px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -3443,7 +3446,6 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
-          {/* BOTÕES DE NAVEGAÇÃO E RECURSOS */}
           <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#ffffff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               {sidebarAberta ? '✕' : '☰'}
@@ -3496,7 +3498,6 @@ export default function EmanuelOSCore() {
             </button>
           </div>
 
-          {/* 🌐 REDES SOCIAIS & SERVIÇOS DE NUVEM/EMAIL EM MODELAGEM FUTURÍSTICA 3D */}
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '250px' }}>
             <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#0284c7', backgroundColor: 'rgba(255,255,255,0.92)', padding: '4px 8px', borderRadius: '6px', border: '1px solid #00f0ff', boxShadow: '0 0 10px rgba(0,240,255,0.2)' }}>
               🌐 LINKS SOCIAIS & NUVENS EMANUEL.OS
@@ -3540,7 +3541,6 @@ export default function EmanuelOSCore() {
             </div>
           </div>
 
-          {/* SIDEBAR ESQUERDA (CENTRAL DOS 12 MAPAS INTEGRADOS + MÓDULO DO AGENTE) */}
           <aside style={{
             position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px',
             opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)',
@@ -3554,7 +3554,6 @@ export default function EmanuelOSCore() {
                   Contexto: EMANUEL<span style={{ color: '#0284c7' }}>.OS Workstation v6.0</span>
                 </h1>
 
-                {/* ⚙️ INTEGRAÇÃO DIRETA DO MÓDULO EM AGENT NO SIDEBAR */}
                 <AgentPanelModule />
 
                 <UnixTerminalCanvas />
@@ -3585,7 +3584,6 @@ export default function EmanuelOSCore() {
             )}
           </aside>
 
-          {/* CHAT/LOGS INFERIORES */}
           <div style={{ position: 'absolute', bottom: '65px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
               {mensagens.map((item, index) => (
@@ -3638,7 +3636,6 @@ export default function EmanuelOSCore() {
         <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
       )}
 
-      {/* 🚀 MÓDULO LATERAL EXPANSÍVEL: MINI ROBOTOC 3D + BLOCO DE NOTAS FUTURISTA + LIXEIRA HOLOGRÁFICA */}
       <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
 
       {yugiohGameAberto && (
