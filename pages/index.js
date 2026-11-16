@@ -236,7 +236,10 @@ function criarModeloRobotocEspetacular3D() {
   robotGroup.add(leftArmObj.armPivot);
 
   // 4. PERNAS ROBÓTICAS COM JOELHEIRAS E BOTAS FUTURISTAS AZUL E BRANCO
-  [-1, 1].forEach((side) => {
+  const leftLegGroup = new THREE.Group();
+  const rightLegGroup = new THREE.Group();
+
+  const criarPernaRobotoc = (side) => {
     const legGroup = new THREE.Group();
     legGroup.position.set(side * 0.17, -0.52, 0);
 
@@ -261,8 +264,12 @@ function criarModeloRobotocEspetacular3D() {
     sole.position.set(0, -0.71, 0.05);
 
     legGroup.add(hipJoint, thigh, kneeJoint, shin, bootCollar, footBase, sole);
-    robotGroup.add(legGroup);
-  });
+    return legGroup;
+  };
+
+  const legL = criarPernaRobotoc(-1);
+  const legR = criarPernaRobotoc(1);
+  robotGroup.add(legL, legR);
 
   return {
     robotGroup,
@@ -273,7 +280,9 @@ function criarModeloRobotocEspetacular3D() {
     chestCoreLed,
     rightArmPivot: rightArmObj.armPivot,
     leftArmPivot: leftArmObj.armPivot,
-    leftElbowGroup: leftArmObj.elbowGroup
+    leftElbowGroup: leftArmObj.elbowGroup,
+    legL,
+    legR
   };
 }
 
@@ -327,7 +336,7 @@ function AgentPanelModule() {
       <h2 style={{ color: '#0284c7', fontSize: '14px', margin: '0 0 10px 0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
         ⚙️ PAINEL WEB DO EM AGENT
       </h2>
-      
+
       <form onSubmit={handleRunAgent} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         <input
           type="text"
@@ -605,13 +614,13 @@ function MiniRobotocAssistant3D({ onClose }) {
 function MiniRobotocSidebarNotes({ addLogTerminal }) {
   const [expandido, setExpandido] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('notas'); // 'notas' ou 'lixeira'
-  
+
   // Estado de Notas Ativas e Lixeira
   const [notas, setNotas] = useState([
     { id: 1, titulo: 'Anotações Mestre Kernel', conteudo: 'Mapeamento quântico de 12 Nós AGI ativo no Emanuel.OS.', data: new Date().toLocaleTimeString('pt-BR') }
   ]);
   const [lixeira, setLixeira] = useState([]);
-  
+
   const [tituloInput, setTituloInput] = useState('');
   const [conteudoInput, setConteudoInput] = useState('');
 
@@ -678,7 +687,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
     doc.setTextColor(2, 132, 199);
     doc.setFontSize(16);
     doc.text("EMANUEL.OS - BLOCO DE NOTAS FUTURISTA ROBOTOC 3D", 15, 18);
-    
+
     doc.setFontSize(10);
     doc.setTextColor(15, 23, 42);
     doc.text(`TÍTULO: ${nota.titulo} | DATA: ${nota.data}`, 15, 25);
@@ -792,7 +801,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
   }, [abaAtiva]);
 
   return (
-    <div 
+    <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       style={{
@@ -808,7 +817,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
       }}
     >
       {/* GATILHO LATERAL FLUTUANTE DE DESLIZAMENTO (PUXAR PARA O LADO) */}
-      <div 
+      <div
         onClick={() => setExpandido(!expandido)}
         title="Puxe para o lado ou clique para abrir o Bloco de Notas Futurista Robotoc 3D"
         style={{
@@ -1022,11 +1031,13 @@ function MotionTracker() {
           {active ? 'Desligar Câmera' : 'Ativar Câmera IA'}
         </button>
       </div>
+
       <div style={{ position: 'relative', width: '100%', height: '120px', backgroundColor: '#0f172a', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: active ? 0.8 : 0.2 }} />
         {!active && <span style={{ position: 'absolute', fontSize: '10px', color: '#94a3b8' }}>Câmera Inativa</span>}
         {active && <div style={{ position: 'absolute', border: '1px dashed #00f0ff', width: '80%', height: '80%', pointerEvents: 'none', boxShadow: 'inset 0 0 10px rgba(0,240,255,0.5)' }} />}
       </div>
+
       <span style={{ fontSize: '9px', color: active ? '#16a34a' : '#64748b', marginTop: '6px', display: 'block', fontFamily: 'monospace' }}>● Status: {status}</span>
     </div>
   );
@@ -1255,6 +1266,7 @@ function AndroidHUDPanel({ open, onClose, children }) {
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>✕</button>
       </div>
+
       <div style={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {children}
       </div>
@@ -1385,9 +1397,9 @@ function EMCreatorStudio({ onClose }) {
 // =========================================================================================
 function PainelDevSplitScreen({ onClose }) {
   const [linguagem, setLinguagem] = useState('mojo');
-  
+
   const templatesExoticos = {
-    mojo: `// Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
+    mojo: `# Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
     zig: `// Zig System Language\nconst std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("🧠 Núcleo de Baixo Nível do Android 16 Neural OS EM Ativo!\\n", .{});\n}`,
     nim: `# Nim Metaprogramming Language\ntype\n  NeuralCore = object\n    status: string\n    potencia: float\n\nlet core = NeuralCore(status: "ONLINE", potencia: 99.8)\necho "🚀 Sistema Emanuel.OS executando em Nim. Status: ", core.status`,
     crystal: `# Crystal Language\nclass QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
@@ -1900,8 +1912,8 @@ const UnixTerminalCanvas = () => {
   };
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       style={{ width: '100%', height: '200px', backgroundColor: '#0f172a', border: '2px solid #00f0ff', borderRadius: '10px', padding: '5px', boxSizing: 'border-box', overflow: 'hidden' }}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -2187,7 +2199,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
       backdropFilter: 'blur(25px)', zIndex: 300, boxShadow: '0 0 40px rgba(0,240,255,0.25)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', color: '#0f172a', fontFamily: 'sans-serif'
     }}>
-      <div 
+      <div
         onMouseDown={handleMouseDownHeader}
         style={{ padding: '12px 16px', backgroundColor: 'rgba(240, 249, 255, 0.95)', borderBottom: '1px solid #00f0ff', cursor: 'grab', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
@@ -2430,6 +2442,12 @@ export default function EmanuelOSCore() {
   const robotLeftElbowRef = useRef(null);
   const robotClickAnimRef = useRef(0);
 
+  // 🚶 NOVOS ESTADOS E REFS PARA COMANDOS DE PASSEIO E EXPLORAÇÃO INTERNA NA TERRA 3D
+  const [modoExploracaoTerra, setModoExploracaoTerra] = useState(false);
+  const robotWalkAnimRef = useRef(0);
+  const robotCoreGroupRef = useRef(null);
+  const earthInteriorGroupRef = useRef(null);
+
   const frasesRobotoc = [
     "Núcleo Emanuel ponto O S sincronizado. Todos os doze mapas operacionais.",
     "Monitorando rede quântica, telemetria orbital e servidores G-AGI em tempo real.",
@@ -2463,7 +2481,7 @@ export default function EmanuelOSCore() {
     } else {
       setTimeout(() => {
         setRobotocFalando(false);
-        setLegendaRobotoc('');
+        setTimeout(() => setLegendaRobotoc(''), 3200);
       }, 4500);
     }
   };
@@ -2477,6 +2495,26 @@ export default function EmanuelOSCore() {
       const utterance = new SpeechSynthesisUtterance("Deseja se conectar ao sistema Robotoc com teclado, mouse ou fone bluetooth?");
       utterance.lang = 'pt-BR';
       window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // 🚶 NOVOS COMANDOS INTERATIVOS DO ROBOTOC 3D (PASSEAR, BUSCAR LOCAIS, EXPLORAR POR DENTRO DA TERRA)
+  const executarComandoRobotocTerra = (tipo) => {
+    robotClickAnimRef.current = 1.0;
+    if (tipo === 'passear') {
+      robotWalkAnimRef.current = 1.0;
+      dispararFalaRobotoc("Iniciando modo de passeio pela superfície da Terra 3D. Dando passos firmes e precisos!");
+    } else if (tipo === 'buscar') {
+      const locAleatorio = locaisEmanuelOS[Math.floor(Math.random() * locaisEmanuelOS.length)];
+      focarLocalNoGlobo(locAleatorio);
+      dispararFalaRobotoc(`Buscando novo local interessante na Terra: ${locAleatorio.nome} (${locAleatorio.categoria}).`);
+    } else if (tipo === 'explorar_interior') {
+      setModoExploracaoTerra(prev => !prev);
+      const estadoNovo = !modoExploracaoTerra;
+      if (earthInteriorGroupRef.current) {
+        earthInteriorGroupRef.current.visible = estadoNovo;
+      }
+      dispararFalaRobotoc(estadoNovo ? "Entrando nas camadas internas da Terra 3D. Analisando o núcleo quântico e o magma!" : "Retornando à superfície da Terra 3D.");
     }
   };
 
@@ -2636,6 +2674,29 @@ export default function EmanuelOSCore() {
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     globeGroup.add(earthMesh);
 
+    // =========================================================================================
+    // 🌋 --- NOVO GRUPO: EXPLORAÇÃO DO INTERIOR DA TERRA 3D (MAGMA, NÚCLEO E MANTOS) ---
+    // =========================================================================================
+    const earthInteriorGroup = new THREE.Group();
+    earthInteriorGroup.visible = false;
+
+    // Manto interno incandescente
+    const mantleMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * 0.85, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xff5500, emissive: 0xff2200, emissiveIntensity: 1.2, wireframe: true })
+    );
+    earthInteriorGroup.add(mantleMesh);
+
+    // Núcleo Quântico Central
+    const coreMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * 0.4, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00f0ff, emissiveIntensity: 3.5, roughness: 0.1 })
+    );
+    earthInteriorGroup.add(coreMesh);
+
+    globeGroup.add(earthInteriorGroup);
+    earthInteriorGroupRef.current = earthInteriorGroup;
+
     // ATMOSFERA BRILHANTE (GLOW NEON)
     const atmosGeo = new THREE.SphereGeometry(radius * 1.03, 64, 64);
     const atmosMat = new THREE.MeshPhysicalMaterial({
@@ -2762,11 +2823,9 @@ export default function EmanuelOSCore() {
 
     // =========================================================================================
     // 📐💎 INFRAESTRUTURA FUTURÍSTICA: LOSANGOS 3D DE MEDIÇÃO MATEMÁTICA & MÚSCULOS CIBERNÉTICOS 3D
-    // Designação de Paralelogramo e Paralelogrâmico sem alterar nada do código existente
     // =========================================================================================
     const mathInfrastructureGroup = new THREE.Group();
 
-    // 1. Criando Losangos 3D (Geometria Paralelogrâmica / Paralelogramo)
     const createRhombus3D = (size, height) => {
       const shape = new THREE.Shape();
       shape.moveTo(0, size);
@@ -2824,7 +2883,6 @@ export default function EmanuelOSCore() {
     const rhombusList = [];
     const muscleCurveList = [];
 
-    // Gerar Losangos Orbitais ao redor da Terra
     for (let i = 0; i < 14; i++) {
       const rhombusMesh = new THREE.Mesh(rhombusGeo, rhombusMat.clone());
       const formulaTex = createMathTextCanvas(formulaTextures[i % formulaTextures.length]);
@@ -2851,7 +2909,6 @@ export default function EmanuelOSCore() {
       rhombusList.push({ mesh: rhombusMesh, initPos: new THREE.Vector3(x, y, z), angle });
     }
 
-    // 2. Criando Estrutura de Músculo Largo e Fino 3D (Feixes Cinesiológicos Quânticos)
     const muscleMatBroad = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
       emissive: 0x00f0ff,
@@ -2869,7 +2926,6 @@ export default function EmanuelOSCore() {
       wireframe: true
     });
 
-    // Conectar os Losangos e os Pontos de Medição da Terra com Músculos 3D
     locaisEmanuelOS.forEach((loc, idx) => {
       const phi = (90 - loc.lat) * (Math.PI / 180);
       const theta = (loc.lng + 180) * (Math.PI / 180);
@@ -2889,13 +2945,11 @@ export default function EmanuelOSCore() {
 
       const curve = new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
 
-      // Músculo Largo 3D (Extrusão em Faixa Paralelogrâmica)
       const broadTubeGeo = new THREE.TubeGeometry(curve, 32, 0.04, 8, false);
       const broadMesh = new THREE.Mesh(broadTubeGeo, muscleMatBroad);
       broadMesh.scale.set(1.8, 0.3, 1.0);
       mathInfrastructureGroup.add(broadMesh);
 
-      // Músculo Fino 3D (Feixe Interno)
       const thinTubeGeo = new THREE.TubeGeometry(curve, 48, 0.012, 6, false);
       const thinMesh = new THREE.Mesh(thinTubeGeo, muscleMatThin);
       mathInfrastructureGroup.add(thinMesh);
@@ -2936,29 +2990,26 @@ export default function EmanuelOSCore() {
     globeGroup.add(markersGroup);
     scene.add(globeGroup);
 
-    // 🤖 ROBOTOC 3D PRINCIPAL (DESIGN ESPETACULAR BASEADO NA IMAGEM) FLUTUANDO AO LADO DA TERRA
+    // 🤖 ROBOTOC 3D PRINCIPAL FLUTUANDO / ANDANDO NA TERRA 3D
     const robotPartsMain = criarModeloRobotocEspetacular3D();
     const mainRobotGroup = robotPartsMain.robotGroup;
 
-    // Posicionar o Robotoc Principal à direita do Globo 3D
     mainRobotGroup.position.set(3.2, 0.2, 1.0);
     mainRobotGroup.scale.set(1.25, 1.25, 1.25);
     scene.add(mainRobotGroup);
     mainRobotRef.current = mainRobotGroup;
+    robotCoreGroupRef.current = mainRobotGroup;
 
-    // Vincular partes articuladas para movimentos sutis e clique interativo
     robotHeadRef.current = robotPartsMain.headGroup;
     robotVisorRef.current = robotPartsMain.eyeL;
     robotArmLRef.current = robotPartsMain.rightArmPivot;
     robotArmRRef.current = robotPartsMain.leftArmPivot;
     robotLeftElbowRef.current = robotPartsMain.leftElbowGroup;
 
-    // RAYCASTER PARA DETECTAR CLIQUE DIRETO NO ROBOTOC 3D
     const raycaster = new THREE.Raycaster();
     const mouseVec = new THREE.Vector2();
     let pointerDownPos = { x: 0, y: 0 };
 
-    // CONTROLE DE ARRASTE/ROTAÇÃO DO GLOBO E CLIQUE NO ROBOTOC 3D
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
@@ -2979,7 +3030,6 @@ export default function EmanuelOSCore() {
     const handleMouseUp = (e) => {
       isDragging = false;
 
-      // Verifica se foi um clique rápido (sem arrastar) sobre o Robotoc 3D
       const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
       if (moveDist < 6 && mountRef.current && mainRobotRef.current && cameraRef.current) {
         const rect = mountRef.current.getBoundingClientRect();
@@ -3021,7 +3071,6 @@ export default function EmanuelOSCore() {
         gridMesh.rotation.y = -time * 0.05;
       }
 
-      // Animações dos Planetas e Estação Espacial
       if (sunMesh) sunMesh.rotation.y = time * 0.05;
       if (saturnGroup) saturnGroup.rotation.y = time * 0.08;
       if (issGroup) {
@@ -3029,7 +3078,6 @@ export default function EmanuelOSCore() {
         issGroup.position.x = 1.2 + Math.sin(time * 0.5) * 0.3;
       }
 
-      // Animação de impulso dos Foguetes Espaciais
       rocketList.forEach((rkt, idx) => {
         rkt.position.y += Math.sin(time * 2 + idx) * 0.003;
       });
@@ -3042,26 +3090,36 @@ export default function EmanuelOSCore() {
       });
 
       if (mainRobotRef.current) {
-        // Decaimento suave da animação ao clicar no Robotoc 3D
         if (robotClickAnimRef.current > 0) {
           robotClickAnimRef.current = Math.max(0, robotClickAnimRef.current - 0.022);
         }
+        if (robotWalkAnimRef.current > 0) {
+          robotWalkAnimRef.current = Math.max(0, robotWalkAnimRef.current - 0.005);
+        }
+
         const clickPulse = robotClickAnimRef.current;
+        const walkIntensity = robotWalkAnimRef.current;
         const jumpOffset = Math.sin(clickPulse * Math.PI) * 0.32;
         const spinOffset = Math.sin(clickPulse * Math.PI * 2) * 0.42;
 
-        // Levitação orgânica suave + salto interativo ao clicar
-        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12 + jumpOffset;
+        const walkOffsetX = Math.sin(time * 6) * walkIntensity * 0.8;
+        const walkOffsetY = Math.abs(Math.sin(time * 12)) * walkIntensity * 0.15;
+
+        mainRobotRef.current.position.x = 3.2 + walkOffsetX;
+        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12 + jumpOffset + walkOffsetY;
         mainRobotRef.current.rotation.y = Math.sin(time * 0.8) * 0.2 - 0.3 + spinOffset;
 
-        // Movimentos sutis de cabeça (observando o globo e reagindo ao clique)
+        if (robotPartsMain.legL && robotPartsMain.legR) {
+          robotPartsMain.legL.rotation.x = Math.sin(time * 10) * walkIntensity * 0.6;
+          robotPartsMain.legR.rotation.x = -Math.sin(time * 10) * walkIntensity * 0.6;
+        }
+
         if (robotHeadRef.current) {
           robotHeadRef.current.rotation.y = Math.sin(time * 1.3) * 0.18;
           robotHeadRef.current.rotation.z = Math.cos(time * 1.1) * 0.06 + Math.sin(clickPulse * Math.PI * 2) * 0.16;
           robotHeadRef.current.rotation.x = Math.sin(clickPulse * Math.PI) * -0.15;
         }
 
-        // Gesticulação sutil dos braços + aceno rápido no clique
         if (robotArmLRef.current && robotArmRRef.current) {
           robotArmLRef.current.rotation.z = -0.18 + Math.sin(time * 1.8) * 0.08 - Math.sin(clickPulse * Math.PI) * 0.25;
           robotArmRRef.current.rotation.z = 0.65 + Math.cos(time * 2.2) * 0.08 + Math.sin(clickPulse * Math.PI) * 0.25;
@@ -3071,7 +3129,6 @@ export default function EmanuelOSCore() {
           robotLeftElbowRef.current.rotation.z = 1.65 + Math.sin(time * 3.0) * 0.14 + Math.sin(clickPulse * Math.PI * 4) * 0.45;
         }
 
-        // Pulso luminoso nos LEDs ciano do Robotoc
         const ledIntensity = 2.6 + Math.sin(time * 8) * 0.9 + clickPulse * 3.0;
         if (robotPartsMain.eyeL && robotPartsMain.eyeL.material) {
           robotPartsMain.eyeL.material.emissiveIntensity = ledIntensity;
@@ -3106,7 +3163,6 @@ export default function EmanuelOSCore() {
     return () => clearInterval(timer);
   }, []);
 
-  // 🤖 ATUALIZAÇÃO ROBOTOC 3D: FALAS AUTOMÁTICAS AO DESBLOQUEAR E PERIÓDICAS
   useEffect(() => {
     if (bloqueado) return;
 
@@ -3128,8 +3184,6 @@ export default function EmanuelOSCore() {
   if (bloqueado) {
     return (
       <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0f172a', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
-        <Head><title>Emanuel.OS Workstation v6.0 - Autenticação ROBOTOC 3D</title></Head>
-
         <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '30px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.25)', textAlign: 'center', boxSizing: 'border-box', backdropFilter: 'blur(20px)' }}>
           <div style={{ fontSize: '40px', marginBottom: '10px' }}>🤖</div>
           <h2 style={{ color: '#0284c7', fontSize: '20px', fontWeight: '900', margin: '0 0 5px 0' }}>
@@ -3213,8 +3267,6 @@ export default function EmanuelOSCore() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#030712', color: '#0f172a', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
-      <Head><title>Emanuel.OS Workstation v6.0 | Globo Terrestre 3D & CIVITAS ATLAS</title></Head>
-
       <div style={{ display: 'flex', width: '100%', height: '100%' }}>
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
@@ -3261,6 +3313,19 @@ export default function EmanuelOSCore() {
             </div>
           )}
 
+          {/* 🎮 PAINEL DE COMANDOS DO ROBOTOC (PASSEAR, BUSCAR LOCAIS, EXPLORAR POR DENTRO DA TERRA) */}
+          <div style={{ position: 'absolute', bottom: '15px', right: '20px', zIndex: 155, display: 'flex', gap: '6px', backgroundColor: 'rgba(255, 255, 255, 0.92)', padding: '8px 12px', borderRadius: '16px', border: '2px solid #00f0ff', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
+            <button onClick={() => executarComandoRobotocTerra('passear')} style={{ padding: '6px 10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '9.5px', fontWeight: 'bold', cursor: 'pointer' }}>
+              🚶 Robotoc Passear na Terra 3D
+            </button>
+            <button onClick={() => executarComandoRobotocTerra('buscar')} style={{ padding: '6px 10px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '9.5px', fontWeight: 'bold', cursor: 'pointer' }}>
+              🌍 Buscar Locais Interessantes
+            </button>
+            <button onClick={() => executarComandoRobotocTerra('explorar_interior')} style={{ padding: '6px 10px', backgroundColor: modoExploracaoTerra ? '#ef4444' : '#a855f7', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '9.5px', fontWeight: 'bold', cursor: 'pointer' }}>
+              🌋 {modoExploracaoTerra ? 'Voltar à Superfície' : 'Explorar por Dentro da Terra 3D'}
+            </button>
+          </div>
+
           {/* 🔊 BOTÃO FLUTUANTE PARA OUVIR DIAGNÓSTICO DO ROBOTOC 3D */}
           <button
             onClick={() => {
@@ -3270,13 +3335,13 @@ export default function EmanuelOSCore() {
             title="Ouvir Diagnóstico do Robotoc 3D"
             style={{
               position: 'absolute',
-              bottom: '135px',
-              right: legendaRobotoc ? '385px' : '30px',
+              bottom: '75px',
+              right: legendaRobotoc ? '385px' : '20px',
               zIndex: 145,
               backgroundColor: 'rgba(255, 255, 255, 0.92)',
               border: '1.5px solid #00f0ff',
               color: '#0284c7',
-              padding: '8px 12px',
+              padding: '6px 10px',
               borderRadius: '20px',
               fontSize: '10px',
               fontWeight: 'bold',
@@ -3521,7 +3586,7 @@ export default function EmanuelOSCore() {
           </aside>
 
           {/* CHAT/LOGS INFERIORES */}
-          <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ position: 'absolute', bottom: '65px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: 'calc(100% - 30px)', maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '10px', padding: '10px', maxHeight: '80px', overflowY: 'auto' }}>
               {mensagens.map((item, index) => (
                 <div key={index}>
@@ -3573,7 +3638,7 @@ export default function EmanuelOSCore() {
         <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
       )}
 
-      {/* 🚀 NOVO MÓDULO LATERAL EXPANSÍVEL: MINI ROBOTOC 3D + BLOCO DE NOTAS FUTURISTA + LIXEIRA HOLOGRÁFICA */}
+      {/* 🚀 MÓDULO LATERAL EXPANSÍVEL: MINI ROBOTOC 3D + BLOCO DE NOTAS FUTURISTA + LIXEIRA HOLOGRÁFICA */}
       <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
 
       {yugiohGameAberto && (
