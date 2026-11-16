@@ -1488,7 +1488,7 @@ function PainelDevSplitScreen({ onClose }) {
         "  ai-optimize-core  -> Otimiza rotinas WebGL e sintaxe de baixo nível",
         "  ai-generate-code  -> Gera boilerplate automático na linguagem exótica selecionada",
         "  ai-scan-security  -> Executa varredura profunda de segurança de 7 camadas",
-        "  sys-info-em       -> Exibe o estado em tempo real dos 12 mapas e periféricos"
+        "  sys-info-em        -> Exibe o estado em tempo real dos 12 mapas e periféricos"
       ];
     } else if (cmd === 'ai-optimize-core') {
       res = ["⚡ IA EM Power Shell: Código compilado, vetores paralelizados e otimização concluída."];

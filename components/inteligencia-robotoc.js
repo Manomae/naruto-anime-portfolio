@@ -76,9 +76,9 @@ export class InteligenciaRobotoc {
         ${contextoExtra ? `Contexto adicional: ${contextoExtra}` : ""}
       `;
 
-      // Utiliza o modelo gemini-2.5-flash para respostas rápidas e inteligentes
+      // Atualizado para utilizar o modelo gemini-3.8-flash compatível e atual
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: [
           { role: 'user', parts: [{ text: `${promptSistema}\n\nPergunta do usuário: ${perguntaUsuario}` }] }
         ]
@@ -112,7 +112,7 @@ export class InteligenciaRobotoc {
       `;
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         contents: [
           { role: 'user', parts: [{ text: promptBusca }] },
         ],
