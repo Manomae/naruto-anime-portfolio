@@ -19,14 +19,12 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (BASEADO NA IMAGEM DE REFERÊNCIA) ---
+// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC ---
 // =========================================================================================
 function criarModeloRobotocEspetacular3D() {
   const robotGroup = new THREE.Group();
 
-  const whiteArmorMat = new THREE.MeshPhysicalMaterial({
-    color: 0xf8fafc, roughness: 0.15, metalness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.1
-  });
+  const whiteArmorMat = new THREE.MeshPhysicalMaterial({ color: 0xf8fafc, roughness: 0.15, metalness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.1 });
   const chromeSilverMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.2, metalness: 0.92 });
   const metallicBlueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.25, metalness: 0.75 });
   const darkScreenMat = new THREE.MeshPhysicalMaterial({ color: 0x020617, roughness: 0.08, metalness: 0.3, clearcoat: 1.0 });
@@ -236,9 +234,9 @@ function criarModeloRobotocEspetacular3D() {
 }
 
 // =========================================================================================
-// 🌸 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX (ROBÔ FEMININO COM RABO DE CAVALO & LUZES NEON) ---
+// 🌸 --- HELPER DE MODELAGEM 3D VEGATOCNYX (FEMININA COM RABO DE CAVALO E LEDS CIANO) ---
 // =========================================================================================
-function criarModeloVegatocnyxEspetacular3D() {
+function criarModelovegatocnyxEspetacular3D() {
   const robotGroup = new THREE.Group();
 
   const whiteArmorMat = new THREE.MeshPhysicalMaterial({ color: 0xf8fafc, roughness: 0.15, metalness: 0.1, clearcoat: 1.0 });
@@ -247,23 +245,24 @@ function criarModeloVegatocnyxEspetacular3D() {
   const darkScreenMat = new THREE.MeshPhysicalMaterial({ color: 0x020617, roughness: 0.08, metalness: 0.3, clearcoat: 1.0 });
   const cyanLedMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.2, roughness: 0.1 });
 
+  // Cabeça Feminina com Capacete Estilizado e Rabo de Cavalo
   const headGroup = new THREE.Group();
   headGroup.position.set(0, 1.05, 0);
 
-  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.50, 36, 36), whiteArmorMat);
-  headBase.scale.set(1.05, 0.95, 0.95);
+  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.48, 36, 36), whiteArmorMat);
+  headBase.scale.set(1.05, 0.96, 1.0);
   headGroup.add(headBase);
 
-  // Rabo de Cavalo Metálico Curvado (Característica Exclusiva Vegatocnyx)
-  const ponytailGroup = new THREE.Group();
-  ponytailGroup.position.set(0, 0.35, -0.32);
-  const hairBase = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.75, 20), whiteArmorMat);
-  hairBase.rotation.x = -Math.PI / 4;
-  hairBase.position.set(0, 0.25, -0.2);
-  const hairRing = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.03, 16, 32), metallicBlueMat);
-  hairRing.position.set(0, 0.05, 0);
-  ponytailGroup.add(hairBase, hairRing);
-  headGroup.add(ponytailGroup);
+  // Rabo de cavalo característico da VegatocNyx
+  const ponytailBase = new THREE.Mesh(new THREE.SphereGeometry(0.22, 20, 20), whiteArmorMat);
+  ponytailBase.position.set(0, 0.25, -0.45);
+  const ponytailTail = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.8, 20), whiteArmorMat);
+  ponytailTail.rotation.x = -Math.PI / 4;
+  ponytailTail.position.set(0, -0.15, -0.75);
+  const ponytailLed = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.7, 16), cyanLedMat);
+  ponytailLed.rotation.x = -Math.PI / 4;
+  ponytailLed.position.set(0, -0.15, -0.74);
+  headGroup.add(ponytailBase, ponytailTail, ponytailLed);
 
   const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.32, 0.18), metallicBlueMat);
   visorFrame.position.set(0, -0.02, 0.41);
@@ -273,7 +272,7 @@ function criarModeloVegatocnyxEspetacular3D() {
   visorScreen.position.set(0, -0.02, 0.415);
   headGroup.add(visorScreen);
 
-  const eyeGeo = new THREE.SphereGeometry(0.08, 24, 24);
+  const eyeGeo = new THREE.SphereGeometry(0.075, 24, 24);
   const eyeL = new THREE.Mesh(eyeGeo, cyanLedMat);
   eyeL.scale.set(1.15, 0.95, 0.35);
   eyeL.position.set(-0.16, -0.02, 0.50);
@@ -285,55 +284,54 @@ function criarModeloVegatocnyxEspetacular3D() {
 
   robotGroup.add(headGroup);
 
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.20, 20), chromeSilverMat);
-  neck.position.set(0, 0.53, 0);
+  // Pescoço e Tronco Feminino esguio
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.20, 20), chromeSilverMat);
+  neck.position.set(0, 0.54, 0);
   robotGroup.add(neck);
 
   const torsoGroup = new THREE.Group();
   torsoGroup.position.set(0, 0.05, 0);
 
-  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.24, 0.52, 32), whiteArmorMat);
-  chestArmor.scale.set(1.1, 1, 0.8);
+  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.24, 0.52, 32), whiteArmorMat);
+  chestArmor.scale.set(1.1, 1, 0.82);
   chestArmor.position.set(0, 0.18, 0);
   torsoGroup.add(chestArmor);
 
-  const chestBlueTrim = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.32), metallicBlueMat);
-  chestBlueTrim.position.set(0, 0.16, 0.06);
+  const chestBlueTrim = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.40, 0.32), metallicBlueMat);
+  chestBlueTrim.position.set(0, 0.16, 0.05);
   torsoGroup.add(chestBlueTrim);
 
-  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.05), cyanLedMat);
-  chestCoreLed.position.set(0, 0.20, 0.25);
+  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.05), cyanLedMat);
+  chestCoreLed.position.set(0, 0.20, 0.24);
   torsoGroup.add(chestCoreLed);
 
   for (let i = 0; i < 3; i++) {
-    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.22 - i * 0.015, 0.21 - i * 0.015, 0.07, 24), chromeSilverMat);
-    abSeg.scale.set(1.05, 1, 0.8);
-    abSeg.position.set(0, -0.13 - i * 0.09, 0);
+    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.22 - i * 0.012, 0.21 - i * 0.012, 0.07, 24), chromeSilverMat);
+    abSeg.position.set(0, -0.14 - i * 0.09, 0);
     torsoGroup.add(abSeg);
   }
 
-  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.18, 0.20, 24), whiteArmorMat);
-  pelvis.scale.set(1.1, 1, 0.85);
-  pelvis.position.set(0, -0.43, 0);
+  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.18, 0.20, 24), whiteArmorMat);
+  pelvis.position.set(0, -0.44, 0);
   torsoGroup.add(pelvis);
 
   robotGroup.add(torsoGroup);
 
-  const criarBracoVegatocnyx = (lado) => {
+  const criarBracoNyx = (lado) => {
     const armPivot = new THREE.Group();
-    armPivot.position.set(lado * 0.44, 0.33, 0);
+    armPivot.position.set(lado * 0.43, 0.32, 0);
 
-    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 20), chromeSilverMat);
-    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.065, 0.27, 20), chromeSilverMat);
-    upperArm.position.set(lado * 0.04, -0.17, 0);
+    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 20), chromeSilverMat);
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.065, 0.26, 20), chromeSilverMat);
+    upperArm.position.set(lado * 0.04, -0.16, 0);
 
     const elbowGroup = new THREE.Group();
     elbowGroup.position.set(lado * 0.06, -0.32, 0);
     const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.11, 0.30, 24), chromeSilverMat);
-    forearm.position.set(0, -0.17, 0);
+    forearm.position.set(0, -0.16, 0);
 
     const handGroup = new THREE.Group();
-    handGroup.position.set(0, -0.40, 0);
+    handGroup.position.set(0, -0.38, 0);
     const palm = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.10, 0.06), whiteArmorMat);
     handGroup.add(palm);
 
@@ -343,36 +341,38 @@ function criarModeloVegatocnyxEspetacular3D() {
       handGroup.add(finger);
     }
 
-    elbowGroup.add(handGroup, forearm);
+    elbowGroup.add(handGroup);
     armPivot.add(shoulder, upperArm, elbowGroup);
     return { armPivot, elbowGroup };
   };
 
-  const rightArmObj = criarBracoVegatocnyx(-1);
-  const leftArmObj = criarBracoVegatocnyx(1);
-  leftArmObj.armPivot.rotation.z = 0.65;
-  leftArmObj.elbowGroup.rotation.z = 1.65;
+  const rightArmObj = criarBracoNyx(-1);
+  rightArmObj.armPivot.rotation.z = -0.15;
+  robotGroup.add(rightArmObj.armPivot);
 
-  robotGroup.add(rightArmObj.armPivot, leftArmObj.armPivot);
+  const leftArmObj = criarBracoNyx(1);
+  leftArmObj.armPivot.rotation.z = 0.60;
+  leftArmObj.elbowGroup.rotation.z = 1.60;
+  robotGroup.add(leftArmObj.armPivot);
 
-  const criarPernaVegatocnyx = (side) => {
+  const criarPernaNyx = (side) => {
     const legGroup = new THREE.Group();
-    legGroup.position.set(side * 0.16, -0.50, 0);
+    legGroup.position.set(side * 0.15, -0.50, 0);
 
     const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.07, 0.25, 20), chromeSilverMat);
     thigh.position.set(0, -0.14, 0);
     const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.12, 0.28, 24), chromeSilverMat);
-    shin.position.set(0, -0.44, 0);
-    const footBase = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.10, 0.32), whiteArmorMat);
-    footBase.position.set(0, -0.62, 0.04);
+    shin.position.set(0, -0.42, 0);
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.10, 0.30), whiteArmorMat);
+    foot.position.set(0, -0.62, 0.04);
 
-    legGroup.add(thigh, shin, footBase);
+    legGroup.add(thigh, shin, foot);
     return legGroup;
   };
 
-  robotGroup.add(criarPernaVegatocnyx(-1), criarPernaVegatocnyx(1));
+  robotGroup.add(criarPernaNyx(-1), criarPernaNyx(1));
 
-  return { robotGroup, headGroup, eyeL, eyeR, leftElbowGroup: leftArmObj.elbowGroup };
+  return { robotGroup, headGroup, eyeL, eyeR, crestLed: ponytailLed, chestCoreLed };
 }
 
 // =========================================================================================
@@ -411,22 +411,12 @@ function AgentPanelModule() {
   };
 
   return (
-    <div style={{
-      backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '2px solid #00f0ff',
-      borderRadius: '16px', padding: '16px', margin: '10px 0', color: '#0f172a',
-      fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)', backdropFilter: 'blur(10px)'
-    }}>
-      <h2 style={{ color: '#0284c7', fontSize: '14px', margin: '0 0 10px 0', fontWeight: 'bold' }}>
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '2px solid #00f0ff', borderRadius: '16px', padding: '16px', margin: '10px 0', color: '#0f172a', fontFamily: 'sans-serif', boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)', backdropFilter: 'blur(10px)' }}>
+      <h2 style={{ color: '#0284c7', fontSize: '14px', margin: '0 0 10px 0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
         ⚙️ PAINEL WEB DO EM AGENT
       </h2>
       <form onSubmit={handleRunAgent} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Digite o comando para o agente..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          style={{ flex: 1, minWidth: '200px', padding: '10px', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '11px', outline: 'none', color: '#0f172a' }}
-        />
+        <input type="text" placeholder="Digite o comando para o agente..." value={task} onChange={(e) => setTask(e.target.value)} style={{ flex: 1, minWidth: '200px', padding: '10px', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '11px', outline: 'none', color: '#0f172a' }} />
         <button type="submit" disabled={loading} style={{ padding: '10px 16px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '11px', cursor: loading ? 'not-allowed' : 'pointer' }}>
           {loading ? 'Executando...' : 'Enviar para o Agente'}
         </button>
@@ -441,19 +431,19 @@ function AgentPanelModule() {
 }
 
 // =========================================================================================
-// 🤖 --- COMPONENTE: MINI ROBOTOC 3D & VEGATOCNYX 3D ASSISTANT ---
+// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const miniRobotRef = useRef(null);
+  const pointerArmRef = useRef(null);
   const clickBoostRef = useRef(0);
 
   const [robotoc] = useState(() => new InteligenciaRobotoc());
-  const [tipoAvatar, setTipoAvatar] = useState('robotoc'); // 'robotoc' ou 'vegatocnyx'
   const [duvidaInput, setDuvidaInput] = useState('');
   const [sugestoes, setSugestoes] = useState([]);
-  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Assistente 3D com microfone e busca na internet. Fale ou digite qualquer assunto!');
+  const [respostaIA, setRespostaIA] = useState('Olá! Sou seu Mini Robotoc 3D com microfone futurístico e busca na internet. Fale ou digite qualquer assunto!');
   const [ouvindo, setOuvindo] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [imagemBusca, setImagemBusca] = useState(null);
@@ -557,12 +547,14 @@ function MiniRobotocAssistant3D({ onClose }) {
     lightCyan.position.set(3, 5, 4);
     scene.add(lightCyan);
 
-    const robotParts = tipoAvatar === 'robotoc' ? criarModeloRobotocEspetacular3D() : criarModeloVegatocnyxEspetacular3D();
+    const robotParts = criarModeloRobotocEspetacular3D();
     const miniRobot = robotParts.robotGroup;
     miniRobot.position.set(0, -0.1, 0);
     miniRobot.scale.set(0.85, 0.85, 0.85);
     scene.add(miniRobot);
+
     miniRobotRef.current = miniRobot;
+    pointerArmRef.current = robotParts.leftElbowGroup;
 
     let clock = new THREE.Clock();
     let animationId;
@@ -575,7 +567,7 @@ function MiniRobotocAssistant3D({ onClose }) {
 
       if (miniRobotRef.current) {
         miniRobotRef.current.position.y = -0.1 + Math.sin(time * 2.5) * 0.06 + Math.sin(boost * Math.PI) * 0.18;
-        miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2 + Math.sin(boost * Math.PI * 2) * 0.45;
+        miniRobotRef.current.rotation.y = Math.sin(time * 1.2) * 0.2;
       }
       renderer.render(scene, camera);
     };
@@ -585,95 +577,69 @@ function MiniRobotocAssistant3D({ onClose }) {
       cancelAnimationFrame(animationId);
       if (mountRef.current && renderer.domElement) mountRef.current.removeChild(renderer.domElement);
     };
-  }, [tipoAvatar]);
+  }, []);
 
   return (
-    <div style={{
-      position: 'fixed', bottom: '20px', right: '20px', width: '390px',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff',
-      borderRadius: '20px', padding: '14px', boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)',
-      zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif', maxHeight: '540px', overflowY: 'auto'
-    }}>
+    <div style={{ position: 'fixed', bottom: '20px', right: '20px', width: '380px', backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff', borderRadius: '20px', padding: '14px', boxShadow: '0 0 35px rgba(0, 240, 255, 0.3)', zIndex: 500, backdropFilter: 'blur(20px)', color: '#0f172a', fontFamily: 'sans-serif', maxHeight: '520px', overflowY: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bae6fd', paddingBottom: '6px', marginBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '14px' }}>🤖</span>
-          <strong style={{ fontSize: '10.5px', color: '#0284c7' }}>MINI {tipoAvatar === 'robotoc' ? 'ROBOTOC' : 'VEGATOCNYX'} 3D</strong>
+          <span>🤖</span>
+          <strong style={{ fontSize: '11px', color: '#0284c7' }}>MINI ROBOTOC 3D + MICROFONE</strong>
         </div>
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          <button onClick={() => setTipoAvatar(prev => prev === 'robotoc' ? 'vegatocnyx' : 'robotoc')} style={{ padding: '2px 6px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer' }}>
-            Alternar Avatar
-          </button>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
-        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}>✕</button>
       </div>
-
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minHeight: '110px', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px solid #00f0ff', padding: '6px', marginBottom: '8px' }}>
-        <div ref={mountRef} onClick={() => processarPerguntaRobotoc("Olá assistente")} title="Clique no Robô 3D!" style={{ width: '90px', height: '100px', cursor: 'pointer', flexShrink: 0 }} />
+        <div ref={mountRef} onClick={() => processarPerguntaRobotoc("Olá Robotoc")} style={{ width: '90px', height: '100px', cursor: 'pointer', flexShrink: 0 }} />
         <div style={{ flex: 1, maxHeight: '140px', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
-          <strong>💡 Resposta:</strong>
-          <p style={{ margin: '4px 0 0 0', color: '#0f172a', whiteSpace: 'pre-wrap' }}>{carregando ? '⚡ Processando dados e buscando na internet...' : respostaIA}</p>
-          {imagemBusca && (
-            <div style={{ marginTop: '6px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #00f0ff' }}>
-              <img src={imagemBusca} alt="Busca" style={{ width: '100%', height: '80px', objectFit: 'cover' }} />
-            </div>
-          )}
+          <strong>💡 Resposta Robotoc:</strong>
+          <p style={{ margin: '4px 0 0 0', color: '#0f172a', whiteSpace: 'pre-wrap' }}>{carregando ? '⚡ Processando...' : respostaIA}</p>
         </div>
       </div>
-
       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-        <button onClick={iniciarOuvirMicrofone} title="Microfone Futurístico" style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: ouvindo ? 'rgba(239,68,68,0.2)' : 'rgba(2,132,199,0.1)', color: ouvindo ? '#ef4444' : '#0284c7', cursor: 'pointer', fontSize: '14px' }}>
-          🎙️
-        </button>
-        <input
-          type="text"
-          value={duvidaInput}
-          onChange={handleInputChange}
-          placeholder="Futebol, estudos, 'buscar [assunto]'..."
-          style={{ flex: 1, padding: '8px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
-        />
-        <button onClick={() => processarPerguntaRobotoc(duvidaInput)} style={{ padding: '8px 12px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
-          Enviar
-        </button>
+        <button onClick={iniciarOuvirMicrofone} style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: ouvindo ? 'rgba(239,68,68,0.2)' : 'rgba(2,132,199,0.1)', color: ouvindo ? '#ef4444' : '#0284c7', cursor: 'pointer', fontSize: '14px' }}>🎙️</button>
+        <input type="text" value={duvidaInput} onChange={handleInputChange} placeholder="Pergunte qualquer assunto..." style={{ flex: 1, padding: '8px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }} />
+        <button onClick={() => processarPerguntaRobotoc(duvidaInput)} style={{ padding: '8px 12px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>Enviar</button>
       </div>
     </div>
   );
 }
 
 // =========================================================================================
-// 🚀 --- OUTROS MÓDULOS DE SUPORTE (Bloco de Notas, Motion Tracker, etc. mantidos íntegros) ---
+// 🚀 --- SIDEBAR NOTAS & LIXEIRA ---
 // =========================================================================================
 function MiniRobotocSidebarNotes({ addLogTerminal }) {
   const [expandido, setExpandido] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('notas');
-  const [notas, setNotas] = useState([{ id: 1, titulo: 'Anotações Mestre', conteudo: 'Sistemas 3D integrados no Emanuel.OS.', data: new Date().toLocaleTimeString('pt-BR') }]);
+  const [notas, setNotas] = useState([{ id: 1, titulo: 'Anotações Mestre', conteudo: 'Emanuel.OS v6.0 ativo.', data: new Date().toLocaleTimeString('pt-BR') }]);
   const [lixeira, setLixeira] = useState([]);
   const [tituloInput, setTituloInput] = useState('');
   const [conteudoInput, setConteudoInput] = useState('');
   const robotMountRef = useRef(null);
 
+  const handleCriarNota = (e) => {
+    e.preventDefault();
+    if (!conteudoInput.trim()) return;
+    setNotas(prev => [{ id: Date.now(), titulo: tituloInput.trim() || `Rascunho ${notas.length + 1}`, conteudo: conteudoInput, data: new Date().toLocaleTimeString('pt-BR') }, ...prev]);
+    setTituloInput('');
+    setConteudoInput('');
+  };
+
   useEffect(() => {
     if (!robotMountRef.current) return;
-    const width = 60, height = 60;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0.15, 3.6);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(45, 45);
     robotMountRef.current.appendChild(renderer.domElement);
     scene.add(new THREE.AmbientLight(0xffffff, 2.5));
-    const dirLight = new THREE.DirectionalLight(0x00f0ff, 3.5);
-    dirLight.position.set(2, 3, 4);
-    scene.add(dirLight);
-    const robotParts = criarModeloRobotocEspetacular3D();
-    scene.add(robotParts.robotGroup);
+    const robot = criarModeloRobotocEspetacular3D().robotGroup;
+    robot.scale.set(0.85, 0.85, 0.85);
+    scene.add(robot);
 
     let animId;
-    let clock = new THREE.Clock();
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      robotParts.robotGroup.position.y = Math.sin(t * 3.0) * 0.08;
-      robotParts.robotGroup.rotation.y = Math.sin(t * 1.5) * 0.3;
       renderer.render(scene, camera);
     };
     animate();
@@ -685,228 +651,378 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
 
   return (
     <div style={{ position: 'fixed', top: '50%', right: 0, transform: 'translateY(-50%)', zIndex: 450, display: 'flex', alignItems: 'center' }}>
-      <div onClick={() => setExpandido(!expandido)} style={{ width: '54px', height: '110px', backgroundColor: 'rgba(255,255,255,0.92)', border: '2px solid #00f0ff', borderRight: 'none', borderRadius: '20px 0 0 20px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+      <div onClick={() => setExpandido(!expandido)} style={{ width: '54px', height: '110px', backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRight: 'none', borderRadius: '20px 0 0 20px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
         <div ref={robotMountRef} style={{ width: '45px', height: '45px', pointerEvents: 'none' }} />
         <span style={{ fontSize: '8px', color: '#0284c7', fontWeight: '900' }}>{expandido ? 'FECHAR' : 'NOTAS'}</span>
       </div>
-      <div style={{ width: expandido ? '360px' : '0px', height: '520px', backgroundColor: 'rgba(255,255,255,0.95)', border: expandido ? '2px solid #00f0ff' : 'none', borderRight: 'none', borderRadius: '20px 0 0 20px', overflow: 'hidden', transition: 'all 0.4s ease', display: 'flex', flexDirection: 'column', padding: expandido ? '12px' : '0' }}>
-        {expandido && (
-          <div>
-            <strong style={{ fontSize: '11px', color: '#0284c7' }}>📝 NOTAS RÁPIDAS</strong>
-            <input type="text" placeholder="Título..." value={tituloInput} onChange={e => setTituloInput(e.target.value)} style={{ width: '100%', margin: '6px 0', padding: '6px' }} />
-            <textarea placeholder="Conteúdo..." value={conteudoInput} onChange={e => setConteudoInput(e.target.value)} style={{ width: '100%', height: '80px', padding: '6px' }} />
-            <button onClick={() => { if (conteudoInput) setNotas([{ id: Date.now(), titulo: tituloInput || 'Nota', conteudo: conteudoInput, data: new Date().toLocaleTimeString() }, ...notas]); setConteudoInput(''); }} style={{ width: '100%', padding: '6px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px' }}>Salvar</button>
-            <div style={{ marginTop: '10px', maxHeight: '250px', overflowY: 'auto' }}>
-              {notas.map(n => (<div key={n.id} style={{ background: '#f0f9ff', padding: '6px', margin: '4px 0', borderRadius: '6px' }}><strong>{n.titulo}</strong><p style={{ margin: '2px 0', fontSize: '9px' }}>{n.conteudo}</p></div>))}
+      <div style={{ width: expandido ? '360px' : '0px', height: '520px', backgroundColor: 'rgba(255, 255, 255, 0.95)', border: expandido ? '2px solid #00f0ff' : 'none', borderRight: 'none', borderRadius: '20px 0 0 20px', overflow: 'hidden', transition: 'all 0.4s ease', display: 'flex', flexDirection: 'column', color: '#0f172a' }}>
+        <div style={{ padding: '12px', borderBottom: '1px solid #bae6fd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <strong>BLOCO DE NOTAS ROBOTOC</strong>
+          <button onClick={() => setExpandido(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+        </div>
+        <div style={{ flex: 1, padding: '12px', overflowY: 'auto' }}>
+          <form onSubmit={handleCriarNota} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+            <input type="text" placeholder="Título..." value={tituloInput} onChange={(e) => setTituloInput(e.target.value)} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+            <textarea placeholder="Conteúdo..." value={conteudoInput} onChange={(e) => setConteudoInput(e.target.value)} style={{ padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+            <button type="submit" style={{ padding: '6px', backgroundColor: '#0284c7', color: '#fff', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Salvar Nota</button>
+          </form>
+          {notas.map(n => (
+            <div key={n.id} style={{ border: '1px solid #00f0ff', borderRadius: '8px', padding: '8px', marginBottom: '6px' }}>
+              <strong>{n.titulo}</strong>
+              <p style={{ margin: '4px 0', fontSize: '10px' }}>{n.conteudo}</p>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
+// =========================================================================================
+// 📸 --- MOTION TRACKER & GEAR ---
+// =========================================================================================
 function MotionTracker() {
   const videoRef = useRef(null);
   const [active, setActive] = useState(false);
   const toggleCamera = async () => {
     if (active) {
-      if (videoRef.current?.srcObject) videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+      videoRef.current?.srcObject?.getTracks().forEach(t => t.stop());
       setActive(false);
     } else {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) videoRef.current.srcObject = stream;
         setActive(true);
-      } catch (e) { alert("Câmera indisponível: " + e.message); }
+      } catch (err) { alert("Erro na câmera: " + err.message); }
     }
   };
   return (
-    <div style={{ background: 'rgba(240,249,255,0.85)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '10px' }}>
-      <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold' }}>📸 VISION TRACKER</span>
-      <button onClick={toggleCamera} style={{ display: 'block', margin: '6px 0', padding: '4px 8px', background: active ? '#ef4444' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px' }}>{active ? 'Desligar' : 'Ligar Câmera'}</button>
-      <div style={{ width: '100%', height: '100px', background: '#000', borderRadius: '6px', overflow: 'hidden' }}>
+    <div style={{ background: 'rgba(240, 249, 255, 0.85)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold' }}>VISION TRACKER</span>
+        <button onClick={toggleCamera} style={{ padding: '4px 8px', backgroundColor: active ? '#ef4444' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px', cursor: 'pointer' }}>{active ? 'Desligar' : 'Ativar'}</button>
+      </div>
+      <div style={{ width: '100%', height: '120px', backgroundColor: '#0f172a', borderRadius: '8px', overflow: 'hidden' }}>
         <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
     </div>
   );
 }
 
-function RobotocGear() {
+function RobotocGear({ highlightGear, onConnectGear }) {
+  const [gears, setGears] = useState({ headset: false, mouse: false, keyboard: true });
   return (
-    <div style={{ background: 'rgba(240,249,255,0.85)', border: '1px solid #0284c7', borderRadius: '12px', padding: '10px' }}>
-      <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold' }}>⚙️ PERIFÉRICOS NEURAIS</span>
-      <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-        <span style={{ fontSize: '9px', background: '#0284c7', color: '#fff', padding: '4px 8px', borderRadius: '4px' }}>Headset OK</span>
-        <span style={{ fontSize: '9px', background: '#0284c7', color: '#fff', padding: '4px 8px', borderRadius: '4px' }}>Mouse 3D OK</span>
+    <div style={{ background: 'rgba(240, 249, 255, 0.85)', border: highlightGear ? '2px solid #eab308' : '1px solid #0284c7', borderRadius: '12px', padding: '10px' }}>
+      <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>PERIFÉRICOS NEURAIS</span>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+        {['headset', 'mouse', 'keyboard'].map(g => (
+          <button key={g} onClick={() => { setGears(p => ({ ...p, [g]: !p[g] })); if(onConnectGear) onConnectGear(g, !gears[g]); }} style={{ padding: '6px', border: '1px solid #0284c7', background: gears[g] ? '#0284c7' : 'transparent', color: gears[g] ? '#fff' : '#0284c7', fontSize: '9px', borderRadius: '6px', cursor: 'pointer' }}>{g}</button>
+        ))}
       </div>
     </div>
   );
 }
 
-function BitcoinAnalysisPanel() {
+// =========================================================================================
+// ⌨️ --- TECLADO GLASS & DISPATCHER & NEURAL ---
+// =========================================================================================
+function GlassKeyboard3D({ onKeyPress }) {
   return (
-    <div style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid #eab308', borderRadius: '12px', padding: '10px' }}>
-      <span style={{ fontSize: '10px', color: '#d97706', fontWeight: 'bold' }}>₿ BITCOIN QUANT ANALYSIS</span>
-      <strong style={{ display: 'block', fontSize: '14px', color: '#b45309', marginTop: '4px' }}>$89,450.00 (Tendência Alta)</strong>
+    <div style={{ background: 'rgba(255, 255, 255, 0.75)', border: '1px solid rgba(0, 240, 255, 0.6)', borderRadius: '12px', padding: '10px' }}>
+      <span style={{ fontSize: '9px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>TECLADO HOLOGRÁFICO GLASS</span>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
+        {['Q','W','E','R','T','Y','U','I','O','P'].map(k => (
+          <button key={k} onClick={() => onKeyPress(k)} style={{ padding: '6px 4px', background: 'rgba(2, 132, 199, 0.1)', border: '1px solid rgba(2, 132, 199, 0.4)', borderRadius: '4px', color: '#0284c7', fontSize: '9px', cursor: 'pointer' }}>{k}</button>
+        ))}
+      </div>
     </div>
   );
 }
 
-function CloudflareWorkerDeployer() {
+function DispatcherMensagensNumeros({ addLog }) {
+  const [num, setNum] = useState('981493989');
+  const [msg, setMsg] = useState('Mensagem Emanuel.OS');
   return (
-    <div style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid #ea580c', borderRadius: '12px', padding: '10px' }}>
-      <span style={{ fontSize: '10px', color: '#ea580c', fontWeight: 'bold' }}>☁️ CLOUDFLARE EDGE DEPLOY</span>
-      <button onClick={() => alert("Worker publicado com sucesso!")} style={{ width: '100%', marginTop: '6px', padding: '6px', background: '#ea580c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '9px' }}>Deploy Global</button>
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', borderRadius: '12px', padding: '12px' }}>
+      <h3 style={{ color: '#0284c7', fontSize: '11px', margin: '0 0 8px 0' }}>MENSAGERIA DIRETA</h3>
+      <input type="text" value={num} onChange={e => setNum(e.target.value)} placeholder="Número" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }} />
+      <textarea value={msg} onChange={e => setMsg(e.target.value)} rows={2} style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }} />
+      <button onClick={() => window.open(`https://api.whatsapp.com/send?phone=5588${num}&text=${encodeURIComponent(msg)}`, '_blank')} style={{ width: '100%', padding: '8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Enviar WhatsApp</button>
+    </div>
+  );
+}
+
+function RobotocNeuralThoughtPanel({ addLog }) {
+  return (
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '2px solid #00f0ff', borderRadius: '14px', padding: '14px' }}>
+      <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 6px 0' }}>PENSAMENTO FUTURISTA NÚCLEO</h3>
+      <p style={{ fontSize: '9px', color: '#64748b' }}>Triple e-mail e processamento neural ativo.</p>
     </div>
   );
 }
 
 function AndroidHUDPanel({ open, onClose, children }) {
-  if (!open) return null;
   return (
-    <div style={{ position: 'fixed', top: 0, right: 0, width: '340px', height: '100vh', background: 'rgba(255,255,255,0.95)', borderLeft: '2px solid #00f0ff', zIndex: 600, padding: '16px', overflowY: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <strong>Android 16 HUD</strong>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', fontWeight: 'bold' }}>✕</button>
+    <div style={{ position: 'fixed', top: 0, right: open ? 0 : '-360px', width: '350px', height: '100vh', backgroundColor: 'rgba(255, 255, 255, 0.92)', borderLeft: '2px solid #00f0ff', backdropFilter: 'blur(20px)', zIndex: 180, transition: 'all 0.4s ease', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong style={{ fontSize: '12px', color: '#0284c7' }}>ANDROID 16 HUD</strong>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>{children}</div>
+      {children}
     </div>
   );
 }
 
 function EMCreatorStudio({ onClose }) {
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', zIndex: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', padding: '20px', borderRadius: '12px', width: '400px', position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', fontWeight: 'bold' }}>✕</button>
-        <h3>Creator Studio AI</h3>
-        <p style={{ fontSize: '11px', color: '#64748b' }}>Métricas de engajamento e análises autônomas ativas.</p>
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(255, 255, 255, 0.75)', backdropFilter: 'blur(20px)', zIndex: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ backgroundColor: '#fff', border: '2px solid #00f0ff', borderRadius: '20px', padding: '25px', width: '100%', maxWidth: '700px', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+        <h2 style={{ color: '#0284c7' }}>EM CREATOR STUDIO IA</h2>
+        <p style={{ fontSize: '11px', color: '#64748b' }}>Painel analítico de mídias e engajamento multimodais.</p>
       </div>
+    </div>
+  );
+}
+
+// =========================================================================================
+// 💻 --- PAINEL DEV SPLIT SCREEN ---
+// =========================================================================================
+function PainelDevSplitScreen({ onClose }) {
+  const [codigoFonte, setCodigoFonte] = useState('fn main():\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS...")');
+  return (
+    <div style={{ width: '100%', height: '100%', backgroundColor: '#f0f9ff', borderLeft: '2px solid #00f0ff', padding: '16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>Emanuel.OS Workstation - Dev Studio</strong>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+      </div>
+      <textarea value={codigoFonte} onChange={e => setCodigoFonte(e.target.value)} style={{ width: '100%', flexGrow: 1, backgroundColor: '#fff', border: '1px solid #00f0ff', borderRadius: '8px', padding: '10px', fontFamily: 'monospace', fontSize: '11px' }} />
+    </div>
+  );
+}
+
+// =========================================================================================
+// ✉️ --- FORMULÁRIO CAPTURA & GOOGLE MEET ---
+// =========================================================================================
+function FormularioCapturaEmanuelOS() {
+  const [email, setEmail] = useState('');
+  const [enviado, setEnviado] = useState(false);
+  return (
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', borderRadius: '14px', padding: '16px', margin: '10px 0' }}>
+      <h3 style={{ color: '#0284c7', margin: '0 0 6px 0', fontSize: '12px' }}>Baixar 300 Comandos Mestre</h3>
+      {enviado ? <p style={{ color: '#16a34a', fontSize: '11px' }}>Enviado com sucesso!</p> : (
+        <form onSubmit={e => { e.preventDefault(); if (email) setEnviado(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <input type="email" required placeholder="Seu e-mail..." value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+          <button type="submit" style={{ padding: '8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Quero Acesso</button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+function GoogleMeetAvatarManager() {
+  return (
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', borderRadius: '14px', padding: '16px', margin: '10px 0' }}>
+      <h3 style={{ color: '#0284c7', fontSize: '12px', margin: '0 0 6px 0' }}>Google Meet + Avatares 3D</h3>
+      <button onClick={() => window.open('https://meet.google.com/new', '_blank')} style={{ width: '100%', padding: '8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Criar Reunião Instantânea</button>
+    </div>
+  );
+}
+
+const UnixTerminalCanvas = () => (
+  <div style={{ width: '100%', height: '150px', backgroundColor: '#0f172a', border: '2px solid #00f0ff', borderRadius: '10px', padding: '8px', color: '#38bdf8', fontFamily: 'monospace', fontSize: '10px' }}>
+    root@emanuel-os:~# Emanuel.OS Kernel 6.x online.<br/>root@emanuel-os:~# G-AGI Ready.
+  </div>
+);
+
+const BitcoinAnalysisPanel = () => (
+  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '2px solid #eab308', borderRadius: '16px', padding: '16px' }}>
+    <h3 style={{ color: '#d97706', fontSize: '13px', margin: '0 0 8px 0' }}>₿ Previsão Bitcoin: $89,450.00</h3>
+  </div>
+);
+
+const CloudflareWorkerDeployer = () => (
+  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '2px solid #ea580c', borderRadius: '16px', padding: '16px' }}>
+    <h3 style={{ color: '#ea580c', fontSize: '13px', margin: '0 0 8px 0' }}>☁️ Cloudflare Worker Deployer</h3>
+  </div>
+);
+
+// =========================================================================================
+// 🏛️ --- VITRINE VIRTUAL 3D (COM ROBOTOC E VEGATOCNYX) ---
+// =========================================================================================
+function VitrineVirtual3D({ modoAtual, onSelectModo }) {
+  const container3dRef = useRef(null);
+  useEffect(() => {
+    if (!container3dRef.current) return;
+    const width = container3dRef.current.clientWidth;
+    const height = container3dRef.current.clientHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 2.5, 9);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    container3dRef.current.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+    const spotCyan = new THREE.SpotLight(0x00f0ff, 6);
+    spotCyan.position.set(-5, 8, 5);
+    scene.add(spotCyan);
+
+    const vitrineGroup = new THREE.Group();
+    const baseMesh = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.8, 0.4, 32), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.1, metalness: 0.9 }));
+    baseMesh.position.y = -1.2;
+    vitrineGroup.add(baseMesh);
+
+    const contentGroup = new THREE.Group();
+    if (modoAtual === 'avatares') {
+      const robot1 = criarModeloRobotocEspetacular3D().robotGroup;
+      robot1.position.set(-1.2, 0.2, 0);
+      robot1.scale.set(0.85, 0.85, 0.85);
+
+      const robot2 = criarModelovegatocnyxEspetacular3D().robotGroup;
+      robot2.position.set(1.2, 0.2, 0);
+      robot2.scale.set(0.85, 0.85, 0.85);
+
+      contentGroup.add(robot1, robot2);
+    } else {
+      const mapMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 2), new THREE.MeshStandardMaterial({ color: 0x0284c7, wireframe: true }));
+      mapMesh.position.y = 0.8;
+      contentGroup.add(mapMesh);
+    }
+    vitrineGroup.add(contentGroup);
+    scene.add(vitrineGroup);
+
+    let animId;
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      vitrineGroup.rotation.y += 0.008;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      if (container3dRef.current && renderer.domElement) container3dRef.current.removeChild(renderer.domElement);
+    };
+  }, [modoAtual]);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '280px', backgroundColor: 'rgba(240, 249, 255, 0.6)', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,240,255,0.4)' }}>
+      <div ref={container3dRef} style={{ width: '100%', height: '100%' }} />
     </div>
   );
 }
 
 function WindowDevPanelRobotoc({ onClose }) {
   return (
-    <div style={{ position: 'fixed', top: '100px', left: '100px', width: '400px', background: '#fff', border: '2px solid #00f0ff', borderRadius: '12px', padding: '16px', zIndex: 650 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-        <strong>Painel Dev EMgemini</strong>
-        <button onClick={onClose} style={{ background: 'none', border: 'none' }}>✕</button>
+    <div style={{ position: 'fixed', top: '60px', left: '80px', width: '520px', height: '580px', backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff', borderRadius: '18px', zIndex: 300, padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>Painel Dev Robotoc & VegatocNyx 3D</strong>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
       </div>
-      <p style={{ fontSize: '10px' }}>Inspeção de shaders e renderização 3D em tempo real.</p>
+      <VitrineVirtual3D modoAtual="avatares" />
     </div>
   );
 }
 
 // =========================================================================================
-// 🌟 --- COMPONENTE PRINCIPAL DO NÚCLEO EMANUEL.OS (INDEX v6.0) ---
+// 🌟 --- COMPONENTE PRINCIPAL EMANUEL.OS CORE v6.0 ---
 // =========================================================================================
 export default function EmanuelOSCore() {
   const [bloqueado, setBloqueado] = useState(true);
   const [etapaSeguranca, setEtapaSeguranca] = useState(1);
-  const [tempoRestanteSessao, setTempoRestanteSessao] = useState(0); // Em segundos (30 min = 1800s)
-  const [modoBetaFacialAtivo, setModoBetaFacialAtivo] = useState(false);
-  const [webcamLigada, setWebcamLigada] = useState(false);
-  const webcamVideoRef = useRef(null);
-
+  const [telefoneDigitado, setTelefoneDigitado] = useState('');
+  const [pinDigitado, setPinDigitado] = useState('');
+  const [emailDigitado, setEmailDigitado] = useState('');
+  const [chaveDigitada, setChaveDigitada] = useState('');
   const [chaveAcessoTripla, setChaveAcessoTripla] = useState('');
-  const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave Única ou use o Login Facial Beta');
-  const [validandoServidores, setValidandoServidores] = useState(false);
+  const [statusAcessoTriplo, setStatusAcessoTriplo] = useState('🔐 Insira a Chave de 3 Camadas');
+  const [tentativasInvasao, setTentativasInvasao] = useState(0);
+  const [bloqueioInvasor, setBloqueioInvasor] = useState(false);
+  const [selectedSequence, setSelectedSequence] = useState([]);
+  const [qrCodeValidando, setQrCodeValidando] = useState(false);
+
+  // Estados da Função Beta de Login Facial (30 Minutos)
+  const [loginFacialAtivo, setLoginFacialAtivo] = useState(false);
+  const [statusFacial, setStatusFacial] = useState('Aguardando escaneamento facial...');
+  const videoLoginRef = useRef(null);
+
+  const iniciarLoginFacialBeta = async () => {
+    setLoginFacialAtivo(true);
+    setStatusFacial('📸 Inicializando câmera para autenticação facial...');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoLoginRef.current) videoLoginRef.current.srcObject = stream;
+      setTimeout(() => {
+        setStatusFacial('✅ Rosto reconhecido com sucesso! Concedendo acesso temporário de 30 minutos...');
+        setTimeout(() => {
+          stream.getTracks().forEach(t => t.stop());
+          setBloqueado(false);
+        }, 1500);
+      }, 3000);
+    } catch (err) {
+      setStatusFacial('❌ Erro ao acessar a câmera para login facial.');
+      setLoginFacialAtivo(false);
+    }
+  };
 
   const [miniAssistantAberto, setMiniAssistantAberto] = useState(false);
   const [yugiohGameAberto, setYugiohGameAberto] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [androidHudOpen, setAndroidHudOpen] = useState(false);
   const [modalCreatorStudioAberto, setModalCreatorStudioAberto] = useState(false);
+  const [modoDevSplit, setModoDevSplit] = useState(false);
   const [janelaRobotocDevAberta, setJanelaRobotocDevAberta] = useState(false);
-
-  const [locaisEmanuelOS] = useState([
-    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor', lat: -3.7172, lng: -38.5437, urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
-    { id: 2, nome: 'Usina Nuclear Central', categoria: '⚛️ Energia', lat: -23.0062, lng: -44.3182, urlExterna: 'https://maps.google.com/?q=-23.0062,-44.3182' }
-  ]);
 
   const [termoBuscaGlobo, setTermoBuscaGlobo] = useState('');
   const [resultadosBuscaGlobo, setResultadosBuscaGlobo] = useState([]);
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
+  const locaisEmanuelOS = [
+    { id: 1, nome: 'Emanuel.OS Core Data Center 01', categoria: '🖥️ Servidor de Dados', cor: 0x00f0ff, lat: -3.7172, lng: -38.5437, trabalho: 'Engenharia de Software', urlExterna: 'https://maps.google.com/?q=-3.7172,-38.5437' },
+    { id: 2, nome: 'Estação Oceanográfica & VegatocNyx Lab', categoria: '🌊 Pesquisa Biológica', cor: 0x00aaff, lat: -12.9714, lng: -38.5014, trabalho: 'Biologia Marinha', urlExterna: 'https://maps.google.com/?q=-12.9714,-38.5014' }
+  ];
+
+  const handleBuscaGlobo = (e) => {
+    const val = e.target.value;
+    setTermoBuscaGlobo(val);
+    if (val.trim().length >= 1) {
+      setResultadosBuscaGlobo(locaisEmanuelOS.filter(item => item.nome.toLowerCase().includes(val.toLowerCase())));
+    } else {
+      setResultadosBuscaGlobo([]);
+    }
+  };
+
+  const focarLocalNoGlobo = (local) => {
+    setLocalSelecionadoGlobo(local);
+    setResultadosBuscaGlobo([]);
+    setTermoBuscaGlobo(local.nome);
+  };
+
+  const processarAutenticacao3Camadas = (e) => {
+    e.preventDefault();
+    if (bloqueioInvasor) return;
+    setEtapaSeguranca(2);
+  };
+
+  const mountRef = useRef(null);
+  const mainRobotRef = useRef(null);
+  const vegatoRobotRef = useRef(null);
   const [legendaRobotoc, setLegendaRobotoc] = useState('');
   const [robotocFalando, setRobotocFalando] = useState(false);
-  const mountRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const globeGroupRef = useRef(null);
-  const mainRobotRef = useRef(null);
-
-  // Timer regressivo para o modo Beta de 30 minutos
-  useEffect(() => {
-    if (tempoRestanteSessao <= 0) return;
-    const timer = setInterval(() => {
-      setTempoRestanteSessao(prev => {
-        if (prev <= 1) {
-          setBloqueado(true);
-          setModoBetaFacialAtivo(false);
-          alert("⏱️ O tempo de teste beta de 30 minutos expirou. Faça login novamente.");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [tempoRestanteSessao]);
-
-  // Função para ligar a câmera para o Login Facial Beta
-  const iniciarLoginFacialBeta = async (minutosEscolha = 30) => {
-    setModoBetaFacialAtivo(true);
-    setStatusAcessoTriplo("📷 Ativando câmera para escaneamento facial...");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (webcamVideoRef.current) {
-        webcamVideoRef.current.srcObject = stream;
-      }
-      setWebcamLigada(true);
-      setStatusAcessoTriplo("👤 Posicione o rosto na câmera. Autenticando com IA...");
-
-      setTimeout(() => {
-        if (webcamVideoRef.current && webcamVideoRef.current.srcObject) {
-          webcamVideoRef.current.srcObject.getTracks().forEach(t => t.stop());
-        }
-        setWebcamLigada(false);
-        setModoBetaFacialAtivo(false);
-        setBloqueado(false);
-        setTempoRestanteSessao(minutosEscolha * 60); // Ex: 30 minutos em segundos
-        alert(`✅ Login facial aprovado! Acesso liberado por ${minutosEscolha} minutos.`);
-      }, 3000);
-    } catch (e) {
-      setWebcamLigada(false);
-      setModoBetaFacialAtivo(false);
-      alert("⚠️ Erro ao acessar a webcam para login facial: " + e.message);
-      setStatusAcessoTriplo("🔐 Insira a Chave Mestre ou tente novamente.");
-    }
-  };
-
-  const processarAutenticacao = (e) => {
-    e.preventDefault();
-    if (chaveAcessoTripla.trim() === "EMANUEL-TRIPLE-AGI-8888-BRS7" || chaveAcessoTripla.trim() === "8888") {
-      setBloqueado(false);
-      setTempoRestanteSessao(1800); // 30 minutos padrão para acesso mestre também
-    } else {
-      alert("⚠️ Chave inválida! Use '8888' ou utilize o Login Facial Beta de 30 minutos.");
-    }
-  };
 
   const dispararFalaRobotoc = (texto) => {
     setLegendaRobotoc(texto);
     setRobotocFalando(true);
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(texto);
-      utterance.lang = 'pt-BR';
-      utterance.onend = () => { setRobotocFalando(false); setTimeout(() => setLegendaRobotoc(''), 3000); };
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => setRobotocFalando(false), 3000);
+      const utt = new SpeechSynthesisUtterance(texto);
+      utt.lang = 'pt-BR';
+      utt.onend = () => { setRobotocFalando(false); setTimeout(() => setLegendaRobotoc(''), 2000); };
+      window.speechSynthesis.speak(utt);
     }
   };
 
@@ -916,12 +1032,10 @@ export default function EmanuelOSCore() {
     const height = mountRef.current.clientHeight;
 
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
     scene.background = new THREE.Color(0x030712);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.set(0, 0, 8.5);
-    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
@@ -933,32 +1047,34 @@ export default function EmanuelOSCore() {
     scene.add(sunLight);
 
     const globeGroup = new THREE.Group();
-    globeGroupRef.current = globeGroup;
-
-    const earthMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(2.5, 64, 64),
-      new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4, metalness: 0.3 })
-    );
+    const earthMesh = new THREE.Mesh(new THREE.SphereGeometry(2.5, 64, 64), new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4 }));
     globeGroup.add(earthMesh);
     scene.add(globeGroup);
 
-    // Adicionando o Robotoc 3D principal na cena 3D
-    const robotParts = criarModeloRobotocEspetacular3D();
-    const mainRobotGroup = robotParts.robotGroup;
-    mainRobotGroup.position.set(3.2, 0.2, 1.0);
-    mainRobotGroup.scale.set(1.25, 1.25, 1.25);
+    // Robotoc 3D à direita
+    const robotPartsMain = criarModeloRobotocEspetacular3D();
+    const mainRobotGroup = robotPartsMain.robotGroup;
+    mainRobotGroup.position.set(2.8, 0.2, 1.0);
+    mainRobotGroup.scale.set(1.1, 1.1, 1.1);
     scene.add(mainRobotGroup);
     mainRobotRef.current = mainRobotGroup;
+
+    // VegatocNyx 3D à esquerda
+    const vegatoParts = criarModelovegatocnyxEspetacular3D();
+    const vegatoGroup = vegatoParts.robotGroup;
+    vegatoGroup.position.set(-2.8, 0.2, 1.0);
+    vegatoGroup.scale.set(1.1, 1.1, 1.1);
+    scene.add(vegatoGroup);
+    vegatoRobotRef.current = vegatoGroup;
 
     let animId;
     let clock = new THREE.Clock();
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
-      if (globeGroupRef.current) globeGroupRef.current.rotation.y += 0.001;
-      if (mainRobotRef.current) {
-        mainRobotRef.current.position.y = 0.2 + Math.sin(time * 2.0) * 0.12;
-      }
+      globeGroup.rotation.y += 0.001;
+      mainRobotGroup.position.y = 0.2 + Math.sin(time * 2) * 0.08;
+      vegatoGroup.position.y = 0.2 + Math.cos(time * 2) * 0.08;
       renderer.render(scene, camera);
     };
     animate();
@@ -971,40 +1087,52 @@ export default function EmanuelOSCore() {
 
   if (bloqueado) {
     return (
-      <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0f172a', fontFamily: 'sans-serif', padding: '20px' }}>
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '30px', width: '100%', maxWidth: '420px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.25)', textAlign: 'center' }}>
-          <div style={{ fontSize: '40px', marginBottom: '10px' }}>🤖</div>
-          <h2 style={{ color: '#0284c7', fontSize: '20px', fontWeight: '900', margin: '0 0 5px 0' }}>
+      <div style={{ width: '100vw', height: '100vh', backgroundColor: '#f0f9ff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0f172a', fontFamily: 'sans-serif', padding: '20px', boxSizing: 'border-box' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #00f0ff', borderRadius: '24px', padding: '30px', width: '100%', maxWidth: '440px', boxShadow: '0 0 50px rgba(0, 240, 255, 0.25)', textAlign: 'center', backdropFilter: 'blur(20px)' }}>
+          <div style={{ fontSize: '40px', marginBottom: '10px' }}>🤖🌸</div>
+          <h2 style={{ color: '#0284c7', fontSize: '18px', fontWeight: '900', margin: '0 0 5px 0' }}>
             EMANUEL<span style={{ color: '#00f0ff' }}>.OS</span> WORKSTATION v6.0
           </h2>
-          <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '20px' }}>
-            PORTAL DE ACESSO & TESTE BETA
+          <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '16px' }}>
+            PROTOCOLO DE 7 ETAPAS ({etapaSeguranca}/7) OU LOGIN FACIAL BETA
           </span>
 
-          <p style={{ fontSize: '11px', color: '#334155', marginBottom: '15px' }}>{statusAcessoTriplo}</p>
-
-          {modoBetaFacialAtivo && (
-            <div style={{ margin: '15px 0', borderRadius: '12px', overflow: 'hidden', border: '2px solid #00f0ff', background: '#000' }}>
-              <video ref={webcamVideoRef} autoPlay playsInline muted style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-              <span style={{ color: '#00f0ff', fontSize: '10px', display: 'block', padding: '6px' }}>Escaneando feições faciais para liberação beta...</span>
-            </div>
-          )}
-
-          {!modoBetaFacialAtivo && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <form onSubmit={processarAutenticacao} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <input type="password" value={chaveAcessoTripla} onChange={(e) => setChaveAcessoTripla(e.target.value)} placeholder="Chave Mestre (ex: 8888)..." style={{ padding: '10px', borderRadius: '8px', border: '1px solid #00f0ff', textAlign: 'center', outline: 'none' }} />
-                <button type="submit" style={{ padding: '10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Entrar com Chave</button>
-              </form>
-
-              <div style={{ borderTop: '1px solid #bae6fd', margin: '10px 0', paddingTop: '10px' }}>
-                <button onClick={() => iniciarLoginFacialBeta(30)} style={{ width: '100%', padding: '12px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>
-                  👤 Entrar com Login Facial Beta (30 Min)
-                </button>
-                <span style={{ fontSize: '8.5px', color: '#64748b', display: 'block', marginTop: '4px' }}>Liberação automática por reconhecimento facial via IA para visitantes.</span>
+          {/* BOTÃO DA FUNÇÃO BETA DE LOGIN FACIAL (30 MINUTOS) */}
+          <div style={{ marginBottom: '16px', padding: '12px', background: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '12px' }}>
+            <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>✨ FUNÇÃO BETA: LOGIN FACIAL (30 MIN)</span>
+            {loginFacialAtivo ? (
+              <div>
+                <video ref={videoLoginRef} autoPlay playsInline muted style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '6px' }} />
+                <p style={{ fontSize: '10px', color: '#16a34a', fontWeight: 'bold', margin: 0 }}>{statusFacial}</p>
               </div>
-            </div>
-          )}
+            ) : (
+              <button onClick={iniciarLoginFacialBeta} style={{ width: '100%', padding: '10px', backgroundColor: '#00f0ff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>
+                📸 Entrar com Reconhecimento Facial (30 Min)
+              </button>
+            )}
+          </div>
+
+          <div style={{ borderTop: '1px solid #bae6fd', paddingTop: '12px' }}>
+            {etapaSeguranca === 1 && (
+              <form onSubmit={processarAutenticacao3Camadas} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: 'bold' }}>1ª Etapa: Chave de Segurança</span>
+                <input type="password" value={chaveAcessoTripla} onChange={(e) => setChaveAcessoTripla(e.target.value)} placeholder="Digite sua Chave..." style={{ padding: '10px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: '#f8fafc', color: '#0284c7', textAlign: 'center', outline: 'none' }} />
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Validar Chave ➔</button>
+              </form>
+            )}
+            {etapaSeguranca === 2 && (
+              <form onSubmit={(e) => { e.preventDefault(); setEtapaSeguranca(3); }} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 'bold' }}>2ª Etapa: Telefone Autorizado</span>
+                <input type="text" value={telefoneDigitado} onChange={(e) => setTelefoneDigitado(e.target.value)} placeholder="88981493989" style={{ padding: '10px', borderRadius: '8px', border: '1px solid #00f0ff', backgroundColor: '#f8fafc', textAlign: 'center' }} />
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Avançar ➔</button>
+              </form>
+            )}
+            {etapaSeguranca >= 3 && (
+              <button onClick={() => setBloqueado(false)} style={{ width: '100%', padding: '12px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+                ⚡ Acessar Emanuel.OS Completamente ➔
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -1012,64 +1140,65 @@ export default function EmanuelOSCore() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: '#030712', color: '#0f172a', fontFamily: 'system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
-      
-      {/* Barra superior de status do Modo Beta */}
-      {tempoRestanteSessao > 0 && (
-        <div style={{ position: 'absolute', top: '15px', right: '20px', zIndex: 300, background: 'rgba(2, 132, 199, 0.9)', color: '#fff', padding: '6px 12px', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', backdropFilter: 'blur(10px)', border: '1px solid #00f0ff' }}>
-          ⏱️ Sessão Beta Ativa: {Math.floor(tempoRestanteSessao / 60)}m {tempoRestanteSessao % 60}s restantes
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+        <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
+          <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }} />
+
+          {legendaRobotoc && (
+            <div style={{ position: 'absolute', bottom: '135px', right: '30px', zIndex: 145, maxWidth: '340px', backgroundColor: 'rgba(3, 7, 18, 0.85)', border: '1.5px solid #00f0ff', borderRadius: '14px', padding: '12px', color: '#f0f9ff' }}>
+              <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#00f0ff' }}>🎙️ ROBOTOC & VEGATOCNYX</span>
+              <p style={{ margin: 0, fontSize: '11px' }}>"{legendaRobotoc}"</p>
+            </div>
+          )}
+
+          <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ backgroundColor: '#fff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold' }}>{sidebarAberta ? '✕' : '☰'}</button>
+            <Link href="/robotocNAV" style={{ backgroundColor: '#00f0ff', color: '#020617', padding: '0 14px', height: '40px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', fontWeight: '900', fontSize: '11px', textDecoration: 'none' }}>🌐 robotocNAV</Link>
+            <button onClick={() => setModoDevSplit(!modoDevSplit)} style={{ backgroundColor: modoDevSplit ? '#0284c7' : '#fff', color: modoDevSplit ? '#fff' : '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>Dev Workstation</button>
+            <button onClick={() => setAndroidHudOpen(true)} style={{ backgroundColor: '#fff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>Android 16 HUD</button>
+            <button onClick={() => setModalCreatorStudioAberto(true)} style={{ backgroundColor: '#fff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>Creator Studio</button>
+            <button onClick={() => setJanelaRobotocDevAberta(true)} style={{ backgroundColor: '#0284c7', color: '#fff', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>🤖 Painel 3D Avatares</button>
+            <button onClick={() => setMiniAssistantAberto(!miniAssistantAberto)} style={{ backgroundColor: '#fff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>Mini Robotoc</button>
+            <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ backgroundColor: '#eab308', color: '#fff', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>Yu-Gi-Oh! 3D</button>
+          </div>
+
+          <aside style={{ position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '100%' : '0px', maxWidth: '390px', opacity: sidebarAberta ? 1 : 0, backgroundColor: 'rgba(255, 255, 255, 0.92)', backdropFilter: 'blur(30px)', borderRight: '1px solid rgba(0, 240, 255, 0.4)', padding: sidebarAberta ? '20px' : '0px', display: 'flex', flexDirection: 'column', gap: '15px', height: '100vh', overflowY: 'auto', zIndex: 190, transition: 'all 0.3s ease' }}>
+            {sidebarAberta && (
+              <>
+                <h1 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', margin: 0 }}>Emanuel.OS v6.0</h1>
+                <AgentPanelModule />
+                <UnixTerminalCanvas />
+                <RobotocNeuralThoughtPanel />
+                <DispatcherMensagensNumeros />
+                <GoogleMeetAvatarManager />
+                <FormularioCapturaEmanuelOS />
+              </>
+            )}
+          </aside>
         </div>
-      )}
 
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-        <div ref={mountRef} style={{ width: '100%', height: '100%', cursor: 'grab' }} />
-
-        {legendaRobotoc && (
-          <div style={{ position: 'absolute', bottom: '135px', right: '30px', zIndex: 145, maxWidth: '340px', backgroundColor: 'rgba(3, 7, 18, 0.85)', border: '1.5px solid #00f0ff', borderRadius: '14px', padding: '12px 16px', color: '#f0f9ff' }}>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#00f0ff' }}>🎙️ ROBOTOC 3D // TRANSMISSÃO</span>
-            <p style={{ margin: 0, fontSize: '11.5px', color: '#e0f2fe' }}>"{legendaRobotoc}"</p>
+        {modoDevSplit && (
+          <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
+            <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
           </div>
         )}
-
-        {/* Menu Superior de Atalhos */}
-        <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 100, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button onClick={() => setSidebarAberta(!sidebarAberta)} style={{ background: '#fff', border: '1px solid #00f0ff', color: '#0284c7', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontWeight: 'bold' }}>☰</button>
-          
-          <button onClick={() => setAndroidHudOpen(true)} style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid #00f0ff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>📱 Android 16 HUD</button>
-          <button onClick={() => setModalCreatorStudioAberto(true)} style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid #0284c7', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>📊 Creator Studio</button>
-          <button onClick={() => setJanelaRobotocDevAberta(true)} style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>🤖 Painel Dev 3D</button>
-          <button onClick={() => setMiniAssistantAberto(!miniAssistantAberto)} style={{ background: miniAssistantAberto ? '#00f0ff' : 'rgba(255,255,255,0.85)', border: '1px solid #00f0ff', color: '#0284c7', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>🤖 Mini Assistente (Robotoc/Vegatocnyx)</button>
-          <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ background: '#eab308', color: '#fff', border: 'none', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>⚔️ Yu-Gi-Oh! 3D</button>
-        </div>
-
-        {/* Sidebar */}
-        <aside style={{ position: 'absolute', top: 0, left: 0, width: sidebarAberta ? '380px' : '0px', height: '100vh', background: 'rgba(255,255,255,0.92)', borderRight: '1px solid #00f0ff', padding: sidebarAberta ? '20px' : '0px', overflowY: 'auto', zIndex: 190, transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {sidebarAberta && (
-            <>
-              <h2 style={{ fontSize: '16px', color: '#0284c7', margin: 0 }}>EMANUEL.OS v6.0 Core</h2>
-              <AgentPanelModule />
-              <button onClick={() => setSidebarAberta(false)} style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#ef4444', fontWeight: 'bold', cursor: 'pointer' }}>Fechar Menu</button>
-            </>
-          )}
-        </aside>
       </div>
 
-      {/* Janelas e Modais Integrados */}
+      {janelaRobotocDevAberta && <WindowDevPanelRobotoc onClose={() => setJanelaRobotocDevAberta(false)} />}
       {miniAssistantAberto && <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />}
       <MiniRobotocSidebarNotes />
-      {janelaRobotocDevAberta && <WindowDevPanelRobotoc onClose={() => setJanelaRobotocDevAberta(false)} />}
-      {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
+      {yugiohGameAberto && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 400, backgroundColor: '#0a0f1d' }}>
+          <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />
+        </div>
+      )}
       <AndroidHUDPanel open={androidHudOpen} onClose={() => setAndroidHudOpen(false)}>
         <MotionTracker />
         <RobotocGear />
         <BitcoinAnalysisPanel />
         <CloudflareWorkerDeployer />
       </AndroidHUDPanel>
-
-      {yugiohGameAberto && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 400, background: '#0a0f1d' }}>
-          <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />
-        </div>
-      )}
+      {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
     </div>
   );
 }
