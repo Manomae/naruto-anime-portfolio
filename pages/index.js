@@ -98,22 +98,20 @@ function criarModeloVegatocnyxEspetacular3D() {
   neckCollar.position.set(0, 0.44, 0);
   robotGroup.add(neck, neckCollar);
 
-  // Torso e Armadura Feminina (Cintura mais fina e peito com design curvilíneo elegante)
+  // Torso e Armadura Feminina
   const torsoGroup = new THREE.Group();
   torsoGroup.position.set(0, 0.05, 0);
 
-  // Estrutura de Peito Feminino Modelado (Busto Robótico Estilizado)
   const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.24, 0.54, 32), whiteArmorMat);
   chestArmor.scale.set(1.15, 1.05, 0.82);
   chestArmor.position.set(0, 0.18, 0);
   torsoGroup.add(chestArmor);
 
-  // Placa de destaque frontal do peito com curvas suaves
   const chestPlateContour = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.36, 0.34), metallicBlueMat);
   chestPlateContour.position.set(0, 0.18, 0.04);
   torsoGroup.add(chestPlateContour);
 
-  // 💖 TEXTO 3D NO PEITO DA VEGATOCNYX (Criado com Canvas Texture de alta elegância)
+  // 💖 TEXTO 3D NO PEITO DA VEGATOCNYX (Com verificação segura de roundRect)
   const canvasVeg = document.createElement('canvas');
   canvasVeg.width = 512;
   canvasVeg.height = 128;
@@ -122,8 +120,13 @@ function criarModeloVegatocnyxEspetacular3D() {
   ctxVeg.fillRect(0, 0, 512, 128);
   ctxVeg.strokeStyle = '#00f0ff';
   ctxVeg.lineWidth = 6;
-  ctx.roundRect ? ctxVeg.roundRect(6, 6, 500, 116, 20) : ctxVeg.strokeRect(6, 6, 500, 116);
-  ctxVeg.stroke();
+  if (typeof ctxVeg.roundRect === 'function') {
+    ctxVeg.beginPath();
+    ctxVeg.roundRect(6, 6, 500, 116, 20);
+    ctxVeg.stroke();
+  } else {
+    ctxVeg.strokeRect(6, 6, 500, 116);
+  }
   ctxVeg.fillStyle = '#ffffff';
   ctxVeg.font = '900 42px sans-serif';
   ctxVeg.textAlign = 'center';
@@ -157,7 +160,6 @@ function criarModeloVegatocnyxEspetacular3D() {
     }
   }
 
-  // Pelvis com proporção esbelta e elegante
   const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.17, 0.18, 24), whiteArmorMat);
   pelvis.scale.set(1.05, 1, 0.78);
   pelvis.position.set(0, -0.42, 0);
@@ -168,7 +170,6 @@ function criarModeloVegatocnyxEspetacular3D() {
 
   robotGroup.add(torsoGroup);
 
-  // Braços Articulados Femininos (Mais delgados e elegantes)
   const criarBracoVegatoc = (lado) => {
     const armPivot = new THREE.Group();
     armPivot.position.set(lado * 0.42, 0.32, 0);
@@ -228,7 +229,6 @@ function criarModeloVegatocnyxEspetacular3D() {
   leftArmObj.elbowGroup.rotation.x = -0.2;
   robotGroup.add(leftArmObj.armPivot);
 
-  // Pernas Articuladas Femininas (Proporções harmoniosas)
   const criarPernaVegatoc = (side) => {
     const legGroup = new THREE.Group();
     legGroup.position.set(side * 0.15, -0.50, 0);
@@ -276,7 +276,7 @@ function criarModeloVegatocnyxEspetacular3D() {
 }
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (COM NOME NO PEITO & DESIGN MASCULINO/ROBÔ) ---
+// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC ---
 // =========================================================================================
 function criarModeloRobotocEspetacular3D() {
   const robotGroup = new THREE.Group();
@@ -356,7 +356,7 @@ function criarModeloRobotocEspetacular3D() {
   chestBlueTrim.position.set(0, 0.16, 0.06);
   torsoGroup.add(chestBlueTrim);
 
-  // 🛡️ TEXTO 3D NO PEITO DO ROBOTOC (Canvas Texture Neon Cyan)
+  // 🛡️ TEXTO 3D NO PEITO DO ROBOTOC (Com verificação segura de roundRect)
   const canvasRob = document.createElement('canvas');
   canvasRob.width = 512;
   canvasRob.height = 128;
@@ -365,7 +365,13 @@ function criarModeloRobotocEspetacular3D() {
   ctxRob.fillRect(0, 0, 512, 128);
   ctxRob.strokeStyle = '#00f0ff';
   ctxRob.lineWidth = 6;
-  ctxRob.strokeRect(6, 6, 500, 116);
+  if (typeof ctxRob.roundRect === 'function') {
+    ctxRob.beginPath();
+    ctxRob.roundRect(6, 6, 500, 116, 20);
+    ctxRob.stroke();
+  } else {
+    ctxRob.strokeRect(6, 6, 500, 116);
+  }
   ctxRob.fillStyle = '#00f0ff';
   ctxRob.font = '900 48px sans-serif';
   ctxRob.textAlign = 'center';
@@ -517,7 +523,7 @@ function criarModeloRobotocEspetacular3D() {
 }
 
 // =========================================================================================
-// ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL (INTEGRADO AO NÚCLEO) ---
+// ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL ---
 // =========================================================================================
 function AgentPanelModule() {
   const [task, setTask] = useState('');
@@ -613,7 +619,7 @@ function AgentPanelModule() {
 }
 
 // =========================================================================================
-// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT (ATUALIZADO COM MICROFONE & BUSCA NA INTERNET) ---
+// 🤖 --- COMPONENTE: MINI ROBOTOC 3D ASSISTANT ---
 // =========================================================================================
 function MiniRobotocAssistant3D({ onClose }) {
   const mountRef = useRef(null);
@@ -891,7 +897,7 @@ function MiniRobotocAssistant3D({ onClose }) {
 }
 
 // =========================================================================================
-// 🚀 --- COMPONENTE: MINI ROBOTOC 3D LATERAL & BLOCO DE NOTAS FUTURISTA COM LIXEIRA ---
+// 🚀 --- COMPONENTE: MINI ROBOTOC 3D LATERAL & BLOCO DE NOTAS FUTURISTA ---
 // =========================================================================================
 function MiniRobotocSidebarNotes({ addLogTerminal }) {
   const [expandido, setExpandido] = useState(false);
@@ -2558,9 +2564,6 @@ export default function EmanuelOSCore() {
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
-  // =========================================================================================
-  // 🔍 --- FUNÇÃO HANDLEBUSCAGLOBO ---
-  // =========================================================================================
   const handleBuscaGlobo = (e) => {
     const termo = e.target.value;
     setTermoBuscaGlobo(termo);
@@ -2576,7 +2579,6 @@ export default function EmanuelOSCore() {
     setResultadosBuscaGlobo(filtrados);
   };
 
-  // 👤 Função para iniciar o Login Facial Beta com timer
   const iniciarLoginFacialBeta = async () => {
     setLoginFacialAtivo(true);
     setStatusFacial('🎙️ Conectando à câmera para reconhecimento biométrico...');
@@ -3200,7 +3202,6 @@ export default function EmanuelOSCore() {
     robotArmRRef.current = robotPartsMain.leftArmPivot;
     robotLeftElbowRef.current = robotPartsMain.leftElbowGroup;
 
-    // --- INSTANCIAR A VEGATOCNYX ATUALIZADA (Lado Esquerdo) ---
     const vegatocPartsMain = criarModeloVegatocnyxEspetacular3D();
     const vegatocGroup = vegatocPartsMain.robotGroup;
     vegatocGroup.position.set(-3.2, 0.2, 1.0);
@@ -3290,7 +3291,6 @@ export default function EmanuelOSCore() {
         item.mesh.position.y = item.initPos.y + pulse;
       });
 
-      // Animação da Vegatocnyx no lado esquerdo
       if (vegatocGroup) {
         vegatocGroup.position.y = 0.2 + Math.sin(time * 2.0 + 1.5) * 0.12;
         vegatocGroup.rotation.y = Math.sin(time * 0.8) * 0.2 + 0.3;
@@ -3411,7 +3411,6 @@ export default function EmanuelOSCore() {
             PROTOCOLO DE SEGURANÇA DE 7 ETAPAS ({etapaSeguranca}/7)
           </span>
 
-          {/* 👤 BOTÃO E TELA DE LOGIN FACIAL BETA */}
           <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '12px' }}>
             <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>📸 ACESSO RÁPIDO BETA (LOGIN FACIAL)</span>
             
