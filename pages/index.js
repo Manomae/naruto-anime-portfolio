@@ -6,6 +6,7 @@ import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
+import { RoboChestNameManager } from '../utils/nomerobos3d.js';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
 import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
@@ -521,6 +522,14 @@ function criarModeloRobotocEspetacular3D() {
     legR
   };
 }
+
+const nameManager = new RoboChestNameManager();
+
+// Aplica o nome "Robotoc" na parte branca do peito do Robotoc
+nameManager.applyToModel(robotocModel, "Robotoc");
+
+// Aplica o nome "Vegatocnyx" na parte branca do peito do Vegatocnyx
+nameManager.applyToModel(vegatocnyxModel, "Vegatocnyx");
 
 // =========================================================================================
 // ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL ---
