@@ -6,7 +6,7 @@ import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
-import { RoboChestNameManager } from '../utils/nomerobos3d.js';
+import { RoboChestNameManager } from '../components/numerobos3d';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
 import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
