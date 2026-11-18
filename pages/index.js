@@ -2342,6 +2342,24 @@ export default function EmanuelOSCore() {
   const [localSelecionadoGlobo, setLocalSelecionadoGlobo] = useState(null);
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
+  // =========================================================================================
+  // 🔍 --- FUNÇÃO HANDLEBUSCAGLOBO (INSERIDA EXATAMENTE AQUI) ---
+  // =========================================================================================
+  const handleBuscaGlobo = (e) => {
+    const termo = e.target.value;
+    setTermoBuscaGlobo(termo);
+    if (!termo.trim()) {
+      setResultadosBuscaGlobo([]);
+      return;
+    }
+    const filtrados = locaisEmanuelOS.filter(l => 
+      l.nome.toLowerCase().includes(termo.toLowerCase()) || 
+      l.categoria.toLowerCase().includes(termo.toLowerCase()) ||
+      l.trabalho.toLowerCase().includes(termo.toLowerCase())
+    );
+    setResultadosBuscaGlobo(filtrados);
+  };
+
   // 👤 Função para iniciar o Login Facial Beta com timer
   const iniciarLoginFacialBeta = async () => {
     setLoginFacialAtivo(true);
