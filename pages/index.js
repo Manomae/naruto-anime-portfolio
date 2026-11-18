@@ -480,13 +480,12 @@ function criarModeloRobotocEspetacular3D() {
     mainRobotRef.current = mainRobotGroup;
     robotCoreGroupRef.current = mainRobotGroup;
 
-    // --- 2. INSTANCIAR A VEGATOCNYX (Lado Oposto / Esquerdo) ---
-    const vegatocPartsMain = criarModeloVegatocnyxEspetacular3D();
-    const vegatocGroup = vegatocPartsMain.robotGroup;
-    vegatocGroup.position.set(-3.2, 0.2, 1.0); // Posição oposta na tela
-    vegatocGroup.scale.set(1.25, 1.25, 1.25);
-    scene.add(vegatocGroup);
-    const vegatocRef = useRef(vegatocGroup); // Pode guardar referência se precisar animar separadamente
+   // --- 2. INSTANCIAR A VEGATOCNYX (Lado Oposto / Esquerdo) ---
+  const vegatocPartsMain = criarModeloVegatocnyxEspetacular3D();
+  const vegatocGroup = vegatocPartsMain.robotGroup;
+  vegatocGroup.position.set(-3.2, 0.2, 1.0); // Posição oposta na tela
+  vegatocGroup.scale.set(1.25, 1.25, 1.25);
+  scene.add(vegatocGroup);
 
 // =========================================================================================
 // ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL (INTEGRADO AO NÚCLEO) ---
