@@ -19,7 +19,7 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX 3D (COMPLETA COM MOVIMENTOS E ESTRUTURA IDÊNTICA) ---
+// 🤖 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX 3D (ATUALIZADO COM DESIGN FEMININO & NOME NO PEITO) ---
 // =========================================================================================
 function criarModeloVegatocnyxEspetacular3D() {
   const robotGroup = new THREE.Group();
@@ -29,119 +29,156 @@ function criarModeloVegatocnyxEspetacular3D() {
   const metallicBlueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.25, metalness: 0.75 });
   const darkScreenMat = new THREE.MeshPhysicalMaterial({ color: 0x020617, roughness: 0.08, metalness: 0.3, clearcoat: 1.0 });
   const cyanLedMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.2, roughness: 0.1 });
+  const glowingPinkMat = new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 2.5, roughness: 0.2 });
 
   // Cabeça
   const headGroup = new THREE.Group();
   headGroup.position.set(0, 1.05, 0);
 
-  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.50, 36, 36), whiteArmorMat);
-  headBase.scale.set(1.08, 0.92, 0.95);
+  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.48, 36, 36), whiteArmorMat);
+  headBase.scale.set(1.02, 0.92, 0.92);
   headGroup.add(headBase);
 
-  const helmetBand = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.24, 32), chromeSilverMat);
+  const helmetBand = new THREE.Mesh(new THREE.CylinderGeometry(0.50, 0.50, 0.22, 32), chromeSilverMat);
   helmetBand.rotation.z = Math.PI / 2;
-  helmetBand.scale.set(0.95, 1.05, 0.95);
+  helmetBand.scale.set(0.92, 1.02, 0.92);
   headGroup.add(helmetBand);
 
-  // Cabelo em rabo de cavalo metálico com mecha azul estilo Vegatocnyx
-  const ponytailBase = new THREE.Mesh(new THREE.SphereGeometry(0.24, 20, 20), chromeSilverMat);
-  ponytailBase.position.set(0, 0.32, -0.42);
-  const ponytailStreamer = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.85, 20), metallicBlueMat);
-  ponytailStreamer.position.set(0, 0.72, -0.62);
-  ponytailStreamer.rotation.x = -Math.PI / 3;
-  headGroup.add(ponytailBase, ponytailStreamer);
+  // Cabelo fluido híbrido (natural e metálico com mechas azuis e rosa brilhante estilo Vegatocnyx)
+  const ponytailBase = new THREE.Mesh(new THREE.SphereGeometry(0.22, 20, 20), chromeSilverMat);
+  ponytailBase.position.set(0, 0.30, -0.40);
+  const ponytailStreamer1 = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.90, 20), metallicBlueMat);
+  ponytailStreamer1.position.set(-0.06, 0.75, -0.60);
+  ponytailStreamer1.rotation.x = -Math.PI / 2.8;
+  ponytailStreamer1.rotation.z = -0.15;
 
-  const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.34, 0.18), metallicBlueMat);
-  visorFrame.position.set(0, -0.02, 0.42);
+  const ponytailStreamer2 = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.75, 20), glowingPinkMat);
+  ponytailStreamer2.position.set(0.08, 0.65, -0.55);
+  ponytailStreamer2.rotation.x = -Math.PI / 3;
+  ponytailStreamer2.rotation.z = 0.2;
+  headGroup.add(ponytailBase, ponytailStreamer1, ponytailStreamer2);
+
+  const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.30, 0.16), metallicBlueMat);
+  visorFrame.position.set(0, -0.02, 0.40);
   headGroup.add(visorFrame);
 
-  const visorScreen = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.28, 0.19), darkScreenMat);
-  visorScreen.position.set(0, -0.02, 0.425);
+  const visorScreen = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.24, 0.17), darkScreenMat);
+  visorScreen.position.set(0, -0.02, 0.405);
   headGroup.add(visorScreen);
 
-  const eyeGeo = new THREE.SphereGeometry(0.08, 24, 24);
+  const eyeGeo = new THREE.SphereGeometry(0.075, 24, 24);
   const eyeL = new THREE.Mesh(eyeGeo, cyanLedMat);
   eyeL.scale.set(1.15, 0.95, 0.35);
-  eyeL.position.set(-0.16, -0.02, 0.51);
+  eyeL.position.set(-0.15, -0.02, 0.49);
 
   const eyeR = new THREE.Mesh(eyeGeo, cyanLedMat);
   eyeR.scale.set(1.15, 0.95, 0.35);
-  eyeR.position.set(0.16, -0.02, 0.51);
+  eyeR.position.set(0.15, -0.02, 0.49);
   headGroup.add(eyeL, eyeR);
 
   [-1, 1].forEach((side) => {
     const earGroup = new THREE.Group();
-    const earOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.08, 24), chromeSilverMat);
+    const earOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.07, 24), chromeSilverMat);
     earOuter.rotation.z = Math.PI / 2;
-    const earRing = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 16, 32), metallicBlueMat);
+    const earRing = new THREE.Mesh(new THREE.TorusGeometry(0.10, 0.018, 16, 32), glowingPinkMat);
     earRing.rotation.y = Math.PI / 2;
     earRing.position.x = side * 0.03;
     earGroup.add(earOuter, earRing);
-    earGroup.position.set(side * 0.54, -0.02, 0);
+    earGroup.position.set(side * 0.51, -0.02, 0);
     headGroup.add(earGroup);
   });
 
   robotGroup.add(headGroup);
 
   // Pescoço e Colar
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.20, 20), chromeSilverMat);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.12, 0.18, 20), chromeSilverMat);
   neck.position.set(0, 0.52, 0);
-  const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.20, 0.03, 16, 32), metallicBlueMat);
+  const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.025, 16, 32), glowingPinkMat);
   neckCollar.rotation.x = Math.PI / 2;
   neckCollar.position.set(0, 0.44, 0);
   robotGroup.add(neck, neckCollar);
 
-  // Torso e Armadura
+  // Torso e Armadura Feminina (Cintura mais fina e peito com design curvilíneo elegante)
   const torsoGroup = new THREE.Group();
   torsoGroup.position.set(0, 0.05, 0);
 
-  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.26, 0.52, 32), whiteArmorMat);
-  chestArmor.scale.set(1.1, 1, 0.8);
+  // Estrutura de Peito Feminino Modelado (Busto Robótico Estilizado)
+  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.24, 0.54, 32), whiteArmorMat);
+  chestArmor.scale.set(1.15, 1.05, 0.82);
   chestArmor.position.set(0, 0.18, 0);
   torsoGroup.add(chestArmor);
 
-  const chestBlueTrim = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.32), metallicBlueMat);
-  chestBlueTrim.position.set(0, 0.16, 0.05);
-  torsoGroup.add(chestBlueTrim);
+  // Placa de destaque frontal do peito com curvas suaves
+  const chestPlateContour = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.36, 0.34), metallicBlueMat);
+  chestPlateContour.position.set(0, 0.18, 0.04);
+  torsoGroup.add(chestPlateContour);
 
-  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.04), cyanLedMat);
-  chestCoreLed.position.set(0, 0.18, 0.24);
+  // 💖 TEXTO 3D NO PEITO DA VEGATOCNYX (Criado com Canvas Texture de alta elegância)
+  const canvasVeg = document.createElement('canvas');
+  canvasVeg.width = 512;
+  canvasVeg.height = 128;
+  const ctxVeg = canvasVeg.getContext('2d');
+  ctxVeg.fillStyle = '#020617';
+  ctxVeg.fillRect(0, 0, 512, 128);
+  ctxVeg.strokeStyle = '#00f0ff';
+  ctxVeg.lineWidth = 6;
+  ctx.roundRect ? ctxVeg.roundRect(6, 6, 500, 116, 20) : ctxVeg.strokeRect(6, 6, 500, 116);
+  ctxVeg.stroke();
+  ctxVeg.fillStyle = '#ffffff';
+  ctxVeg.font = '900 42px sans-serif';
+  ctxVeg.textAlign = 'center';
+  ctxVeg.textBaseline = 'middle';
+  ctxVeg.shadowColor = '#00f0ff';
+  ctxVeg.shadowBlur = 15;
+  ctxVeg.fillText('VEGATOCNYX', 256, 64);
+  
+  const vegTex = new THREE.CanvasTexture(canvasVeg);
+  const namePlateMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.32, 0.09),
+    new THREE.MeshBasicMaterial({ map: vegTex, transparent: true, side: THREE.DoubleSide })
+  );
+  namePlateMesh.position.set(0, 0.22, 0.22);
+  torsoGroup.add(namePlateMesh);
+
+  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.18, 0.04), glowingPinkMat);
+  chestCoreLed.position.set(0, 0.06, 0.24);
   torsoGroup.add(chestCoreLed);
 
   for (let i = 0; i < 3; i++) {
-    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.23 - i * 0.012, 0.22 - i * 0.012, 0.07, 24), chromeSilverMat);
-    abSeg.scale.set(1.05, 1, 0.8);
+    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.21 - i * 0.012, 0.20 - i * 0.012, 0.07, 24), chromeSilverMat);
+    abSeg.scale.set(0.95, 1, 0.75);
     abSeg.position.set(0, -0.12 - i * 0.09, 0);
     torsoGroup.add(abSeg);
 
     if (i < 2) {
-      const abLed = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.018, 0.22), cyanLedMat);
+      const abLed = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.018, 0.20), cyanLedMat);
       abLed.position.set(0, -0.16 - i * 0.09, 0.03);
       torsoGroup.add(abLed);
     }
   }
 
-  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.18, 0.20, 24), whiteArmorMat);
-  pelvis.scale.set(1.1, 1, 0.82);
+  // Pelvis com proporção esbelta e elegante
+  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.17, 0.18, 24), whiteArmorMat);
+  pelvis.scale.set(1.05, 1, 0.78);
   pelvis.position.set(0, -0.42, 0);
-  const pelvisTrim = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.025, 12, 28), metallicBlueMat);
+  const pelvisTrim = new THREE.Mesh(new THREE.TorusGeometry(0.20, 0.022, 12, 28), glowingPinkMat);
   pelvisTrim.rotation.x = Math.PI / 2;
   pelvisTrim.position.set(0, -0.34, 0);
   torsoGroup.add(pelvis, pelvisTrim);
 
   robotGroup.add(torsoGroup);
 
-  // Braços Articulados
+  // Braços Articulados Femininos (Mais delgados e elegantes)
   const criarBracoVegatoc = (lado) => {
     const armPivot = new THREE.Group();
-    armPivot.position.set(lado * 0.44, 0.32, 0);
+    armPivot.position.set(lado * 0.42, 0.32, 0);
 
-    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 20), chromeSilverMat);
-    const shoulderRing = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 12, 24), metallicBlueMat);
+    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.10, 20, 20), chromeSilverMat);
+    const shoulderRing = new THREE.Mesh(new THREE.TorusGeometry(0.10, 0.018, 12, 24), glowingPinkMat);
     shoulderRing.rotation.y = Math.PI / 2;
     armPivot.add(shoulder, shoulderRing);
 
-    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.26, 20), chromeSilverMat);
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.055, 0.26, 20), chromeSilverMat);
     upperArm.position.set(lado * 0.04, -0.16, 0);
     upperArm.rotation.z = lado * 0.15;
     armPivot.add(upperArm);
@@ -149,29 +186,29 @@ function criarModeloVegatocnyxEspetacular3D() {
     const elbowGroup = new THREE.Group();
     elbowGroup.position.set(lado * 0.06, -0.32, 0);
 
-    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), metallicBlueMat);
+    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), metallicBlueMat);
     elbowGroup.add(elbowJoint);
 
-    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.11, 0.30, 24), chromeSilverMat);
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.095, 0.30, 24), chromeSilverMat);
     forearm.position.set(0, -0.16, 0);
-    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.025, 12, 24), metallicBlueMat);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.095, 0.02, 12, 24), glowingPinkMat);
     cuff.rotation.x = Math.PI / 2;
     cuff.position.set(0, -0.31, 0);
     elbowGroup.add(forearm, cuff);
 
     const handGroup = new THREE.Group();
     handGroup.position.set(0, -0.40, 0);
-    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.11, 0.06), whiteArmorMat);
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.10, 0.05), whiteArmorMat);
     handGroup.add(palm);
 
     for (let f = -1.5; f <= 1.5; f += 1) {
-      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.011, 0.08, 10), chromeSilverMat);
-      finger.position.set(f * 0.03, -0.08, 0);
+      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.009, 0.08, 10), chromeSilverMat);
+      finger.position.set(f * 0.025, -0.08, 0);
       finger.rotation.z = f * 0.08 * lado;
       handGroup.add(finger);
     }
-    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.013, 0.07, 10), chromeSilverMat);
-    thumb.position.set(-lado * 0.07, -0.02, 0.02);
+    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.011, 0.07, 10), chromeSilverMat);
+    thumb.position.set(-lado * 0.06, -0.02, 0.02);
     thumb.rotation.z = -lado * 0.6;
     handGroup.add(thumb);
 
@@ -191,29 +228,29 @@ function criarModeloVegatocnyxEspetacular3D() {
   leftArmObj.elbowGroup.rotation.x = -0.2;
   robotGroup.add(leftArmObj.armPivot);
 
-  // Pernas Articuladas
+  // Pernas Articuladas Femininas (Proporções harmoniosas)
   const criarPernaVegatoc = (side) => {
     const legGroup = new THREE.Group();
-    legGroup.position.set(side * 0.16, -0.50, 0);
+    legGroup.position.set(side * 0.15, -0.50, 0);
 
-    const hipJoint = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), chromeSilverMat);
-    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.075, 0.24, 20), chromeSilverMat);
+    const hipJoint = new THREE.Mesh(new THREE.SphereGeometry(0.075, 16, 16), chromeSilverMat);
+    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.078, 0.065, 0.24, 20), chromeSilverMat);
     thigh.position.set(0, -0.14, 0);
 
-    const kneeJoint = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), metallicBlueMat);
+    const kneeJoint = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), glowingPinkMat);
     kneeJoint.position.set(0, -0.28, 0.02);
 
-    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 0.28, 24), chromeSilverMat);
+    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.10, 0.28, 24), chromeSilverMat);
     shin.position.set(0, -0.44, 0);
 
-    const bootCollar = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.022, 12, 24), metallicBlueMat);
+    const bootCollar = new THREE.Mesh(new THREE.TorusGeometry(0.10, 0.02, 12, 24), metallicBlueMat);
     bootCollar.rotation.x = Math.PI / 2;
     bootCollar.position.set(0, -0.58, 0);
 
-    const footBase = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.10, 0.32), whiteArmorMat);
+    const footBase = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.09, 0.28), whiteArmorMat);
     footBase.position.set(0, -0.64, 0.04);
 
-    const sole = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.03, 0.33), metallicBlueMat);
+    const sole = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.025, 0.29), glowingPinkMat);
     sole.position.set(0, -0.69, 0.04);
 
     legGroup.add(hipJoint, thigh, kneeJoint, shin, bootCollar, footBase, sole);
@@ -239,7 +276,7 @@ function criarModeloVegatocnyxEspetacular3D() {
 }
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (BASEADO NA IMAGEM DE REFERÊNCIA) ---
+// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (COM NOME NO PEITO & DESIGN MASCULINO/ROBÔ) ---
 // =========================================================================================
 function criarModeloRobotocEspetacular3D() {
   const robotGroup = new THREE.Group();
@@ -319,8 +356,34 @@ function criarModeloRobotocEspetacular3D() {
   chestBlueTrim.position.set(0, 0.16, 0.06);
   torsoGroup.add(chestBlueTrim);
 
+  // 🛡️ TEXTO 3D NO PEITO DO ROBOTOC (Canvas Texture Neon Cyan)
+  const canvasRob = document.createElement('canvas');
+  canvasRob.width = 512;
+  canvasRob.height = 128;
+  const ctxRob = canvasRob.getContext('2d');
+  ctxRob.fillStyle = '#020617';
+  ctxRob.fillRect(0, 0, 512, 128);
+  ctxRob.strokeStyle = '#00f0ff';
+  ctxRob.lineWidth = 6;
+  ctxRob.strokeRect(6, 6, 500, 116);
+  ctxRob.fillStyle = '#00f0ff';
+  ctxRob.font = '900 48px sans-serif';
+  ctxRob.textAlign = 'center';
+  ctxRob.textBaseline = 'middle';
+  ctxRob.shadowColor = '#00f0ff';
+  ctxRob.shadowBlur = 18;
+  ctxRob.fillText('ROBOTOC', 256, 64);
+
+  const robTex = new THREE.CanvasTexture(canvasRob);
+  const namePlateRobotoc = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.32, 0.09),
+    new THREE.MeshBasicMaterial({ map: robTex, transparent: true, side: THREE.DoubleSide })
+  );
+  namePlateRobotoc.position.set(0, 0.22, 0.24);
+  torsoGroup.add(namePlateRobotoc);
+
   const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.26, 0.05), cyanLedMat);
-  chestCoreLed.position.set(0, 0.20, 0.26);
+  chestCoreLed.position.set(0, 0.05, 0.26);
   torsoGroup.add(chestCoreLed);
 
   for (let i = 0; i < 3; i++) {
@@ -1660,6 +1723,7 @@ function PainelDevSplitScreen({ onClose }) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const exportarCodigoPDF = () => {
@@ -2495,7 +2559,7 @@ export default function EmanuelOSCore() {
   const [tamanhoFonteBusca, setTamanhoFonteBusca] = useState(11);
 
   // =========================================================================================
-  // 🔍 --- FUNÇÃO HANDLEBUSCAGLOBO (INSERIDA EXATAMENTE AQUI) ---
+  // 🔍 --- FUNÇÃO HANDLEBUSCAGLOBO ---
   // =========================================================================================
   const handleBuscaGlobo = (e) => {
     const termo = e.target.value;
@@ -2523,7 +2587,6 @@ export default function EmanuelOSCore() {
       }
       setStatusFacial('🟢 Rosto detectado! Autenticando com G-AGI...');
       setTimeout(() => {
-        // Para a câmera após sucesso
         stream.getTracks().forEach(track => track.stop());
         setLoginFacialAtivo(false);
         setBloqueado(false);
@@ -3137,7 +3200,7 @@ export default function EmanuelOSCore() {
     robotArmRRef.current = robotPartsMain.leftArmPivot;
     robotLeftElbowRef.current = robotPartsMain.leftElbowGroup;
 
-    // --- INSTANCIAR A VEGATOCNYX (Lado Oposto / Esquerdo) ---
+    // --- INSTANCIAR A VEGATOCNYX ATUALIZADA (Lado Esquerdo) ---
     const vegatocPartsMain = criarModeloVegatocnyxEspetacular3D();
     const vegatocGroup = vegatocPartsMain.robotGroup;
     vegatocGroup.position.set(-3.2, 0.2, 1.0);
@@ -3227,7 +3290,7 @@ export default function EmanuelOSCore() {
         item.mesh.position.y = item.initPos.y + pulse;
       });
 
-      // Animação da Vegatocnyx no lado esquerdo (dentro do loop animate)
+      // Animação da Vegatocnyx no lado esquerdo
       if (vegatocGroup) {
         vegatocGroup.position.y = 0.2 + Math.sin(time * 2.0 + 1.5) * 0.12;
         vegatocGroup.rotation.y = Math.sin(time * 0.8) * 0.2 + 0.3;
