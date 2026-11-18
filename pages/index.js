@@ -6,7 +6,7 @@ import emailjs from '@emailjs/browser';
 import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
-import { RoboChestNameManager } from '../components/numerobos3d';
+import { RoboChestNameManager } from '../components/nomerobos3d';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
 import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
@@ -20,7 +20,7 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX 3D (ATUALIZADO COM DESIGN FEMININO & NOME NO PEITO) ---
+// 🤖 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX 3D (COM NOME NO PEITO AJUSTADO) ---
 // =========================================================================================
 function criarModeloVegatocnyxEspetacular3D() {
   const robotGroup = new THREE.Group();
@@ -45,7 +45,7 @@ function criarModeloVegatocnyxEspetacular3D() {
   helmetBand.scale.set(0.92, 1.02, 0.92);
   headGroup.add(helmetBand);
 
-  // Cabelo fluido híbrido (natural e metálico com mechas azuis e rosa brilhante estilo Vegatocnyx)
+  // Cabelo fluido híbrido
   const ponytailBase = new THREE.Mesh(new THREE.SphereGeometry(0.22, 20, 20), chromeSilverMat);
   ponytailBase.position.set(0, 0.30, -0.40);
   const ponytailStreamer1 = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.90, 20), metallicBlueMat);
@@ -112,36 +112,38 @@ function criarModeloVegatocnyxEspetacular3D() {
   chestPlateContour.position.set(0, 0.18, 0.04);
   torsoGroup.add(chestPlateContour);
 
-  // 💖 TEXTO 3D NO PEITO DA VEGATOCNYX (Com verificação segura de roundRect)
+ // 💖 TEXTO "VEGATOCNYX" GIGANTE E BRILHANTE (Visibilidade Máxima)
   const canvasVeg = document.createElement('canvas');
   canvasVeg.width = 512;
   canvasVeg.height = 128;
   const ctxVeg = canvasVeg.getContext('2d');
-  ctxVeg.fillStyle = '#020617';
-  ctxVeg.fillRect(0, 0, 512, 128);
-  ctxVeg.strokeStyle = '#00f0ff';
-  ctxVeg.lineWidth = 6;
-  if (typeof ctxVeg.roundRect === 'function') {
-    ctxVeg.beginPath();
-    ctxVeg.roundRect(6, 6, 500, 116, 20);
-    ctxVeg.stroke();
-  } else {
-    ctxVeg.strokeRect(6, 6, 500, 116);
-  }
+  
+  ctxVeg.clearRect(0, 0, 512, 128);
+
+  ctxVeg.shadowColor = '#ff007f';
+  ctxVeg.shadowBlur = 28;
+
   ctxVeg.fillStyle = '#ffffff';
-  ctxVeg.font = '900 42px sans-serif';
+  ctxVeg.font = '900 58px Arial, sans-serif'; // Fonte super aumentada
   ctxVeg.textAlign = 'center';
   ctxVeg.textBaseline = 'middle';
-  ctxVeg.shadowColor = '#00f0ff';
-  ctxVeg.shadowBlur = 15;
-  ctxVeg.fillText('VEGATOCNYX', 256, 64);
   
+  ctxVeg.fillText('VEGATOCNYX', 256, 64);
+  ctxVeg.fillText('VEGATOCNYX', 256, 64); // Passada dupla para engrossar o branco
+
   const vegTex = new THREE.CanvasTexture(canvasVeg);
+  vegTex.needsUpdate = true;
+
   const namePlateMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.32, 0.09),
-    new THREE.MeshBasicMaterial({ map: vegTex, transparent: true, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(0.48, 0.14), // Placa levemente maior para acompanhar a fonte gigante
+    new THREE.MeshBasicMaterial({ 
+      map: vegTex, 
+      transparent: true, 
+      depthWrite: false,   
+      side: THREE.DoubleSide 
+    })
   );
-  namePlateMesh.position.set(0, 0.22, 0.22);
+  namePlateMesh.position.set(0, 0.20, 0.34); 
   torsoGroup.add(namePlateMesh);
 
   const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.18, 0.04), glowingPinkMat);
@@ -277,7 +279,7 @@ function criarModeloVegatocnyxEspetacular3D() {
 }
 
 // =========================================================================================
-// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC ---
+// 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (CORRETO E COMPLETO) ---
 // =========================================================================================
 function criarModeloRobotocEspetacular3D() {
   const robotGroup = new THREE.Group();
@@ -288,6 +290,7 @@ function criarModeloRobotocEspetacular3D() {
   const darkScreenMat = new THREE.MeshPhysicalMaterial({ color: 0x020617, roughness: 0.08, metalness: 0.3, clearcoat: 1.0 });
   const cyanLedMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.2, roughness: 0.1 });
 
+  // Cabeça
   const headGroup = new THREE.Group();
   headGroup.position.set(0, 1.05, 0);
 
@@ -338,6 +341,7 @@ function criarModeloRobotocEspetacular3D() {
 
   robotGroup.add(headGroup);
 
+  // Pescoço
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.22, 20), chromeSilverMat);
   neck.position.set(0, 0.54, 0);
   const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 16, 32), metallicBlueMat);
@@ -345,6 +349,7 @@ function criarModeloRobotocEspetacular3D() {
   neckCollar.position.set(0, 0.46, 0);
   robotGroup.add(neck, neckCollar);
 
+  // Torso
   const torsoGroup = new THREE.Group();
   torsoGroup.position.set(0, 0.05, 0);
 
@@ -357,36 +362,38 @@ function criarModeloRobotocEspetacular3D() {
   chestBlueTrim.position.set(0, 0.16, 0.06);
   torsoGroup.add(chestBlueTrim);
 
-  // 🛡️ TEXTO 3D NO PEITO DO ROBOTOC (Com verificação segura de roundRect)
+ // 🛡️ TEXTO "ROBOTOC" GIGANTE E BRILHANTE (Visibilidade Máxima)
   const canvasRob = document.createElement('canvas');
   canvasRob.width = 512;
   canvasRob.height = 128;
   const ctxRob = canvasRob.getContext('2d');
-  ctxRob.fillStyle = '#020617';
-  ctxRob.fillRect(0, 0, 512, 128);
-  ctxRob.strokeStyle = '#00f0ff';
-  ctxRob.lineWidth = 6;
-  if (typeof ctxRob.roundRect === 'function') {
-    ctxRob.beginPath();
-    ctxRob.roundRect(6, 6, 500, 116, 20);
-    ctxRob.stroke();
-  } else {
-    ctxRob.strokeRect(6, 6, 500, 116);
-  }
-  ctxRob.fillStyle = '#00f0ff';
-  ctxRob.font = '900 48px sans-serif';
+  
+  ctxRob.clearRect(0, 0, 512, 128);
+
+  ctxRob.shadowColor = '#00f0ff';
+  ctxRob.shadowBlur = 28;
+
+  ctxRob.fillStyle = '#ffffff';
+  ctxRob.font = '900 78px Arial, sans-serif'; // Fonte super aumentada
   ctxRob.textAlign = 'center';
   ctxRob.textBaseline = 'middle';
-  ctxRob.shadowColor = '#00f0ff';
-  ctxRob.shadowBlur = 18;
+  
   ctxRob.fillText('ROBOTOC', 256, 64);
+  ctxRob.fillText('ROBOTOC', 256, 64); // Passada dupla para engrossar o branco
 
   const robTex = new THREE.CanvasTexture(canvasRob);
+  robTex.needsUpdate = true;
+
   const namePlateRobotoc = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.32, 0.09),
-    new THREE.MeshBasicMaterial({ map: robTex, transparent: true, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(0.48, 0.14), // Placa levemente maior para acompanhar a fonte gigante
+    new THREE.MeshBasicMaterial({ 
+      map: robTex, 
+      transparent: true, 
+      depthWrite: false,   
+      side: THREE.DoubleSide 
+    })
   );
-  namePlateRobotoc.position.set(0, 0.22, 0.24);
+  namePlateRobotoc.position.set(0, 0.20, 0.35); 
   torsoGroup.add(namePlateRobotoc);
 
   const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.26, 0.05), cyanLedMat);
@@ -417,6 +424,7 @@ function criarModeloRobotocEspetacular3D() {
 
   robotGroup.add(torsoGroup);
 
+  // Braços
   const criarBracoRobotoc = (lado) => {
     const armPivot = new THREE.Group();
     armPivot.position.set(lado * 0.46, 0.34, 0);
@@ -476,6 +484,7 @@ function criarModeloRobotocEspetacular3D() {
   leftArmObj.elbowGroup.rotation.x = -0.2;
   robotGroup.add(leftArmObj.armPivot);
 
+  // Pernas
   const criarPernaRobotoc = (side) => {
     const legGroup = new THREE.Group();
     legGroup.position.set(side * 0.17, -0.52, 0);
@@ -522,14 +531,6 @@ function criarModeloRobotocEspetacular3D() {
     legR
   };
 }
-
-const nameManager = new RoboChestNameManager();
-
-// Aplica o nome "Robotoc" na parte branca do peito do Robotoc
-nameManager.applyToModel(robotocModel, "Robotoc");
-
-// Aplica o nome "Vegatocnyx" na parte branca do peito do Vegatocnyx
-nameManager.applyToModel(vegatocnyxModel, "Vegatocnyx");
 
 // =========================================================================================
 // ⚙️ --- COMPONENTE: AGENTE EM AGENT PANEL ---
@@ -1639,7 +1640,7 @@ function PainelDevSplitScreen({ onClose }) {
     mojo: `# Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
     zig: `// Zig System Language\nconst std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("🧠 Núcleo de Baixo Nível do Android 16 Neural OS EM Ativo!\\n", .{});\n}`,
     nim: `# Nim Metaprogramming Language\ntype\n  NeuralCore = object\n    status: string\n    potencia: float\n\nlet core = NeuralCore(status: "ONLINE", potencia: 99.8)\necho "🚀 Sistema Emanuel.OS executando em Nim. Status: ", core.status`,
-    crystal: `# Crystal Language\nclass QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
+    crystal: `# Crystal Language\ class QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
     elixir: `# Elixir Distributed System\ndefmodule EmanuelOS.Core do\n  def sync_nodes(node_id) do\n    IO.puts("🔮 Sincronizando Nó Funcional Exótico: #{node_id}")\n  end\nend\n\nEmanuelOS.Core.sync_nodes("Node-BRS7")`,
     qsharp: `// Q# Quantum System\nnamespace EmanuelOS.Quantum {\n    open Microsoft.Quantum.Canon;\n    open Microsoft.Quantum.Intrinsic;\n\n    operation MeasureQubit() : Result {\n        use q = Qubit();\n        H(q);\n        return M(q);\n    }\n}`,
     gleam: `// Gleam Language\nimport gleam/io\n\npub fn main() {\n  io.print_line("✨ Executando Gleam no Motor Distribuído do Emanuel.OS!")\n}`
