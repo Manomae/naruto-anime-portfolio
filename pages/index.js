@@ -19,6 +19,226 @@ import pptxgen from "pptxgenjs";
 import YugiohDuelLinks3D from '../components/YugiohDuelLinks3D';
 
 // =========================================================================================
+// 🤖 --- HELPER DE MODELAGEM 3D DO VEGATOCNYX 3D (COMPLETA COM MOVIMENTOS E ESTRUTURA IDÊNTICA) ---
+// =========================================================================================
+function criarModeloVegatocnyxEspetacular3D() {
+  const robotGroup = new THREE.Group();
+
+  const whiteArmorMat = new THREE.MeshPhysicalMaterial({ color: 0xf8fafc, roughness: 0.15, metalness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.1 });
+  const chromeSilverMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.2, metalness: 0.92 });
+  const metallicBlueMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.25, metalness: 0.75 });
+  const darkScreenMat = new THREE.MeshPhysicalMaterial({ color: 0x020617, roughness: 0.08, metalness: 0.3, clearcoat: 1.0 });
+  const cyanLedMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff, emissiveIntensity: 3.2, roughness: 0.1 });
+
+  // Cabeça
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 1.05, 0);
+
+  const headBase = new THREE.Mesh(new THREE.SphereGeometry(0.50, 36, 36), whiteArmorMat);
+  headBase.scale.set(1.08, 0.92, 0.95);
+  headGroup.add(headBase);
+
+  const helmetBand = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.24, 32), chromeSilverMat);
+  helmetBand.rotation.z = Math.PI / 2;
+  helmetBand.scale.set(0.95, 1.05, 0.95);
+  headGroup.add(helmetBand);
+
+  // Cabelo em rabo de cavalo metálico com mecha azul estilo Vegatocnyx
+  const ponytailBase = new THREE.Mesh(new THREE.SphereGeometry(0.24, 20, 20), chromeSilverMat);
+  ponytailBase.position.set(0, 0.32, -0.42);
+  const ponytailStreamer = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.85, 20), metallicBlueMat);
+  ponytailStreamer.position.set(0, 0.72, -0.62);
+  ponytailStreamer.rotation.x = -Math.PI / 3;
+  headGroup.add(ponytailBase, ponytailStreamer);
+
+  const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.34, 0.18), metallicBlueMat);
+  visorFrame.position.set(0, -0.02, 0.42);
+  headGroup.add(visorFrame);
+
+  const visorScreen = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.28, 0.19), darkScreenMat);
+  visorScreen.position.set(0, -0.02, 0.425);
+  headGroup.add(visorScreen);
+
+  const eyeGeo = new THREE.SphereGeometry(0.08, 24, 24);
+  const eyeL = new THREE.Mesh(eyeGeo, cyanLedMat);
+  eyeL.scale.set(1.15, 0.95, 0.35);
+  eyeL.position.set(-0.16, -0.02, 0.51);
+
+  const eyeR = new THREE.Mesh(eyeGeo, cyanLedMat);
+  eyeR.scale.set(1.15, 0.95, 0.35);
+  eyeR.position.set(0.16, -0.02, 0.51);
+  headGroup.add(eyeL, eyeR);
+
+  [-1, 1].forEach((side) => {
+    const earGroup = new THREE.Group();
+    const earOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.08, 24), chromeSilverMat);
+    earOuter.rotation.z = Math.PI / 2;
+    const earRing = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 16, 32), metallicBlueMat);
+    earRing.rotation.y = Math.PI / 2;
+    earRing.position.x = side * 0.03;
+    earGroup.add(earOuter, earRing);
+    earGroup.position.set(side * 0.54, -0.02, 0);
+    headGroup.add(earGroup);
+  });
+
+  robotGroup.add(headGroup);
+
+  // Pescoço e Colar
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.20, 20), chromeSilverMat);
+  neck.position.set(0, 0.52, 0);
+  const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.20, 0.03, 16, 32), metallicBlueMat);
+  neckCollar.rotation.x = Math.PI / 2;
+  neckCollar.position.set(0, 0.44, 0);
+  robotGroup.add(neck, neckCollar);
+
+  // Torso e Armadura
+  const torsoGroup = new THREE.Group();
+  torsoGroup.position.set(0, 0.05, 0);
+
+  const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.26, 0.52, 32), whiteArmorMat);
+  chestArmor.scale.set(1.1, 1, 0.8);
+  chestArmor.position.set(0, 0.18, 0);
+  torsoGroup.add(chestArmor);
+
+  const chestBlueTrim = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.32), metallicBlueMat);
+  chestBlueTrim.position.set(0, 0.16, 0.05);
+  torsoGroup.add(chestBlueTrim);
+
+  const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.04), cyanLedMat);
+  chestCoreLed.position.set(0, 0.18, 0.24);
+  torsoGroup.add(chestCoreLed);
+
+  for (let i = 0; i < 3; i++) {
+    const abSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.23 - i * 0.012, 0.22 - i * 0.012, 0.07, 24), chromeSilverMat);
+    abSeg.scale.set(1.05, 1, 0.8);
+    abSeg.position.set(0, -0.12 - i * 0.09, 0);
+    torsoGroup.add(abSeg);
+
+    if (i < 2) {
+      const abLed = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.018, 0.22), cyanLedMat);
+      abLed.position.set(0, -0.16 - i * 0.09, 0.03);
+      torsoGroup.add(abLed);
+    }
+  }
+
+  const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.18, 0.20, 24), whiteArmorMat);
+  pelvis.scale.set(1.1, 1, 0.82);
+  pelvis.position.set(0, -0.42, 0);
+  const pelvisTrim = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.025, 12, 28), metallicBlueMat);
+  pelvisTrim.rotation.x = Math.PI / 2;
+  pelvisTrim.position.set(0, -0.34, 0);
+  torsoGroup.add(pelvis, pelvisTrim);
+
+  robotGroup.add(torsoGroup);
+
+  // Braços Articulados (mesma estrutura do Robotoc)
+  const criarBracoVegatoc = (lado) => {
+    const armPivot = new THREE.Group();
+    armPivot.position.set(lado * 0.44, 0.32, 0);
+
+    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 20), chromeSilverMat);
+    const shoulderRing = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 12, 24), metallicBlueMat);
+    shoulderRing.rotation.y = Math.PI / 2;
+    armPivot.add(shoulder, shoulderRing);
+
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.26, 20), chromeSilverMat);
+    upperArm.position.set(lado * 0.04, -0.16, 0);
+    upperArm.rotation.z = lado * 0.15;
+    armPivot.add(upperArm);
+
+    const elbowGroup = new THREE.Group();
+    elbowGroup.position.set(lado * 0.06, -0.32, 0);
+
+    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), metallicBlueMat);
+    elbowGroup.add(elbowJoint);
+
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.11, 0.30, 24), chromeSilverMat);
+    forearm.position.set(0, -0.16, 0);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.025, 12, 24), metallicBlueMat);
+    cuff.rotation.x = Math.PI / 2;
+    cuff.position.set(0, -0.31, 0);
+    elbowGroup.add(forearm, cuff);
+
+    const handGroup = new THREE.Group();
+    handGroup.position.set(0, -0.40, 0);
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.11, 0.06), whiteArmorMat);
+    handGroup.add(palm);
+
+    for (let f = -1.5; f <= 1.5; f += 1) {
+      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.011, 0.08, 10), chromeSilverMat);
+      finger.position.set(f * 0.03, -0.08, 0);
+      finger.rotation.z = f * 0.08 * lado;
+      handGroup.add(finger);
+    }
+    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.013, 0.07, 10), chromeSilverMat);
+    thumb.position.set(-lado * 0.07, -0.02, 0.02);
+    thumb.rotation.z = -lado * 0.6;
+    handGroup.add(thumb);
+
+    elbowGroup.add(handGroup);
+    armPivot.add(elbowGroup);
+
+    return { armPivot, elbowGroup };
+  };
+
+  const rightArmObj = criarBracoVegatoc(-1);
+  rightArmObj.armPivot.rotation.z = -0.18;
+  robotGroup.add(rightArmObj.armPivot);
+
+  const leftArmObj = criarBracoVegatoc(1);
+  leftArmObj.armPivot.rotation.z = 0.65;
+  leftArmObj.elbowGroup.rotation.z = 1.65;
+  leftArmObj.elbowGroup.rotation.x = -0.2;
+  robotGroup.add(leftArmObj.armPivot);
+
+  // Pernas Articuladas
+  const criarPernaVegatoc = (side) => {
+    const legGroup = new THREE.Group();
+    legGroup.position.set(side * 0.16, -0.50, 0);
+
+    const hipJoint = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), chromeSilverMat);
+    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.075, 0.24, 20), chromeSilverMat);
+    thigh.position.set(0, -0.14, 0);
+
+    const kneeJoint = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), metallicBlueMat);
+    kneeJoint.position.set(0, -0.28, 0.02);
+
+    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 0.28, 24), chromeSilverMat);
+    shin.position.set(0, -0.44, 0);
+
+    const bootCollar = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.022, 12, 24), metallicBlueMat);
+    bootCollar.rotation.x = Math.PI / 2;
+    bootCollar.position.set(0, -0.58, 0);
+
+    const footBase = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.10, 0.32), whiteArmorMat);
+    footBase.position.set(0, -0.64, 0.04);
+
+    const sole = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.03, 0.33), metallicBlueMat);
+    sole.position.set(0, -0.69, 0.04);
+
+    legGroup.add(hipJoint, thigh, kneeJoint, shin, bootCollar, footBase, sole);
+    return legGroup;
+  };
+
+  const legL = criarPernaVegatoc(-1);
+  const legR = criarPernaVegatoc(1);
+  robotGroup.add(legL, legR);
+
+  return {
+    robotGroup,
+    headGroup,
+    eyeL,
+    eyeR,
+    chestCoreLed,
+    rightArmPivot: rightArmObj.armPivot,
+    leftArmPivot: leftArmObj.armPivot,
+    leftElbowGroup: leftArmObj.elbowGroup,
+    legL,
+    legR
+  };
+}
+
+// =========================================================================================
 // 🤖 --- HELPER DE MODELAGEM 3D ESPETACULAR DO ROBOTOC (BASEADO NA IMAGEM DE REFERÊNCIA) ---
 // =========================================================================================
 function criarModeloRobotocEspetacular3D() {
