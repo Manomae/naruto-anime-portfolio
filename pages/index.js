@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
 import { RoboChestNameManager } from '../components/nomerobos3d';
+import RobotocVegatocnyxHoloMap3D from '../components/RobotocVegatocnyxHoloMap3D';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
 import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
@@ -112,12 +113,12 @@ function criarModeloVegatocnyxEspetacular3D() {
   chestPlateContour.position.set(0, 0.18, 0.04);
   torsoGroup.add(chestPlateContour);
 
- // 💖 TEXTO "VEGATOCNYX" GIGANTE E BRILHANTE (Visibilidade Máxima)
+  // 💖 TEXTO "VEGATOCNYX" GIGANTE E BRILHANTE (Visibilidade Máxima)
   const canvasVeg = document.createElement('canvas');
   canvasVeg.width = 512;
   canvasVeg.height = 128;
   const ctxVeg = canvasVeg.getContext('2d');
-  
+
   ctxVeg.clearRect(0, 0, 512, 128);
 
   ctxVeg.shadowColor = '#ff007f';
@@ -127,7 +128,7 @@ function criarModeloVegatocnyxEspetacular3D() {
   ctxVeg.font = '900 58px Arial, sans-serif'; // Fonte super aumentada
   ctxVeg.textAlign = 'center';
   ctxVeg.textBaseline = 'middle';
-  
+
   ctxVeg.fillText('VEGATOCNYX', 256, 64);
   ctxVeg.fillText('VEGATOCNYX', 256, 64); // Passada dupla para engrossar o branco
 
@@ -136,14 +137,14 @@ function criarModeloVegatocnyxEspetacular3D() {
 
   const namePlateMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(0.48, 0.14), // Placa levemente maior para acompanhar a fonte gigante
-    new THREE.MeshBasicMaterial({ 
-      map: vegTex, 
-      transparent: true, 
-      depthWrite: false,   
-      side: THREE.DoubleSide 
+    new THREE.MeshBasicMaterial({
+      map: vegTex,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide
     })
   );
-  namePlateMesh.position.set(0, 0.20, 0.34); 
+  namePlateMesh.position.set(0, 0.20, 0.34);
   torsoGroup.add(namePlateMesh);
 
   const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.18, 0.04), glowingPinkMat);
@@ -362,12 +363,12 @@ function criarModeloRobotocEspetacular3D() {
   chestBlueTrim.position.set(0, 0.16, 0.06);
   torsoGroup.add(chestBlueTrim);
 
- // 🛡️ TEXTO "ROBOTOC" GIGANTE E BRILHANTE (Visibilidade Máxima)
+  // 🛡️ TEXTO "ROBOTOC" GIGANTE E BRILHANTE (Visibilidade Máxima)
   const canvasRob = document.createElement('canvas');
   canvasRob.width = 512;
   canvasRob.height = 128;
   const ctxRob = canvasRob.getContext('2d');
-  
+
   ctxRob.clearRect(0, 0, 512, 128);
 
   ctxRob.shadowColor = '#00f0ff';
@@ -377,7 +378,7 @@ function criarModeloRobotocEspetacular3D() {
   ctxRob.font = '900 78px Arial, sans-serif'; // Fonte super aumentada
   ctxRob.textAlign = 'center';
   ctxRob.textBaseline = 'middle';
-  
+
   ctxRob.fillText('ROBOTOC', 256, 64);
   ctxRob.fillText('ROBOTOC', 256, 64); // Passada dupla para engrossar o branco
 
@@ -386,14 +387,14 @@ function criarModeloRobotocEspetacular3D() {
 
   const namePlateRobotoc = new THREE.Mesh(
     new THREE.PlaneGeometry(0.48, 0.14), // Placa levemente maior para acompanhar a fonte gigante
-    new THREE.MeshBasicMaterial({ 
-      map: robTex, 
-      transparent: true, 
-      depthWrite: false,   
-      side: THREE.DoubleSide 
+    new THREE.MeshBasicMaterial({
+      map: robTex,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide
     })
   );
-  namePlateRobotoc.position.set(0, 0.20, 0.35); 
+  namePlateRobotoc.position.set(0, 0.20, 0.35);
   torsoGroup.add(namePlateRobotoc);
 
   const chestCoreLed = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.26, 0.05), cyanLedMat);
@@ -831,7 +832,7 @@ function MiniRobotocAssistant3D({ onClose }) {
         <div style={{ flex: 1, maxHeight: '140px', overflowY: 'auto', fontSize: '9.5px', color: '#0284c7', lineHeight: '1.3' }}>
           <strong>💡 Resposta Robotoc:</strong>
           <p style={{ margin: '4px 0 0 0', color: '#0f172a', whiteSpace: 'pre-wrap' }}>{carregando ? '⚡ Processando dados e buscando na internet...' : respostaIA}</p>
-          
+
           {imagemBusca && (
             <div style={{ marginTop: '6px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #00f0ff' }}>
               <img src={imagemBusca} alt="Ilustração Robotoc" style={{ width: '100%', height: '80px', objectFit: 'cover' }} />
@@ -897,7 +898,7 @@ function MiniRobotocAssistant3D({ onClose }) {
           placeholder="Futebol, faculdade, comida, 'buscar [assunto]'..."
           style={{ flex: 1, padding: '8px 10px', backgroundColor: '#f8fafc', border: '1px solid #00f0ff', borderRadius: '8px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
         />
-        
+
         <button onClick={() => processarPerguntaRobotoc(duvidaInput)} style={{ padding: '8px 12px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '9px', cursor: 'pointer' }}>
           Enviar
         </button>
@@ -1119,7 +1120,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
         </div>
 
         <div style={{ display: 'flex', borderBottom: '1px solid #bae6fd', backgroundColor: '#f8fafc' }}>
-          <button 
+          <button
             onClick={() => setAbaAtiva('notas')}
             style={{
               flex: 1, padding: '8px', border: 'none',
@@ -1130,7 +1131,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
           >
             📋 Notas Ativas ({notas.length})
           </button>
-          <button 
+          <button
             onClick={() => setAbaAtiva('lixeira')}
             style={{
               flex: 1, padding: '8px', border: 'none',
@@ -1146,16 +1147,16 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
         {abaAtiva === 'notas' && (
           <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
             <form onSubmit={handleCriarNota} style={{ display: 'flex', flexDirection: 'column', gap: '6px', backgroundColor: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '10px', padding: '10px' }}>
-              <input 
-                type="text" 
-                placeholder="Título do Rascunho..." 
-                value={tituloInput} 
+              <input
+                type="text"
+                placeholder="Título do Rascunho..."
+                value={tituloInput}
                 onChange={(e) => setTituloInput(e.target.value)}
                 style={{ padding: '6px 10px', backgroundColor: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '10px', outline: 'none', color: '#0f172a' }}
               />
-              <textarea 
+              <textarea
                 rows={3}
-                placeholder="Escreva suas ideias ou anotações importantes..." 
+                placeholder="Escreva suas ideias ou anotações importantes..."
                 value={conteudoInput}
                 onChange={(e) => setConteudoInput(e.target.value)}
                 style={{ padding: '6px 10px', backgroundColor: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '10px', outline: 'none', resize: 'none', color: '#0f172a' }}
@@ -1176,7 +1177,7 @@ function MiniRobotocSidebarNotes({ addLogTerminal }) {
                       <span style={{ fontSize: '8px', color: '#94a3b8' }}>{nota.data}</span>
                     </div>
                     <p style={{ fontSize: '10px', color: '#334155', margin: '0 0 8px 0', whiteSpace: 'pre-wrap', lineHeight: '1.3' }}>{nota.conteudo}</p>
-                    
+
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                       <button onClick={() => handleDownloadTXT(nota)} style={{ padding: '4px 8px', backgroundColor: '#16a34a', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '8.5px', fontWeight: 'bold', cursor: 'pointer' }}>
                         💾 Baixar TXT
@@ -1640,7 +1641,7 @@ function PainelDevSplitScreen({ onClose }) {
     mojo: `# Mojo (AI Performance High-Speed Language)\nfn main():\n    let matrix_dim: Int = 1024\n    print("⚡ Inicializando Tensor Quântico Emanuel.OS no Núcleo Mojo...")\n    print("Matriz carregada com dimensao:", matrix_dim)`,
     zig: `// Zig System Language\nconst std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("🧠 Núcleo de Baixo Nível do Android 16 Neural OS EM Ativo!\\n", .{});\n}`,
     nim: `# Nim Metaprogramming Language\ntype\n  NeuralCore = object\n    status: string\n    potencia: float\n\nlet core = NeuralCore(status: "ONLINE", potencia: 99.8)\necho "🚀 Sistema Emanuel.OS executando em Nim. Status: ", core.status`,
-    crystal: `# Crystal Language\ class QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
+    crystal: `# Crystal Language\nclass QuantumEngine\n  def initialize(@name : String)\n  end\n\n  def boot\n    puts "💎 Rodando motor quântico #{@name} no Emanuel.OS Workstation"\n  end\nend\n\nQuantumEngine.new("EM-Core v6.0").boot`,
     elixir: `# Elixir Distributed System\ndefmodule EmanuelOS.Core do\n  def sync_nodes(node_id) do\n    IO.puts("🔮 Sincronizando Nó Funcional Exótico: #{node_id}")\n  end\nend\n\nEmanuelOS.Core.sync_nodes("Node-BRS7")`,
     qsharp: `// Q# Quantum System\nnamespace EmanuelOS.Quantum {\n    open Microsoft.Quantum.Canon;\n    open Microsoft.Quantum.Intrinsic;\n\n    operation MeasureQubit() : Result {\n        use q = Qubit();\n        H(q);\n        return M(q);\n    }\n}`,
     gleam: `// Gleam Language\nimport gleam/io\n\npub fn main() {\n  io.print_line("✨ Executando Gleam no Motor Distribuído do Emanuel.OS!")\n}`
@@ -1868,7 +1869,7 @@ function PainelDevSplitScreen({ onClose }) {
         </form>
       </div>
 
-      <GlassKeyboard3D 
+      <GlassKeyboard3D
         onKeyPress={(tecla) => {
           if (tecla === 'Backspace') {
             setCodigoFonte(prev => prev.slice(0, -1));
@@ -2457,8 +2458,8 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
           🏛️ <strong>Vitrine Virtual 3D de Vidro</strong> - Modelos Giratórios & Maquetes Interativas de Mapas
         </span>
 
-        <VitrineVirtual3D 
-          modoAtual={modoVitrine} 
+        <VitrineVirtual3D
+          modoAtual={modoVitrine}
           onSelectModo={(m) => setModoVitrine(m)}
           onRequestBluetoothConnection={onRequestBluetooth}
         />
@@ -2494,7 +2495,7 @@ function WindowDevPanelRobotoc({ onClose, onRequestBluetooth }) {
         </div>
       </div>
 
-      <div 
+      <div
         onMouseDown={() => setIsResizing(true)}
         style={{ position: 'absolute', bottom: 0, right: 0, width: '16px', height: '16px', cursor: 'nwse-resize', background: 'linear-gradient(135deg, transparent 50%, #00f0ff 50%)' }}
       />
@@ -2534,6 +2535,8 @@ export default function EmanuelOSCore() {
     facebook: "https://www.facebook.com/leeheroi.heroi",
     youtube: "https://youtube.com/@emanuelsilva2987?si=pd7120vlBFFa-6Hg"
   };
+
+  const [holoMapAberto, setHoloMapAberto] = useState(false);
 
   const [links3D, setLinks3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
@@ -2581,8 +2584,8 @@ export default function EmanuelOSCore() {
       setResultadosBuscaGlobo([]);
       return;
     }
-    const filtrados = locaisEmanuelOS.filter(l => 
-      l.nome.toLowerCase().includes(termo.toLowerCase()) || 
+    const filtrados = locaisEmanuelOS.filter(l =>
+      l.nome.toLowerCase().includes(termo.toLowerCase()) ||
       l.categoria.toLowerCase().includes(termo.toLowerCase()) ||
       l.trabalho.toLowerCase().includes(termo.toLowerCase())
     );
@@ -3423,7 +3426,7 @@ export default function EmanuelOSCore() {
 
           <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f0f9ff', border: '1px solid #00f0ff', borderRadius: '12px' }}>
             <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>📸 ACESSO RÁPIDO BETA (LOGIN FACIAL)</span>
-            
+
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '8px' }}>
               <span style={{ fontSize: '9px', color: '#334155' }}>Tempo da Sessão:</span>
               <select value={tempoSessaoMinutos} onChange={(e) => setTempoSessaoMinutos(Number(e.target.value))} style={{ fontSize: '9px', padding: '3px', borderRadius: '4px', border: '1px solid #0284c7', color: '#0284c7' }}>
@@ -3528,10 +3531,10 @@ export default function EmanuelOSCore() {
 
         <div style={{ width: modoDevSplit ? '50%' : '100%', height: '100%', position: 'relative', transition: 'width 0.4s ease' }}>
 
-          <div 
-            ref={mountRef} 
+          <div
+            ref={mountRef}
             title="Arraste para girar a Terra 3D! Clique no Robotoc 3D ao lado para interagir."
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }} 
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, cursor: 'grab' }}
           />
 
           {legendaRobotoc && (
@@ -3610,7 +3613,7 @@ export default function EmanuelOSCore() {
           <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', zIndex: 150, width: '90%', maxWidth: '520px' }}>
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', border: '2px solid #00f0ff', borderRadius: '25px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 25px rgba(0,240,255,0.3)', backdropFilter: 'blur(15px)' }}>
               <span style={{ fontSize: `${tamanhoFonteBusca + 3}px`, color: '#0284c7' }}>🔍</span>
-              
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', backgroundColor: 'rgba(2, 132, 199, 0.1)', padding: '2px 6px', borderRadius: '12px', border: '1px solid rgba(0,240,255,0.5)' }}>
                 <button
                   type="button"
@@ -3744,6 +3747,23 @@ export default function EmanuelOSCore() {
             <button onClick={() => setYugiohGameAberto(!yugiohGameAberto)} style={{ backgroundColor: yugiohGameAberto ? '#eab308' : 'rgba(255, 255, 255, 0.85)', border: '1px solid #eab308', color: yugiohGameAberto ? '#fff' : '#d97706', padding: '0 14px', height: '40px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px', backdropFilter: 'blur(10px)' }}>
               ⚔️ {yugiohGameAberto ? 'Fechar Duel Links' : 'Yu-Gi-Oh! Duel Links 3D'}
             </button>
+
+            <button
+              onClick={() => setHoloMapAberto(true)}
+              style={{
+                backgroundColor: '#ec4899',
+                border: '1px solid #00f0ff',
+                color: '#fff',
+                padding: '0 14px',
+                height: '40px',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '11px'
+              }}
+            >
+              🏙️ Holo-Mapa GPS 3D
+            </button>
           </div>
 
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '250px' }}>
@@ -3860,54 +3880,51 @@ export default function EmanuelOSCore() {
               }}
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(0,240,255,0.2)' }}
             >
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Fale com o ROBOTOC & VEGATOCNYX 3D ou envie comandos neurais..." style={{ background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', fontSize: '10px', flexGrow: 1 }} />
-              <button type="submit" style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '18px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' }}>Executar ➔</button>
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Enviar comando para o núcleo ROBOTOC & VEGATOCNYX 3D..." style={{ flex: 1, background: 'transparent', border: 'none', color: '#0f172a', padding: '6px', outline: 'none', fontSize: '11px' }} />
+              <button type="submit" style={{ backgroundColor: '#0284c7', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>ENVIAR</button>
             </form>
           </div>
+
+          <footer style={{ position: 'absolute', bottom: '15px', left: '15px', backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '6px 12px', zIndex: 10, fontSize: '9px', color: '#0284c7', fontWeight: 'bold', backdropFilter: 'blur(10px)' }}>
+            <span>Emanuel.OS Workstation v6.0 | ROBOTOC & VEGATOCNYX 3D</span> • <span>{horaAtual}</span>
+          </footer>
+
+          <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
+            <RobotocGear
+              onConnectGear={(type, state) => addLogTerminal(`[ROBOTOC GEAR] ${type}: ${state ? 'Ativo' : 'Inativo'}`)}
+              highlightGear={solicitarConexaoBluetooth}
+            />
+            <MotionTracker />
+            <BitcoinAnalysisPanel />
+            <CloudflareWorkerDeployer addLog={addLogTerminal} />
+          </AndroidHUDPanel>
         </div>
 
         {modoDevSplit && (
-          <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
+          <div style={{ width: '50%', height: '100%', backgroundColor: '#f0f9ff', zIndex: 160 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
           </div>
         )}
       </div>
 
+      {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
+
       {janelaRobotocDevAberta && (
-        <WindowDevPanelRobotoc 
-          onClose={() => setJanelaRobotocDevAberta(false)} 
+        <WindowDevPanelRobotoc
+          onClose={() => setJanelaRobotocDevAberta(false)}
           onRequestBluetooth={acionarSolicitacaoBluetooth}
         />
       )}
 
-      {miniAssistantAberto && (
-        <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />
-      )}
-
       <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
 
-      {yugiohGameAberto && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 400,
-          backgroundColor: '#0a0f1d'
-        }}>
-          <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />
-        </div>
+      {miniAssistantAberto && <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />}
+
+      {yugiohGameAberto && <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />}
+
+      {holoMapAberto && (
+        <RobotocVegatocnyxHoloMap3D onClose={() => setHoloMapAberto(false)} />
       )}
-
-      <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
-        <MotionTracker />
-        <RobotocGear highlightGear={solicitarConexaoBluetooth} onConnectGear={(t, s) => addLogTerminal(`[GEAR] ${t}: ${s ? 'ON' : 'OFF'}`)} />
-        <BitcoinAnalysisPanel />
-        <CloudflareWorkerDeployer addLog={addLogTerminal} />
-      </AndroidHUDPanel>
-
-      {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
     </div>
   );
 }
