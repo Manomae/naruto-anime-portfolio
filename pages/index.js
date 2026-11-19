@@ -8,6 +8,7 @@ import { coreAssistant } from '../coreAssistantEngine';
 import { autoCompleterEngine } from '../components/palavrasAutoComplemento';
 import { RoboChestNameManager } from '../components/nomerobos3d';
 import RobotocVegatocnyxHoloMap3D from '../components/RobotocVegatocnyxHoloMap3D';
+import DancaRobotocVegatocnyx from '../components/dancarobotocvegatocnyx';
 
 // Importação do Módulo de Inteligência Robotoc (Microfone Futurístico & buscarobotoc)
 import { InteligenciaRobotoc } from '../components/inteligencia-robotoc';
@@ -2537,6 +2538,7 @@ export default function EmanuelOSCore() {
   };
 
   const [holoMapAberto, setHoloMapAberto] = useState(false);
+  const [dancaPalcoAberto, setDancaPalcoAberto] = useState(false);
 
   const [links3D, setLinks3D] = useState([
     { id: 1, tipo: 'youtube', titulo: 'Canal YouTube Emanuel', url: meusDadosReais.youtube, icone: '▶️', nuvem: 'google' },
@@ -3764,6 +3766,23 @@ export default function EmanuelOSCore() {
             >
               🏙️ Holo-Mapa GPS 3D
             </button>
+
+            <button
+              onClick={() => setDancaPalcoAberto(true)}
+              style={{
+                backgroundColor: '#00f0ff',
+                border: '1px solid #0284c7',
+                color: '#020617',
+                padding: '0 14px',
+                height: '40px',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontWeight: '900',
+                fontSize: '11px'
+              }}
+            >
+              🎸 Dança Robotoc & Vegatocnyx
+            </button>
           </div>
 
           <div style={{ position: 'absolute', top: '70px', right: '15px', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '6px', maxWidth: '250px' }}>
@@ -3880,32 +3899,39 @@ export default function EmanuelOSCore() {
               }}
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #00f0ff', borderRadius: '25px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(0,240,255,0.2)' }}
             >
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Enviar comando para o núcleo ROBOTOC & VEGATOCNYX 3D..." style={{ flex: 1, background: 'transparent', border: 'none', color: '#0f172a', padding: '6px', outline: 'none', fontSize: '11px' }} />
-              <button type="submit" style={{ backgroundColor: '#0284c7', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>ENVIAR</button>
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Enviar comando para o núcleo EMgemini..." style={{ flexGrow: 1, background: 'transparent', border: 'none', color: '#0f172a', fontSize: '10px', outline: 'none' }} />
+              <button type="submit" style={{ backgroundColor: '#0284c7', border: 'none', color: '#fff', padding: '5px 10px', borderRadius: '18px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' }}>Enviar</button>
             </form>
           </div>
 
-          <footer style={{ position: 'absolute', bottom: '15px', left: '15px', backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid rgba(0, 240, 255, 0.4)', borderRadius: '12px', padding: '6px 12px', zIndex: 10, fontSize: '9px', color: '#0284c7', fontWeight: 'bold', backdropFilter: 'blur(10px)' }}>
-            <span>Emanuel.OS Workstation v6.0 | ROBOTOC & VEGATOCNYX 3D</span> • <span>{horaAtual}</span>
-          </footer>
+          <div style={{ position: 'absolute', bottom: '15px', left: '15px', zIndex: 10, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button onClick={() => setBloqueado(true)} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', padding: '5px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '9px', fontWeight: 'bold' }}>🔒 Bloquear</button>
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #0284c7', padding: '5px 10px', borderRadius: '8px', fontSize: '9px', color: '#0284c7', fontFamily: 'monospace', fontWeight: 'bold' }}>⏰ {horaAtual}</div>
+            <button onClick={() => addLogTerminal(`[SYSTEM: SYNC] Rede quântica verificada às ${new Date().toLocaleTimeString('pt-BR')}`)} style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)', border: '1px solid #00f0ff', color: '#0284c7', padding: '5px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '9px', fontWeight: 'bold' }}>🔄 Sync Quântico</button>
+          </div>
 
-          <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
-            <RobotocGear
-              onConnectGear={(type, state) => addLogTerminal(`[ROBOTOC GEAR] ${type}: ${state ? 'Ativo' : 'Inativo'}`)}
-              highlightGear={solicitarConexaoBluetooth}
-            />
-            <MotionTracker />
-            <BitcoinAnalysisPanel />
-            <CloudflareWorkerDeployer addLog={addLogTerminal} />
-          </AndroidHUDPanel>
         </div>
 
         {modoDevSplit && (
-          <div style={{ width: '50%', height: '100%', backgroundColor: '#f0f9ff', zIndex: 160 }}>
+          <div style={{ width: '50%', height: '100%', zIndex: 120 }}>
             <PainelDevSplitScreen onClose={() => setModoDevSplit(false)} />
           </div>
         )}
+
       </div>
+
+      <AndroidHUDPanel open={androidHudOpen} onClose={() => { setAndroidHudOpen(false); setSolicitarConexaoBluetooth(false); }}>
+        <MotionTracker />
+        <RobotocGear
+          highlightGear={solicitarConexaoBluetooth}
+          onConnectGear={(type, state) => addLogTerminal(`[BLUETOOTH: GEAR] Periférico ${type} ${state ? 'conectado' : 'desconectado'} com sucesso!`)}
+        />
+        <BitcoinAnalysisPanel />
+        <CloudflareWorkerDeployer addLog={addLogTerminal} />
+        <div style={{ backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '8px', fontFamily: 'monospace', fontSize: '9px', color: '#0284c7', maxHeight: '140px', overflowY: 'auto' }}>
+          {cmdLogs.map((l, idx) => <div key={idx} style={{ margin: '2px 0' }}>{l}</div>)}
+        </div>
+      </AndroidHUDPanel>
 
       {modalCreatorStudioAberto && <EMCreatorStudio onClose={() => setModalCreatorStudioAberto(false)} />}
 
@@ -3916,15 +3942,75 @@ export default function EmanuelOSCore() {
         />
       )}
 
-      <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
-
       {miniAssistantAberto && <MiniRobotocAssistant3D onClose={() => setMiniAssistantAberto(false)} />}
 
-      {yugiohGameAberto && <YugiohDuelLinks3D onClose={() => setYugiohGameAberto(false)} />}
+      {yugiohGameAberto && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(15px)',
+          zIndex: 600, display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', backgroundColor: '#0f172a', borderBottom: '2px solid #eab308' }}>
+            <strong style={{ color: '#eab308', fontSize: '14px', letterSpacing: '1px' }}>
+              ⚔️ YU-GI-OH! DUEL LINKS 3D — EMANUEL.OS WORKSTATION v6.0
+            </strong>
+            <button onClick={() => setYugiohGameAberto(false)} style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}>
+              ✕ Fechar Duelo 3D
+            </button>
+          </div>
+          <div style={{ flexGrow: 1, position: 'relative' }}>
+            <YugiohDuelLinks3D />
+          </div>
+        </div>
+      )}
 
       {holoMapAberto && (
-        <RobotocVegatocnyxHoloMap3D onClose={() => setHoloMapAberto(false)} />
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(2, 6, 23, 0.92)', backdropFilter: 'blur(15px)',
+          zIndex: 650, display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', backgroundColor: '#020617', borderBottom: '2px solid #00f0ff' }}>
+            <strong style={{ color: '#00f0ff', fontSize: '14px', letterSpacing: '1px' }}>
+              🏙️ HOLO-MAPA URBANO & GPS 3D — ROBOTOC & VEGATOCNYX (EMANUEL.OS)
+            </strong>
+            <button
+              onClick={() => setHoloMapAberto(false)}
+              style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}
+            >
+              ✕ Fechar Holo-Mapa
+            </button>
+          </div>
+          <div style={{ flexGrow: 1, position: 'relative' }}>
+            <RobotocVegatocnyxHoloMap3D />
+          </div>
+        </div>
       )}
+
+      {dancaPalcoAberto && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(2, 6, 23, 0.92)', backdropFilter: 'blur(15px)',
+          zIndex: 660, display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', backgroundColor: '#020617', borderBottom: '2px solid #00f0ff' }}>
+            <strong style={{ color: '#00f0ff', fontSize: '14px', letterSpacing: '1px' }}>
+              🎸 PALCO DE DANÇA 3D — ROBOTOC & VEGATOCNYX (EMANUEL.OS)
+            </strong>
+            <button
+              onClick={() => setDancaPalcoAberto(false)}
+              style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontWeight: 'bold', cursor: 'pointer', fontSize: '11px' }}
+            >
+              ✕ Fechar Palco
+            </button>
+          </div>
+          <div style={{ flexGrow: 1, position: 'relative' }}>
+            <DancaRobotocVegatocnyx />
+          </div>
+        </div>
+      )}
+
+      <MiniRobotocSidebarNotes addLogTerminal={addLogTerminal} />
     </div>
   );
 }
