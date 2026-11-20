@@ -1076,3 +1076,215 @@ export function aplicarVisualModo3D(robotoc, vegatocnyx, modo, t = 0) {
     vegatocnyx.torsoGroup.rotation.x = amortecerAngulo(vegatocnyx.torsoGroup.rotation.x, -respiracao, 0.15);
   }
 }
+
+// =========================================================================
+// MODO AUTOMÁTICO PARA QUALQUER MÚSICA (YOUTUBE, MP3 OU REDES SOCIAIS)
+// =========================================================================
+
+const MODOS_DISPONIVEIS_3D = [
+  'ROCK_STAGE',
+  'MICHAEL_JACKSON_3D',
+  'SHAKIRA_3D',
+  'KARAOKE_DUO',
+  'FORRO_VAQUEJADA',
+  'FREESTYLE_NEON',
+  'SALTO_TOTAL',
+  'BATERIA_TURBO',
+  'FUNK_PATRICINHA'
+];
+
+const COR_TEMA_MODO = {
+  ROCK_STAGE: 0xff2200,
+  MICHAEL_JACKSON_3D: 0xfacc15,
+  SHAKIRA_3D: 0xff2a85,
+  KARAOKE_DUO: 0x00f0ff,
+  FORRO_VAQUEJADA: 0xf59e0b,
+  FREESTYLE_NEON: 0x00f0ff,
+  SALTO_TOTAL: 0x38bdf8,
+  BATERIA_TURBO: 0xfacc15,
+  FUNK_PATRICINHA: 0xff2a85
+};
+
+function normalizarTextoMidia(entradaMidia) {
+  if (!entradaMidia) return '';
+  if (typeof entradaMidia === 'string') return entradaMidia.toLowerCase();
+  if (typeof entradaMidia === 'object') {
+    return [
+      entradaMidia.modo,
+      entradaMidia.estilo,
+      entradaMidia.titulo,
+      entradaMidia.title,
+      entradaMidia.nome,
+      entradaMidia.name,
+      entradaMidia.url,
+      entradaMidia.src,
+      entradaMidia.origem,
+      entradaMidia.plataforma,
+      entradaMidia.artista,
+      entradaMidia.genero
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+  }
+  return String(entradaMidia).toLowerCase();
+}
+
+export function resolverEstiloAutomaticoMidia(entradaMidia, t = 0, modoFallback = null) {
+  const texto = normalizarTextoMidia(entradaMidia);
+
+  if (modoFallback && MODOS_DISPONIVEIS_3D.includes(modoFallback)) {
+    return modoFallback;
+  }
+
+  if (texto.includes('rock_stage') || /\brock\b|metal|guitar|punk|headbang/.test(texto)) {
+    return 'ROCK_STAGE';
+  }
+  if (
+    texto.includes('michael_jackson_3d') ||
+    /michael\s*jackson|\bmj\b|billie\s*jean|thriller|moonwalk|smooth\s*criminal/.test(texto)
+  ) {
+    return 'MICHAEL_JACKSON_3D';
+  }
+  if (
+    texto.includes('shakira_3d') ||
+    /shakira|waka|hips\s*don|latina|salsa|reggaeton|baila/.test(texto)
+  ) {
+    return 'SHAKIRA_3D';
+  }
+  if (texto.includes('karaoke_duo') || /karaoke|microfone|vocal|dupla|cantar|voz/.test(texto)) {
+    return 'KARAOKE_DUO';
+  }
+  if (
+    texto.includes('forro_vaquejada') ||
+    /forro|forró|vaquejada|piseiro|sert[aã]o|vaqueiro|sanfona|pared[aã]o/.test(texto)
+  ) {
+    return 'FORRO_VAQUEJADA';
+  }
+  if (texto.includes('funk_patricinha') || /funk|baile|patricinha|brega\s*funk|mandela/.test(texto)) {
+    return 'FUNK_PATRICINHA';
+  }
+  if (texto.includes('bateria_turbo') || /bateria|drum|turbo|batida|percuss[aã]o/.test(texto)) {
+    return 'BATERIA_TURBO';
+  }
+  if (texto.includes('salto_total') || /salto|jump|drop|eletro|edm|rave/.test(texto)) {
+    return 'SALTO_TOTAL';
+  }
+  if (texto.includes('freestyle_neon') || /freestyle|neon|trap|hip\s*hop|rap|cyber/.test(texto)) {
+    return 'FREESTYLE_NEON';
+  }
+
+  // Para qualquer vídeo do YouTube (curto ou longo), MP3 ou rede social sem palavra-chave explícita:
+  // seleciona um estilo estável por hash do texto ou acompanha a música de forma contínua
+  if (texto.trim().length > 0) {
+    let soma = 0;
+    for (let i = 0; i < texto.length; i += 1) {
+      soma = (soma + texto.charCodeAt(i) * (i + 1)) % 100000;
+    }
+    return MODOS_DISPONIVEIS_3D[soma % MODOS_DISPONIVEIS_3D.length];
+  }
+
+  const indiceCiclo = Math.floor(Math.max(0, t) / 18) % MODOS_DISPONIVEIS_3D.length;
+  return MODOS_DISPONIVEIS_3D[indiceCiclo];
+}
+
+export function sincronizarCenarioComMusica(cenarioOuCena, modo, t = 0, intensidade = 1) {
+  if (!cenarioOuCena) return;
+
+  const corTema = COR_TEMA_MODO[modo] || 0x00f0ff;
+  const pulsoRitmo = 0.85 + Math.abs(Math.sin(t * 4.5)) * 0.35 * Math.max(0.2, intensidade);
+
+  const candidatos = Array.isArray(cenarioOuCena)
+    ? cenarioOuCena
+    : [cenarioOuCena];
+
+  candidatos.forEach((alvo) => {
+    if (!alvo || typeof alvo !== 'object') return;
+
+    if (alvo.isScene && alvo.fog && alvo.fog.color && typeof alvo.fog.color.setHex === 'function') {
+      alvo.fog.color.setHex(corTema);
+    }
+
+    if (typeof alvo.traverse === 'function') {
+      alvo.traverse((obj) => {
+        if (!obj) return;
+        if (obj.isLight && obj.color && typeof obj.color.setHex === 'function') {
+          obj.color.setHex(corTema);
+          if (typeof obj.intensity === 'number') {
+            obj.intensity = pulsoRitmo * 1.4;
+          }
+        }
+        const nomeObj = String(obj.name || '').toLowerCase();
+        if (
+          nomeObj.includes('cenario') ||
+          nomeObj.includes('cenário') ||
+          nomeObj.includes('palco') ||
+          nomeObj.includes('stage') ||
+          nomeObj.includes('anel') ||
+          nomeObj.includes('pista')
+        ) {
+          obj.rotation.y = amortecerAngulo(obj.rotation.y, Math.sin(t * 1.4) * 0.14, 0.12);
+          if (obj.material && obj.material.emissive && typeof obj.material.emissive.setHex === 'function') {
+            obj.material.emissive.setHex(corTema);
+            if (typeof obj.material.emissiveIntensity === 'number') {
+              obj.material.emissiveIntensity = pulsoRitmo;
+            }
+          }
+        }
+      });
+    }
+  });
+}
+
+export function aplicarModoAutomaticoMidia3D(
+  robotoc,
+  vegatocnyx,
+  entradaMidia = '',
+  t = 0,
+  opcoes = {}
+) {
+  if (!robotoc || !vegatocnyx) return null;
+
+  const estaTocando = opcoes.tocando !== false && opcoes.isPlaying !== false;
+  const tempoAtivo = estaTocando ? t : 0;
+  const modoDetectado = resolverEstiloAutomaticoMidia(entradaMidia, tempoAtivo, opcoes.modo);
+
+  // Movimento rítmico base acompanhando a música em reprodução
+  const batida = estaTocando ? Math.abs(Math.sin(tempoAtivo * 5.0)) : 0;
+  const balanco = estaTocando ? Math.sin(tempoAtivo * 2.5) : 0;
+
+  if (robotoc.torsoGroup) {
+    robotoc.torsoGroup.position.y = amortecerAngulo(
+      robotoc.torsoGroup.position.y,
+      batida * 0.055,
+      0.22
+    );
+    robotoc.torsoGroup.rotation.z = amortecerAngulo(
+      robotoc.torsoGroup.rotation.z,
+      balanco * 0.05,
+      0.2
+    );
+  }
+
+  if (vegatocnyx.torsoGroup) {
+    vegatocnyx.torsoGroup.position.y = amortecerAngulo(
+      vegatocnyx.torsoGroup.position.y,
+      batida * 0.065,
+      0.24
+    );
+    vegatocnyx.torsoGroup.rotation.z = amortecerAngulo(
+      vegatocnyx.torsoGroup.rotation.z,
+      -balanco * 0.06,
+      0.2
+    );
+  }
+
+  aplicarVisualModo3D(robotoc, vegatocnyx, modoDetectado, tempoAtivo);
+
+  const alvoCenario = opcoes.cenario || opcoes.scene || opcoes.palco || null;
+  if (alvoCenario) {
+    sincronizarCenarioComMusica(alvoCenario, modoDetectado, tempoAtivo, opcoes.intensidade ?? 1);
+  }
+
+  return modoDetectado;
+}
