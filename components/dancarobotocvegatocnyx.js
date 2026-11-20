@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { aplicarVisualModo3D } from './estilosmodos3ds.js';
+import {
+  aplicarVisualModo3D,
+  aplicarModoAutomaticoMidia3D,
+  sincronizarCenarioComMusica
+} from './estilosmodos3ds.js';
 
 const RITMOS_12 = [
   {
@@ -1066,6 +1070,93 @@ function criarVegatocnyxBaterista3D() {
   };
 }
 
+// =========================================================================
+// ONDA DE ECOCARDIOGRAMA SONORO 3D (REAGE À INTENSIDADE E FORÇA DO SOM)
+// =========================================================================
+
+function criarEcocardiogramaSonoro3D(corPrimaria = 0x00f0ff, corSecundaria = 0xff2a85) {
+  const group = new THREE.Group();
+  group.name = 'cenario_ecocardiograma_som_3d';
+  group.position.set(0, -0.88, 2.35);
+
+  const qtdBarras = 44;
+  const larguraTotal = 5.4;
+  const espacamento = larguraTotal / (qtdBarras - 1);
+
+  const matA = new THREE.MeshStandardMaterial({
+    color: corPrimaria,
+    emissive: corPrimaria,
+    emissiveIntensity: 2.2,
+    metalness: 0.6,
+    roughness: 0.2
+  });
+  const matB = new THREE.MeshStandardMaterial({
+    color: corSecundaria,
+    emissive: corSecundaria,
+    emissiveIntensity: 2.1,
+    metalness: 0.6,
+    roughness: 0.2
+  });
+
+  const barras = [];
+  for (let i = 0; i < qtdBarras; i++) {
+    const bar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.055, 0.14, 0.055),
+      i % 2 === 0 ? matA : matB
+    );
+    bar.position.set(-larguraTotal / 2 + i * espacamento, 0, 0);
+    bar.userData = { index: i, total: qtdBarras };
+    group.add(bar);
+    barras.push(bar);
+  }
+
+  // Linha base fina do monitor ecocardiográfico
+  const linhaBase = new THREE.Mesh(
+    new THREE.BoxGeometry(larguraTotal + 0.3, 0.016, 0.02),
+    matA
+  );
+  linhaBase.position.set(0, 0, -0.02);
+  group.add(linhaBase);
+
+  return { group, barras, matA, matB };
+}
+
+function atualizarEcocardiogramaSonoro3D(ecoObj, t, freq, intensidadeSom, corA, corB, ativo) {
+  if (!ecoObj || !ecoObj.group) return;
+
+  ecoObj.matA.color.setHex(corA);
+  ecoObj.matA.emissive.setHex(corA);
+  ecoObj.matB.color.setHex(corB);
+  ecoObj.matB.emissive.setHex(corB);
+
+  const forca = ativo ? Math.max(0.18, Math.min(2.4, intensidadeSom)) : 0.08;
+
+  ecoObj.barras.forEach((bar) => {
+    const { index, total } = bar.userData;
+    const norm = index / Math.max(1, total - 1);
+
+    // Padrão tipo complexo QRS de ecocardiograma viajando pela onda
+    const faseOnda = (norm * 5.2 - t * (freq * 0.9)) % 1;
+    const picoQrs =
+      Math.exp(-Math.pow((faseOnda - 0.35) * 18, 2)) * 1.15 -
+      Math.exp(-Math.pow((faseOnda - 0.26) * 24, 2)) * 0.45 -
+      Math.exp(-Math.pow((faseOnda - 0.44) * 22, 2)) * 0.55;
+
+    const vibracao =
+      Math.sin(t * freq * 3.2 + index * 0.55) * 0.28 +
+      Math.cos(t * freq * 1.7 - index * 0.35) * 0.18;
+
+    const envelopamentoLaterais = Math.sin(norm * Math.PI);
+    const altura = Math.max(
+      0.06,
+      (0.12 + Math.abs(picoQrs + vibracao) * 0.95 * forca) * (0.35 + envelopamentoLaterais * 0.75)
+    );
+
+    bar.scale.y = altura / 0.14;
+    bar.position.y = (picoQrs * 0.22 + vibracao * 0.08) * forca;
+  });
+}
+
 function descartarGrupo3D(group) {
   if (!group) return;
   group.traverse((obj) => {
@@ -1084,6 +1175,7 @@ function descartarGrupo3D(group) {
 
 function criarCenarioRitmo3D(scene, ritmo) {
   const group = new THREE.Group();
+  group.name = 'cenario_ritmo_3d';
   const corA = ritmo.luzA;
   const corB = ritmo.luzB;
 
@@ -1123,7 +1215,6 @@ function criarCenarioRitmo3D(scene, ritmo) {
   group.add(arco);
 
   if (ritmo.id === 'FUNK' || ritmo.id === 'PISEIRO' || ritmo.id === 'BREGA_FUNK') {
-    // Torres de paredão / caixas acústicas 3D
     [-2.7, 2.7].forEach((xPos) => {
       const box = new THREE.Mesh(new THREE.BoxGeometry(0.95, 1.85, 0.75), pillarMat);
       box.position.set(xPos, -0.25, -1.6);
@@ -1133,14 +1224,12 @@ function criarCenarioRitmo3D(scene, ritmo) {
       group.add(box, speaker);
     });
   } else if (ritmo.id === 'FORRO' || ritmo.id === 'SERTANEJO') {
-    // Estrelas / luzes de festa junina / arena
     for (let i = -2; i <= 2; i++) {
       const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), i % 2 === 0 ? propMatA : propMatB);
       lamp.position.set(i * 1.4, 2.75, -1.5);
       group.add(lamp);
     }
   } else if (ritmo.id === 'SAMBA' || ritmo.id === 'PAGODE' || ritmo.id === 'AXE') {
-    // Esferas festivas / percussão visual ao fundo
     for (let i = -3; i <= 3; i++) {
       if (i === 0) continue;
       const sphere = new THREE.Mesh(new THREE.IcosahedronGeometry(0.24, 0), i > 0 ? propMatA : propMatB);
@@ -1148,12 +1237,10 @@ function criarCenarioRitmo3D(scene, ritmo) {
       group.add(sphere);
     }
   } else if (ritmo.id === 'TRAP' || ritmo.id === 'POP' || ritmo.id === 'REGGAETON') {
-    // Colunas de luz geométricas / anéis de palco
     const ringBg = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.035, 12, 48), propMatB);
     ringBg.position.set(0, 1.1, -3.0);
     group.add(ringBg);
   } else if (ritmo.id === 'ROCK') {
-    // Amplificadores empilhados e holofotes de arena
     [-2.8, 2.8].forEach((xPos) => {
       const amp = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.3, 0.65), pillarMat);
       amp.position.set(xPos, -0.55, -1.6);
@@ -1193,7 +1280,7 @@ function criarCenarioRitmo3D(scene, ritmo) {
   forroFarmGroup.visible = false;
   group.add(forroFarmGroup);
 
-  // Cenário 3D Internacional - Modo Michael Jackson (World Arena & Spotlight Truss)
+  // Cenário 3D Internacional - Modo Michael Jackson
   const michaelWorldGroup = new THREE.Group();
   const trussMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
   const goldSpotMat = new THREE.MeshStandardMaterial({
@@ -1234,7 +1321,7 @@ function criarCenarioRitmo3D(scene, ritmo) {
   michaelWorldGroup.visible = false;
   group.add(michaelWorldGroup);
 
-  // Cenário 3D Internacional - Modo Shakira (Global Stadium & Latin Neon Arcs)
+  // Cenário 3D Internacional - Modo Shakira
   const shakiraWorldGroup = new THREE.Group();
   const latinPinkMat = new THREE.MeshStandardMaterial({
     color: 0xff2a85,
@@ -1290,9 +1377,10 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
   const [bpm, setBpm] = useState(128);
   const [intensidadeDanca, setIntensidadeDanca] = useState(1.2);
   const [modoCoreografia, setModoCoreografia] = useState('FREESTYLE_NEON');
+  const [modoAutomaticoMidia, setModoAutomaticoMidia] = useState(true);
+  const [modoDetectadoLabel, setModoDetectadoLabel] = useState('FREESTYLE_NEON');
   const [ritmoAtualId, setRitmoAtualId] = useState('FUNK');
 
-  // Mídias: MP3, YouTube e Playlists de redes sociais / internet
   const [faixas, setFaixas] = useState([
     {
       id: 'demo-1',
@@ -1312,11 +1400,19 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
   const bpmRef = useRef(bpm);
   const intensidadeRef = useRef(intensidadeDanca);
   const modoRef = useRef(modoCoreografia);
+  const autoMidiaRef = useRef(modoAutomaticoMidia);
   const ritmoRef = useRef(RITMOS_12[0]);
+  const faixaAtivaRef = useRef(faixas[0]);
+
+  const faixaAtiva = faixas.find((f) => f.id === faixaAtivaId) || faixas[0];
 
   useEffect(() => {
     faixasRef.current = faixas;
   }, [faixas]);
+
+  useEffect(() => {
+    faixaAtivaRef.current = faixaAtiva;
+  }, [faixaAtiva]);
 
   useEffect(() => {
     dancandoRef.current = dancando;
@@ -1333,6 +1429,10 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
   useEffect(() => {
     modoRef.current = modoCoreografia;
   }, [modoCoreografia]);
+
+  useEffect(() => {
+    autoMidiaRef.current = modoAutomaticoMidia;
+  }, [modoAutomaticoMidia]);
 
   useEffect(() => {
     const encontrado = RITMOS_12.find((r) => r.id === ritmoAtualId) || RITMOS_12[0];
@@ -1353,8 +1453,6 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     };
   }, []);
 
-  const faixaAtiva = faixas.find((f) => f.id === faixaAtivaId) || faixas[0];
-
   const conectarAnalisadorAudio = (audioElemento) => {
     if (!audioElemento) return;
     try {
@@ -1374,7 +1472,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
         audioCtxRef.current.resume().catch(() => {});
       }
     } catch (e) {
-      // Caso já conectado ou bloqueado pelo navegador, segue com animação por BPM
+      // Segue com animação rítmica caso já conectado
     }
   };
 
@@ -1401,7 +1499,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     e.preventDefault();
     const ytId = extrairIdYouTube(youtubeInput);
     if (!ytId) {
-      alert('Cole um link válido do YouTube (ex: https://www.youtube.com/watch?v=...).');
+      alert('Cole um link válido do YouTube (ex: https://www.youtube.com/watch?v=... ou Shorts/embed).');
       return;
     }
 
@@ -1418,7 +1516,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     setYoutubeInput('');
     setTituloLinkInput('');
     setDancando(true);
-    if (addLog) addLog(`[DANÇA 3D] Link do YouTube adicionado: ${novaFaixa.titulo}`);
+    if (addLog) addLog(`[DANÇA 3D] Vídeo do YouTube adicionado: ${novaFaixa.titulo}`);
   };
 
   const handleAdicionarPlaylistWeb = (e) => {
@@ -1427,17 +1525,29 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     if (!urlLimpa) return;
 
     const ytListId = extrairIdPlaylistYouTube(urlLimpa);
+    const tituloPl = tituloLinkInput.trim() || (ytListId ? `Playlist YouTube (${ytListId})` : 'Link / Rede Social');
     const novaPlaylist = {
       id: `pl-${Date.now()}`,
-      nome: tituloLinkInput.trim() || (ytListId ? `Playlist YouTube (${ytListId})` : 'Playlist / Link Social'),
+      nome: tituloPl,
       url: urlLimpa,
       ytListId
     };
 
+    const faixaSocial = {
+      id: `social-${Date.now()}`,
+      titulo: `🛜 ${tituloPl}`,
+      tipo: 'social',
+      url: urlLimpa,
+      youtubeId: null
+    };
+
     setPlaylistsSalvas((prev) => [novaPlaylist, ...prev]);
+    setFaixas((prev) => [faixaSocial, ...prev]);
+    setFaixaAtivaId(faixaSocial.id);
     setPlaylistInput('');
     setTituloLinkInput('');
-    if (addLog) addLog(`[DANÇA 3D] Playlist da rede/internet salva: ${novaPlaylist.nome}`);
+    setDancando(true);
+    if (addLog) addLog(`[DANÇA 3D] Link/playlist sincronizado: ${tituloPl}`);
   };
 
   useEffect(() => {
@@ -1470,7 +1580,6 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     spotPink.position.set(3.5, 3.5, 3);
     scene.add(spotPink);
 
-    // Palco neon circular
     const stageGeo = new THREE.CylinderGeometry(4.4, 4.7, 0.25, 48);
     const stageMat = new THREE.MeshStandardMaterial({
       color: ritmoInicial.palcoCor,
@@ -1487,6 +1596,9 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
     stageRing.rotation.x = Math.PI / 2;
     stageRing.position.y = -1.12;
     scene.add(stageRing);
+
+    const ecocardiogramaObj = criarEcocardiogramaSonoro3D(ritmoInicial.luzA, ritmoInicial.luzB);
+    scene.add(ecocardiogramaObj.group);
 
     let cenarioObj = criarCenarioRitmo3D(scene, ritmoInicial);
     let ultimoRitmoAplicado = ritmoInicial.id;
@@ -1540,6 +1652,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
 
     const clock = new THREE.Clock();
     let animId;
+    let ultimoModoExibido = '';
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
@@ -1550,27 +1663,52 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
         aplicarTemaRitmo3D(ritmoAtual);
       }
 
-      let energiaAudio = 0.5;
+      let energiaAudio = 0.55 + Math.abs(Math.sin(t * ((bpmRef.current / 60) * Math.PI * 1.5))) * 0.45;
       if (analyserRef.current && dataArrayRef.current && dancandoRef.current) {
         analyserRef.current.getByteFrequencyData(dataArrayRef.current);
         let soma = 0;
         for (let i = 0; i < 16; i++) {
           soma += dataArrayRef.current[i];
         }
-        energiaAudio = Math.min(2.2, (soma / (16 * 255)) * 2.4);
+        if (soma > 10) {
+          energiaAudio = Math.min(2.3, (soma / (16 * 255)) * 2.5);
+        }
       }
 
       const freq = (bpmRef.current / 60) * Math.PI;
       const amp = dancandoRef.current ? intensidadeRef.current * (0.75 + energiaAudio * 0.45) : 0;
-      const modo = modoRef.current;
 
-      aplicarVisualModo3D(robotoc, vegatocnyx, modo, t);
+      const faixaAtual = faixaAtivaRef.current;
+      const modoAtivo = autoMidiaRef.current
+        ? aplicarModoAutomaticoMidia3D(robotoc, vegatocnyx, faixaAtual, t, {
+            tocando: dancandoRef.current,
+            intensidade: amp,
+            cenario: cenarioObj?.group
+          }) || modoRef.current
+        : modoRef.current;
 
-      const isKaraoke = modo === 'KARAOKE_DUO';
-      const isFunkMode = modo === 'FUNK_PATRICINHA';
-      const isForroMode = modo === 'FORRO_VAQUEJADA';
-      const isMichaelMode = modo === 'MICHAEL_JACKSON_3D';
-      const isShakiraMode = modo === 'SHAKIRA_3D';
+      if (modoAtivo !== ultimoModoExibido) {
+        ultimoModoExibido = modoAtivo;
+        setModoDetectadoLabel(modoAtivo);
+      }
+
+      aplicarVisualModo3D(robotoc, vegatocnyx, modoAtivo, t);
+      sincronizarCenarioComMusica(cenarioObj?.group, modoAtivo, t, amp);
+      atualizarEcocardiogramaSonoro3D(
+        ecocardiogramaObj,
+        t,
+        freq,
+        dancandoRef.current ? intensidadeRef.current * energiaAudio : 0,
+        ritmoAtual.luzA,
+        ritmoAtual.luzB,
+        dancandoRef.current
+      );
+
+      const isKaraoke = modoAtivo === 'KARAOKE_DUO';
+      const isFunkMode = modoAtivo === 'FUNK_PATRICINHA';
+      const isForroMode = modoAtivo === 'FORRO_VAQUEJADA';
+      const isMichaelMode = modoAtivo === 'MICHAEL_JACKSON_3D';
+      const isShakiraMode = modoAtivo === 'SHAKIRA_3D';
 
       robotoc.cigarGroup.visible = isFunkMode;
       robotoc.goldChainGroup.visible = isFunkMode;
@@ -1631,9 +1769,8 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
       const pulo = Math.abs(Math.sin(t * freq * 0.5));
       const mov = calcularMovimentosMembrosRitmo(ritmoAtual.id, t, freq, amp, beat, beatRapido);
 
-      // Dança do ROBOTOC guitarrista adaptada ao ritmo e modo selecionado
       if (dancandoRef.current) {
-        let saltoRobotoc = modo === 'SALTO_TOTAL' ? pulo * 0.42 * amp : Math.max(0, beat) * 0.14 * amp;
+        let saltoRobotoc = modoAtivo === 'SALTO_TOTAL' ? pulo * 0.42 * amp : Math.max(0, beat) * 0.14 * amp;
         let posXRobotoc = -1.65 + Math.sin(t * freq * 0.5) * 0.28 * amp;
         let posZRobotoc = 0.4;
         let rotYRobotoc = Math.sin(t * freq * 0.5) * 0.32 * amp;
@@ -1724,9 +1861,8 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
         robotoc.legR.rotation.z = 0;
       }
 
-      // Dança e bateria da VEGATOCNYX adaptada ao ritmo e modo selecionado
       if (dancandoRef.current) {
-        let saltoVega = modo === 'BATERIA_TURBO' ? Math.abs(beatRapido) * 0.22 * amp : Math.max(0, -beat) * 0.15 * amp;
+        let saltoVega = modoAtivo === 'BATERIA_TURBO' ? Math.abs(beatRapido) * 0.22 * amp : Math.max(0, -beat) * 0.15 * amp;
         let posXVega = 1.75 + Math.cos(t * freq * 0.5) * 0.22 * amp;
         let posZVega = 0.2;
         let rotYVega = -Math.sin(t * freq * 0.5) * 0.28 * amp;
@@ -1739,7 +1875,6 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
           rotYVega = -0.22 + Math.cos(t * freq) * 0.15 * amp;
           saltoVega = Math.abs(beatRapido) * 0.14 * amp;
         } else if (isFunkMode) {
-          // Rebolando até o chão no estilo patricinha
           const agachamentoFunk = Math.abs(Math.sin(t * freq)) * 0.52 * Math.min(1.5, amp);
           saltoVega = -agachamentoFunk;
           posXVega = 1.45 + Math.cos(t * freq) * 0.26 * amp;
@@ -1803,7 +1938,6 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
           vegatocnyx.armR.rotation.x = -0.45 + Math.sin(t * freq * 2) * 0.62 * amp;
           vegatocnyx.armR.rotation.z = 0.45 * amp;
         } else {
-          // Baquetas e braços batendo na bateria conforme o ritmo
           vegatocnyx.armL.rotation.x = mov.vegArmLX;
           vegatocnyx.armL.rotation.z = mov.vegArmLZ;
           vegatocnyx.armR.rotation.x = mov.vegArmRX;
@@ -1839,6 +1973,10 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
       if (cenarioObj?.group) {
         scene.remove(cenarioObj.group);
         descartarGrupo3D(cenarioObj.group);
+      }
+      if (ecocardiogramaObj?.group) {
+        scene.remove(ecocardiogramaObj.group);
+        descartarGrupo3D(ecocardiogramaObj.group);
       }
       descartarGrupo3D(robotoc.root);
       descartarGrupo3D(vegatocnyx.root);
@@ -1900,7 +2038,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
               🎸🥁 DANÇA ROBOTOC & VEGATOCNYX 3D — PALCO MUSICAL
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#cbd5e1' }}>
-              Robotoc na guitarra com fone & microfone • Vegatocnyx na bateria com fone rosa & microfone
+              Modo Auto Mídia: <strong>{modoAutomaticoMidia ? `ATIVO (${modoDetectadoLabel})` : 'MANUAL'}</strong> • Onda Ecocardiograma Sonoro 3D
             </p>
           </div>
           <button
@@ -1970,6 +2108,22 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
                   {dancando ? '⏸ Pausar Dança' : '💃 Fazer Dançar Muito!'}
                 </button>
 
+                <button
+                  onClick={() => setModoAutomaticoMidia((prev) => !prev)}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: modoAutomaticoMidia ? '1px solid #00f0ff' : '1px solid #475569',
+                    backgroundColor: modoAutomaticoMidia ? 'rgba(0, 240, 255, 0.16)' : '#1e293b',
+                    color: modoAutomaticoMidia ? '#00f0ff' : '#cbd5e1',
+                    fontWeight: 'bold',
+                    fontSize: '10.5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {modoAutomaticoMidia ? '🤖 Auto Mídia: ON' : '🎛 Auto Mídia: OFF'}
+                </button>
+
                 <select
                   value={ritmoAtualId}
                   onChange={(e) => setRitmoAtualId(e.target.value)}
@@ -1992,7 +2146,10 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
 
                 <select
                   value={modoCoreografia}
-                  onChange={(e) => setModoCoreografia(e.target.value)}
+                  onChange={(e) => {
+                    setModoCoreografia(e.target.value);
+                    setModoAutomaticoMidia(false);
+                  }}
                   style={{
                     backgroundColor: '#1e293b',
                     color: '#f8fafc',
@@ -2079,11 +2236,11 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
               }}
             >
               <strong style={{ fontSize: '11px', color: '#ff4da6' }}>
-                ▶️ 2. Adicionar Link de Música do YouTube
+                ▶️ 2. Adicionar Link de Vídeo / Música do YouTube
               </strong>
               <input
                 type="text"
-                placeholder="Nome da música (opcional)"
+                placeholder="Nome / estilo da música (ex: Rock, Funk, Forró, MJ, Shakira...)"
                 value={tituloLinkInput}
                 onChange={(e) => setTituloLinkInput(e.target.value)}
                 style={{
@@ -2098,7 +2255,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
                   type="text"
-                  placeholder="Cole o link do YouTube aqui..."
+                  placeholder="Cole o link do YouTube (vídeo, shorts ou embed)..."
                   value={youtubeInput}
                   onChange={(e) => setYoutubeInput(e.target.value)}
                   style={{
@@ -2143,7 +2300,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
               }}
             >
               <strong style={{ fontSize: '11px', color: '#38bdf8' }}>
-                🛜 3. Playlists de Redes Sociais ou da Internet
+                🛜 3. Links / Playlists de Redes Sociais ou da Internet
               </strong>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
@@ -2174,7 +2331,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
                     cursor: 'pointer'
                   }}
                 >
-                  Salvar Playlist
+                  Sincronizar
                 </button>
               </div>
 
@@ -2195,7 +2352,7 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
                         textDecoration: 'none'
                       }}
                     >
-                      🛜 {pl.nome} ➔ Abrir Playlist
+                      🛜 {pl.nome} ➔ Abrir Link Externo
                     </a>
                   ))}
                 </div>
@@ -2224,7 +2381,10 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
                   src={faixaAtiva.url}
                   controls
                   autoPlay
-                  onPlay={() => conectarAnalisadorAudio(audioElRef.current)}
+                  onPlay={() => {
+                    conectarAnalisadorAudio(audioElRef.current);
+                    setDancando(true);
+                  }}
                   style={{ width: '100%', height: '34px' }}
                 />
               )}
@@ -2243,11 +2403,20 @@ export default function DancaRobotocVegatocnyx({ onClose, addLog }) {
                 </div>
               )}
 
+              {faixaAtiva?.tipo === 'social' && faixaAtiva.url && (
+                <div style={{ fontSize: '10.5px', color: '#cbd5e1', backgroundColor: '#1e293b', padding: '8px', borderRadius: '8px' }}>
+                  Link ativo em modo automático: <strong>{faixaAtiva.url}</strong>
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '110px', overflowY: 'auto' }}>
                 {faixas.map((f) => (
                   <button
                     key={f.id}
-                    onClick={() => setFaixaAtivaId(f.id)}
+                    onClick={() => {
+                      setFaixaAtivaId(f.id);
+                      setDancando(true);
+                    }}
                     style={{
                       textAlign: 'left',
                       padding: '6px 8px',
